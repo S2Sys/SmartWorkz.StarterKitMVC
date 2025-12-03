@@ -1,0 +1,10 @@
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Web.csproj.AssemblyReference.cache
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net10.0\rpswa.dswa.cache.json
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Web.GeneratedMSBuildEditorConfig.editorconfig
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Web.AssemblyInfoInputs.cache
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Web.AssemblyInfo.cs
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Web.csproj.CoreCompileInputs.cache
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Web.MvcApplicationPartsAssemblyInfo.cache
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Web.RazorAssemblyInfo.cache
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Web.RazorAssemblyInfo.cs
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Web.sourcelink.json

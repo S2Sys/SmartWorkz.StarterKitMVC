@@ -14,22 +14,27 @@ const Admin = window.Admin || {};
 // Sidebar Management
 // ============================================
 Admin.sidebar = {
-    wrapper: null,
-    backdrop: null,
+    sidebar: null,
+    overlay: null,
     toggleBtn: null,
+    closeBtn: null,
     
     init() {
-        this.wrapper = document.getElementById('sidebar-wrapper');
-        this.backdrop = document.getElementById('sidebarBackdrop');
+        this.sidebar = document.getElementById('adminSidebar');
+        this.overlay = document.getElementById('sidebarOverlay');
         this.toggleBtn = document.getElementById('sidebarToggle');
+        this.closeBtn = document.getElementById('sidebarClose');
         
-        if (!this.wrapper) return;
+        if (!this.sidebar) return;
         
         // Toggle button click
         this.toggleBtn?.addEventListener('click', () => this.toggle());
         
-        // Backdrop click (mobile)
-        this.backdrop?.addEventListener('click', () => this.close());
+        // Close button click (mobile)
+        this.closeBtn?.addEventListener('click', () => this.close());
+        
+        // Overlay click (mobile)
+        this.overlay?.addEventListener('click', () => this.close());
         
         // Close on escape key
         document.addEventListener('keydown', (e) => {
@@ -37,44 +42,56 @@ Admin.sidebar = {
         });
         
         // Handle resize
-        window.addEventListener('resize', SW.utils.debounce(() => {
+        window.addEventListener('resize', this.debounce(() => {
             if (window.innerWidth >= 992) {
-                this.wrapper.classList.remove('show');
-                this.backdrop?.classList.remove('show');
+                this.sidebar.classList.remove('show');
+                this.overlay?.classList.remove('show');
             }
         }, 100));
         
-        // Restore state from storage
-        const collapsed = SW.storage.get('sidebar-collapsed');
-        if (collapsed && window.innerWidth >= 992) {
-            document.body.classList.add('sidebar-collapsed');
+        // Restore collapsed state from storage
+        const collapsed = localStorage.getItem('sidebar-collapsed');
+        if (collapsed === 'true' && window.innerWidth >= 992) {
+            this.sidebar.classList.add('collapsed');
         }
     },
     
     toggle() {
         if (window.innerWidth < 992) {
             // Mobile: slide in/out
-            this.wrapper.classList.toggle('show');
-            this.backdrop?.classList.toggle('show');
+            this.sidebar.classList.toggle('show');
+            this.overlay?.classList.toggle('show');
         } else {
             // Desktop: collapse/expand
-            document.body.classList.toggle('sidebar-collapsed');
-            SW.storage.set('sidebar-collapsed', document.body.classList.contains('sidebar-collapsed'));
+            this.sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebar-collapsed', this.sidebar.classList.contains('collapsed'));
         }
     },
     
     open() {
         if (window.innerWidth < 992) {
-            this.wrapper.classList.add('show');
-            this.backdrop?.classList.add('show');
+            this.sidebar.classList.add('show');
+            this.overlay?.classList.add('show');
         }
     },
     
     close() {
         if (window.innerWidth < 992) {
-            this.wrapper.classList.remove('show');
-            this.backdrop?.classList.remove('show');
+            this.sidebar.classList.remove('show');
+            this.overlay?.classList.remove('show');
         }
+    },
+    
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
     }
 };
 
@@ -331,11 +348,43 @@ Admin.notifications = {
 };
 
 // ============================================
+// Theme Management
+// ============================================
+Admin.theme = {
+    init() {
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('admin-theme') || 'light';
+        this.setTheme(savedTheme);
+        
+        themeToggle?.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            this.setTheme(newTheme);
+            localStorage.setItem('admin-theme', newTheme);
+        });
+    },
+    
+    setTheme(theme) {
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        const themeIcon = document.getElementById('themeIcon');
+        if (themeIcon) {
+            themeIcon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+        }
+    }
+};
+
+// ============================================
 // Initialize on DOM Ready
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize sidebar
     Admin.sidebar.init();
+    
+    // Initialize theme
+    Admin.theme.init();
     
     // Initialize tooltips in admin
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {

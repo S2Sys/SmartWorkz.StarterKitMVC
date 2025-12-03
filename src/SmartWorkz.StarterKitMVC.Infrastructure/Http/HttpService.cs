@@ -1,6 +1,5 @@
 using System.Net.Http.Json;
 using SmartWorkz.StarterKitMVC.Application.Abstractions;
-using SmartWorkz.StarterKitMVC.Shared.Primitives;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Http;
 
@@ -16,41 +15,69 @@ public sealed class HttpService : IHttpService
         _client = client;
     }
 
-    public async Task<ApiResponse<T>> SendAsync<T>(ApiRequest request, CancellationToken cancellationToken = default)
+    public async Task<HttpResult<T>> GetAsync<T>(string path, CancellationToken ct = default)
     {
-        using var message = new HttpRequestMessage(request.Method, request.Path);
-
-        if (request.Body is not null)
+        try
         {
-            message.Content = JsonContent.Create(request.Body);
+            var response = await _client.GetAsync(path, ct);
+            return await CreateResultAsync<T>(response, ct);
         }
-
-        if (request.Headers is not null)
+        catch (Exception ex)
         {
-            foreach (var (key, value) in request.Headers)
-            {
-                message.Headers.TryAddWithoutValidation(key, value);
-            }
+            return new HttpResult<T>(false, default, ex.Message, 0);
         }
+    }
 
-        using var response = await _client.SendAsync(message, cancellationToken).ConfigureAwait(false);
-
-        var apiResponse = new ApiResponse<T>
+    public async Task<HttpResult<T>> PostAsync<T>(string path, object? body = null, CancellationToken ct = default)
+    {
+        try
         {
-            StatusCode = response.StatusCode,
-            IsSuccess = response.IsSuccessStatusCode
-        };
+            var response = await _client.PostAsJsonAsync(path, body, ct);
+            return await CreateResultAsync<T>(response, ct);
+        }
+        catch (Exception ex)
+        {
+            return new HttpResult<T>(false, default, ex.Message, 0);
+        }
+    }
 
+    public async Task<HttpResult<T>> PutAsync<T>(string path, object? body = null, CancellationToken ct = default)
+    {
+        try
+        {
+            var response = await _client.PutAsJsonAsync(path, body, ct);
+            return await CreateResultAsync<T>(response, ct);
+        }
+        catch (Exception ex)
+        {
+            return new HttpResult<T>(false, default, ex.Message, 0);
+        }
+    }
+
+    public async Task<HttpResult<T>> DeleteAsync<T>(string path, CancellationToken ct = default)
+    {
+        try
+        {
+            var response = await _client.DeleteAsync(path, ct);
+            return await CreateResultAsync<T>(response, ct);
+        }
+        catch (Exception ex)
+        {
+            return new HttpResult<T>(false, default, ex.Message, 0);
+        }
+    }
+
+    private static async Task<HttpResult<T>> CreateResultAsync<T>(HttpResponseMessage response, CancellationToken ct)
+    {
+        var statusCode = (int)response.StatusCode;
+        
         if (response.IsSuccessStatusCode)
         {
-            apiResponse = apiResponse with { Data = await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken) };
+            var data = await response.Content.ReadFromJsonAsync<T>(cancellationToken: ct);
+            return new HttpResult<T>(true, data, null, statusCode);
         }
-        else
-        {
-            var error = await response.Content.ReadFromJsonAsync<ApiError>(cancellationToken: cancellationToken);
-            apiResponse = apiResponse with { Error = error };
-        }
-
-        return apiResponse;
+        
+        var error = await response.Content.ReadAsStringAsync(ct);
+        return new HttpResult<T>(false, default, error, statusCode);
     }
 }

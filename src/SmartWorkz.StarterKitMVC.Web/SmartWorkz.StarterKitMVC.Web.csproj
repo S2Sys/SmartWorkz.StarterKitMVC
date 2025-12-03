@@ -1,15 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\SmartWorkz.StarterKitMVC.Application\SmartWorkz.StarterKitMVC.Application.csproj" />
     <ProjectReference Include="..\SmartWorkz.StarterKitMVC.Infrastructure\SmartWorkz.StarterKitMVC.Infrastructure.csproj" />
     <ProjectReference Include="..\SmartWorkz.StarterKitMVC.Shared\SmartWorkz.StarterKitMVC.Shared.csproj" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
 
 </Project>

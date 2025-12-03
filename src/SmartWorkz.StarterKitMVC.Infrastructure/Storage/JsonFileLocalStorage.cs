@@ -1,10 +1,12 @@
+using Microsoft.Extensions.Hosting;
+
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Storage;
 
 public sealed class JsonFileLocalStorage : ILocalStorage
 {
     private readonly string _rootPath;
 
-    public JsonFileLocalStorage(IWebHostEnvironment env)
+    public JsonFileLocalStorage(IHostEnvironment env)
     {
         _rootPath = Path.Combine(env.ContentRootPath, "_localdata");
         Directory.CreateDirectory(_rootPath);

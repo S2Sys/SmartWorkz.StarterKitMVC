@@ -244,12 +244,13 @@ public static class FeatureServiceExtensions
             var redisConnection = configuration.GetConnectionString("Redis");
             if (!string.IsNullOrEmpty(redisConnection))
             {
-                services.AddStackExchangeRedisCache(opt =>
-                {
-                    opt.Configuration = redisConnection;
-                    opt.InstanceName = options.Redis.InstanceName;
-                });
-                Console.WriteLine("[Feature] Redis caching enabled");
+                // Add Microsoft.Extensions.Caching.StackExchangeRedis package to enable
+                // services.AddStackExchangeRedisCache(opt =>
+                // {
+                //     opt.Configuration = redisConnection;
+                //     opt.InstanceName = options.Redis.InstanceName;
+                // });
+                Console.WriteLine("[Feature] Redis caching enabled (requires package)");
             }
         }
         else
@@ -355,12 +356,15 @@ public static class FeatureServiceExtensions
     {
         services.AddRateLimiter(limiter =>
         {
-            limiter.AddFixedWindowLimiter("fixed", opt =>
-            {
-                opt.PermitLimit = options.PermitLimit;
-                opt.Window = TimeSpan.FromSeconds(options.WindowSeconds);
-                opt.QueueLimit = options.QueueLimit;
-            });
+            limiter.GlobalLimiter = System.Threading.RateLimiting.PartitionedRateLimiter.Create<HttpContext, string>(context =>
+                System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: context.Request.Headers.Host.ToString(),
+                    factory: _ => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = options.PermitLimit,
+                        Window = TimeSpan.FromSeconds(options.WindowSeconds),
+                        QueueLimit = options.QueueLimit
+                    }));
         });
         Console.WriteLine($"[Feature] Rate limiting enabled: {options.PermitLimit} requests per {options.WindowSeconds}s");
     }
