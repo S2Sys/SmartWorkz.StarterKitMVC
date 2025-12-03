@@ -1,0 +1,25 @@
+@* Confirm Modal Partial - Reusable confirmation dialog *@
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">
+                    <i class="bi bi-question-circle me-2 text-warning"></i>
+                    <span id="confirmModalTitle">Confirm Action</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="confirmModalBody">
+                Are you sure you want to proceed?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="confirmModalOk">
+                    <i class="bi bi-check-lg me-1"></i>Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

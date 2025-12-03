@@ -1,0 +1,37 @@
+@* Card Partial - Reusable card component *@
+@model dynamic
+@{
+    string title = Model?.Title ?? "";
+    string subtitle = Model?.Subtitle ?? "";
+    string icon = Model?.Icon ?? "";
+    string headerClass = Model?.HeaderClass ?? "";
+    string bodyClass = Model?.BodyClass ?? "";
+}
+
+<div class="card shadow-sm h-100">
+    @if (!string.IsNullOrEmpty(title))
+    {
+        <div class="card-header bg-transparent @headerClass">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-0">
+                    @if (!string.IsNullOrEmpty(icon))
+                    {
+                        <i class="bi @icon me-2 text-primary"></i>
+                    }
+                    @title
+                </h5>
+                @if (IsSectionDefined("CardActions"))
+                {
+                    <div>@RenderSection("CardActions", required: false)</div>
+                }
+            </div>
+            @if (!string.IsNullOrEmpty(subtitle))
+            {
+                <small class="text-muted">@subtitle</small>
+            }
+        </div>
+    }
+    <div class="card-body @bodyClass">
+        @RenderBody()
+    </div>
+</div>

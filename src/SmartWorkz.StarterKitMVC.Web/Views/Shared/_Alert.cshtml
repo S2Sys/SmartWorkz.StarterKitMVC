@@ -1,0 +1,27 @@
+@* Alert Partial - Reusable alert component *@
+@model dynamic
+@{
+    string type = Model?.Type ?? "info";
+    string message = Model?.Message ?? "";
+    bool dismissible = Model?.Dismissible ?? true;
+    string icon = type switch
+    {
+        "success" => "bi-check-circle-fill",
+        "danger" => "bi-exclamation-triangle-fill",
+        "warning" => "bi-exclamation-circle-fill",
+        "info" => "bi-info-circle-fill",
+        _ => "bi-info-circle-fill"
+    };
+}
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-@type @(dismissible ? "alert-dismissible" : "") fade show d-flex align-items-center" role="alert">
+        <i class="bi @icon me-2 flex-shrink-0"></i>
+        <div>@message</div>
+        @if (dismissible)
+        {
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        }
+    </div>
+}
