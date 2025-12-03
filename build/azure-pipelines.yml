@@ -1,0 +1,23 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '9.0.x'
+
+  - script: dotnet restore
+    displayName: 'Restore'
+
+  - script: dotnet build --no-restore -c $(buildConfiguration)
+    displayName: 'Build'
+
+  - script: dotnet test --no-build -c $(buildConfiguration) --verbosity normal
+    displayName: 'Test'

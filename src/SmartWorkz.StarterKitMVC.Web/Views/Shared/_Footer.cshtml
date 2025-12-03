@@ -1,0 +1,82 @@
+@* Footer Partial - Responsive Bootstrap 5.3.3 Footer *@
+@{
+    var year = DateTime.UtcNow.Year;
+}
+<footer class="bg-dark text-light py-5 mt-auto">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Brand Column -->
+            <div class="col-lg-4 col-md-6">
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-lightning-charge-fill me-2 text-primary"></i>SmartWorkz
+                </h5>
+                <p class="text-secondary mb-3">
+                    Enterprise-grade ASP.NET Core MVC boilerplate with clean architecture, 
+                    multi-tenancy, and modern UI.
+                </p>
+                <div class="d-flex gap-2">
+                    <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                        <i class="bi bi-github"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                        <i class="bi bi-linkedin"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                        <i class="bi bi-twitter-x"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6">
+                <h6 class="fw-bold mb-3 text-uppercase">Quick Links</h6>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><a href="/" class="text-secondary text-decoration-none hover-light">Home</a></li>
+                    <li class="mb-2"><a href="#" class="text-secondary text-decoration-none hover-light">Features</a></li>
+                    <li class="mb-2"><a href="#" class="text-secondary text-decoration-none hover-light">Documentation</a></li>
+                    <li class="mb-2"><a href="#" class="text-secondary text-decoration-none hover-light">Support</a></li>
+                </ul>
+            </div>
+            
+            <!-- Resources -->
+            <div class="col-lg-2 col-md-6">
+                <h6 class="fw-bold mb-3 text-uppercase">Resources</h6>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><a href="#" class="text-secondary text-decoration-none hover-light">API Reference</a></li>
+                    <li class="mb-2"><a href="#" class="text-secondary text-decoration-none hover-light">How to Use</a></li>
+                    <li class="mb-2"><a href="#" class="text-secondary text-decoration-none hover-light">Architecture</a></li>
+                    <li class="mb-2"><a href="#" class="text-secondary text-decoration-none hover-light">Changelog</a></li>
+                </ul>
+            </div>
+            
+            <!-- Contact -->
+            <div class="col-lg-4 col-md-6">
+                <h6 class="fw-bold mb-3 text-uppercase">Stay Updated</h6>
+                <p class="text-secondary small mb-3">Subscribe to our newsletter for updates.</p>
+                <form class="d-flex gap-2">
+                    <input type="email" class="form-control form-control-sm bg-dark text-light border-secondary" 
+                           placeholder="Enter email">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-send"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <hr class="my-4 border-secondary">
+        
+        <!-- Bottom Bar -->
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start">
+                <p class="text-secondary small mb-0">
+                    &copy; @year SmartWorkz. All rights reserved.
+                </p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <a href="#" class="text-secondary small text-decoration-none me-3">Privacy Policy</a>
+                <a href="#" class="text-secondary small text-decoration-none me-3">Terms of Service</a>
+                <a href="#" class="text-secondary small text-decoration-none">Contact</a>
+            </div>
+        </div>
+    </div>
+</footer>

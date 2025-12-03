@@ -1,0 +1,48 @@
+@{
+    var year = DateTime.UtcNow.Year;
+}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SmartWorkz StarterKitMVC - Enterprise ASP.NET Core MVC Boilerplate" />
+    <title>@ViewData["Title"] - SmartWorkz StarterKitMVC</title>
+    
+    <!-- Bootstrap 5.3.3 (Latest) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    
+    <!-- Site CSS -->
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Navbar Partial -->
+    @await Html.PartialAsync("_Navbar")
+    
+    <!-- Toast Container -->
+    @await Html.PartialAsync("_ToastContainer")
+    
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+        @RenderBody()
+    </main>
+    
+    <!-- Footer Partial -->
+    @await Html.PartialAsync("_Footer")
+    
+    <!-- Loading Overlay -->
+    @await Html.PartialAsync("_LoadingOverlay")
+    
+    <!-- Confirm Modal -->
+    @await Html.PartialAsync("_ConfirmModal")
+
+    <!-- Bootstrap 5.3.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
+    <!-- Site JS -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,154 @@
+@{
+    var year = DateTime.UtcNow.Year;
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString()?.ToLower();
+}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin | StarterKitMVC</title>
+    
+    <!-- Bootstrap 5.3.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/admin.css" rel="stylesheet" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <!-- Mobile Sidebar Backdrop -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <nav class="bg-dark text-white" id="sidebar-wrapper">
+            <div class="sidebar-heading p-3 border-bottom border-secondary">
+                <a href="/" class="text-white text-decoration-none d-flex align-items-center">
+                    <i class="bi bi-lightning-charge-fill fs-4 me-2"></i>
+                    <span class="fs-5 fw-bold sidebar-text">StarterKit</span>
+                </a>
+            </div>
+            <div class="list-group list-group-flush py-2">
+                <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" 
+                   class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "dashboard" ? "active" : "")">
+                    <i class="bi bi-speedometer2 me-2"></i><span class="sidebar-text">Dashboard</span>
+                </a>
+                <a asp-area="Admin" asp-controller="Settings" asp-action="Index" 
+                   class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "settings" ? "active" : "")">
+                    <i class="bi bi-gear me-2"></i><span class="sidebar-text">Settings</span>
+                </a>
+                <a asp-area="Admin" asp-controller="Lov" asp-action="Index" 
+                   class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "lov" ? "active" : "")">
+                    <i class="bi bi-list-ul me-2"></i><span class="sidebar-text">List of Values</span>
+                </a>
+                <a asp-area="Admin" asp-controller="Identity" asp-action="Index" 
+                   class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "identity" ? "active" : "")">
+                    <i class="bi bi-people me-2"></i><span class="sidebar-text">Identity</span>
+                </a>
+                <a asp-area="Admin" asp-controller="Tenants" asp-action="Index" 
+                   class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "tenants" ? "active" : "")">
+                    <i class="bi bi-building me-2"></i><span class="sidebar-text">Tenants</span>
+                </a>
+                <a asp-area="Admin" asp-controller="Notifications" asp-action="Index" 
+                   class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "notifications" ? "active" : "")">
+                    <i class="bi bi-bell me-2"></i><span class="sidebar-text">Notifications</span>
+                </a>
+                <a asp-area="Admin" asp-controller="Theme" asp-action="Index" 
+                   class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "theme" ? "active" : "")">
+                    <i class="bi bi-palette me-2"></i><span class="sidebar-text">Theme</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <!-- Top Navbar -->
+            <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom shadow-sm sticky-top">
+                <div class="container-fluid">
+                    <button class="btn btn-outline-secondary me-3" id="sidebarToggle" type="button">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb" class="d-none d-md-block">
+                        <ol class="breadcrumb mb-0 small">
+                            <li class="breadcrumb-item"><a href="/">Home</a></li>
+                            <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                        </ol>
+                    </nav>
+                    
+                    <div class="d-flex align-items-center ms-auto gap-2">
+                        <!-- Theme Toggle -->
+                        <button class="btn btn-link nav-link" id="themeToggle" title="Toggle theme">
+                            <i class="bi bi-moon-stars" id="themeIcon"></i>
+                        </button>
+                        
+                        <!-- Notifications -->
+                        <div class="dropdown">
+                            <button class="btn btn-link nav-link position-relative" data-bs-toggle="dropdown">
+                                <i class="bi bi-bell"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">3</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow" style="width: 300px;">
+                                <li class="dropdown-header">Notifications</li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item py-2" href="#"><small class="text-muted">No new notifications</small></a></li>
+                            </ul>
+                        </div>
+                        
+                        <!-- User Menu -->
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" data-bs-toggle="dropdown">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <span class="d-none d-md-inline">Admin</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
+                                <li class="dropdown-header">Admin User</li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Toast Container -->
+            @await Html.PartialAsync("_ToastContainer")
+            
+            <!-- Main Content -->
+            <main class="container-fluid p-4">
+                @RenderBody()
+            </main>
+
+            <!-- Footer -->
+            <footer class="bg-body-tertiary py-3 mt-auto border-top">
+                <div class="container-fluid px-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                        <span class="text-muted small">&copy; @year SmartWorkz. All rights reserved.</span>
+                        <span class="text-muted small">StarterKitMVC v1.0</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    @await Html.PartialAsync("_LoadingOverlay")
+    
+    <!-- Confirm Modal -->
+    @await Html.PartialAsync("_ConfirmModal")
+
+    <!-- Bootstrap 5.3.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

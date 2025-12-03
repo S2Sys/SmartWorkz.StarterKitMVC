@@ -1,0 +1,41 @@
+@* DataTable Partial - Responsive table with sorting and search *@
+@model dynamic
+@{
+    string tableId = Model?.TableId ?? "dataTable";
+    bool searchable = Model?.Searchable ?? true;
+    bool sortable = Model?.Sortable ?? true;
+}
+
+<div class="table-responsive">
+    @if (searchable)
+    {
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-transparent">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control" id="@(tableId)Search" 
+                           placeholder="Search..." data-table-search="@tableId">
+                </div>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-outline-secondary" data-table-export="csv" data-table="@tableId">
+                        <i class="bi bi-filetype-csv me-1"></i>CSV
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" data-table-export="excel" data-table="@tableId">
+                        <i class="bi bi-file-earmark-excel me-1"></i>Excel
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" data-table-print data-table="@tableId">
+                        <i class="bi bi-printer me-1"></i>Print
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    
+    <table class="table table-hover table-striped align-middle @(sortable ? "sortable" : "")" id="@tableId">
+        @RenderBody()
+    </table>
+</div>

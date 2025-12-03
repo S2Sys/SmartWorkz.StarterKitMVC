@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li><a asp-area="Admin" asp-controller="Settings" asp-action="Index">Settings</a></li>
+            <li><a asp-area="Admin" asp-controller="Lov" asp-action="Index">LoV</a></li>
+            <li><a asp-area="Admin" asp-controller="Identity" asp-action="Index">Identity</a></li>
+            <li><a asp-area="Admin" asp-controller="Tenants" asp-action="Index">Tenants</a></li>
+            <li><a asp-area="Admin" asp-controller="Notifications" asp-action="Index">Notifications</a></li>
+            <li><a asp-area="Admin" asp-controller="Theme" asp-action="Index">Theme</a></li>
+        </ul>
+    </nav>
+    <main>
+        @RenderBody()
+    </main>
+</body>
+</html>
