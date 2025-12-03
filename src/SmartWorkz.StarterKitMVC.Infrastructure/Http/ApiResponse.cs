@@ -1,3 +1,4 @@
+using System.Net;
 using SmartWorkz.StarterKitMVC.Shared.Primitives;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Http;
@@ -25,7 +26,7 @@ namespace SmartWorkz.StarterKitMVC.Infrastructure.Http;
 /// };
 /// </code>
 /// </example>
-public sealed class ApiResponse<T>
+public sealed record ApiResponse<T>
 {
     /// <summary>Whether the request was successful.</summary>
     public bool IsSuccess { get; init; }

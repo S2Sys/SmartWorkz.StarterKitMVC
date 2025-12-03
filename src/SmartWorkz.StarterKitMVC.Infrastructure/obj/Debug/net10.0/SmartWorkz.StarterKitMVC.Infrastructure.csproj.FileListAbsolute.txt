@@ -1,0 +1,6 @@
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Infrastructure.csproj.AssemblyReference.cache
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Infrastructure.AssemblyInfoInputs.cache
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Infrastructure.AssemblyInfo.cs
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Infrastructure.csproj.CoreCompileInputs.cache
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net10.0\SmartWorkz.StarterKitMVC.Infrastructure.sourcelink.json

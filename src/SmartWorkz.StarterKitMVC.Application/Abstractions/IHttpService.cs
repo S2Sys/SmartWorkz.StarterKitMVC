@@ -1,5 +1,3 @@
-using SmartWorkz.StarterKitMVC.Infrastructure.Http;
-
 namespace SmartWorkz.StarterKitMVC.Application.Abstractions;
 
 /// <summary>
@@ -16,13 +14,7 @@ namespace SmartWorkz.StarterKitMVC.Application.Abstractions;
 ///     
 ///     public async Task&lt;User?&gt; GetUserAsync(int id)
 ///     {
-///         var request = new ApiRequest
-///         {
-///             Method = HttpMethod.Get,
-///             Path = $"/api/users/{id}"
-///         };
-///         
-///         var response = await _http.SendAsync&lt;User&gt;(request);
+///         var response = await _http.GetAsync&lt;User&gt;($"/api/users/{id}");
 ///         return response.IsSuccess ? response.Data : null;
 ///     }
 /// }
@@ -30,12 +22,20 @@ namespace SmartWorkz.StarterKitMVC.Application.Abstractions;
 /// </example>
 public interface IHttpService
 {
-    /// <summary>
-    /// Sends an HTTP request and returns a typed response.
-    /// </summary>
-    /// <typeparam name="T">The expected response type.</typeparam>
-    /// <param name="request">The API request to send.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>API response with data or error.</returns>
-    Task<ApiResponse<T>> SendAsync<T>(ApiRequest request, CancellationToken cancellationToken = default);
+    /// <summary>Sends a GET request.</summary>
+    Task<HttpResult<T>> GetAsync<T>(string path, CancellationToken ct = default);
+    
+    /// <summary>Sends a POST request.</summary>
+    Task<HttpResult<T>> PostAsync<T>(string path, object? body = null, CancellationToken ct = default);
+    
+    /// <summary>Sends a PUT request.</summary>
+    Task<HttpResult<T>> PutAsync<T>(string path, object? body = null, CancellationToken ct = default);
+    
+    /// <summary>Sends a DELETE request.</summary>
+    Task<HttpResult<T>> DeleteAsync<T>(string path, CancellationToken ct = default);
 }
+
+/// <summary>
+/// Result of an HTTP operation.
+/// </summary>
+public record HttpResult<T>(bool IsSuccess, T? Data, string? Error, int StatusCode);

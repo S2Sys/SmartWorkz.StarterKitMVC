@@ -1,7 +1,7 @@
 @* Navbar Partial - Responsive Bootstrap 5.3.3 Navigation *@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm">
     <div class="container">
-        <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+        <a class="navbar-brand fw-bold d-flex align-items-center" asp-controller="Home" asp-action="Index">
             <i class="bi bi-lightning-charge-fill fs-4 me-2"></i>
             <span>StarterKitMVC</span>
         </a>
@@ -26,11 +26,13 @@
                         <i class="bi bi-grid me-1"></i>Features
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-list-ul me-2"></i>List of Values</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-people me-2"></i>Identity</a></li>
+                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Settings" asp-action="Index"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Lov" asp-action="Index"><i class="bi bi-list-ul me-2"></i>List of Values</a></li>
+                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Identity" asp-action="Index"><i class="bi bi-people me-2"></i>Identity</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-building me-2"></i>Multi-Tenancy</a></li>
+                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Tenants" asp-action="Index"><i class="bi bi-building me-2"></i>Multi-Tenancy</a></li>
+                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Notifications" asp-action="Index"><i class="bi bi-bell me-2"></i>Notifications</a></li>
+                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Theme" asp-action="Index"><i class="bi bi-palette me-2"></i>Theme</a></li>
                     </ul>
                 </li>
             </ul>

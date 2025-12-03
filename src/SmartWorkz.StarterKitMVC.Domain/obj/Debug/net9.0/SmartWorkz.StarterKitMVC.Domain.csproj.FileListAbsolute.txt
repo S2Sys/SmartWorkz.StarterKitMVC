@@ -1,0 +1,12 @@
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Domain.deps.json
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Domain.dll
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Domain.pdb
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Domain.GeneratedMSBuildEditorConfig.editorconfig
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Domain.AssemblyInfoInputs.cache
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Domain.AssemblyInfo.cs
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Domain.csproj.CoreCompileInputs.cache
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Domain.sourcelink.json
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Domain.dll
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\refint\SmartWorkz.StarterKitMVC.Domain.dll
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Domain.pdb
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\ref\SmartWorkz.StarterKitMVC.Domain.dll

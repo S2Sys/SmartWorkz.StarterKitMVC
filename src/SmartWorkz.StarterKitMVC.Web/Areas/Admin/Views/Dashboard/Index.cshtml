@@ -1,3 +1,249 @@
-@{ ViewData["Title"] = "Admin Dashboard"; }
-<h1>Admin Dashboard</h1>
-<p>Dashboard shell – add widgets here.</p>
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@section PageActions {
+    <button class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>Add Widget
+    </button>
+}
+
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card admin-card stat-card primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value">1,250</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-success"><i class="bi bi-arrow-up"></i> 12%</span>
+                    <span class="text-muted ms-2">from last month</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card admin-card stat-card success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value">$45,890</div>
+                        <div class="stat-label">Revenue</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-success"><i class="bi bi-arrow-up"></i> 8%</span>
+                    <span class="text-muted ms-2">from last month</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card admin-card stat-card warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value">342</div>
+                        <div class="stat-label">Orders</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-cart"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-danger"><i class="bi bi-arrow-down"></i> 3%</span>
+                    <span class="text-muted ms-2">from last month</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card admin-card stat-card info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value">18</div>
+                        <div class="stat-label">Tenants</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-building"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-success"><i class="bi bi-arrow-up"></i> 2</span>
+                    <span class="text-muted ms-2">new this month</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card admin-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-graph-up me-2"></i>Activity Overview</span>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-secondary active">Week</button>
+                    <button class="btn btn-outline-secondary">Month</button>
+                    <button class="btn btn-outline-secondary">Year</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container d-flex align-items-center justify-content-center text-muted">
+                    <div class="text-center">
+                        <i class="bi bi-bar-chart fs-1 mb-2 d-block"></i>
+                        <p>Chart placeholder - integrate Chart.js or ApexCharts</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-pie-chart me-2"></i>Traffic Sources
+            </div>
+            <div class="card-body">
+                <div class="chart-container d-flex align-items-center justify-content-center text-muted">
+                    <div class="text-center">
+                        <i class="bi bi-pie-chart fs-1 mb-2 d-block"></i>
+                        <p>Pie chart placeholder</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity & Quick Actions -->
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card admin-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-clock-history me-2"></i>Recent Activity</span>
+                <a href="#" class="btn btn-sm btn-link">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table admin-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar-sm me-2"><i class="bi bi-person-fill"></i></div>
+                                        John Doe
+                                    </div>
+                                </td>
+                                <td>Created new tenant</td>
+                                <td>2 mins ago</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar-sm me-2"><i class="bi bi-person-fill"></i></div>
+                                        Jane Smith
+                                    </div>
+                                </td>
+                                <td>Updated settings</td>
+                                <td>15 mins ago</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar-sm me-2"><i class="bi bi-person-fill"></i></div>
+                                        Mike Johnson
+                                    </div>
+                                </td>
+                                <td>Deleted user account</td>
+                                <td>1 hour ago</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar-sm me-2"><i class="bi bi-person-fill"></i></div>
+                                        Sarah Wilson
+                                    </div>
+                                </td>
+                                <td>Uploaded new file</td>
+                                <td>3 hours ago</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-lightning me-2"></i>Quick Actions
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-controller="Identity" asp-action="Users" class="btn btn-outline-primary text-start">
+                        <i class="bi bi-person-plus me-2"></i>Add New User
+                    </a>
+                    <a asp-controller="Tenants" asp-action="Index" class="btn btn-outline-primary text-start">
+                        <i class="bi bi-building me-2"></i>Manage Tenants
+                    </a>
+                    <a asp-controller="Settings" asp-action="Index" class="btn btn-outline-primary text-start">
+                        <i class="bi bi-gear me-2"></i>System Settings
+                    </a>
+                    <a asp-controller="Lov" asp-action="Index" class="btn btn-outline-primary text-start">
+                        <i class="bi bi-list-ul me-2"></i>List of Values
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card admin-card mt-4">
+            <div class="card-header">
+                <i class="bi bi-info-circle me-2"></i>System Info
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">Version</span>
+                        <strong>1.0.0</strong>
+                    </li>
+                    <li class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">.NET</span>
+                        <strong>9.0</strong>
+                    </li>
+                    <li class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">Bootstrap</span>
+                        <strong>5.3.3</strong>
+                    </li>
+                    <li class="d-flex justify-content-between py-2">
+                        <span class="text-muted">Server Time</span>
+                        <strong>@DateTime.UtcNow.ToString("HH:mm:ss")</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

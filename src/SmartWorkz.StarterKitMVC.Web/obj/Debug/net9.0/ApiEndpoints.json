@@ -1,0 +1,22 @@
+[
+  {
+    "ContainingType": "SmartWorkz.StarterKitMVC.Web.Controllers.HealthController",
+    "Method": "Get",
+    "RelativePath": "Health",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SmartWorkz.StarterKitMVC.Web.Controllers.HealthController",
+    "Method": "Ready",
+    "RelativePath": "Health/ready",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
