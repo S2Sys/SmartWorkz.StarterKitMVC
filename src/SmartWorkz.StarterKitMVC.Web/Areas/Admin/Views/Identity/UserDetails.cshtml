@@ -1,0 +1,201 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.UserDetailsViewModel
+@{
+    ViewData["Title"] = "User Details";
+}
+
+@section PageActions {
+    <a asp-action="UserEdit" asp-route-id="@Model.Id" class="btn btn-primary btn-sm">
+        <i class="bi bi-pencil me-1"></i>Edit
+    </a>
+}
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card admin-card mb-4">
+            <div class="card-body text-center">
+                <div class="user-avatar mx-auto mb-3" style="width: 100px; height: 100px; font-size: 2.5rem;">
+                    @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+                    {
+                        <img src="@Model.AvatarUrl" alt="@Model.DisplayName" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <i class="bi bi-person-fill"></i>
+                    }
+                </div>
+                <h4 class="mb-1">@(Model.DisplayName ?? Model.UserName)</h4>
+                <p class="text-muted mb-3">@@@Model.UserName</p>
+                
+                @if (Model.IsActive)
+                {
+                    <span class="badge bg-success fs-6">Active</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger fs-6">Inactive</span>
+                }
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-around text-center">
+                    <div>
+                        <div class="fw-bold">@Model.Roles.Count()</div>
+                        <small class="text-muted">Roles</small>
+                    </div>
+                    <div>
+                        <div class="fw-bold">@Model.Claims.Count()</div>
+                        <small class="text-muted">Claims</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card admin-card mb-4">
+            <div class="card-header">
+                <i class="bi bi-shield me-2"></i>Roles
+            </div>
+            <div class="card-body">
+                @if (Model.Roles.Any())
+                {
+                    @foreach (var role in Model.Roles)
+                    {
+                        <span class="badge bg-primary me-1 mb-1">@role</span>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No roles assigned</p>
+                }
+            </div>
+        </div>
+
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-lightning me-2"></i>Quick Actions
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-warning btn-sm">
+                        <i class="bi bi-envelope me-1"></i>Send Password Reset
+                    </button>
+                    <button type="button" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-unlock me-1"></i>Unlock Account
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Resend Verification
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card admin-card mb-4">
+            <div class="card-header">
+                <i class="bi bi-person me-2"></i>User Information
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Username</label>
+                        <div class="fw-medium">@Model.UserName</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Email</label>
+                        <div class="fw-medium">
+                            @Model.Email
+                            @if (Model.EmailConfirmed)
+                            {
+                                <i class="bi bi-check-circle-fill text-success ms-1" title="Verified"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-exclamation-circle text-warning ms-1" title="Not verified"></i>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Display Name</label>
+                        <div class="fw-medium">@(Model.DisplayName ?? "-")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Phone Number</label>
+                        <div class="fw-medium">@(Model.PhoneNumber ?? "-")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Locale</label>
+                        <div class="fw-medium">@(Model.Locale ?? "en-US")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Two-Factor Auth</label>
+                        <div class="fw-medium">
+                            @if (Model.TwoFactorEnabled)
+                            {
+                                <span class="badge bg-success">Enabled</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Disabled</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card admin-card mb-4">
+            <div class="card-header">
+                <i class="bi bi-clock-history me-2"></i>Activity
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Created At</label>
+                        <div class="fw-medium">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Created By</label>
+                        <div class="fw-medium">@(Model.CreatedBy ?? "System")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Updated At</label>
+                        <div class="fw-medium">@(Model.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? "-")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Updated By</label>
+                        <div class="fw-medium">@(Model.UpdatedBy ?? "-")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Claims.Any())
+        {
+            <div class="card admin-card">
+                <div class="card-header">
+                    <i class="bi bi-key me-2"></i>Claims
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table admin-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var claim in Model.Claims)
+                                {
+                                    <tr>
+                                        <td><code>@claim.Type</code></td>
+                                        <td>@claim.Value</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

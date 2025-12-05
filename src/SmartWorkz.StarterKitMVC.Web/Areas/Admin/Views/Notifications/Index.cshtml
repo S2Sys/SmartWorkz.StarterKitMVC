@@ -1,6 +1,248 @@
-@{ ViewData["Title"] = "Notification Center"; }
-<h1>Notification Center</h1>
-<p>Notification center shell – wire INotificationRouter here.</p>
-<ul>
-    <li><a asp-action="Templates">Templates</a></li>
-</ul>
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.NotificationsPageViewModel
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+@section PageActions {
+    <a asp-action="Templates" class="btn btn-outline-secondary btn-sm me-2">
+        <i class="bi bi-file-text me-1"></i>Templates
+    </a>
+    <a asp-action="Create" class="btn btn-primary btn-sm">
+        <i class="bi bi-send me-1"></i>Send Notification
+    </a>
+}
+
+<!-- Stats -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card admin-card stat-card primary">
+            <div class="card-body py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value">@Model.TotalCount</div>
+                        <div class="stat-label">Total Notifications</div>
+                    </div>
+                    <div class="stat-icon"><i class="bi bi-bell"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card admin-card stat-card warning">
+            <div class="card-body py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value">@Model.UnreadCount</div>
+                        <div class="stat-label">Unread</div>
+                    </div>
+                    <div class="stat-icon"><i class="bi bi-envelope"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card admin-card stat-card success">
+            <div class="card-body py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value">@(Model.TotalCount - Model.UnreadCount)</div>
+                        <div class="stat-label">Read</div>
+                    </div>
+                    <div class="stat-icon"><i class="bi bi-envelope-open"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card admin-card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-2">
+                <select class="form-select" name="type">
+                    <option value="">All Types</option>
+                    <option value="Info" selected="@(Model.FilterType == "Info")">Info</option>
+                    <option value="Success" selected="@(Model.FilterType == "Success")">Success</option>
+                    <option value="Warning" selected="@(Model.FilterType == "Warning")">Warning</option>
+                    <option value="Error" selected="@(Model.FilterType == "Error")">Error</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="channel">
+                    <option value="">All Channels</option>
+                    <option value="InApp" selected="@(Model.FilterChannel == "InApp")">In-App</option>
+                    <option value="Email" selected="@(Model.FilterChannel == "Email")">Email</option>
+                    <option value="SMS" selected="@(Model.FilterChannel == "SMS")">SMS</option>
+                    <option value="Push" selected="@(Model.FilterChannel == "Push")">Push</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="isRead">
+                    <option value="">All Status</option>
+                    <option value="false" selected="@(Model.FilterIsRead == false)">Unread</option>
+                    <option value="true" selected="@(Model.FilterIsRead == true)">Read</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-search me-1"></i>Filter
+                </button>
+            </div>
+            <div class="col-md-4 text-end">
+                <form asp-action="MarkAllAsRead" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-secondary">
+                        <i class="bi bi-check-all me-1"></i>Mark All as Read
+                    </button>
+                </form>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Notifications List -->
+<div class="card admin-card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;"></th>
+                        <th>Notification</th>
+                        <th>User</th>
+                        <th>Channel</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th style="width: 100px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var notification in Model.Notifications)
+                    {
+                        <tr class="@(!notification.IsRead ? "table-light" : "")">
+                            <td>
+                                @{
+                                    var typeIcon = notification.Type switch
+                                    {
+                                        "Success" => "bi-check-circle-fill text-success",
+                                        "Warning" => "bi-exclamation-triangle-fill text-warning",
+                                        "Error" => "bi-x-circle-fill text-danger",
+                                        _ => "bi-info-circle-fill text-info"
+                                    };
+                                }
+                                <i class="bi @typeIcon"></i>
+                            </td>
+                            <td>
+                                <div class="fw-medium @(!notification.IsRead ? "fw-bold" : "")">@notification.Title</div>
+                                <small class="text-muted">@notification.Message.Substring(0, Math.Min(50, notification.Message.Length))...</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">@notification.UserName</span>
+                            </td>
+                            <td>
+                                @{
+                                    var channelBadge = notification.Channel switch
+                                    {
+                                        "Email" => "bg-primary",
+                                        "SMS" => "bg-success",
+                                        "Push" => "bg-warning",
+                                        _ => "bg-info"
+                                    };
+                                }
+                                <span class="badge @channelBadge">@notification.Channel</span>
+                            </td>
+                            <td>
+                                @if (notification.IsRead)
+                                {
+                                    <span class="badge bg-success">Read</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">Unread</span>
+                                }
+                                @if (notification.IsSent)
+                                {
+                                    <span class="badge bg-secondary ms-1">Sent</span>
+                                }
+                            </td>
+                            <td>
+                                <span title="@notification.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")">
+                                    @notification.CreatedAt.ToString("MMM dd, HH:mm")
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="Details" asp-route-id="@notification.Id" class="btn btn-outline-secondary" title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" title="Delete"
+                                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                            data-id="@notification.Id" data-name="@notification.Title">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Notifications.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-bell-slash display-6 d-block mb-2"></i>
+                                No notifications found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+        <div>
+            <span class="text-muted">Showing @Model.Notifications.Count of @Model.TotalCount</span>
+        </div>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item @(Model.Page <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.Page - 1)">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">@Model.Page</a></li>
+                <li class="page-item @(Model.Notifications.Count < Model.PageSize ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.Page + 1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete notification <strong id="deleteNotificationName"></strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="Delete" method="post" class="d-inline">
+                    <input type="hidden" name="id" id="deleteNotificationId">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('deleteModal')?.addEventListener('show.bs.modal', function(e) {
+        const button = e.relatedTarget;
+        document.getElementById('deleteNotificationId').value = button.dataset.id;
+        document.getElementById('deleteNotificationName').textContent = button.dataset.name;
+    });
+</script>
+}

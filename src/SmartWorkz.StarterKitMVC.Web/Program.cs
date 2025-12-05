@@ -48,9 +48,11 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/error/500");
     app.UseHsts();
 }
+
+app.UseStatusCodePagesWithReExecute("/error/{0}");
 
 app.UseHttpsRedirection();
 
@@ -63,8 +65,6 @@ app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseAuthorization();
 
 app.MapStaticAssets();
-app.MapRazorPages()
-   .WithStaticAssets();
 
 app.MapControllerRoute(
     name: "areas",

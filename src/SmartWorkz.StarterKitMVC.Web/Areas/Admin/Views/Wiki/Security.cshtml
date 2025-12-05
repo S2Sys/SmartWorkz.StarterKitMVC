@@ -1,0 +1,404 @@
+@{
+    ViewData["Title"] = "Security";
+}
+
+<div class="row">
+    <div class="col-lg-9">
+        <!-- Overview -->
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Security Overview</h5>
+            </div>
+            <div class="card-body">
+                <p>StarterKitMVC implements multiple layers of security following OWASP best practices.</p>
+                
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="text-center p-3 bg-light rounded">
+                            <i class="bi bi-person-lock fs-2 text-primary"></i>
+                            <h6 class="mt-2 mb-0">Authentication</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 bg-light rounded">
+                            <i class="bi bi-key fs-2 text-success"></i>
+                            <h6 class="mt-2 mb-0">Authorization</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 bg-light rounded">
+                            <i class="bi bi-shield-check fs-2 text-warning"></i>
+                            <h6 class="mt-2 mb-0">Data Protection</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3 bg-light rounded">
+                            <i class="bi bi-journal-text fs-2 text-info"></i>
+                            <h6 class="mt-2 mb-0">Audit Logging</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Authentication -->
+        <div class="card mb-4" id="authentication">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-person-lock me-2"></i>Authentication</h5>
+            </div>
+            <div class="card-body">
+                <h6>ASP.NET Core Identity</h6>
+                <p>Built-in identity management with:</p>
+                <ul>
+                    <li>Secure password hashing (PBKDF2)</li>
+                    <li>Account lockout after failed attempts</li>
+                    <li>Two-factor authentication support</li>
+                    <li>Email confirmation</li>
+                    <li>Password reset tokens</li>
+                </ul>
+
+                <h6 class="mt-4">Identity Configuration</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>builder.Services.AddIdentity&lt;ApplicationUser, ApplicationRole&gt;(options =>
+{
+    // Password settings
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequiredUniqueChars = 4;
+    
+    // Lockout settings
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+    
+    // User settings
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = true;
+})
+.AddEntityFrameworkStores&lt;AppDbContext&gt;()
+.AddDefaultTokenProviders();</code></pre>
+
+                <h6 class="mt-4">JWT Token Authentication</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = configuration["Authentication:JwtIssuer"],
+        ValidAudience = configuration["Authentication:JwtAudience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(configuration["Authentication:JwtSecret"]!))
+    };
+});</code></pre>
+            </div>
+        </div>
+
+        <!-- Authorization -->
+        <div class="card mb-4" id="authorization">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-key me-2"></i>Authorization</h5>
+            </div>
+            <div class="card-body">
+                <h6>Role-Based Authorization</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>[Authorize(Roles = "Admin")]
+public class AdminController : Controller
+{
+    // Only accessible by Admin role
+}
+
+[Authorize(Roles = "Admin,Manager")]
+public IActionResult ManageUsers()
+{
+    // Accessible by Admin OR Manager
+}</code></pre>
+
+                <h6>Policy-Based Authorization</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>// Configure policies in Program.cs
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdmin", policy =>
+        policy.RequireRole("Admin"));
+        
+    options.AddPolicy("CanManageUsers", policy =>
+        policy.RequireClaim("Permission", "Users.Manage"));
+        
+    options.AddPolicy("MinimumAge", policy =>
+        policy.Requirements.Add(new MinimumAgeRequirement(18)));
+});
+
+// Use in controller
+[Authorize(Policy = "CanManageUsers")]
+public IActionResult EditUser(Guid id) { }</code></pre>
+
+                <h6>Resource-Based Authorization</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>public class DocumentAuthorizationHandler 
+    : AuthorizationHandler&lt;OperationAuthorizationRequirement, Document&gt;
+{
+    protected override Task HandleRequirementAsync(
+        AuthorizationHandlerContext context,
+        OperationAuthorizationRequirement requirement,
+        Document resource)
+    {
+        if (requirement.Name == "Edit" && 
+            resource.OwnerId == context.User.GetUserId())
+        {
+            context.Succeed(requirement);
+        }
+        return Task.CompletedTask;
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Data Protection -->
+        <div class="card mb-4" id="data-protection">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-shield-check me-2"></i>Data Protection</h5>
+            </div>
+            <div class="card-body">
+                <h6>Encryption at Rest</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>// Configure Data Protection
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(@@"C:\keys"))
+    .SetApplicationName("StarterKitMVC")
+    .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
+
+// Usage
+public class SecureService
+{
+    private readonly IDataProtector _protector;
+    
+    public SecureService(IDataProtectionProvider provider)
+    {
+        _protector = provider.CreateProtector("SecureData");
+    }
+    
+    public string Encrypt(string plainText) => _protector.Protect(plainText);
+    public string Decrypt(string encrypted) => _protector.Unprotect(encrypted);
+}</code></pre>
+
+                <h6>HTTPS Enforcement</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>// Force HTTPS in production
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+app.UseHttpsRedirection();</code></pre>
+
+                <h6>Secure Headers</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Add("X-Frame-Options", "DENY");
+    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+    context.Response.Headers.Add("Referrer-Policy", "strict-origin-when-cross-origin");
+    context.Response.Headers.Add("Content-Security-Policy", 
+        "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'");
+    await next();
+});</code></pre>
+            </div>
+        </div>
+
+        <!-- CSRF Protection -->
+        <div class="card mb-4" id="csrf">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-shield-exclamation me-2"></i>CSRF Protection</h5>
+            </div>
+            <div class="card-body">
+                <p>Cross-Site Request Forgery protection is enabled by default in ASP.NET Core MVC.</p>
+                
+                <h6>In Forms</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>&lt;form asp-action="Create" method="post"&gt;
+    @@Html.AntiForgeryToken()
+    &lt;!-- form fields --&gt;
+&lt;/form&gt;
+
+&lt;!-- Or use tag helper (automatic) --&gt;
+&lt;form asp-action="Create" asp-antiforgery="true"&gt;
+    &lt;!-- form fields --&gt;
+&lt;/form&gt;</code></pre>
+
+                <h6>In Controllers</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>[HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult Create(CreateModel model)
+{
+    // Token is validated automatically
+}
+
+// Or apply globally
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+});</code></pre>
+            </div>
+        </div>
+
+        <!-- Input Validation -->
+        <div class="card mb-4" id="validation">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-check2-circle me-2"></i>Input Validation</h5>
+            </div>
+            <div class="card-body">
+                <h6>Model Validation</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>public class CreateUserRequest
+{
+    [Required(ErrorMessage = "Email is required")]
+    [EmailAddress(ErrorMessage = "Invalid email format")]
+    [MaxLength(256)]
+    public string Email { get; set; } = string.Empty;
+    
+    [Required]
+    [MinLength(8, ErrorMessage = "Password must be at least 8 characters")]
+    [RegularExpression(@@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$",
+        ErrorMessage = "Password must contain uppercase, lowercase, digit and special character")]
+    public string Password { get; set; } = string.Empty;
+    
+    [Compare("Password", ErrorMessage = "Passwords do not match")]
+    public string ConfirmPassword { get; set; } = string.Empty;
+}</code></pre>
+
+                <h6>FluentValidation</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>public class CreateUserValidator : AbstractValidator&lt;CreateUserRequest&gt;
+{
+    public CreateUserValidator()
+    {
+        RuleFor(x => x.Email)
+            .NotEmpty()
+            .EmailAddress()
+            .MaximumLength(256);
+            
+        RuleFor(x => x.Password)
+            .NotEmpty()
+            .MinimumLength(8)
+            .Matches("[A-Z]").WithMessage("Must contain uppercase")
+            .Matches("[a-z]").WithMessage("Must contain lowercase")
+            .Matches("[0-9]").WithMessage("Must contain digit")
+            .Matches("[^a-zA-Z0-9]").WithMessage("Must contain special character");
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Audit Logging -->
+        <div class="card mb-4" id="audit">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-journal-text me-2"></i>Audit Logging</h5>
+            </div>
+            <div class="card-body">
+                <pre class="bg-dark text-light p-3 rounded"><code>public interface IAuditLogger
+{
+    Task LogAsync(AuditEntry entry);
+}
+
+public class AuditEntry
+{
+    public string Action { get; set; }      // Create, Update, Delete, Login
+    public string EntityType { get; set; }  // User, Order, etc.
+    public string EntityId { get; set; }
+    public string UserId { get; set; }
+    public string IpAddress { get; set; }
+    public string UserAgent { get; set; }
+    public DateTime Timestamp { get; set; }
+    public string OldValues { get; set; }   // JSON
+    public string NewValues { get; set; }   // JSON
+}
+
+// Usage
+await _auditLogger.LogAsync(new AuditEntry
+{
+    Action = "Update",
+    EntityType = "User",
+    EntityId = user.Id.ToString(),
+    UserId = currentUser.Id,
+    OldValues = JsonSerializer.Serialize(oldUser),
+    NewValues = JsonSerializer.Serialize(newUser)
+});</code></pre>
+            </div>
+        </div>
+
+        <!-- Security Checklist -->
+        <div class="card" id="checklist">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Security Checklist</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-success"><i class="bi bi-check-circle me-2"></i>Authentication</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check text-success me-2"></i>Strong password policy</li>
+                            <li><i class="bi bi-check text-success me-2"></i>Account lockout</li>
+                            <li><i class="bi bi-check text-success me-2"></i>Secure password storage</li>
+                            <li><i class="bi bi-check text-success me-2"></i>Session management</li>
+                            <li><i class="bi bi-check text-success me-2"></i>2FA support</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-success"><i class="bi bi-check-circle me-2"></i>Data Protection</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check text-success me-2"></i>HTTPS enforced</li>
+                            <li><i class="bi bi-check text-success me-2"></i>CSRF protection</li>
+                            <li><i class="bi bi-check text-success me-2"></i>XSS prevention</li>
+                            <li><i class="bi bi-check text-success me-2"></i>SQL injection prevention</li>
+                            <li><i class="bi bi-check text-success me-2"></i>Secure headers</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-3 mb-0">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>Remember:</strong> Never store secrets in source code. Use environment variables, Azure Key Vault, or user secrets for sensitive configuration.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-3">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-list-ul me-2"></i>On This Page</h6>
+            </div>
+            <div class="card-body p-0">
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="#authentication">Authentication</a>
+                    <a class="nav-link" href="#authorization">Authorization</a>
+                    <a class="nav-link" href="#data-protection">Data Protection</a>
+                    <a class="nav-link" href="#csrf">CSRF Protection</a>
+                    <a class="nav-link" href="#validation">Input Validation</a>
+                    <a class="nav-link" href="#audit">Audit Logging</a>
+                    <a class="nav-link" href="#checklist">Security Checklist</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<style>
+    pre code {
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 0.8rem;
+    }
+    .nav-link {
+        padding: 0.5rem 1rem;
+        color: inherit;
+        border-left: 2px solid transparent;
+    }
+    .nav-link:hover {
+        background-color: rgba(0,0,0,0.05);
+        border-left-color: var(--bs-primary);
+    }
+</style>
+}

@@ -1,0 +1,489 @@
+@{
+    ViewData["Title"] = "Configuration";
+}
+
+<div class="row">
+    <div class="col-lg-9">
+        <!-- Overview -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Configuration Overview</h5>
+            </div>
+            <div class="card-body">
+                <p>StarterKitMVC uses the standard ASP.NET Core configuration system with multiple sources:</p>
+                <ul>
+                    <li><code>appsettings.json</code> - Base configuration</li>
+                    <li><code>appsettings.{Environment}.json</code> - Environment-specific overrides</li>
+                    <li>Environment variables - Production secrets</li>
+                    <li>User secrets - Development secrets</li>
+                </ul>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Tip:</strong> Never commit sensitive data like connection strings or API keys to source control. Use environment variables or user secrets instead.
+                </div>
+            </div>
+        </div>
+
+        <!-- appsettings.json -->
+        <div class="card mb-4" id="appsettings">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-file-earmark-code me-2"></i>appsettings.json Structure</h5>
+            </div>
+            <div class="card-body">
+                <pre class="bg-dark text-light p-3 rounded" style="font-size: 0.85rem;"><code>{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=StarterKitMVC;Trusted_Connection=True;MultipleActiveResultSets=true"
+  },
+  
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.EntityFrameworkCore": "Warning"
+    }
+  },
+  
+  "AllowedHosts": "*",
+  
+  "AppSettings": {
+    "ApplicationName": "StarterKitMVC",
+    "Version": "1.0.0",
+    "SupportEmail": "support@example.com"
+  },
+  
+  "MultiTenancy": {
+    "Enabled": true,
+    "DefaultTenant": "default",
+    "TenantResolutionStrategy": "Host"
+  },
+  
+  "Authentication": {
+    "JwtSecret": "your-secret-key-min-32-characters",
+    "JwtIssuer": "StarterKitMVC",
+    "JwtAudience": "StarterKitMVC",
+    "TokenExpirationMinutes": 60
+  },
+  
+  "Email": {
+    "Provider": "Smtp",
+    "SmtpHost": "smtp.example.com",
+    "SmtpPort": 587,
+    "SmtpUser": "",
+    "SmtpPassword": "",
+    "FromAddress": "noreply@example.com",
+    "FromName": "StarterKitMVC"
+  },
+  
+  "Storage": {
+    "Provider": "Local",
+    "LocalPath": "wwwroot/uploads",
+    "MaxFileSizeMB": 10
+  },
+  
+  "Caching": {
+    "Provider": "Memory",
+    "DefaultExpirationMinutes": 30
+  },
+  
+  "FeatureFlags": {
+    "EnableRegistration": true,
+    "EnableApiDocs": true,
+    "EnableTelemetry": false
+  }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Connection Strings -->
+        <div class="card mb-4" id="connection-strings">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-database me-2"></i>Connection Strings</h5>
+            </div>
+            <div class="card-body">
+                <h6>SQL Server (Production)</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>"Server=your-server;Database=StarterKitMVC;User Id=sa;Password=YourPassword;TrustServerCertificate=True;"</code></pre>
+
+                <h6>LocalDB (Development)</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>"Server=(localdb)\\mssqllocaldb;Database=StarterKitMVC;Trusted_Connection=True;"</code></pre>
+
+                <h6>Azure SQL</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>"Server=tcp:your-server.database.windows.net,1433;Database=StarterKitMVC;User ID=admin;Password=YourPassword;Encrypt=True;"</code></pre>
+
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>Security:</strong> Store production connection strings in environment variables or Azure Key Vault, not in appsettings.json.
+                </div>
+            </div>
+        </div>
+
+        <!-- Multi-Tenancy -->
+        <div class="card mb-4" id="multi-tenancy">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-building me-2"></i>Multi-Tenancy Configuration</h5>
+            </div>
+            <div class="card-body">
+                <p>StarterKitMVC supports multiple tenant resolution strategies:</p>
+                
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Strategy</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>Host</code></td>
+                            <td>Resolve tenant from subdomain</td>
+                            <td><code>tenant1.yourapp.com</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>Header</code></td>
+                            <td>Resolve from X-Tenant-Id header</td>
+                            <td><code>X-Tenant-Id: tenant1</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>Route</code></td>
+                            <td>Resolve from URL path</td>
+                            <td><code>/tenant1/dashboard</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>Claim</code></td>
+                            <td>Resolve from user JWT claim</td>
+                            <td><code>tenant_id: tenant1</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h6 class="mt-4">Configuration Example</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>"MultiTenancy": {
+  "Enabled": true,
+  "DefaultTenant": "default",
+  "TenantResolutionStrategy": "Host",
+  "Tenants": [
+    {
+      "Id": "tenant1",
+      "Name": "Tenant One",
+      "ConnectionString": "Server=...;Database=Tenant1Db;...",
+      "Host": "tenant1.yourapp.com"
+    }
+  ]
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Authentication -->
+        <div class="card mb-4" id="authentication">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Authentication Configuration</h5>
+            </div>
+            <div class="card-body">
+                <h6>JWT Configuration</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>"Authentication": {
+  "JwtSecret": "your-super-secret-key-at-least-32-characters-long",
+  "JwtIssuer": "StarterKitMVC",
+  "JwtAudience": "StarterKitMVC",
+  "TokenExpirationMinutes": 60,
+  "RefreshTokenExpirationDays": 7
+}</code></pre>
+
+                <h6>OAuth Providers (Optional)</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>"Authentication": {
+  "Google": {
+    "ClientId": "your-google-client-id",
+    "ClientSecret": "your-google-client-secret"
+  },
+  "Microsoft": {
+    "ClientId": "your-microsoft-client-id",
+    "ClientSecret": "your-microsoft-client-secret"
+  },
+  "GitHub": {
+    "ClientId": "your-github-client-id",
+    "ClientSecret": "your-github-client-secret"
+  }
+}</code></pre>
+
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Note:</strong> Generate a strong JWT secret using: <code>openssl rand -base64 32</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Configuration -->
+        <div class="card mb-4" id="email">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-envelope me-2"></i>Email Configuration</h5>
+            </div>
+            <div class="card-body">
+                <h6>SMTP Configuration</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>"Email": {
+  "Provider": "Smtp",
+  "SmtpHost": "smtp.gmail.com",
+  "SmtpPort": 587,
+  "SmtpUser": "your-email@gmail.com",
+  "SmtpPassword": "your-app-password",
+  "UseSsl": true,
+  "FromAddress": "noreply@yourapp.com",
+  "FromName": "StarterKitMVC"
+}</code></pre>
+
+                <h6>SendGrid Configuration</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>"Email": {
+  "Provider": "SendGrid",
+  "SendGridApiKey": "SG.xxxxxxxxxxxx",
+  "FromAddress": "noreply@yourapp.com",
+  "FromName": "StarterKitMVC"
+}</code></pre>
+
+                <h6>AWS SES Configuration</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>"Email": {
+  "Provider": "AwsSes",
+  "AwsAccessKey": "AKIAXXXXXXXX",
+  "AwsSecretKey": "your-secret-key",
+  "AwsRegion": "us-east-1",
+  "FromAddress": "noreply@yourapp.com"
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Storage Configuration -->
+        <div class="card mb-4" id="storage">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-cloud-upload me-2"></i>Storage Configuration</h5>
+            </div>
+            <div class="card-body">
+                <h6>Local Storage</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>"Storage": {
+  "Provider": "Local",
+  "LocalPath": "wwwroot/uploads",
+  "MaxFileSizeMB": 10,
+  "AllowedExtensions": [".jpg", ".jpeg", ".png", ".gif", ".pdf", ".doc", ".docx"]
+}</code></pre>
+
+                <h6>Azure Blob Storage</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>"Storage": {
+  "Provider": "AzureBlob",
+  "AzureConnectionString": "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;",
+  "AzureContainerName": "uploads",
+  "MaxFileSizeMB": 50
+}</code></pre>
+
+                <h6>AWS S3</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>"Storage": {
+  "Provider": "AwsS3",
+  "AwsAccessKey": "AKIAXXXXXXXX",
+  "AwsSecretKey": "your-secret-key",
+  "AwsRegion": "us-east-1",
+  "AwsBucketName": "your-bucket-name",
+  "MaxFileSizeMB": 50
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Caching -->
+        <div class="card mb-4" id="caching">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-lightning me-2"></i>Caching Configuration</h5>
+            </div>
+            <div class="card-body">
+                <h6>In-Memory Cache (Default)</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>"Caching": {
+  "Provider": "Memory",
+  "DefaultExpirationMinutes": 30
+}</code></pre>
+
+                <h6>Redis Cache</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>"Caching": {
+  "Provider": "Redis",
+  "RedisConnectionString": "localhost:6379",
+  "RedisInstanceName": "StarterKitMVC_",
+  "DefaultExpirationMinutes": 30
+}</code></pre>
+
+                <h6>SQL Server Distributed Cache</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>"Caching": {
+  "Provider": "SqlServer",
+  "SqlConnectionString": "Server=...;Database=CacheDb;...",
+  "SqlSchemaName": "dbo",
+  "SqlTableName": "DistributedCache",
+  "DefaultExpirationMinutes": 30
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Feature Flags -->
+        <div class="card mb-4" id="feature-flags">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-toggle-on me-2"></i>Feature Flags</h5>
+            </div>
+            <div class="card-body">
+                <p>Enable or disable features without code changes:</p>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>"FeatureFlags": {
+  "EnableRegistration": true,      // Allow new user registration
+  "EnableApiDocs": true,           // Show Swagger/OpenAPI docs
+  "EnableTelemetry": false,        // OpenTelemetry tracing
+  "EnableAuditLog": true,          // Audit logging
+  "EnableRateLimiting": true,      // API rate limiting
+  "EnableCaching": true,           // Response caching
+  "MaintenanceMode": false         // Show maintenance page
+}</code></pre>
+
+                <h6>Usage in Code</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>// Inject IFeatureFlagService
+public class MyController : Controller
+{
+    private readonly IFeatureFlagService _features;
+    
+    public MyController(IFeatureFlagService features)
+    {
+        _features = features;
+    }
+    
+    public IActionResult Register()
+    {
+        if (!_features.IsEnabled("EnableRegistration"))
+            return NotFound();
+            
+        return View();
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Environment Variables -->
+        <div class="card mb-4" id="environment-variables">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-terminal me-2"></i>Environment Variables</h5>
+            </div>
+            <div class="card-body">
+                <p>Override any configuration using environment variables with double underscore (<code>__</code>) as separator:</p>
+                
+                <table class="table table-bordered table-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Config Path</th>
+                            <th>Environment Variable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ConnectionStrings:DefaultConnection</code></td>
+                            <td><code>ConnectionStrings__DefaultConnection</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>Authentication:JwtSecret</code></td>
+                            <td><code>Authentication__JwtSecret</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>Email:SmtpPassword</code></td>
+                            <td><code>Email__SmtpPassword</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>Storage:AzureConnectionString</code></td>
+                            <td><code>Storage__AzureConnectionString</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h6 class="mt-4">Setting Environment Variables</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Windows (PowerShell)</strong></p>
+                        <pre class="bg-dark text-light p-2 rounded"><code>$env:ConnectionStrings__DefaultConnection = "Server=..."</code></pre>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Linux/macOS</strong></p>
+                        <pre class="bg-dark text-light p-2 rounded"><code>export ConnectionStrings__DefaultConnection="Server=..."</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logging -->
+        <div class="card" id="logging">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-journal-text me-2"></i>Logging Configuration</h5>
+            </div>
+            <div class="card-body">
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>"Logging": {
+  "LogLevel": {
+    "Default": "Information",
+    "Microsoft.AspNetCore": "Warning",
+    "Microsoft.EntityFrameworkCore": "Warning",
+    "Microsoft.EntityFrameworkCore.Database.Command": "Warning"
+  },
+  "Console": {
+    "FormatterName": "simple",
+    "FormatterOptions": {
+      "SingleLine": true,
+      "TimestampFormat": "HH:mm:ss "
+    }
+  }
+},
+
+"Serilog": {
+  "MinimumLevel": {
+    "Default": "Information",
+    "Override": {
+      "Microsoft": "Warning",
+      "System": "Warning"
+    }
+  },
+  "WriteTo": [
+    { "Name": "Console" },
+    { 
+      "Name": "File", 
+      "Args": { 
+        "path": "logs/log-.txt",
+        "rollingInterval": "Day"
+      }
+    }
+  ]
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <div class="col-lg-3">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-list-ul me-2"></i>On This Page</h6>
+            </div>
+            <div class="card-body p-0">
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="#appsettings">appsettings.json</a>
+                    <a class="nav-link" href="#connection-strings">Connection Strings</a>
+                    <a class="nav-link" href="#multi-tenancy">Multi-Tenancy</a>
+                    <a class="nav-link" href="#authentication">Authentication</a>
+                    <a class="nav-link" href="#email">Email</a>
+                    <a class="nav-link" href="#storage">Storage</a>
+                    <a class="nav-link" href="#caching">Caching</a>
+                    <a class="nav-link" href="#feature-flags">Feature Flags</a>
+                    <a class="nav-link" href="#environment-variables">Environment Variables</a>
+                    <a class="nav-link" href="#logging">Logging</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<style>
+    pre code {
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 0.85rem;
+    }
+    .nav-link {
+        padding: 0.5rem 1rem;
+        color: inherit;
+        border-left: 2px solid transparent;
+    }
+    .nav-link:hover {
+        background-color: rgba(0,0,0,0.05);
+        border-left-color: var(--bs-primary);
+    }
+</style>
+}

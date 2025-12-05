@@ -1,3 +1,127 @@
-@{ ViewData["Title"] = "Login"; }
-<h1>Login</h1>
-<p>Login form shell – wire IIdentityService.LoginAsync here.</p>
+@{
+    ViewData["Title"] = "Login";
+}
+
+<section class="min-vh-100 d-flex align-items-center py-5" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-5">
+                        <!-- Logo -->
+                        <div class="text-center mb-4">
+                            <a asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                                <i class="bi bi-lightning-charge-fill text-warning fs-1"></i>
+                                <h4 class="fw-bold mt-2">StarterKit<span class="text-warning">MVC</span></h4>
+                            </a>
+                            <p class="text-muted">Sign in to your account</p>
+                        </div>
+                        
+                        <!-- Login Form -->
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-envelope text-muted"></i>
+                                    </span>
+                                    <input type="email" class="form-control border-start-0 ps-0" 
+                                           placeholder="name@example.com" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <label class="form-label">Password</label>
+                                    <a href="#" class="small text-decoration-none">Forgot password?</a>
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-lock text-muted"></i>
+                                    </span>
+                                    <input type="password" class="form-control border-start-0 border-end-0 ps-0" 
+                                           placeholder="Enter your password" required id="passwordInput">
+                                    <button type="button" class="input-group-text bg-light border-start-0" 
+                                            onclick="togglePassword()">
+                                        <i class="bi bi-eye text-muted" id="toggleIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                                    <label class="form-check-label" for="rememberMe">
+                                        Remember me
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                            </button>
+                        </form>
+                        
+                        <!-- Divider -->
+                        <div class="d-flex align-items-center my-4">
+                            <hr class="flex-grow-1">
+                            <span class="px-3 text-muted small">OR CONTINUE WITH</span>
+                            <hr class="flex-grow-1">
+                        </div>
+                        
+                        <!-- Social Login -->
+                        <div class="d-flex gap-2 mb-4">
+                            <button type="button" class="btn btn-outline-secondary flex-fill">
+                                <i class="bi bi-google me-2"></i>Google
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary flex-fill">
+                                <i class="bi bi-microsoft me-2"></i>Microsoft
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary flex-fill">
+                                <i class="bi bi-github me-2"></i>GitHub
+                            </button>
+                        </div>
+                        
+                        <!-- Register Link -->
+                        <p class="text-center text-muted mb-0">
+                            Don't have an account? 
+                            <a asp-action="Register" class="text-decoration-none fw-semibold">Sign up</a>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Back to Home -->
+                <div class="text-center mt-4">
+                    <a asp-controller="Home" asp-action="Index" class="text-white-50 text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i>Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+function togglePassword() {
+    const input = document.getElementById('passwordInput');
+    const icon = document.getElementById('toggleIcon');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+    }
+}
+
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    // TODO: Implement actual login
+    SW.toast.info('Login functionality - wire IIdentityService.LoginAsync');
+});
+</script>
+}

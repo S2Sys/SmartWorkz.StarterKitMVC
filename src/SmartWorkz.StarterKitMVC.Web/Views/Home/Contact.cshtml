@@ -1,0 +1,240 @@
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<!-- Hero Section -->
+<section class="bg-dark text-white py-5">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold mb-3">Get In Touch</h1>
+                <p class="lead text-white-50 mb-0">Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container py-4">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        
+        <div class="row g-5">
+            <!-- Contact Form -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4 p-lg-5">
+                        <h4 class="fw-bold mb-4">Send us a Message</h4>
+                        <form asp-action="Contact" method="post">
+                            @Html.AntiForgeryToken()
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Your Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-lg" name="name" required placeholder="John Doe">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control form-control-lg" name="email" required placeholder="john@example.com">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Subject <span class="text-danger">*</span></label>
+                                    <select class="form-select form-select-lg" name="subject" required>
+                                        <option value="">Select a subject...</option>
+                                        <option value="General Inquiry">General Inquiry</option>
+                                        <option value="Technical Support">Technical Support</option>
+                                        <option value="Sales">Sales</option>
+                                        <option value="Partnership">Partnership</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Message <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" name="message" rows="6" required placeholder="How can we help you?"></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="privacyCheck" required>
+                                        <label class="form-check-label" for="privacyCheck">
+                                            I agree to the <a asp-action="Privacy">Privacy Policy</a>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary btn-lg px-5">
+                                        <i class="bi bi-send me-2"></i>Send Message
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-geo-alt text-primary fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Address</h6>
+                                <p class="text-muted mb-0">123 Business Street<br>Tech City, TC 12345</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-envelope text-success fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Email</h6>
+                                <p class="text-muted mb-0">
+                                    <a href="mailto:info@smartworkz.com" class="text-decoration-none">info@smartworkz.com</a><br>
+                                    <a href="mailto:support@smartworkz.com" class="text-decoration-none">support@smartworkz.com</a>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start">
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-telephone text-warning fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Phone</h6>
+                                <p class="text-muted mb-0">
+                                    +1 (234) 567-8900<br>
+                                    +1 (234) 567-8901
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold mb-3">Business Hours</h6>
+                        <ul class="list-unstyled mb-0">
+                            <li class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted">Monday - Friday</span>
+                                <strong>9:00 AM - 6:00 PM</strong>
+                            </li>
+                            <li class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted">Saturday</span>
+                                <strong>10:00 AM - 4:00 PM</strong>
+                            </li>
+                            <li class="d-flex justify-content-between py-2">
+                                <span class="text-muted">Sunday</span>
+                                <strong>Closed</strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold mb-3">Follow Us</h6>
+                        <div class="d-flex gap-2">
+                            <a href="#" class="btn btn-outline-dark rounded-circle">
+                                <i class="bi bi-github"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-primary rounded-circle">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-info rounded-circle">
+                                <i class="bi bi-twitter-x"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-danger rounded-circle">
+                                <i class="bi bi-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="card border-0 shadow-sm overflow-hidden">
+            <div class="ratio ratio-21x9">
+                <div class="bg-secondary d-flex align-items-center justify-content-center">
+                    <div class="text-center text-white">
+                        <i class="bi bi-map fs-1 mb-2"></i>
+                        <p class="mb-0">Map placeholder - Integrate Google Maps or similar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Frequently Asked Questions</h2>
+            <p class="text-muted">Quick answers to common questions</p>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item border-0 mb-3 shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                Is StarterKitMVC free to use?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes! StarterKitMVC is completely free and open-source under the MIT license. You can use it for personal and commercial projects.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border-0 mb-3 shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                How do I get support?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                You can reach us through this contact form, email, or by opening an issue on our GitHub repository. We typically respond within 24-48 hours.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border-0 mb-3 shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Can I customize the starter kit?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Absolutely! The kit is designed to be fully customizable. You can enable/disable features, modify the UI, and extend functionality as needed.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border-0 shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                Do you offer enterprise support?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, we offer enterprise support packages including priority support, custom development, and training. Contact us for more details.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

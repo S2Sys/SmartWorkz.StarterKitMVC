@@ -1,3 +1,185 @@
-@{ ViewData["Title"] = "Register"; }
-<h1>Register</h1>
-<p>Register form shell – wire IIdentityService.RegisterAsync here.</p>
+@{
+    ViewData["Title"] = "Register";
+}
+
+<section class="min-vh-100 d-flex align-items-center py-5" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-5">
+                        <!-- Logo -->
+                        <div class="text-center mb-4">
+                            <a asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                                <i class="bi bi-lightning-charge-fill text-warning fs-1"></i>
+                                <h4 class="fw-bold mt-2">StarterKit<span class="text-warning">MVC</span></h4>
+                            </a>
+                            <p class="text-muted">Create your account</p>
+                        </div>
+                        
+                        <!-- Register Form -->
+                        <form id="registerForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">First Name</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-person text-muted"></i>
+                                        </span>
+                                        <input type="text" class="form-control border-start-0 ps-0" 
+                                               placeholder="John" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last Name</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-person text-muted"></i>
+                                        </span>
+                                        <input type="text" class="form-control border-start-0 ps-0" 
+                                               placeholder="Doe" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Email Address</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-envelope text-muted"></i>
+                                        </span>
+                                        <input type="email" class="form-control border-start-0 ps-0" 
+                                               placeholder="name@example.com" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-lock text-muted"></i>
+                                        </span>
+                                        <input type="password" class="form-control border-start-0 ps-0" 
+                                               placeholder="Create password" required id="password">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Confirm Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-lock text-muted"></i>
+                                        </span>
+                                        <input type="password" class="form-control border-start-0 ps-0" 
+                                               placeholder="Confirm password" required id="confirmPassword">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Password Requirements -->
+                            <div class="mt-3 p-3 bg-light rounded small">
+                                <p class="mb-2 fw-semibold">Password must contain:</p>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <i class="bi bi-check-circle text-success me-2" id="req-length"></i>
+                                            <span>At least 8 characters</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-check-circle text-success me-2" id="req-upper"></i>
+                                            <span>One uppercase letter</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <i class="bi bi-check-circle text-success me-2" id="req-lower"></i>
+                                            <span>One lowercase letter</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-check-circle text-success me-2" id="req-number"></i>
+                                            <span>One number</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                                    <label class="form-check-label" for="agreeTerms">
+                                        I agree to the <a asp-controller="Home" asp-action="Terms">Terms of Service</a> 
+                                        and <a asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                                <i class="bi bi-person-plus me-2"></i>Create Account
+                            </button>
+                        </form>
+                        
+                        <!-- Divider -->
+                        <div class="d-flex align-items-center my-4">
+                            <hr class="flex-grow-1">
+                            <span class="px-3 text-muted small">OR SIGN UP WITH</span>
+                            <hr class="flex-grow-1">
+                        </div>
+                        
+                        <!-- Social Register -->
+                        <div class="d-flex gap-2 mb-4">
+                            <button type="button" class="btn btn-outline-secondary flex-fill">
+                                <i class="bi bi-google me-2"></i>Google
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary flex-fill">
+                                <i class="bi bi-microsoft me-2"></i>Microsoft
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary flex-fill">
+                                <i class="bi bi-github me-2"></i>GitHub
+                            </button>
+                        </div>
+                        
+                        <!-- Login Link -->
+                        <p class="text-center text-muted mb-0">
+                            Already have an account? 
+                            <a asp-action="Login" class="text-decoration-none fw-semibold">Sign in</a>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Back to Home -->
+                <div class="text-center mt-4">
+                    <a asp-controller="Home" asp-action="Index" class="text-white-50 text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i>Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    // TODO: Implement actual registration
+    SW.toast.info('Registration functionality - wire IIdentityService.RegisterAsync');
+});
+
+// Password validation visual feedback
+document.getElementById('password')?.addEventListener('input', function() {
+    const password = this.value;
+    
+    document.getElementById('req-length').className = password.length >= 8 
+        ? 'bi bi-check-circle-fill text-success me-2' 
+        : 'bi bi-circle text-muted me-2';
+    
+    document.getElementById('req-upper').className = /[A-Z]/.test(password) 
+        ? 'bi bi-check-circle-fill text-success me-2' 
+        : 'bi bi-circle text-muted me-2';
+    
+    document.getElementById('req-lower').className = /[a-z]/.test(password) 
+        ? 'bi bi-check-circle-fill text-success me-2' 
+        : 'bi bi-circle text-muted me-2';
+    
+    document.getElementById('req-number').className = /[0-9]/.test(password) 
+        ? 'bi bi-check-circle-fill text-success me-2' 
+        : 'bi bi-circle text-muted me-2';
+});
+</script>
+}

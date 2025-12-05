@@ -1,0 +1,176 @@
+@{
+    ViewData["Title"] = "Documentation";
+}
+
+<div class="row g-4">
+    <!-- Welcome Card -->
+    <div class="col-12">
+        <div class="card border-0 bg-gradient-primary text-white">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h2 class="mb-3"><i class="bi bi-book me-2"></i>StarterKitMVC Documentation</h2>
+                        <p class="lead mb-0">
+                            Welcome to the comprehensive documentation for SmartWorkz StarterKitMVC. 
+                            This guide covers everything from initial setup to advanced configuration and deployment.
+                        </p>
+                    </div>
+                    <div class="col-lg-4 text-center d-none d-lg-block">
+                        <i class="bi bi-journal-code display-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 hover-lift">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-3" style="width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-rocket-takeoff fs-3"></i>
+                </div>
+                <h5 class="card-title">Getting Started</h5>
+                <p class="card-text text-muted">Quick start guide to get your project up and running in minutes.</p>
+                <a asp-action="GettingStarted" class="btn btn-outline-primary">Read Guide</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 hover-lift">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon bg-success bg-opacity-10 text-success rounded-circle mx-auto mb-3" style="width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-gear fs-3"></i>
+                </div>
+                <h5 class="card-title">Configuration</h5>
+                <p class="card-text text-muted">Learn about all configuration options and environment settings.</p>
+                <a asp-action="Configuration" class="btn btn-outline-success">View Config</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 hover-lift">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon bg-info bg-opacity-10 text-info rounded-circle mx-auto mb-3" style="width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-diagram-3 fs-3"></i>
+                </div>
+                <h5 class="card-title">Architecture</h5>
+                <p class="card-text text-muted">Understand the clean architecture and project structure.</p>
+                <a asp-action="Architecture" class="btn btn-outline-info">Explore</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 hover-lift">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon bg-warning bg-opacity-10 text-warning rounded-circle mx-auto mb-3" style="width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-database fs-3"></i>
+                </div>
+                <h5 class="card-title">Database</h5>
+                <p class="card-text text-muted">Database setup, migrations, and Entity Framework configuration.</p>
+                <a asp-action="Database" class="btn btn-outline-warning">Learn More</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 hover-lift">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon bg-danger bg-opacity-10 text-danger rounded-circle mx-auto mb-3" style="width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-shield-lock fs-3"></i>
+                </div>
+                <h5 class="card-title">Security</h5>
+                <p class="card-text text-muted">Authentication, authorization, and security best practices.</p>
+                <a asp-action="Security" class="btn btn-outline-danger">View Security</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 hover-lift">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon bg-secondary bg-opacity-10 text-secondary rounded-circle mx-auto mb-3" style="width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-braces fs-3"></i>
+                </div>
+                <h5 class="card-title">API Reference</h5>
+                <p class="card-text text-muted">Complete API documentation and endpoint reference.</p>
+                <a asp-action="Api" class="btn btn-outline-secondary">View API</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Version Info -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Project Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" style="width: 200px;">Framework</th>
+                                    <td>.NET 9.0</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">ASP.NET Core</th>
+                                    <td>9.0</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Bootstrap</th>
+                                    <td>5.3.3</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Entity Framework</th>
+                                    <td>9.0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" style="width: 200px;">Architecture</th>
+                                    <td>Clean Architecture</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Multi-Tenancy</th>
+                                    <td>Supported</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">License</th>
+                                    <td>MIT</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Repository</th>
+                                    <td><a href="https://github.com/S2Sys/SmartWorkz.StarterKitMVC" target="_blank">GitHub</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+    }
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+    }
+</style>
+}

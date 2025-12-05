@@ -1,0 +1,98 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.RoleFormViewModel
+@{
+    ViewData["Title"] = "Create Role";
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <form asp-action="RoleCreate" method="post">
+            <div class="card admin-card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-shield me-2"></i>Role Information
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="form-label">Role Name <span class="text-danger">*</span></label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter role name">
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="TenantId" class="form-label">Tenant</label>
+                            <select asp-for="TenantId" class="form-select">
+                                <option value="">Global (All Tenants)</option>
+                                <option value="default">Default Tenant</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="2" placeholder="Enter role description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card admin-card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-key me-2"></i>Permissions
+                </div>
+                <div class="card-body">
+                    @foreach (var group in Model.PermissionGroups)
+                    {
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">@group.Category</h6>
+                            <div class="row">
+                                @foreach (var permission in group.Permissions)
+                                {
+                                    <div class="col-md-6 col-lg-4 mb-2">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" name="SelectedPermissionIds" 
+                                                   value="@permission.Id" id="perm_@permission.Id" @(permission.IsSelected ? "checked" : "")>
+                                            <label class="form-check-label" for="perm_@permission.Id">
+                                                @permission.DisplayName
+                                                @if (!string.IsNullOrEmpty(permission.Description))
+                                                {
+                                                    <i class="bi bi-info-circle text-muted ms-1" title="@permission.Description"></i>
+                                                }
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-lg me-1"></i>Create Role
+                </button>
+                <a asp-action="Roles" class="btn btn-secondary">
+                    <i class="bi bi-x-lg me-1"></i>Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-4">
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-info-circle me-2"></i>Help
+            </div>
+            <div class="card-body">
+                <h6>Creating a Role</h6>
+                <p class="text-muted small">Roles define a set of permissions that can be assigned to users.</p>
+                <ul class="small text-muted">
+                    <li>Role name must be unique.</li>
+                    <li>Select permissions to grant to users with this role.</li>
+                    <li>Global roles apply to all tenants.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

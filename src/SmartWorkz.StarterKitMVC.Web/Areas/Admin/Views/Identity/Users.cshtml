@@ -1,3 +1,193 @@
-@{ ViewData["Title"] = "Users"; }
-<h1>Users</h1>
-<p>Wire IIdentityAdminService.GetUsersAsync here.</p>
+@model List<SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.UserListViewModel>
+@{
+    ViewData["Title"] = "Users";
+}
+
+@section PageActions {
+    <a asp-action="UserCreate" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>Add User
+    </a>
+}
+
+<!-- Filters -->
+<div class="card admin-card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <input type="text" class="form-control" name="search" placeholder="Search users..." value="@Context.Request.Query["search"]">
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="status">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="role">
+                    <option value="">All Roles</option>
+                    <option value="Administrator">Administrator</option>
+                    <option value="Manager">Manager</option>
+                    <option value="User">User</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-search me-1"></i>Filter
+                </button>
+            </div>
+            <div class="col-md-3 text-end">
+                <span class="text-muted">@Model.Count users found</span>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="card admin-card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">
+                            <input type="checkbox" class="form-check-input" id="selectAll">
+                        </th>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Roles</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th style="width: 120px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="form-check-input row-select" value="@user.Id">
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar-sm me-2">
+                                        @if (!string.IsNullOrEmpty(user.AvatarUrl))
+                                        {
+                                            <img src="@user.AvatarUrl" alt="@user.DisplayName" class="rounded-circle" width="32" height="32">
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-person-fill"></i>
+                                        }
+                                    </div>
+                                    <div>
+                                        <div class="fw-medium">@(user.DisplayName ?? user.UserName)</div>
+                                        <small class="text-muted">@@@user.UserName</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                @user.Email
+                                @if (user.EmailConfirmed)
+                                {
+                                    <i class="bi bi-check-circle-fill text-success ms-1" title="Verified"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-exclamation-circle text-warning ms-1" title="Not verified"></i>
+                                }
+                            </td>
+                            <td>
+                                @foreach (var role in user.Roles)
+                                {
+                                    <span class="badge bg-secondary me-1">@role</span>
+                                }
+                            </td>
+                            <td>
+                                @if (user.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <span title="@user.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")">
+                                    @user.CreatedAt.ToString("MMM dd, yyyy")
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="UserDetails" asp-route-id="@user.Id" class="btn btn-outline-secondary" title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="UserEdit" asp-route-id="@user.Id" class="btn btn-outline-secondary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" title="Delete" 
+                                            data-bs-toggle="modal" data-bs-target="#deleteModal" 
+                                            data-id="@user.Id" data-name="@user.UserName">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+        <div>
+            <span class="text-muted">Showing 1-@Model.Count of @Model.Count</span>
+        </div>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete user <strong id="deleteUserName"></strong>?</p>
+                <p class="text-danger mb-0"><small>This action cannot be undone.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="UserDelete" method="post" class="d-inline">
+                    <input type="hidden" name="id" id="deleteUserId">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // Select all checkbox
+    document.getElementById('selectAll')?.addEventListener('change', function() {
+        document.querySelectorAll('.row-select').forEach(cb => cb.checked = this.checked);
+    });
+    
+    // Delete modal
+    document.getElementById('deleteModal')?.addEventListener('show.bs.modal', function(e) {
+        const button = e.relatedTarget;
+        document.getElementById('deleteUserId').value = button.dataset.id;
+        document.getElementById('deleteUserName').textContent = button.dataset.name;
+    });
+</script>
+}

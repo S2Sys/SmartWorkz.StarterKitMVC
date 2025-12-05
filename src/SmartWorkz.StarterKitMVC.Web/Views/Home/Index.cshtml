@@ -3,29 +3,170 @@
     Layout = "_Layout";
 }
 
-<!-- Hero Section -->
-<section class="bg-gradient-primary text-white py-5">
-    <div class="container py-5">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-3">
-                    <i class="bi bi-lightning-charge-fill me-2"></i>StarterKitMVC
+<!-- Hero Section with Typed Text & Rotating Text -->
+<section class="hero-section position-relative overflow-hidden" id="home">
+    <div class="hero-bg"></div>
+    <div class="container position-relative py-5">
+        <div class="row align-items-center min-vh-75 py-5">
+            <div class="col-lg-7" data-aos="fade-right">
+                <span class="badge bg-warning text-dark mb-3 px-3 py-2">
+                    <i class="bi bi-stars me-1"></i>Enterprise Ready
+                </span>
+                <h1 class="display-3 fw-bold text-white mb-3">
+                    Build Amazing Apps<br>
+                    <span class="text-warning">
+                        <span class="rotating-text" data-texts='["Faster", "Smarter", "Better", "Easier"]'>Faster</span>
+                    </span>
                 </h1>
-                <p class="lead mb-4">Enterprise-grade ASP.NET Core MVC boilerplate with clean architecture.</p>
-                <div class="d-flex flex-column flex-sm-row gap-3">
-                    <a href="#features" class="btn btn-light btn-lg"><i class="bi bi-arrow-down-circle me-2"></i>Features</a>
-                    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-light btn-lg">
-                        <i class="bi bi-speedometer2 me-2"></i>Admin
+                <p class="lead text-white-50 mb-4">
+                    <span class="typed-text" data-strings='["Enterprise-grade ASP.NET Core MVC boilerplate.", "Clean architecture with best practices.", "Multi-tenancy, Identity, and more built-in.", "Start building your dream project today!"]'></span>
+                    <span class="typed-cursor">|</span>
+                </p>
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <a href="#features" class="btn btn-warning btn-lg px-4 smooth-scroll">
+                        <i class="bi bi-arrow-down-circle me-2"></i>Explore Features
+                    </a>
+                    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-light btn-lg px-4">
+                        <i class="bi bi-speedometer2 me-2"></i>Admin Demo
                     </a>
                 </div>
+                <div class="d-flex align-items-center gap-4 text-white-50">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        <span>Free & Open Source</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        <span>MIT License</span>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-6 text-center">
-                <div class="bg-white bg-opacity-10 rounded-4 p-4">
-                    <i class="bi bi-code-slash display-1"></i>
-                    <div class="mt-3">
-                        <span class="badge bg-light text-primary me-2">.NET 9</span>
-                        <span class="badge bg-light text-primary me-2">Bootstrap 5.3</span>
-                        <span class="badge bg-light text-primary">SQL Server</span>
+            <div class="col-lg-5 d-none d-lg-block" data-aos="fade-left" data-aos-delay="200">
+                <div class="hero-code-block">
+                    <div class="code-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="ms-3 text-muted small">Program.cs</span>
+                    </div>
+                    <pre class="code-content"><code><span class="keyword">var</span> builder = WebApplication.CreateBuilder(args);
+
+<span class="comment">// Add StarterKit services</span>
+builder.Services
+    .<span class="method">AddIdentity</span>()
+    .<span class="method">AddMultiTenancy</span>()
+    .<span class="method">AddSettings</span>()
+    .<span class="method">AddNotifications</span>();
+
+<span class="keyword">var</span> app = builder.Build();
+app.<span class="method">Run</span>();</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Scroll indicator -->
+    <div class="scroll-indicator">
+        <a href="#features" class="smooth-scroll">
+            <i class="bi bi-chevron-double-down"></i>
+        </a>
+    </div>
+</section>
+
+<!-- Tech Stack Marquee -->
+<section class="bg-dark py-3 border-top border-bottom border-secondary">
+    <div class="container">
+        <div class="tech-marquee">
+            <div class="tech-track">
+                <span class="tech-item"><i class="bi bi-filetype-cs me-2"></i>.NET 9</span>
+                <span class="tech-item"><i class="bi bi-bootstrap me-2"></i>Bootstrap 5.3</span>
+                <span class="tech-item"><i class="bi bi-database me-2"></i>SQL Server</span>
+                <span class="tech-item"><i class="bi bi-box me-2"></i>Docker</span>
+                <span class="tech-item"><i class="bi bi-cloud me-2"></i>Azure Ready</span>
+                <span class="tech-item"><i class="bi bi-shield-check me-2"></i>JWT Auth</span>
+                <span class="tech-item"><i class="bi bi-building me-2"></i>Multi-Tenant</span>
+                <span class="tech-item"><i class="bi bi-gear me-2"></i>Settings</span>
+                <!-- Duplicate for seamless loop -->
+                <span class="tech-item"><i class="bi bi-filetype-cs me-2"></i>.NET 9</span>
+                <span class="tech-item"><i class="bi bi-bootstrap me-2"></i>Bootstrap 5.3</span>
+                <span class="tech-item"><i class="bi bi-database me-2"></i>SQL Server</span>
+                <span class="tech-item"><i class="bi bi-box me-2"></i>Docker</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5 bg-light">
+    <div class="container py-5">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2">Features</span>
+            <h2 class="display-5 fw-bold">Everything You Need</h2>
+            <p class="text-muted lead">Powerful features to accelerate your development</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon bg-primary bg-gradient text-white rounded-3 mb-3">
+                            <i class="bi bi-layers"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Clean Architecture</h5>
+                        <p class="card-text text-muted">Layered architecture with Domain, Application, Infrastructure, and Web projects following SOLID principles.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon bg-success bg-gradient text-white rounded-3 mb-3">
+                            <i class="bi bi-shield-lock"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Identity & Security</h5>
+                        <p class="card-text text-muted">Built-in authentication with JWT, OAuth, roles, claims, permissions, and two-factor authentication.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon bg-info bg-gradient text-white rounded-3 mb-3">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Multi-Tenancy</h5>
+                        <p class="card-text text-muted">Complete tenant isolation with subdomain routing, custom branding, and per-tenant settings.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon bg-warning bg-gradient text-white rounded-3 mb-3">
+                            <i class="bi bi-sliders"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Settings System</h5>
+                        <p class="card-text text-muted">Hierarchical settings with System, Tenant, and User scopes. Easy configuration management.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon bg-danger bg-gradient text-white rounded-3 mb-3">
+                            <i class="bi bi-bell"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Notifications</h5>
+                        <p class="card-text text-muted">Multi-channel notifications via Email, SMS, Push, and In-App with template support.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="500">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon bg-secondary bg-gradient text-white rounded-3 mb-3">
+                            <i class="bi bi-cloud-upload"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">DevOps Ready</h5>
+                        <p class="card-text text-muted">Docker, Kubernetes, CI/CD pipelines, health checks, and monitoring built-in.</p>
                     </div>
                 </div>
             </div>
@@ -33,78 +174,140 @@
     </div>
 </section>
 
-<!-- Features Section -->
-<section id="features" class="py-5">
-    <div class="container py-4">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Powerful Features</h2>
-            <p class="text-muted">Everything you need to build enterprise applications</p>
+<!-- Why Choose Us Section -->
+<section id="why-us" class="py-5">
+    <div class="container py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6" data-aos="fade-right">
+                <span class="badge bg-success bg-opacity-10 text-success mb-3 px-3 py-2">Why Choose Us</span>
+                <h2 class="display-5 fw-bold mb-4">Built for <span class="text-primary">Developers</span></h2>
+                <p class="lead text-muted mb-4">We've spent countless hours building the perfect foundation so you don't have to.</p>
+                
+                <div class="d-flex mb-4">
+                    <div class="flex-shrink-0">
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                            <i class="bi bi-rocket-takeoff text-primary fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="ms-4">
+                        <h5 class="fw-bold">Fast Development</h5>
+                        <p class="text-muted mb-0">Skip weeks of boilerplate setup. Start building features immediately.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-4">
+                    <div class="flex-shrink-0">
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                            <i class="bi bi-code-square text-success fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="ms-4">
+                        <h5 class="fw-bold">Best Practices</h5>
+                        <p class="text-muted mb-0">Clean code, SOLID principles, and industry-standard patterns.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                            <i class="bi bi-gear text-warning fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="ms-4">
+                        <h5 class="fw-bold">Fully Customizable</h5>
+                        <p class="text-muted mb-0">Modular design lets you enable only what you need.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="position-relative">
+                    <div class="stats-card bg-white rounded-4 shadow-lg p-4 mb-4">
+                        <div class="row text-center g-4">
+                            <div class="col-6">
+                                <div class="counter display-4 fw-bold text-primary" data-target="50">0</div>
+                                <p class="text-muted mb-0">Components</p>
+                            </div>
+                            <div class="col-6">
+                                <div class="counter display-4 fw-bold text-success" data-target="100">0</div>
+                                <p class="text-muted mb-0">% Free</p>
+                            </div>
+                            <div class="col-6">
+                                <div class="counter display-4 fw-bold text-warning" data-target="24">0</div>
+                                <p class="text-muted mb-0">Hour Setup</p>
+                            </div>
+                            <div class="col-6">
+                                <div class="counter display-4 fw-bold text-info" data-target="5">0</div>
+                                <p class="text-muted mb-0">Star Rating</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Portfolio/Showcase Section -->
+<section id="showcase" class="py-5 bg-dark text-white">
+    <div class="container py-5">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="badge bg-warning text-dark mb-3 px-3 py-2">Showcase</span>
+            <h2 class="display-5 fw-bold">What You Can Build</h2>
+            <p class="text-white-50 lead">Endless possibilities with StarterKitMVC</p>
         </div>
         <div class="row g-4">
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 hover-lift">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
-                            <i class="bi bi-layers fs-3 text-primary"></i>
-                        </div>
-                        <h5 class="card-title">Clean Architecture</h5>
-                        <p class="card-text text-muted">Layered architecture with Domain, Application, Infrastructure, and Web projects.</p>
+            <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="0">
+                <div class="showcase-card">
+                    <div class="showcase-icon">
+                        <i class="bi bi-cart4"></i>
                     </div>
+                    <h5>E-Commerce</h5>
+                    <p class="text-white-50 small">Build online stores with multi-tenant support</p>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 hover-lift">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
-                            <i class="bi bi-shield-check fs-3 text-success"></i>
-                        </div>
-                        <h5 class="card-title">Identity Ready</h5>
-                        <p class="card-text text-muted">Built-in authentication with roles, claims, and permissions.</p>
+            <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="100">
+                <div class="showcase-card">
+                    <div class="showcase-icon">
+                        <i class="bi bi-kanban"></i>
                     </div>
+                    <h5>SaaS Platforms</h5>
+                    <p class="text-white-50 small">Multi-tenant SaaS applications</p>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 hover-lift">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
-                            <i class="bi bi-building fs-3 text-info"></i>
-                        </div>
-                        <h5 class="card-title">Multi-Tenancy</h5>
-                        <p class="card-text text-muted">Tenant isolation, branding, and feature flags support.</p>
+            <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="200">
+                <div class="showcase-card">
+                    <div class="showcase-icon">
+                        <i class="bi bi-hospital"></i>
                     </div>
+                    <h5>Healthcare</h5>
+                    <p class="text-white-50 small">HIPAA-ready healthcare solutions</p>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 hover-lift">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
-                            <i class="bi bi-gear fs-3 text-warning"></i>
-                        </div>
-                        <h5 class="card-title">Settings System</h5>
-                        <p class="card-text text-muted">Hierarchical settings with System, Tenant, and User scopes.</p>
+            <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="300">
+                <div class="showcase-card">
+                    <div class="showcase-icon">
+                        <i class="bi bi-bank"></i>
                     </div>
+                    <h5>Finance</h5>
+                    <p class="text-white-50 small">Secure financial applications</p>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 hover-lift">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
-                            <i class="bi bi-broadcast fs-3 text-danger"></i>
-                        </div>
-                        <h5 class="card-title">Event Bus</h5>
-                        <p class="card-text text-muted">Publish/subscribe events for decoupled communication.</p>
+            <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="400">
+                <div class="showcase-card">
+                    <div class="showcase-icon">
+                        <i class="bi bi-mortarboard"></i>
                     </div>
+                    <h5>Education</h5>
+                    <p class="text-white-50 small">Learning management systems</p>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 hover-lift">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-secondary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
-                            <i class="bi bi-cloud fs-3 text-secondary"></i>
-                        </div>
-                        <h5 class="card-title">DevOps Ready</h5>
-                        <p class="card-text text-muted">Docker, Kubernetes, CI/CD pipelines included.</p>
+            <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="500">
+                <div class="showcase-card">
+                    <div class="showcase-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
                     </div>
+                    <h5>Analytics</h5>
+                    <p class="text-white-50 small">Data dashboards and reporting</p>
                 </div>
             </div>
         </div>
@@ -112,12 +315,359 @@
 </section>
 
 <!-- CTA Section -->
-<section class="bg-light py-5">
-    <div class="container text-center py-4">
-        <h3 class="fw-bold mb-3">Ready to Get Started?</h3>
-        <p class="text-muted mb-4">Clone, rename, and start building your enterprise application.</p>
-        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-primary btn-lg">
-            <i class="bi bi-rocket-takeoff me-2"></i>Launch Admin Panel
-        </a>
+<section class="py-5 bg-primary">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8 text-center text-lg-start" data-aos="fade-right">
+                <h2 class="display-5 fw-bold text-white mb-3">Ready to Get Started?</h2>
+                <p class="lead text-white-50 mb-0">Clone, rename, and start building your enterprise application today.</p>
+            </div>
+            <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0" data-aos="fade-left">
+                <a href="https://github.com/S2Sys/SmartWorkz.StarterKitMVC" class="btn btn-light btn-lg px-4 me-2" target="_blank">
+                    <i class="bi bi-github me-2"></i>GitHub
+                </a>
+                <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-warning btn-lg px-4">
+                    <i class="bi bi-rocket-takeoff me-2"></i>Demo
+                </a>
+            </div>
+        </div>
     </div>
 </section>
+
+@section Styles {
+<style>
+/* Hero Section */
+.hero-section {
+    background: var(--sw-gradient-hero, linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%));
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 60%);
+}
+
+.min-vh-75 { min-height: 75vh; }
+
+/* Typed Text Effect */
+.typed-cursor {
+    animation: blink 1s infinite;
+}
+@@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Rotating Text */
+.rotating-text {
+    display: inline-block;
+    animation: rotateText 8s infinite;
+}
+@@keyframes rotateText {
+    0%, 20% { opacity: 1; }
+    25%, 45% { opacity: 0; }
+    50%, 70% { opacity: 1; }
+    75%, 95% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Code Block */
+.hero-code-block {
+    background: #1e1e1e;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+.code-header {
+    background: #323232;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+}
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+.dot.red { background: #ff5f56; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green { background: #27ca40; }
+.code-content {
+    padding: 20px;
+    margin: 0;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #d4d4d4;
+    overflow-x: auto;
+}
+.code-content .keyword { color: #569cd6; }
+.code-content .method { color: #dcdcaa; }
+.code-content .comment { color: #6a9955; }
+
+/* Scroll Indicator */
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+}
+.scroll-indicator a {
+    color: rgba(255,255,255,0.5);
+    font-size: 2rem;
+}
+@@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+    40% { transform: translateX(-50%) translateY(-10px); }
+    60% { transform: translateX(-50%) translateY(-5px); }
+}
+
+/* Tech Marquee */
+.tech-marquee {
+    overflow: hidden;
+}
+.tech-track {
+    display: flex;
+    animation: marquee 20s linear infinite;
+}
+.tech-item {
+    flex-shrink: 0;
+    padding: 0 2rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+@@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* Feature Icons */
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+/* Hover Lift */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15) !important;
+}
+
+/* Showcase Cards */
+.showcase-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+.showcase-card:hover {
+    background: rgba(255,255,255,0.1);
+    transform: translateY(-5px);
+}
+.showcase-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+    color: #1a1a2e;
+}
+
+/* Counter Animation */
+.counter {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Stats Card */
+.stats-card {
+    position: relative;
+}
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: var(--sw-gradient-primary, linear-gradient(135deg, #6366f1, #8b5cf6));
+    border-radius: 20px;
+    z-index: -1;
+    opacity: 0.4;
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+
+@@keyframes pulse-glow {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.02); }
+}
+
+/* AOS Animations */
+[data-aos] {
+    opacity: 0;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+[data-aos].aos-animate {
+    opacity: 1;
+}
+[data-aos="fade-up"] { transform: translateY(30px); }
+[data-aos="fade-up"].aos-animate { transform: translateY(0); }
+[data-aos="fade-right"] { transform: translateX(-30px); }
+[data-aos="fade-right"].aos-animate { transform: translateX(0); }
+[data-aos="fade-left"] { transform: translateX(30px); }
+[data-aos="fade-left"].aos-animate { transform: translateX(0); }
+[data-aos="zoom-in"] { transform: scale(0.9); }
+[data-aos="zoom-in"].aos-animate { transform: scale(1); }
+</style>
+}
+
+@section Scripts {
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Typed Text Effect
+    const typedElement = document.querySelector('.typed-text');
+    if (typedElement) {
+        const strings = JSON.parse(typedElement.dataset.strings || '[]');
+        let stringIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        
+        function type() {
+            const current = strings[stringIndex];
+            
+            if (isDeleting) {
+                typedElement.textContent = current.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typedElement.textContent = current.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            let typeSpeed = isDeleting ? 30 : 50;
+            
+            if (!isDeleting && charIndex === current.length) {
+                typeSpeed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                stringIndex = (stringIndex + 1) % strings.length;
+                typeSpeed = 500;
+            }
+            
+            setTimeout(type, typeSpeed);
+        }
+        type();
+    }
+    
+    // Rotating Text Effect
+    const rotatingElement = document.querySelector('.rotating-text');
+    if (rotatingElement) {
+        const texts = JSON.parse(rotatingElement.dataset.texts || '[]');
+        let index = 0;
+        
+        setInterval(() => {
+            rotatingElement.style.opacity = 0;
+            setTimeout(() => {
+                index = (index + 1) % texts.length;
+                rotatingElement.textContent = texts[index];
+                rotatingElement.style.opacity = 1;
+            }, 300);
+        }, 2000);
+    }
+    
+    // Counter Animation
+    const counters = document.querySelectorAll('.counter');
+    const observerOptions = { threshold: 0.5 };
+    
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const target = parseInt(counter.dataset.target);
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+                
+                const updateCounter = () => {
+                    current += step;
+                    if (current < target) {
+                        counter.textContent = Math.floor(current);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target;
+                    }
+                };
+                updateCounter();
+                counterObserver.unobserve(counter);
+            }
+        });
+    }, observerOptions);
+    
+    counters.forEach(counter => counterObserver.observe(counter));
+    
+    // Smooth Scroll
+    document.querySelectorAll('.smooth-scroll').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const target = document.querySelector(targetId);
+            if (target) {
+                const offset = 70;
+                const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                window.scrollTo({ top, behavior: 'smooth' });
+            }
+        });
+    });
+    
+    // AOS-like scroll animations
+    const animateOnScroll = () => {
+        document.querySelectorAll('[data-aos]').forEach(el => {
+            const rect = el.getBoundingClientRect();
+            const offset = 100;
+            if (rect.top <= window.innerHeight - offset) {
+                const delay = parseInt(el.dataset.aosDelay) || 0;
+                setTimeout(() => el.classList.add('aos-animate'), delay);
+            }
+        });
+    };
+    
+    window.addEventListener('scroll', animateOnScroll);
+    animateOnScroll();
+    
+    // Navbar scroll effect
+    const navbar = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            navbar.classList.add('navbar-scrolled');
+        } else {
+            navbar.classList.remove('navbar-scrolled');
+        }
+    });
+});
+</script>
+}

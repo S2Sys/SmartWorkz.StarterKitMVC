@@ -1,7 +1,194 @@
-@{ ViewData["Title"] = "LoV Management"; }
-<h1>LoV Management</h1>
-<p>This is the LoV admin shell. Wire your LoV service here.</p>
-<ul>
-    <li><a asp-action="Categories">Categories</a></li>
-    <li><a asp-action="Items">Items</a></li>
-</ul>
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.LovPageViewModel
+@{
+    ViewData["Title"] = "List of Values";
+}
+
+@section PageActions {
+    <a asp-action="Categories" class="btn btn-outline-secondary btn-sm me-2">
+        <i class="bi bi-folder me-1"></i>Manage Categories
+    </a>
+    <a asp-action="ItemCreate" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>Add Item
+    </a>
+}
+
+<div class="row">
+    <!-- Categories Sidebar -->
+    <div class="col-lg-3 mb-4">
+        <div class="card admin-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-folder me-2"></i>Categories</span>
+                <a asp-action="CategoryCreate" class="btn btn-sm btn-outline-primary" title="Add Category">
+                    <i class="bi bi-plus"></i>
+                </a>
+            </div>
+            <div class="list-group list-group-flush">
+                @foreach (var category in Model.Categories)
+                {
+                    <a asp-action="Index" asp-route-categoryId="@category.Id" 
+                       class="list-group-item list-group-item-action @(Model.SelectedCategory?.Id == category.Id ? "active" : "")">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>
+                                <i class="@category.Icon me-2"></i>@category.Name
+                            </span>
+                            <span class="badge bg-secondary">@category.ItemCount</span>
+                        </div>
+                        <small class="@(Model.SelectedCategory?.Id == category.Id ? "text-white-50" : "text-muted")">@category.Key</small>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Items List -->
+    <div class="col-lg-9">
+        @if (Model.SelectedCategory != null)
+        {
+            <div class="card admin-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="@Model.SelectedCategory.Icon me-2"></i>@Model.SelectedCategory.Name
+                        @if (Model.SelectedCategory.IsSystem)
+                        {
+                            <span class="badge bg-info ms-2">System</span>
+                        }
+                    </span>
+                    <a asp-action="ItemCreate" asp-route-categoryId="@Model.SelectedCategory.Id" class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus-lg me-1"></i>Add Item
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table admin-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">Order</th>
+                                    <th>Key</th>
+                                    <th>Display Name</th>
+                                    <th>Color</th>
+                                    <th>Status</th>
+                                    <th style="width: 100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var categoryItems = Model.Items.Where(i => i.CategoryKey == Model.SelectedCategory.Key).OrderBy(i => i.SortOrder);
+                                }
+                                @foreach (var item in categoryItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-secondary">@item.SortOrder</span>
+                                        </td>
+                                        <td>
+                                            <code>@item.Key</code>
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.Icon))
+                                            {
+                                                <i class="@item.Icon me-1"></i>
+                                            }
+                                            @item.DisplayName
+                                            @if (item.IsDefault)
+                                            {
+                                                <span class="badge bg-primary ms-1">Default</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.Color))
+                                            {
+                                                <div class="d-flex align-items-center">
+                                                    <div style="width: 20px; height: 20px; background-color: @item.Color; border-radius: 4px; margin-right: 8px;"></div>
+                                                    <code>@item.Color</code>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (item.IsActive)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a asp-action="ItemEdit" asp-route-id="@item.Id" class="btn btn-outline-secondary" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-outline-danger" title="Delete"
+                                                        data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                        data-id="@item.Id" data-name="@item.DisplayName">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (!categoryItems.Any())
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            <i class="bi bi-inbox display-6 d-block mb-2"></i>
+                                            No items in this category.
+                                            <a asp-action="ItemCreate" asp-route-categoryId="@Model.SelectedCategory.Id">Add one now</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card admin-card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-list-ul display-4 text-muted mb-3 d-block"></i>
+                    <h5>Select a Category</h5>
+                    <p class="text-muted">Choose a category from the sidebar to view its items.</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete item <strong id="deleteItemName"></strong>?</p>
+                <p class="text-danger mb-0"><small>This action cannot be undone.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="ItemDelete" method="post" class="d-inline">
+                    <input type="hidden" name="id" id="deleteItemId">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('deleteModal')?.addEventListener('show.bs.modal', function(e) {
+        const button = e.relatedTarget;
+        document.getElementById('deleteItemId').value = button.dataset.id;
+        document.getElementById('deleteItemName').textContent = button.dataset.name;
+    });
+</script>
+}

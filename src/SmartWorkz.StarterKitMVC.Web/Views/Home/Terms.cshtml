@@ -1,0 +1,123 @@
+@{
+    ViewData["Title"] = "Terms of Service";
+}
+
+<!-- Hero Section -->
+<section class="bg-dark text-white py-5">
+    <div class="container py-4">
+        <h1 class="display-5 fw-bold mb-3">Terms of Service</h1>
+        <p class="lead text-white-50 mb-0">Last updated: @DateTime.UtcNow.ToString("MMMM dd, yyyy")</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container py-4">
+        <div class="row">
+            <!-- Table of Contents -->
+            <div class="col-lg-3 mb-4">
+                <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">Contents</h6>
+                        <nav class="nav flex-column">
+                            <a class="nav-link px-0 py-1 text-muted" href="#acceptance">Acceptance of Terms</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#license">License</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#use">Acceptable Use</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#accounts">User Accounts</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#ip">Intellectual Property</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#disclaimer">Disclaimer</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#limitation">Limitation of Liability</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#changes">Changes to Terms</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="col-lg-9">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4 p-lg-5">
+                        <section id="acceptance" class="mb-5">
+                            <h4 class="fw-bold mb-3">1. Acceptance of Terms</h4>
+                            <p>By accessing and using StarterKitMVC ("Service"), you accept and agree to be bound by the terms and provisions of this agreement.</p>
+                            <p>If you do not agree to these terms, please do not use our Service.</p>
+                        </section>
+                        
+                        <section id="license" class="mb-5">
+                            <h4 class="fw-bold mb-3">2. License</h4>
+                            <p>StarterKitMVC is licensed under the MIT License. This means you are free to:</p>
+                            <ul>
+                                <li>Use the software for any purpose, including commercial applications</li>
+                                <li>Modify the software to suit your needs</li>
+                                <li>Distribute copies of the original or modified software</li>
+                                <li>Include the software in proprietary projects</li>
+                            </ul>
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                The MIT License requires that the original copyright notice and license text be included in all copies or substantial portions of the software.
+                            </div>
+                        </section>
+                        
+                        <section id="use" class="mb-5">
+                            <h4 class="fw-bold mb-3">3. Acceptable Use</h4>
+                            <p>You agree not to use the Service to:</p>
+                            <ul>
+                                <li>Violate any applicable laws or regulations</li>
+                                <li>Infringe on the rights of others</li>
+                                <li>Distribute malware or harmful code</li>
+                                <li>Attempt to gain unauthorized access to systems</li>
+                                <li>Engage in any activity that disrupts the Service</li>
+                            </ul>
+                        </section>
+                        
+                        <section id="accounts" class="mb-5">
+                            <h4 class="fw-bold mb-3">4. User Accounts</h4>
+                            <p>When you create an account, you agree to:</p>
+                            <ul>
+                                <li>Provide accurate and complete information</li>
+                                <li>Maintain the security of your account credentials</li>
+                                <li>Notify us immediately of any unauthorized access</li>
+                                <li>Accept responsibility for all activities under your account</li>
+                            </ul>
+                        </section>
+                        
+                        <section id="ip" class="mb-5">
+                            <h4 class="fw-bold mb-3">5. Intellectual Property</h4>
+                            <p>The Service and its original content (excluding user-generated content) remain the property of SmartWorkz and are protected by copyright, trademark, and other intellectual property laws.</p>
+                            <p>You retain ownership of any content you create using the Service.</p>
+                        </section>
+                        
+                        <section id="disclaimer" class="mb-5">
+                            <h4 class="fw-bold mb-3">6. Disclaimer</h4>
+                            <div class="alert alert-warning">
+                                <p class="mb-0">THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.</p>
+                            </div>
+                        </section>
+                        
+                        <section id="limitation" class="mb-5">
+                            <h4 class="fw-bold mb-3">7. Limitation of Liability</h4>
+                            <p>In no event shall SmartWorkz, its directors, employees, or agents be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or related to your use of the Service.</p>
+                        </section>
+                        
+                        <section id="changes">
+                            <h4 class="fw-bold mb-3">8. Changes to Terms</h4>
+                            <p>We reserve the right to modify these terms at any time. We will notify users of any material changes by:</p>
+                            <ul>
+                                <li>Posting the updated terms on this page</li>
+                                <li>Updating the "Last updated" date</li>
+                                <li>Sending an email notification for significant changes</li>
+                            </ul>
+                            <p>Your continued use of the Service after changes constitutes acceptance of the new terms.</p>
+                            
+                            <hr class="my-4">
+                            
+                            <p class="text-muted">If you have any questions about these Terms, please contact us:</p>
+                            <a asp-action="Contact" class="btn btn-primary">
+                                <i class="bi bi-envelope me-2"></i>Contact Us
+                            </a>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

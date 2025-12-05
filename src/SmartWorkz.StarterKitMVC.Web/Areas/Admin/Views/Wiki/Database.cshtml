@@ -1,0 +1,357 @@
+@{
+    ViewData["Title"] = "Database";
+}
+
+<div class="row">
+    <div class="col-lg-9">
+        <!-- Overview -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-database me-2"></i>Database Overview</h5>
+            </div>
+            <div class="card-body">
+                <p>StarterKitMVC uses <strong>Entity Framework Core 9.0</strong> with Code-First approach for database management.</p>
+                
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <i class="bi bi-server fs-1 text-primary"></i>
+                            <h6 class="mt-2">SQL Server</h6>
+                            <small class="text-muted">Primary database</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <i class="bi bi-pc-display fs-1 text-success"></i>
+                            <h6 class="mt-2">LocalDB</h6>
+                            <small class="text-muted">Development</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <i class="bi bi-cloud fs-1 text-info"></i>
+                            <h6 class="mt-2">Azure SQL</h6>
+                            <small class="text-muted">Cloud deployment</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Initial Setup -->
+        <div class="card mb-4" id="setup">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Initial Database Setup</h5>
+            </div>
+            <div class="card-body">
+                <div class="step mb-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-primary rounded-pill me-2">1</span>
+                        <h6 class="mb-0">Configure Connection String</h6>
+                    </div>
+                    <p class="text-muted">Update <code>appsettings.json</code> with your database connection:</p>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=StarterKitMVC;Trusted_Connection=True;MultipleActiveResultSets=true"
+  }
+}</code></pre>
+                </div>
+
+                <div class="step mb-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-primary rounded-pill me-2">2</span>
+                        <h6 class="mb-0">Install EF Core Tools</h6>
+                    </div>
+                    <pre class="bg-dark text-light p-3 rounded"><code>dotnet tool install --global dotnet-ef</code></pre>
+                </div>
+
+                <div class="step mb-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-primary rounded-pill me-2">3</span>
+                        <h6 class="mb-0">Apply Migrations</h6>
+                    </div>
+                    <pre class="bg-dark text-light p-3 rounded"><code>dotnet ef database update --project src/SmartWorkz.StarterKitMVC.Infrastructure --startup-project src/SmartWorkz.StarterKitMVC.Web</code></pre>
+                </div>
+
+                <div class="step">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-primary rounded-pill me-2">4</span>
+                        <h6 class="mb-0">Seed Initial Data (Optional)</h6>
+                    </div>
+                    <pre class="bg-dark text-light p-3 rounded"><code>dotnet run --project src/SmartWorkz.StarterKitMVC.Web -- --seed</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Migrations -->
+        <div class="card mb-4" id="migrations">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-arrow-repeat me-2"></i>Working with Migrations</h5>
+            </div>
+            <div class="card-body">
+                <h6>Create a New Migration</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>dotnet ef migrations add MigrationName --project src/SmartWorkz.StarterKitMVC.Infrastructure --startup-project src/SmartWorkz.StarterKitMVC.Web</code></pre>
+
+                <h6>Apply Migrations</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>dotnet ef database update --project src/SmartWorkz.StarterKitMVC.Infrastructure --startup-project src/SmartWorkz.StarterKitMVC.Web</code></pre>
+
+                <h6>Remove Last Migration</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>dotnet ef migrations remove --project src/SmartWorkz.StarterKitMVC.Infrastructure --startup-project src/SmartWorkz.StarterKitMVC.Web</code></pre>
+
+                <h6>Generate SQL Script</h6>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>dotnet ef migrations script --project src/SmartWorkz.StarterKitMVC.Infrastructure --startup-project src/SmartWorkz.StarterKitMVC.Web -o migration.sql</code></pre>
+
+                <h6>Rollback to Specific Migration</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>dotnet ef database update MigrationName --project src/SmartWorkz.StarterKitMVC.Infrastructure --startup-project src/SmartWorkz.StarterKitMVC.Web</code></pre>
+            </div>
+        </div>
+
+        <!-- DbContext -->
+        <div class="card mb-4" id="dbcontext">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-code-slash me-2"></i>DbContext Configuration</h5>
+            </div>
+            <div class="card-body">
+                <pre class="bg-dark text-light p-3 rounded"><code>public class AppDbContext : DbContext
+{
+    private readonly ITenantService _tenantService;
+    
+    public AppDbContext(
+        DbContextOptions&lt;AppDbContext&gt; options,
+        ITenantService tenantService) : base(options)
+    {
+        _tenantService = tenantService;
+    }
+    
+    public DbSet&lt;User&gt; Users => Set&lt;User&gt;();
+    public DbSet&lt;Tenant&gt; Tenants => Set&lt;Tenant&gt;();
+    public DbSet&lt;AuditLog&gt; AuditLogs => Set&lt;AuditLog&gt;();
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        
+        // Apply all configurations from assembly
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(AppDbContext).Assembly);
+        
+        // Global query filter for multi-tenancy
+        modelBuilder.Entity&lt;User&gt;()
+            .HasQueryFilter(u => u.TenantId == _tenantService.CurrentTenantId);
+    }
+    
+    public override async Task&lt;int&gt; SaveChangesAsync(CancellationToken ct = default)
+    {
+        // Auto-populate audit fields
+        foreach (var entry in ChangeTracker.Entries&lt;AuditableEntity&gt;())
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.CreatedAt = DateTime.UtcNow;
+                entry.Entity.TenantId = _tenantService.CurrentTenantId;
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+            }
+        }
+        
+        return await base.SaveChangesAsync(ct);
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Entity Configuration -->
+        <div class="card mb-4" id="entity-config">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-table me-2"></i>Entity Configuration</h5>
+            </div>
+            <div class="card-body">
+                <p>Use Fluent API for entity configuration:</p>
+                <pre class="bg-dark text-light p-3 rounded"><code>public class UserConfiguration : IEntityTypeConfiguration&lt;User&gt;
+{
+    public void Configure(EntityTypeBuilder&lt;User&gt; builder)
+    {
+        builder.ToTable("Users");
+        
+        builder.HasKey(u => u.Id);
+        
+        builder.Property(u => u.Email)
+            .IsRequired()
+            .HasMaxLength(256);
+            
+        builder.Property(u => u.PasswordHash)
+            .IsRequired()
+            .HasMaxLength(512);
+            
+        builder.HasIndex(u => u.Email)
+            .IsUnique();
+            
+        builder.HasIndex(u => u.TenantId);
+        
+        // Relationships
+        builder.HasOne(u => u.Tenant)
+            .WithMany(t => t.Users)
+            .HasForeignKey(u => u.TenantId)
+            .OnDelete(DeleteBehavior.Restrict);
+            
+        // Value object mapping
+        builder.OwnsOne(u => u.Address, a =>
+        {
+            a.Property(x => x.Street).HasMaxLength(200);
+            a.Property(x => x.City).HasMaxLength(100);
+            a.Property(x => x.Country).HasMaxLength(100);
+        });
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Database Schema -->
+        <div class="card mb-4" id="schema">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-diagram-2 me-2"></i>Core Database Schema</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Table</th>
+                                <th>Description</th>
+                                <th>Key Columns</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>Users</code></td>
+                                <td>Application users</td>
+                                <td>Id, Email, PasswordHash, TenantId, IsActive</td>
+                            </tr>
+                            <tr>
+                                <td><code>Roles</code></td>
+                                <td>User roles</td>
+                                <td>Id, Name, NormalizedName</td>
+                            </tr>
+                            <tr>
+                                <td><code>UserRoles</code></td>
+                                <td>User-Role mapping</td>
+                                <td>UserId, RoleId</td>
+                            </tr>
+                            <tr>
+                                <td><code>Tenants</code></td>
+                                <td>Multi-tenant organizations</td>
+                                <td>Id, Name, Identifier, IsActive</td>
+                            </tr>
+                            <tr>
+                                <td><code>AuditLogs</code></td>
+                                <td>Audit trail</td>
+                                <td>Id, Action, EntityType, EntityId, UserId, Timestamp</td>
+                            </tr>
+                            <tr>
+                                <td><code>ListOfValues</code></td>
+                                <td>Configurable lookup values</td>
+                                <td>Id, Category, Code, Value, SortOrder</td>
+                            </tr>
+                            <tr>
+                                <td><code>Settings</code></td>
+                                <td>Application settings</td>
+                                <td>Id, Key, Value, TenantId</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Tips -->
+        <div class="card" id="performance">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>Performance Best Practices</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded h-100">
+                            <h6><i class="bi bi-lightning text-warning me-2"></i>Use AsNoTracking</h6>
+                            <p class="text-muted small mb-2">For read-only queries:</p>
+                            <pre class="bg-light p-2 rounded small"><code>await _context.Users
+    .AsNoTracking()
+    .ToListAsync();</code></pre>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded h-100">
+                            <h6><i class="bi bi-funnel text-primary me-2"></i>Use Projections</h6>
+                            <p class="text-muted small mb-2">Select only needed columns:</p>
+                            <pre class="bg-light p-2 rounded small"><code>await _context.Users
+    .Select(u => new { u.Id, u.Email })
+    .ToListAsync();</code></pre>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded h-100">
+                            <h6><i class="bi bi-collection text-success me-2"></i>Batch Operations</h6>
+                            <p class="text-muted small mb-2">Use ExecuteUpdate/Delete:</p>
+                            <pre class="bg-light p-2 rounded small"><code>await _context.Users
+    .Where(u => !u.IsActive)
+    .ExecuteDeleteAsync();</code></pre>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded h-100">
+                            <h6><i class="bi bi-diagram-3 text-info me-2"></i>Eager Loading</h6>
+                            <p class="text-muted small mb-2">Include related data:</p>
+                            <pre class="bg-light p-2 rounded small"><code>await _context.Users
+    .Include(u => u.Roles)
+    .FirstOrDefaultAsync();</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning mt-3 mb-0">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>Tip:</strong> Always add indexes for frequently queried columns and foreign keys.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-3">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-list-ul me-2"></i>On This Page</h6>
+            </div>
+            <div class="card-body p-0">
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="#setup">Initial Setup</a>
+                    <a class="nav-link" href="#migrations">Migrations</a>
+                    <a class="nav-link" href="#dbcontext">DbContext</a>
+                    <a class="nav-link" href="#entity-config">Entity Configuration</a>
+                    <a class="nav-link" href="#schema">Database Schema</a>
+                    <a class="nav-link" href="#performance">Performance</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<style>
+    pre code {
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 0.8rem;
+    }
+    .nav-link {
+        padding: 0.5rem 1rem;
+        color: inherit;
+        border-left: 2px solid transparent;
+    }
+    .nav-link:hover {
+        background-color: rgba(0,0,0,0.05);
+        border-left-color: var(--bs-primary);
+    }
+</style>
+}

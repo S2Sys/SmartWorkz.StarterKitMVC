@@ -1,3 +1,137 @@
-@{ ViewData["Title"] = "Notification Templates"; }
-<h1>Notification Templates</h1>
-<p>Templates management shell.</p>
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.NotificationTemplatesPageViewModel
+@{
+    ViewData["Title"] = "Notification Templates";
+}
+
+@section PageActions {
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-2">
+        <i class="bi bi-bell me-1"></i>Notifications
+    </a>
+    <a asp-action="TemplateCreate" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>Add Template
+    </a>
+}
+
+<div class="card admin-card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Template</th>
+                        <th>Subject</th>
+                        <th>Channel</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th style="width: 150px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var template in Model.Templates)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-medium">@template.Name</div>
+                                <small class="text-muted"><code>@template.Key</code></small>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(template.Subject))
+                                {
+                                    @template.Subject
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                            <td>
+                                @{
+                                    var channelBadge = template.Channel switch
+                                    {
+                                        "Email" => "bg-primary",
+                                        "SMS" => "bg-success",
+                                        "Push" => "bg-warning",
+                                        _ => "bg-info"
+                                    };
+                                }
+                                <span class="badge @channelBadge">@template.Channel</span>
+                            </td>
+                            <td>
+                                @if (template.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <span title="@template.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")">
+                                    @template.CreatedAt.ToString("MMM dd, yyyy")
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="TemplatePreview" asp-route-id="@template.Id" class="btn btn-outline-secondary" title="Preview" target="_blank">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="TemplateEdit" asp-route-id="@template.Id" class="btn btn-outline-secondary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" title="Delete"
+                                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                            data-id="@template.Id" data-name="@template.Name">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Templates.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-file-text display-6 d-block mb-2"></i>
+                                No templates found.
+                                <a asp-action="TemplateCreate">Create one now</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete template <strong id="deleteTemplateName"></strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="TemplateDelete" method="post" class="d-inline">
+                    <input type="hidden" name="id" id="deleteTemplateId">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('deleteModal')?.addEventListener('show.bs.modal', function(e) {
+        const button = e.relatedTarget;
+        document.getElementById('deleteTemplateId').value = button.dataset.id;
+        document.getElementById('deleteTemplateName').textContent = button.dataset.name;
+    });
+</script>
+}

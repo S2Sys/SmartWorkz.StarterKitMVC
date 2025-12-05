@@ -1,0 +1,131 @@
+@{
+    ViewData["Title"] = "Privacy Policy";
+}
+
+<!-- Hero Section -->
+<section class="bg-dark text-white py-5">
+    <div class="container py-4">
+        <h1 class="display-5 fw-bold mb-3">Privacy Policy</h1>
+        <p class="lead text-white-50 mb-0">Last updated: @DateTime.UtcNow.ToString("MMMM dd, yyyy")</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container py-4">
+        <div class="row">
+            <!-- Table of Contents -->
+            <div class="col-lg-3 mb-4">
+                <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">Contents</h6>
+                        <nav class="nav flex-column">
+                            <a class="nav-link px-0 py-1 text-muted" href="#introduction">Introduction</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#information">Information We Collect</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#use">How We Use Information</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#sharing">Information Sharing</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#security">Data Security</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#cookies">Cookies</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#rights">Your Rights</a>
+                            <a class="nav-link px-0 py-1 text-muted" href="#contact">Contact Us</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="col-lg-9">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4 p-lg-5">
+                        <section id="introduction" class="mb-5">
+                            <h4 class="fw-bold mb-3">1. Introduction</h4>
+                            <p>Welcome to StarterKitMVC ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy.</p>
+                            <p>This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our service. Please read this privacy policy carefully.</p>
+                        </section>
+                        
+                        <section id="information" class="mb-5">
+                            <h4 class="fw-bold mb-3">2. Information We Collect</h4>
+                            <p>We collect information that you provide directly to us, including:</p>
+                            <ul>
+                                <li><strong>Account Information:</strong> Name, email address, password, and profile information</li>
+                                <li><strong>Usage Data:</strong> Information about how you use our service</li>
+                                <li><strong>Device Information:</strong> Browser type, IP address, device identifiers</li>
+                                <li><strong>Communication Data:</strong> Messages you send through our contact forms</li>
+                            </ul>
+                        </section>
+                        
+                        <section id="use" class="mb-5">
+                            <h4 class="fw-bold mb-3">3. How We Use Your Information</h4>
+                            <p>We use the information we collect to:</p>
+                            <ul>
+                                <li>Provide, maintain, and improve our services</li>
+                                <li>Process transactions and send related information</li>
+                                <li>Send you technical notices and support messages</li>
+                                <li>Respond to your comments and questions</li>
+                                <li>Analyze usage patterns to improve user experience</li>
+                                <li>Protect against fraudulent or illegal activity</li>
+                            </ul>
+                        </section>
+                        
+                        <section id="sharing" class="mb-5">
+                            <h4 class="fw-bold mb-3">4. Information Sharing</h4>
+                            <p>We do not sell, trade, or rent your personal information to third parties. We may share your information in the following situations:</p>
+                            <ul>
+                                <li><strong>Service Providers:</strong> With third-party vendors who perform services on our behalf</li>
+                                <li><strong>Legal Requirements:</strong> When required by law or to protect our rights</li>
+                                <li><strong>Business Transfers:</strong> In connection with a merger or acquisition</li>
+                                <li><strong>With Your Consent:</strong> When you have given us permission</li>
+                            </ul>
+                        </section>
+                        
+                        <section id="security" class="mb-5">
+                            <h4 class="fw-bold mb-3">5. Data Security</h4>
+                            <p>We implement appropriate technical and organizational measures to protect your personal information, including:</p>
+                            <ul>
+                                <li>Encryption of data in transit and at rest</li>
+                                <li>Regular security assessments</li>
+                                <li>Access controls and authentication</li>
+                                <li>Secure data storage practices</li>
+                            </ul>
+                        </section>
+                        
+                        <section id="cookies" class="mb-5">
+                            <h4 class="fw-bold mb-3">6. Cookies and Tracking</h4>
+                            <p>We use cookies and similar tracking technologies to:</p>
+                            <ul>
+                                <li>Remember your preferences and settings</li>
+                                <li>Understand how you use our service</li>
+                                <li>Provide personalized content</li>
+                                <li>Analyze site traffic and trends</li>
+                            </ul>
+                            <p>You can control cookies through your browser settings.</p>
+                        </section>
+                        
+                        <section id="rights" class="mb-5">
+                            <h4 class="fw-bold mb-3">7. Your Rights</h4>
+                            <p>Depending on your location, you may have the following rights:</p>
+                            <ul>
+                                <li><strong>Access:</strong> Request a copy of your personal data</li>
+                                <li><strong>Correction:</strong> Request correction of inaccurate data</li>
+                                <li><strong>Deletion:</strong> Request deletion of your personal data</li>
+                                <li><strong>Portability:</strong> Request transfer of your data</li>
+                                <li><strong>Opt-out:</strong> Opt out of marketing communications</li>
+                            </ul>
+                        </section>
+                        
+                        <section id="contact">
+                            <h4 class="fw-bold mb-3">8. Contact Us</h4>
+                            <p>If you have questions about this Privacy Policy, please contact us:</p>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-envelope me-2"></i>Email: privacy@smartworkz.com</li>
+                                <li><i class="bi bi-geo-alt me-2"></i>Address: 123 Business Street, Tech City, TC 12345</li>
+                            </ul>
+                            <a asp-action="Contact" class="btn btn-primary mt-3">
+                                <i class="bi bi-envelope me-2"></i>Contact Us
+                            </a>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -11,7 +11,7 @@
 const Admin = window.Admin || {};
 
 // ============================================
-// Sidebar Management
+// Sidebar Management with Multi-Level Menu
 // ============================================
 Admin.sidebar = {
     sidebar: null,
@@ -54,6 +54,55 @@ Admin.sidebar = {
         if (collapsed === 'true' && window.innerWidth >= 992) {
             this.sidebar.classList.add('collapsed');
         }
+        
+        // Initialize multi-level menus
+        this.initMultiLevelMenu();
+    },
+    
+    /**
+     * Initialize multi-level dropdown menus in sidebar
+     */
+    initMultiLevelMenu() {
+        const menuToggles = this.sidebar?.querySelectorAll('.nav-link[data-bs-toggle="collapse"]');
+        
+        menuToggles?.forEach(toggle => {
+            toggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = toggle.getAttribute('data-bs-target') || toggle.getAttribute('href');
+                const submenu = document.querySelector(targetId);
+                
+                if (submenu) {
+                    // Close other open submenus at the same level
+                    const parent = toggle.closest('.nav-item');
+                    const siblings = parent?.parentElement?.querySelectorAll('.nav-item > .collapse.show');
+                    siblings?.forEach(sibling => {
+                        if (sibling !== submenu) {
+                            sibling.classList.remove('show');
+                            const siblingToggle = sibling.previousElementSibling;
+                            siblingToggle?.classList.remove('active');
+                            siblingToggle?.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                    
+                    // Toggle current submenu
+                    submenu.classList.toggle('show');
+                    toggle.classList.toggle('active');
+                    toggle.setAttribute('aria-expanded', submenu.classList.contains('show'));
+                }
+            });
+        });
+        
+        // Restore open state for active menu items
+        const activeLinks = this.sidebar?.querySelectorAll('.nav-link.active');
+        activeLinks?.forEach(link => {
+            const parentCollapse = link.closest('.collapse');
+            if (parentCollapse) {
+                parentCollapse.classList.add('show');
+                const parentToggle = parentCollapse.previousElementSibling;
+                parentToggle?.classList.add('active');
+                parentToggle?.setAttribute('aria-expanded', 'true');
+            }
+        });
     },
     
     toggle() {
@@ -377,6 +426,326 @@ Admin.theme = {
 };
 
 // ============================================
+// Smooth Scroll
+// ============================================
+Admin.smoothScroll = {
+    init() {
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', (e) => {
+                const targetId = anchor.getAttribute('href');
+                if (targetId === '#' || targetId === '') return;
+                
+                const target = document.querySelector(targetId);
+                if (target) {
+                    e.preventDefault();
+                    const offset = 80; // Account for fixed header
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    },
+    
+    /**
+     * Scroll to element with offset
+     * @param {string|HTMLElement} target - Target element or selector
+     * @param {number} offset - Offset from top
+     */
+    to(target, offset = 80) {
+        const el = typeof target === 'string' ? document.querySelector(target) : target;
+        if (el) {
+            const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({ top, behavior: 'smooth' });
+        }
+    }
+};
+
+// ============================================
+// AOS (Animate On Scroll) - Lightweight Implementation
+// ============================================
+Admin.aos = {
+    elements: [],
+    
+    init(options = {}) {
+        const defaults = {
+            offset: 100,
+            duration: 600,
+            easing: 'ease-out',
+            once: true,
+            mirror: false
+        };
+        
+        this.options = { ...defaults, ...options };
+        this.elements = document.querySelectorAll('[data-aos]');
+        
+        if (this.elements.length === 0) return;
+        
+        // Add initial styles
+        this.elements.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transition = `opacity ${this.options.duration}ms ${this.options.easing}, transform ${this.options.duration}ms ${this.options.easing}`;
+            this.setInitialTransform(el);
+        });
+        
+        // Check on scroll
+        this.checkElements();
+        window.addEventListener('scroll', this.throttle(() => this.checkElements(), 100));
+        window.addEventListener('resize', this.throttle(() => this.checkElements(), 100));
+    },
+    
+    setInitialTransform(el) {
+        const animation = el.getAttribute('data-aos');
+        const transforms = {
+            'fade-up': 'translateY(30px)',
+            'fade-down': 'translateY(-30px)',
+            'fade-left': 'translateX(30px)',
+            'fade-right': 'translateX(-30px)',
+            'zoom-in': 'scale(0.9)',
+            'zoom-out': 'scale(1.1)',
+            'flip-up': 'rotateX(90deg)',
+            'flip-down': 'rotateX(-90deg)',
+            'slide-up': 'translateY(100%)',
+            'slide-down': 'translateY(-100%)',
+            'slide-left': 'translateX(100%)',
+            'slide-right': 'translateX(-100%)'
+        };
+        
+        if (transforms[animation]) {
+            el.style.transform = transforms[animation];
+        }
+    },
+    
+    checkElements() {
+        this.elements.forEach(el => {
+            if (this.isInViewport(el)) {
+                this.animate(el);
+            } else if (this.options.mirror && !this.options.once) {
+                this.reset(el);
+            }
+        });
+    },
+    
+    isInViewport(el) {
+        const rect = el.getBoundingClientRect();
+        return (
+            rect.top <= (window.innerHeight || document.documentElement.clientHeight) - this.options.offset &&
+            rect.bottom >= 0
+        );
+    },
+    
+    animate(el) {
+        if (el.classList.contains('aos-animate')) return;
+        
+        const delay = parseInt(el.getAttribute('data-aos-delay')) || 0;
+        
+        setTimeout(() => {
+            el.style.opacity = '1';
+            el.style.transform = 'translate(0) scale(1) rotate(0)';
+            el.classList.add('aos-animate');
+        }, delay);
+    },
+    
+    reset(el) {
+        el.style.opacity = '0';
+        this.setInitialTransform(el);
+        el.classList.remove('aos-animate');
+    },
+    
+    throttle(func, limit) {
+        let inThrottle;
+        return function(...args) {
+            if (!inThrottle) {
+                func.apply(this, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    }
+};
+
+// ============================================
+// Charts Helper (Chart.js wrapper)
+// ============================================
+Admin.charts = {
+    instances: {},
+    
+    /**
+     * Create a line chart
+     * @param {string} canvasId - Canvas element ID
+     * @param {Object} config - Chart configuration
+     */
+    line(canvasId, config) {
+        return this.create(canvasId, 'line', config);
+    },
+    
+    /**
+     * Create a bar chart
+     * @param {string} canvasId - Canvas element ID
+     * @param {Object} config - Chart configuration
+     */
+    bar(canvasId, config) {
+        return this.create(canvasId, 'bar', config);
+    },
+    
+    /**
+     * Create a pie chart
+     * @param {string} canvasId - Canvas element ID
+     * @param {Object} config - Chart configuration
+     */
+    pie(canvasId, config) {
+        return this.create(canvasId, 'pie', config);
+    },
+    
+    /**
+     * Create a doughnut chart
+     * @param {string} canvasId - Canvas element ID
+     * @param {Object} config - Chart configuration
+     */
+    doughnut(canvasId, config) {
+        return this.create(canvasId, 'doughnut', config);
+    },
+    
+    /**
+     * Create an area chart
+     * @param {string} canvasId - Canvas element ID
+     * @param {Object} config - Chart configuration
+     */
+    area(canvasId, config) {
+        config.fill = true;
+        return this.create(canvasId, 'line', config);
+    },
+    
+    /**
+     * Create a radar chart
+     * @param {string} canvasId - Canvas element ID
+     * @param {Object} config - Chart configuration
+     */
+    radar(canvasId, config) {
+        return this.create(canvasId, 'radar', config);
+    },
+    
+    /**
+     * Create a polar area chart
+     * @param {string} canvasId - Canvas element ID
+     * @param {Object} config - Chart configuration
+     */
+    polarArea(canvasId, config) {
+        return this.create(canvasId, 'polarArea', config);
+    },
+    
+    /**
+     * Create a chart
+     * @param {string} canvasId - Canvas element ID
+     * @param {string} type - Chart type
+     * @param {Object} config - Chart configuration
+     */
+    create(canvasId, type, config) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas || typeof Chart === 'undefined') {
+            console.warn('Chart.js not loaded or canvas not found:', canvasId);
+            return null;
+        }
+        
+        // Destroy existing chart if any
+        if (this.instances[canvasId]) {
+            this.instances[canvasId].destroy();
+        }
+        
+        const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        const textColor = isDark ? '#adb5bd' : '#6c757d';
+        const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+        
+        const defaultOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: textColor }
+                }
+            },
+            scales: type !== 'pie' && type !== 'doughnut' && type !== 'polarArea' && type !== 'radar' ? {
+                x: {
+                    ticks: { color: textColor },
+                    grid: { color: gridColor }
+                },
+                y: {
+                    ticks: { color: textColor },
+                    grid: { color: gridColor }
+                }
+            } : undefined
+        };
+        
+        const chartConfig = {
+            type: type,
+            data: config.data || {},
+            options: { ...defaultOptions, ...config.options }
+        };
+        
+        this.instances[canvasId] = new Chart(canvas, chartConfig);
+        return this.instances[canvasId];
+    },
+    
+    /**
+     * Update chart data
+     * @param {string} canvasId - Canvas element ID
+     * @param {Object} data - New data
+     */
+    update(canvasId, data) {
+        const chart = this.instances[canvasId];
+        if (chart) {
+            chart.data = data;
+            chart.update();
+        }
+    },
+    
+    /**
+     * Destroy a chart
+     * @param {string} canvasId - Canvas element ID
+     */
+    destroy(canvasId) {
+        if (this.instances[canvasId]) {
+            this.instances[canvasId].destroy();
+            delete this.instances[canvasId];
+        }
+    },
+    
+    /**
+     * Get default color palette
+     */
+    getColors() {
+        return {
+            primary: '#0d6efd',
+            success: '#198754',
+            warning: '#ffc107',
+            danger: '#dc3545',
+            info: '#0dcaf0',
+            secondary: '#6c757d',
+            purple: '#6f42c1',
+            pink: '#d63384',
+            orange: '#fd7e14',
+            teal: '#20c997'
+        };
+    },
+    
+    /**
+     * Generate gradient for charts
+     * @param {CanvasRenderingContext2D} ctx - Canvas context
+     * @param {string} color - Base color
+     */
+    createGradient(ctx, color) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, color);
+        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+        return gradient;
+    }
+};
+
+// ============================================
 // Initialize on DOM Ready
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
@@ -386,33 +755,48 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize theme
     Admin.theme.init();
     
+    // Initialize smooth scroll
+    Admin.smoothScroll.init();
+    
+    // Initialize AOS
+    Admin.aos.init();
+    
     // Initialize tooltips in admin
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
         new bootstrap.Tooltip(el);
     });
     
-    // Table row checkbox handling
-    SW.on('change', 'table tbody input[type="checkbox"]', function() {
-        const table = this.closest('table');
-        if (table?.id) {
-            Admin.dataTable.updateBulkActions(table.id);
+    // Table row checkbox handling - Fixed: Use direct event delegation
+    document.addEventListener('change', function(e) {
+        const checkbox = e.target;
+        if (checkbox.matches('table tbody input[type="checkbox"]')) {
+            const table = checkbox.closest('table');
+            if (table?.id) {
+                Admin.dataTable.updateBulkActions(table.id);
+            }
         }
     });
     
-    // Select all checkbox
-    SW.on('change', '[data-select-all]', function() {
-        const tableId = this.getAttribute('data-select-all');
-        Admin.dataTable.selectAll(tableId, this.checked);
+    // Select all checkbox - Fixed: Use direct event delegation
+    document.addEventListener('change', function(e) {
+        const checkbox = e.target;
+        if (checkbox.hasAttribute('data-select-all')) {
+            const tableId = checkbox.getAttribute('data-select-all');
+            Admin.dataTable.selectAll(tableId, checkbox.checked);
+        }
     });
     
-    // Confirm actions
-    SW.on('click', '[data-confirm]', async function(e) {
-        e.preventDefault();
-        const message = this.getAttribute('data-confirm');
-        const confirmed = await SW.confirm.show({ message });
-        if (confirmed) {
-            const href = this.getAttribute('href');
-            if (href) window.location.href = href;
+    // Confirm actions - Fixed: Use direct event delegation
+    document.addEventListener('click', async function(e) {
+        const target = e.target.closest('[data-confirm]');
+        if (target) {
+            e.preventDefault();
+            const message = target.getAttribute('data-confirm');
+            const confirmed = await SW.confirm.show({ message });
+            if (confirmed) {
+                const href = target.getAttribute('href');
+                if (href) window.location.href = href;
+            }
         }
     });
     
