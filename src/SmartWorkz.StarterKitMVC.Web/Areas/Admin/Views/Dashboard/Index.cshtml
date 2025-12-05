@@ -8,9 +8,9 @@
     </button>
 }
 
-<!-- Stats Row -->
+<!-- Stats Row with AOS animations -->
 <div class="row g-4 mb-4">
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6" data-aos="fade-up" data-aos-delay="0">
         <div class="card admin-card stat-card primary">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -29,7 +29,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
         <div class="card admin-card stat-card success">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -48,7 +48,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
         <div class="card admin-card stat-card warning">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -67,7 +67,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
         <div class="card admin-card stat-card info">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -88,39 +88,101 @@
     </div>
 </div>
 
-<!-- Charts Row -->
+<!-- Main Charts Row -->
 <div class="row g-4 mb-4">
-    <div class="col-lg-8">
+    <div class="col-lg-8" data-aos="fade-right">
         <div class="card admin-card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-graph-up me-2"></i>Activity Overview</span>
-                <div class="btn-group btn-group-sm">
-                    <button class="btn btn-outline-secondary active">Week</button>
-                    <button class="btn btn-outline-secondary">Month</button>
-                    <button class="btn btn-outline-secondary">Year</button>
+                <span><i class="bi bi-graph-up me-2"></i>Activity Overview (Line Chart)</span>
+                <div class="btn-group btn-group-sm" id="lineChartPeriod">
+                    <button class="btn btn-outline-secondary active" data-period="week">Week</button>
+                    <button class="btn btn-outline-secondary" data-period="month">Month</button>
+                    <button class="btn btn-outline-secondary" data-period="year">Year</button>
                 </div>
             </div>
             <div class="card-body">
-                <div class="chart-container d-flex align-items-center justify-content-center text-muted">
-                    <div class="text-center">
-                        <i class="bi bi-bar-chart fs-1 mb-2 d-block"></i>
-                        <p>Chart placeholder - integrate Chart.js or ApexCharts</p>
-                    </div>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="lineChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-4">
+    <div class="col-lg-4" data-aos="fade-left">
         <div class="card admin-card">
             <div class="card-header">
-                <i class="bi bi-pie-chart me-2"></i>Traffic Sources
+                <i class="bi bi-pie-chart me-2"></i>Traffic Sources (Doughnut)
             </div>
             <div class="card-body">
-                <div class="chart-container d-flex align-items-center justify-content-center text-muted">
-                    <div class="text-center">
-                        <i class="bi bi-pie-chart fs-1 mb-2 d-block"></i>
-                        <p>Pie chart placeholder</p>
-                    </div>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="doughnutChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Charts Row -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-6" data-aos="fade-up">
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-bar-chart me-2"></i>Monthly Revenue (Bar Chart)
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="height: 280px;">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-graph-up-arrow me-2"></i>User Growth (Area Chart)
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="height: 280px;">
+                    <canvas id="areaChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- More Chart Types -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-4" data-aos="zoom-in">
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-pie-chart-fill me-2"></i>Device Usage (Pie)
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="height: 250px;">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4" data-aos="zoom-in" data-aos-delay="100">
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-radar me-2"></i>Performance (Radar)
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="height: 250px;">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4" data-aos="zoom-in" data-aos-delay="200">
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-bullseye me-2"></i>Categories (Polar Area)
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="height: 250px;">
+                    <canvas id="polarChart"></canvas>
                 </div>
             </div>
         </div>
@@ -247,3 +309,164 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const colors = Admin.charts.getColors();
+    
+    // Line Chart - Activity Overview
+    Admin.charts.line('lineChart', {
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Users',
+                data: [65, 59, 80, 81, 56, 55, 40],
+                borderColor: colors.primary,
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                fill: true,
+                tension: 0.4
+            }, {
+                label: 'Sessions',
+                data: [28, 48, 40, 19, 86, 27, 90],
+                borderColor: colors.success,
+                backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        }
+    });
+    
+    // Doughnut Chart - Traffic Sources
+    Admin.charts.doughnut('doughnutChart', {
+        data: {
+            labels: ['Direct', 'Organic', 'Referral', 'Social'],
+            datasets: [{
+                data: [35, 30, 20, 15],
+                backgroundColor: [colors.primary, colors.success, colors.warning, colors.info],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            cutout: '70%',
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+    
+    // Bar Chart - Monthly Revenue
+    Admin.charts.bar('barChart', {
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Revenue ($)',
+                data: [12000, 19000, 15000, 25000, 22000, 30000],
+                backgroundColor: [
+                    colors.primary,
+                    colors.success,
+                    colors.warning,
+                    colors.info,
+                    colors.purple,
+                    colors.teal
+                ],
+                borderRadius: 8
+            }]
+        }
+    });
+    
+    // Area Chart - User Growth
+    Admin.charts.area('areaChart', {
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'New Users',
+                data: [150, 230, 180, 290, 350, 420],
+                borderColor: colors.success,
+                backgroundColor: 'rgba(25, 135, 84, 0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        }
+    });
+    
+    // Pie Chart - Device Usage
+    Admin.charts.pie('pieChart', {
+        data: {
+            labels: ['Desktop', 'Mobile', 'Tablet'],
+            datasets: [{
+                data: [55, 35, 10],
+                backgroundColor: [colors.primary, colors.warning, colors.info],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+    
+    // Radar Chart - Performance
+    Admin.charts.radar('radarChart', {
+        data: {
+            labels: ['Speed', 'Reliability', 'Security', 'Scalability', 'UX', 'Support'],
+            datasets: [{
+                label: 'Current',
+                data: [85, 90, 95, 80, 88, 92],
+                borderColor: colors.primary,
+                backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                pointBackgroundColor: colors.primary
+            }, {
+                label: 'Target',
+                data: [90, 95, 98, 90, 92, 95],
+                borderColor: colors.success,
+                backgroundColor: 'rgba(25, 135, 84, 0.2)',
+                pointBackgroundColor: colors.success
+            }]
+        },
+        options: {
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+    
+    // Polar Area Chart - Categories
+    Admin.charts.polarArea('polarChart', {
+        data: {
+            labels: ['Users', 'Tenants', 'Settings', 'LOV', 'Notifications'],
+            datasets: [{
+                data: [1250, 18, 45, 120, 89],
+                backgroundColor: [
+                    'rgba(13, 110, 253, 0.7)',
+                    'rgba(25, 135, 84, 0.7)',
+                    'rgba(255, 193, 7, 0.7)',
+                    'rgba(13, 202, 240, 0.7)',
+                    'rgba(111, 66, 193, 0.7)'
+                ]
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+    
+    // Period toggle for line chart
+    document.getElementById('lineChartPeriod')?.addEventListener('click', function(e) {
+        if (e.target.matches('button')) {
+            this.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            // TODO: Update chart data based on period
+        }
+    });
+});
+</script>
+}

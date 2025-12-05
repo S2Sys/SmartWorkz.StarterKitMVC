@@ -1,0 +1,168 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.RoleFormViewModel
+@{
+    ViewData["Title"] = "Edit Role";
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <form asp-action="RoleEdit" asp-route-id="@Model.Id" method="post">
+            <input type="hidden" asp-for="Id" />
+            
+            <div class="card admin-card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-shield me-2"></i>Role Information
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="form-label">Role Name <span class="text-danger">*</span></label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter role name" readonly="@Model.IsSystemRole">
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                            @if (Model.IsSystemRole)
+                            {
+                                <small class="text-muted">System role names cannot be changed.</small>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="TenantId" class="form-label">Tenant</label>
+                            <select asp-for="TenantId" class="form-select" disabled="@Model.IsSystemRole">
+                                <option value="">Global (All Tenants)</option>
+                                <option value="default">Default Tenant</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="2" placeholder="Enter role description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card admin-card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-key me-2"></i>Permissions</span>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="selectAllPermissions()">Select All</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAllPermissions()">Deselect All</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @foreach (var group in Model.PermissionGroups)
+                    {
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">
+                                @group.Category
+                                <button type="button" class="btn btn-sm btn-link p-0 ms-2" onclick="toggleGroup('@group.Category')">Toggle</button>
+                            </h6>
+                            <div class="row" data-group="@group.Category">
+                                @foreach (var permission in group.Permissions)
+                                {
+                                    <div class="col-md-6 col-lg-4 mb-2">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input permission-checkbox" name="SelectedPermissionIds" 
+                                                   value="@permission.Id" id="perm_@permission.Id" @(permission.IsSelected ? "checked" : "")>
+                                            <label class="form-check-label" for="perm_@permission.Id">
+                                                @permission.DisplayName
+                                                @if (!string.IsNullOrEmpty(permission.Description))
+                                                {
+                                                    <i class="bi bi-info-circle text-muted ms-1" title="@permission.Description"></i>
+                                                }
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-lg me-1"></i>Save Changes
+                </button>
+                <a asp-action="Roles" class="btn btn-secondary">
+                    <i class="bi bi-x-lg me-1"></i>Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-4">
+        <div class="card admin-card mb-4">
+            <div class="card-header">
+                <i class="bi bi-shield-check me-2"></i>Role Info
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Role Type</label>
+                    <div>
+                        @if (Model.IsSystemRole)
+                        {
+                            <span class="badge bg-info">System Role</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-primary">Custom Role</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        @if (!Model.IsSystemRole)
+        {
+            <div class="card admin-card">
+                <div class="card-header">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Danger Zone
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted">Deleting this role will remove it from all users.</p>
+                    <button type="button" class="btn btn-outline-danger btn-sm w-100" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="bi bi-trash me-1"></i>Delete Role
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete role <strong>@Model.Name</strong>?</p>
+                <p class="text-danger mb-0"><small>Users with this role will lose associated permissions.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="RoleDelete" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@Model.Id">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function selectAllPermissions() {
+            document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = true);
+        }
+        function deselectAllPermissions() {
+            document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = false);
+        }
+        function toggleGroup(groupName) {
+            const checkboxes = document.querySelectorAll(`[data-group="${groupName}"] .permission-checkbox`);
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            checkboxes.forEach(cb => cb.checked = !allChecked);
+        }
+    </script>
+}

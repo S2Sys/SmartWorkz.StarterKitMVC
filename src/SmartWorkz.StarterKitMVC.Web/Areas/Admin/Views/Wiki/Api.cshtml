@@ -1,0 +1,158 @@
+@{
+    ViewData["Title"] = "API Reference";
+}
+
+<div class="row">
+    <div class="col-lg-9">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-braces me-2"></i>API Overview</h5>
+            </div>
+            <div class="card-body">
+                <p>StarterKitMVC provides a RESTful API for programmatic access.</p>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded text-center">
+                            <h4 class="text-primary mb-0">REST</h4>
+                            <small class="text-muted">API Style</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded text-center">
+                            <h4 class="text-success mb-0">JSON</h4>
+                            <small class="text-muted">Data Format</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded text-center">
+                            <h4 class="text-warning mb-0">JWT</h4>
+                            <small class="text-muted">Authentication</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4" id="api-auth">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-key me-2"></i>Authentication</h5>
+            </div>
+            <div class="card-body">
+                <h6>Login Endpoint</h6>
+                <p><span class="badge bg-success">POST</span> <code>/api/v1/auth/login</code></p>
+                <pre class="bg-dark text-light p-3 rounded mb-3"><code>// Request
+{ "email": "user@example.com", "password": "Password123!" }
+
+// Response
+{ "accessToken": "eyJ...", "refreshToken": "...", "expiresIn": 3600 }</code></pre>
+                
+                <h6>Using Token</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>Authorization: Bearer eyJhbGciOiJIUzI1NiIs...</code></pre>
+            </div>
+        </div>
+
+        <div class="card mb-4" id="users-api">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-people me-2"></i>Users API</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge bg-primary">GET</span></td><td><code>/api/v1/users</code></td><td>List all users</td></tr>
+                        <tr><td><span class="badge bg-primary">GET</span></td><td><code>/api/v1/users/{id}</code></td><td>Get user by ID</td></tr>
+                        <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/v1/users</code></td><td>Create user</td></tr>
+                        <tr><td><span class="badge bg-warning">PUT</span></td><td><code>/api/v1/users/{id}</code></td><td>Update user</td></tr>
+                        <tr><td><span class="badge bg-danger">DELETE</span></td><td><code>/api/v1/users/{id}</code></td><td>Delete user</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card mb-4" id="tenants-api">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-building me-2"></i>Tenants API</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge bg-primary">GET</span></td><td><code>/api/v1/tenants</code></td><td>List tenants</td></tr>
+                        <tr><td><span class="badge bg-primary">GET</span></td><td><code>/api/v1/tenants/{id}</code></td><td>Get tenant</td></tr>
+                        <tr><td><span class="badge bg-success">POST</span></td><td><code>/api/v1/tenants</code></td><td>Create tenant</td></tr>
+                        <tr><td><span class="badge bg-warning">PUT</span></td><td><code>/api/v1/tenants/{id}</code></td><td>Update tenant</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card mb-4" id="response-codes">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Response Codes</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr><th>Code</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge bg-success">200</span></td><td>Success</td></tr>
+                        <tr><td><span class="badge bg-success">201</span></td><td>Created</td></tr>
+                        <tr><td><span class="badge bg-warning">400</span></td><td>Bad Request - Invalid input</td></tr>
+                        <tr><td><span class="badge bg-warning">401</span></td><td>Unauthorized - Invalid token</td></tr>
+                        <tr><td><span class="badge bg-warning">403</span></td><td>Forbidden - No permission</td></tr>
+                        <tr><td><span class="badge bg-warning">404</span></td><td>Not Found</td></tr>
+                        <tr><td><span class="badge bg-danger">500</span></td><td>Server Error</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" id="error-format">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Error Response Format</h5>
+            </div>
+            <div class="card-body">
+                <pre class="bg-dark text-light p-3 rounded"><code>{
+  "type": "ValidationError",
+  "title": "One or more validation errors occurred",
+  "status": 400,
+  "errors": {
+    "email": ["Email is required", "Invalid email format"],
+    "password": ["Password must be at least 8 characters"]
+  },
+  "traceId": "00-abc123-def456-00"
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-list-ul me-2"></i>On This Page</h6>
+            </div>
+            <div class="card-body p-0">
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="#api-auth">Authentication</a>
+                    <a class="nav-link" href="#users-api">Users API</a>
+                    <a class="nav-link" href="#tenants-api">Tenants API</a>
+                    <a class="nav-link" href="#response-codes">Response Codes</a>
+                    <a class="nav-link" href="#error-format">Error Format</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<style>
+    pre code { font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.8rem; }
+    .nav-link { padding: 0.5rem 1rem; color: inherit; border-left: 2px solid transparent; }
+    .nav-link:hover { background-color: rgba(0,0,0,0.05); border-left-color: var(--bs-primary); }
+</style>
+}

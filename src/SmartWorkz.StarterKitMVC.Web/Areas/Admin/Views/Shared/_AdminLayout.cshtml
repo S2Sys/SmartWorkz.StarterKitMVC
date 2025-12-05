@@ -60,11 +60,34 @@
             <div class="nav-section">
                 <span class="nav-section-title">Management</span>
                 <ul class="nav flex-column">
+                    <!-- Identity with submenu -->
                     <li class="nav-item">
-                        <a class="nav-link @(currentController == "Identity" ? "active" : "")" asp-area="Admin" asp-controller="Identity" asp-action="Index">
+                        <a class="nav-link @(currentController == "Identity" ? "active" : "")" data-bs-toggle="collapse" href="#identityMenu" role="button" aria-expanded="@(currentController == "Identity" ? "true" : "false")">
                             <i class="bi bi-people"></i>
                             <span>Identity</span>
                         </a>
+                        <div class="collapse @(currentController == "Identity" ? "show" : "")" id="identityMenu">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentAction == "Users" ? "active" : "")" asp-area="Admin" asp-controller="Identity" asp-action="Users">
+                                        <i class="bi bi-person"></i>
+                                        <span>Users</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentAction == "Roles" ? "active" : "")" asp-area="Admin" asp-controller="Identity" asp-action="Roles">
+                                        <i class="bi bi-shield"></i>
+                                        <span>Roles</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentAction == "Claims" ? "active" : "")" asp-area="Admin" asp-controller="Identity" asp-action="Claims">
+                                        <i class="bi bi-key"></i>
+                                        <span>Claims</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link @(currentController == "Tenants" ? "active" : "")" asp-area="Admin" asp-controller="Tenants" asp-action="Index">
@@ -101,6 +124,64 @@
                             <i class="bi bi-palette"></i>
                             <span>Theme</span>
                         </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <span class="nav-section-title">Resources</span>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link @(currentController == "Wiki" ? "active" : "")" data-bs-toggle="collapse" href="#wikiMenu" role="button" aria-expanded="@(currentController == "Wiki" ? "true" : "false")">
+                            <i class="bi bi-book"></i>
+                            <span>Documentation</span>
+                        </a>
+                        <div class="collapse @(currentController == "Wiki" ? "show" : "")" id="wikiMenu">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentAction == "Index" && currentController == "Wiki" ? "active" : "")" asp-area="Admin" asp-controller="Wiki" asp-action="Index">
+                                        <i class="bi bi-house"></i>
+                                        <span>Overview</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentAction == "GettingStarted" ? "active" : "")" asp-area="Admin" asp-controller="Wiki" asp-action="GettingStarted">
+                                        <i class="bi bi-rocket-takeoff"></i>
+                                        <span>Getting Started</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentAction == "Configuration" ? "active" : "")" asp-area="Admin" asp-controller="Wiki" asp-action="Configuration">
+                                        <i class="bi bi-gear"></i>
+                                        <span>Configuration</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentAction == "Architecture" ? "active" : "")" asp-area="Admin" asp-controller="Wiki" asp-action="Architecture">
+                                        <i class="bi bi-diagram-3"></i>
+                                        <span>Architecture</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentAction == "Database" ? "active" : "")" asp-area="Admin" asp-controller="Wiki" asp-action="Database">
+                                        <i class="bi bi-database"></i>
+                                        <span>Database</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentAction == "Security" ? "active" : "")" asp-area="Admin" asp-controller="Wiki" asp-action="Security">
+                                        <i class="bi bi-shield-lock"></i>
+                                        <span>Security</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentAction == "Api" ? "active" : "")" asp-area="Admin" asp-controller="Wiki" asp-action="Api">
+                                        <i class="bi bi-braces"></i>
+                                        <span>API Reference</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                 </ul>
             </div>

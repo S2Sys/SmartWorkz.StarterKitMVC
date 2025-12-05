@@ -1,0 +1,396 @@
+@{
+    ViewData["Title"] = "Architecture";
+}
+
+<div class="row">
+    <div class="col-lg-9">
+        <!-- Overview -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-diagram-3 me-2"></i>Clean Architecture Overview</h5>
+            </div>
+            <div class="card-body">
+                <p>StarterKitMVC follows <strong>Clean Architecture</strong> principles, organizing code into distinct layers with clear dependencies flowing inward.</p>
+                
+                <div class="text-center my-4">
+                    <div class="architecture-diagram">
+                        <div class="layer layer-domain">
+                            <strong>Domain</strong>
+                            <small>Entities, Value Objects, Domain Events</small>
+                        </div>
+                        <div class="layer layer-application">
+                            <strong>Application</strong>
+                            <small>Use Cases, DTOs, Interfaces</small>
+                        </div>
+                        <div class="layer layer-infrastructure">
+                            <strong>Infrastructure</strong>
+                            <small>Data Access, External Services</small>
+                        </div>
+                        <div class="layer layer-presentation">
+                            <strong>Presentation (Web)</strong>
+                            <small>Controllers, Views, APIs</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Key Principle:</strong> Dependencies always point inward. The Domain layer has no dependencies on other layers.
+                </div>
+            </div>
+        </div>
+
+        <!-- Layer Details -->
+        <div class="card mb-4" id="domain-layer">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-box me-2"></i>Domain Layer</h5>
+            </div>
+            <div class="card-body">
+                <p>The innermost layer containing enterprise business rules and entities.</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-folder me-2"></i>Structure</h6>
+                        <pre class="bg-light p-3 rounded"><code>Domain/
+├── Entities/
+│   ├── BaseEntity.cs
+│   ├── User.cs
+│   ├── Tenant.cs
+│   └── AuditableEntity.cs
+├── ValueObjects/
+│   ├── Email.cs
+│   ├── Money.cs
+│   └── Address.cs
+├── Events/
+│   ├── IDomainEvent.cs
+│   └── UserCreatedEvent.cs
+└── Exceptions/
+    └── DomainException.cs</code></pre>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-code-slash me-2"></i>Example Entity</h6>
+                        <pre class="bg-dark text-light p-3 rounded"><code>public class User : BaseEntity
+{
+    public string Email { get; private set; }
+    public string PasswordHash { get; private set; }
+    public bool IsActive { get; private set; }
+    
+    public void Activate()
+    {
+        IsActive = true;
+        AddDomainEvent(new UserActivatedEvent(Id));
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4" id="application-layer">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Application Layer</h5>
+            </div>
+            <div class="card-body">
+                <p>Contains application business rules, use cases, and orchestration logic.</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-folder me-2"></i>Structure</h6>
+                        <pre class="bg-light p-3 rounded"><code>Application/
+├── Abstractions/
+│   ├── IRepository.cs
+│   ├── IUnitOfWork.cs
+│   ├── IEmailService.cs
+│   └── ICurrentUser.cs
+├── DTOs/
+│   ├── UserDto.cs
+│   └── CreateUserRequest.cs
+├── Services/
+│   ├── IUserService.cs
+│   └── UserService.cs
+├── Validators/
+│   └── CreateUserValidator.cs
+└── Mappings/
+    └── UserMappings.cs</code></pre>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-code-slash me-2"></i>Example Service</h6>
+                        <pre class="bg-dark text-light p-3 rounded"><code>public class UserService : IUserService
+{
+    private readonly IRepository&lt;User&gt; _repo;
+    private readonly IUnitOfWork _uow;
+    
+    public async Task&lt;UserDto&gt; CreateAsync(
+        CreateUserRequest request)
+    {
+        var user = new User(
+            request.Email,
+            request.Password);
+            
+        await _repo.AddAsync(user);
+        await _uow.SaveChangesAsync();
+        
+        return user.ToDto();
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4" id="infrastructure-layer">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="bi bi-hdd me-2"></i>Infrastructure Layer</h5>
+            </div>
+            <div class="card-body">
+                <p>Implements interfaces defined in Application layer. Contains data access, external services, and framework-specific code.</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-folder me-2"></i>Structure</h6>
+                        <pre class="bg-light p-3 rounded"><code>Infrastructure/
+├── Data/
+│   ├── AppDbContext.cs
+│   ├── Configurations/
+│   │   └── UserConfiguration.cs
+│   └── Migrations/
+├── Repositories/
+│   ├── Repository.cs
+│   └── UserRepository.cs
+├── Services/
+│   ├── EmailService.cs
+│   ├── StorageService.cs
+│   └── CacheService.cs
+├── Identity/
+│   └── IdentityService.cs
+└── Telemetry/
+    └── TelemetryService.cs</code></pre>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-code-slash me-2"></i>Example Repository</h6>
+                        <pre class="bg-dark text-light p-3 rounded"><code>public class Repository&lt;T&gt; : IRepository&lt;T&gt;
+    where T : BaseEntity
+{
+    private readonly AppDbContext _context;
+    
+    public async Task&lt;T?&gt; GetByIdAsync(Guid id)
+    {
+        return await _context.Set&lt;T&gt;()
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+    
+    public async Task AddAsync(T entity)
+    {
+        await _context.Set&lt;T&gt;().AddAsync(entity);
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4" id="presentation-layer">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-window me-2"></i>Presentation Layer (Web)</h5>
+            </div>
+            <div class="card-body">
+                <p>The outermost layer containing UI, controllers, and API endpoints.</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-folder me-2"></i>Structure</h6>
+                        <pre class="bg-light p-3 rounded"><code>Web/
+├── Areas/
+│   └── Admin/
+│       ├── Controllers/
+│       └── Views/
+├── Controllers/
+│   ├── HomeController.cs
+│   └── AccountController.cs
+├── Views/
+│   ├── Home/
+│   ├── Account/
+│   └── Shared/
+├── wwwroot/
+│   ├── css/
+│   ├── js/
+│   └── images/
+├── Middleware/
+│   └── ExceptionMiddleware.cs
+└── Program.cs</code></pre>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-code-slash me-2"></i>Example Controller</h6>
+                        <pre class="bg-dark text-light p-3 rounded"><code>public class UsersController : Controller
+{
+    private readonly IUserService _userService;
+    
+    public UsersController(IUserService userService)
+    {
+        _userService = userService;
+    }
+    
+    [HttpGet]
+    public async Task&lt;IActionResult&gt; Index()
+    {
+        var users = await _userService
+            .GetAllAsync();
+        return View(users);
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dependency Injection -->
+        <div class="card mb-4" id="dependency-injection">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-plug me-2"></i>Dependency Injection</h5>
+            </div>
+            <div class="card-body">
+                <p>Services are registered in <code>Program.cs</code> following the dependency inversion principle:</p>
+                
+                <pre class="bg-dark text-light p-3 rounded"><code>// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+
+// Application Services
+builder.Services.AddScoped&lt;IUserService, UserService&gt;();
+builder.Services.AddScoped&lt;ITenantService, TenantService&gt;();
+
+// Infrastructure Services
+builder.Services.AddScoped&lt;IRepository&lt;&gt;, Repository&lt;&gt;&gt;();
+builder.Services.AddScoped&lt;IUnitOfWork, UnitOfWork&gt;();
+builder.Services.AddScoped&lt;IEmailService, SmtpEmailService&gt;();
+builder.Services.AddScoped&lt;IStorageService, LocalStorageService&gt;();
+
+// DbContext
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =>
+    options.UseSqlServer(connectionString));
+
+// Identity
+builder.Services.AddIdentity&lt;ApplicationUser, ApplicationRole&gt;()
+    .AddEntityFrameworkStores&lt;AppDbContext&gt;()
+    .AddDefaultTokenProviders();</code></pre>
+            </div>
+        </div>
+
+        <!-- Design Patterns -->
+        <div class="card" id="design-patterns">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-puzzle me-2"></i>Design Patterns Used</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded">
+                            <h6><i class="bi bi-database me-2 text-primary"></i>Repository Pattern</h6>
+                            <p class="text-muted small mb-0">Abstracts data access logic, making it easier to swap data sources.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded">
+                            <h6><i class="bi bi-save me-2 text-success"></i>Unit of Work</h6>
+                            <p class="text-muted small mb-0">Manages transactions across multiple repositories.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded">
+                            <h6><i class="bi bi-arrow-left-right me-2 text-info"></i>Mediator (CQRS)</h6>
+                            <p class="text-muted small mb-0">Separates read and write operations for better scalability.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded">
+                            <h6><i class="bi bi-funnel me-2 text-warning"></i>Specification Pattern</h6>
+                            <p class="text-muted small mb-0">Encapsulates query logic in reusable specifications.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded">
+                            <h6><i class="bi bi-layers me-2 text-danger"></i>Decorator Pattern</h6>
+                            <p class="text-muted small mb-0">Adds cross-cutting concerns like caching and logging.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded">
+                            <h6><i class="bi bi-building me-2 text-secondary"></i>Factory Pattern</h6>
+                            <p class="text-muted small mb-0">Creates complex objects with proper initialization.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-3">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-list-ul me-2"></i>On This Page</h6>
+            </div>
+            <div class="card-body p-0">
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="#domain-layer">Domain Layer</a>
+                    <a class="nav-link" href="#application-layer">Application Layer</a>
+                    <a class="nav-link" href="#infrastructure-layer">Infrastructure Layer</a>
+                    <a class="nav-link" href="#presentation-layer">Presentation Layer</a>
+                    <a class="nav-link" href="#dependency-injection">Dependency Injection</a>
+                    <a class="nav-link" href="#design-patterns">Design Patterns</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<style>
+    .architecture-diagram {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+    }
+    .layer {
+        padding: 1rem 3rem;
+        text-align: center;
+        color: white;
+        width: 100%;
+        max-width: 400px;
+    }
+    .layer small {
+        display: block;
+        opacity: 0.8;
+        font-size: 0.8rem;
+    }
+    .layer-domain {
+        background: #6366f1;
+        border-radius: 50% 50% 0 0;
+        padding-top: 2rem;
+    }
+    .layer-application {
+        background: #10b981;
+    }
+    .layer-infrastructure {
+        background: #f59e0b;
+    }
+    .layer-presentation {
+        background: #06b6d4;
+        border-radius: 0 0 1rem 1rem;
+        padding-bottom: 1.5rem;
+    }
+    pre code {
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 0.8rem;
+    }
+    .nav-link {
+        padding: 0.5rem 1rem;
+        color: inherit;
+        border-left: 2px solid transparent;
+    }
+    .nav-link:hover {
+        background-color: rgba(0,0,0,0.05);
+        border-left-color: var(--bs-primary);
+    }
+</style>
+}

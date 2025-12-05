@@ -1,3 +1,108 @@
-@{ ViewData["Title"] = "Roles"; }
-<h1>Roles</h1>
-<p>Wire IIdentityAdminService.GetRolesAsync here.</p>
+@model List<SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.RoleListViewModel>
+@{
+    ViewData["Title"] = "Roles";
+}
+
+@section PageActions {
+    <a asp-action="RoleCreate" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>Add Role
+    </a>
+}
+
+<div class="card admin-card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Role Name</th>
+                        <th>Description</th>
+                        <th>Users</th>
+                        <th>Type</th>
+                        <th>Created</th>
+                        <th style="width: 120px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var role in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-medium">@role.Name</div>
+                            </td>
+                            <td>
+                                <span class="text-muted">@(role.Description ?? "-")</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">@role.UserCount users</span>
+                            </td>
+                            <td>
+                                @if (role.IsSystemRole)
+                                {
+                                    <span class="badge bg-info">System</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-primary">Custom</span>
+                                }
+                            </td>
+                            <td>
+                                <span title="@role.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")">
+                                    @role.CreatedAt.ToString("MMM dd, yyyy")
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="RoleEdit" asp-route-id="@role.Id" class="btn btn-outline-secondary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    @if (!role.IsSystemRole)
+                                    {
+                                        <button type="button" class="btn btn-outline-danger" title="Delete"
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                data-id="@role.Id" data-name="@role.Name">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete role <strong id="deleteRoleName"></strong>?</p>
+                <p class="text-danger mb-0"><small>Users with this role will lose associated permissions.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="RoleDelete" method="post" class="d-inline">
+                    <input type="hidden" name="id" id="deleteRoleId">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('deleteModal')?.addEventListener('show.bs.modal', function(e) {
+        const button = e.relatedTarget;
+        document.getElementById('deleteRoleId').value = button.dataset.id;
+        document.getElementById('deleteRoleName').textContent = button.dataset.name;
+    });
+</script>
+}

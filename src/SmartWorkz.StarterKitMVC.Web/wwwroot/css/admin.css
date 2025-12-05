@@ -198,6 +198,46 @@
     opacity: 1;
 }
 
+/* Multi-Level Menu */
+.sidebar-nav .nav-link[data-bs-toggle="collapse"] {
+    position: relative;
+}
+
+.sidebar-nav .nav-link[data-bs-toggle="collapse"]::after {
+    content: '\F285';
+    font-family: 'bootstrap-icons';
+    position: absolute;
+    right: 1.25rem;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-nav .nav-link[data-bs-toggle="collapse"][aria-expanded="true"]::after {
+    transform: rotate(90deg);
+}
+
+.sidebar-nav .collapse,
+.sidebar-nav .collapsing {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-nav .collapse .nav-link,
+.sidebar-nav .collapsing .nav-link {
+    padding-left: 3rem;
+    font-size: 0.85rem;
+}
+
+.sidebar-nav .collapse .nav-link i,
+.sidebar-nav .collapsing .nav-link i {
+    font-size: 1rem;
+}
+
+/* Third level menu */
+.sidebar-nav .collapse .collapse .nav-link,
+.sidebar-nav .collapse .collapsing .nav-link {
+    padding-left: 4rem;
+    font-size: 0.8rem;
+}
+
 /* Sidebar Footer */
 .sidebar-footer {
     padding: 1rem 1.25rem;

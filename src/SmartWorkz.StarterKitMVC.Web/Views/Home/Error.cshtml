@@ -1,0 +1,147 @@
+@{
+    ViewData["Title"] = $"Error {ViewBag.ErrorCode}";
+    var errorCode = (int)ViewBag.ErrorCode;
+    var errorMessage = (string)ViewBag.ErrorMessage;
+    
+    var errorIcon = errorCode switch
+    {
+        404 => "bi-search",
+        401 => "bi-lock",
+        403 => "bi-shield-x",
+        500 => "bi-exclamation-triangle",
+        503 => "bi-cloud-slash",
+        _ => "bi-x-circle"
+    };
+    
+    var errorColor = errorCode switch
+    {
+        404 => "warning",
+        401 or 403 => "danger",
+        _ => "danger"
+    };
+}
+
+<section class="min-vh-100 d-flex align-items-center py-5" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <!-- Error Animation -->
+                <div class="error-animation mb-4">
+                    <div class="error-icon bg-@errorColor bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                        <i class="bi @errorIcon text-@errorColor" style="font-size: 4rem;"></i>
+                    </div>
+                </div>
+                
+                <!-- Error Code -->
+                <h1 class="display-1 fw-bold text-white mb-3">
+                    <span class="error-code">@errorCode</span>
+                </h1>
+                
+                <!-- Error Message -->
+                <h2 class="h3 text-white-50 mb-4">@errorMessage</h2>
+                
+                <!-- Description -->
+                <p class="lead text-white-50 mb-5">
+                    @switch (errorCode)
+                    {
+                        case 404:
+                            <text>The page you're looking for doesn't exist or has been moved.</text>
+                            break;
+                        case 401:
+                            <text>You need to be logged in to access this page.</text>
+                            break;
+                        case 403:
+                            <text>You don't have permission to access this resource.</text>
+                            break;
+                        case 500:
+                            <text>Something went wrong on our end. We're working to fix it.</text>
+                            break;
+                        case 503:
+                            <text>The service is temporarily unavailable. Please try again later.</text>
+                            break;
+                        default:
+                            <text>An unexpected error occurred. Please try again.</text>
+                            break;
+                    }
+                </p>
+                
+                <!-- Action Buttons -->
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-warning btn-lg px-4">
+                        <i class="bi bi-house me-2"></i>Go Home
+                    </a>
+                    <button onclick="history.back()" class="btn btn-outline-light btn-lg px-4">
+                        <i class="bi bi-arrow-left me-2"></i>Go Back
+                    </button>
+                    @if (errorCode == 401)
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                        </a>
+                    }
+                </div>
+                
+                <!-- Search Box for 404 -->
+                @if (errorCode == 404)
+                {
+                    <div class="mt-5">
+                        <p class="text-white-50 mb-3">Or try searching for what you need:</p>
+                        <form asp-controller="Home" asp-action="Search" method="get" class="d-flex justify-content-center">
+                            <div class="input-group" style="max-width: 400px;">
+                                <input type="search" name="q" class="form-control form-control-lg" placeholder="Search...">
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                }
+                
+                <!-- Help Links -->
+                <div class="mt-5 pt-4 border-top border-secondary">
+                    <p class="text-white-50 mb-3">Need help?</p>
+                    <div class="d-flex justify-content-center gap-4">
+                        <a asp-controller="Home" asp-action="Contact" class="text-white-50 text-decoration-none">
+                            <i class="bi bi-envelope me-1"></i>Contact Support
+                        </a>
+                        <a href="#" class="text-white-50 text-decoration-none">
+                            <i class="bi bi-book me-1"></i>Documentation
+                        </a>
+                        <a href="https://github.com/S2Sys/SmartWorkz.StarterKitMVC/issues" target="_blank" class="text-white-50 text-decoration-none">
+                            <i class="bi bi-github me-1"></i>Report Issue
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+<style>
+.error-animation {
+    animation: float 3s ease-in-out infinite;
+}
+
+@@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.error-code {
+    background: linear-gradient(135deg, #ffc107, #ff9800);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.error-icon {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+</style>
+}

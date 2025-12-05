@@ -1,0 +1,198 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.TenantDetailsViewModel
+@{
+    ViewData["Title"] = "Tenant Details";
+}
+
+@section PageActions {
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-sm">
+        <i class="bi bi-pencil me-1"></i>Edit
+    </a>
+}
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card admin-card mb-4">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-building display-4 text-primary"></i>
+                </div>
+                <h4 class="mb-1">@Model.Name</h4>
+                <p class="text-muted mb-3">@Model.Id</p>
+                
+                @if (Model.IsActive)
+                {
+                    <span class="badge bg-success fs-6">Active</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger fs-6">Inactive</span>
+                }
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-around text-center">
+                    <div>
+                        <div class="fw-bold">@Model.CurrentUserCount</div>
+                        <small class="text-muted">Users</small>
+                    </div>
+                    <div>
+                        <div class="fw-bold">@(Model.MaxUsers == 0 ? "∞" : Model.MaxUsers.ToString())</div>
+                        <small class="text-muted">Max Users</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card admin-card mb-4">
+            <div class="card-header">
+                <i class="bi bi-lightning me-2"></i>Quick Actions
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="Branding" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-palette me-1"></i>Edit Branding
+                    </a>
+                    <a asp-action="Settings" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-gear me-1"></i>Tenant Settings
+                    </a>
+                    <a asp-controller="Identity" asp-action="Users" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-people me-1"></i>Manage Users
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Features.Any())
+        {
+            <div class="card admin-card">
+                <div class="card-header">
+                    <i class="bi bi-check2-square me-2"></i>Features
+                </div>
+                <div class="card-body">
+                    @foreach (var feature in Model.Features)
+                    {
+                        <span class="badge bg-primary me-1 mb-1">@feature</span>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card admin-card mb-4">
+            <div class="card-header">
+                <i class="bi bi-building me-2"></i>Tenant Information
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Tenant ID</label>
+                        <div class="fw-medium"><code>@Model.Id</code></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Name</label>
+                        <div class="fw-medium">@Model.Name</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Subdomain</label>
+                        <div class="fw-medium">
+                            @if (!string.IsNullOrEmpty(Model.Subdomain))
+                            {
+                                <code>@Model.Subdomain</code><span class="text-muted">.example.com</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Custom Domain</label>
+                        <div class="fw-medium">@(Model.Domain ?? "-")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Database Provider</label>
+                        <div class="fw-medium">@Model.DatabaseProvider</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Expiration Date</label>
+                        <div class="fw-medium">
+                            @if (Model.ExpirationDate.HasValue)
+                            {
+                                @Model.ExpirationDate.Value.ToString("yyyy-MM-dd")
+                            }
+                            else
+                            {
+                                <span class="text-muted">Never</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card admin-card mb-4">
+            <div class="card-header">
+                <i class="bi bi-palette me-2"></i>Branding
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small">Primary Color</label>
+                        <div class="d-flex align-items-center">
+                            <div style="width: 24px; height: 24px; background-color: @Model.Branding.PrimaryColor; border-radius: 4px; margin-right: 8px;"></div>
+                            <code>@Model.Branding.PrimaryColor</code>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small">Secondary Color</label>
+                        <div class="d-flex align-items-center">
+                            <div style="width: 24px; height: 24px; background-color: @Model.Branding.SecondaryColor; border-radius: 4px; margin-right: 8px;"></div>
+                            <code>@Model.Branding.SecondaryColor</code>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small">Accent Color</label>
+                        <div class="d-flex align-items-center">
+                            <div style="width: 24px; height: 24px; background-color: @Model.Branding.AccentColor; border-radius: 4px; margin-right: 8px;"></div>
+                            <code>@Model.Branding.AccentColor</code>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Logo URL</label>
+                        <div class="fw-medium">@(Model.Branding.LogoUrl ?? "-")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Footer Text</label>
+                        <div class="fw-medium">@(Model.Branding.FooterText ?? "-")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-clock-history me-2"></i>Activity
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Created At</label>
+                        <div class="fw-medium">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Created By</label>
+                        <div class="fw-medium">@(Model.CreatedBy ?? "System")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Updated At</label>
+                        <div class="fw-medium">@(Model.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? "-")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Updated By</label>
+                        <div class="fw-medium">@(Model.UpdatedBy ?? "-")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
