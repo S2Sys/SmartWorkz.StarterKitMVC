@@ -1,3 +1,9 @@
 @using SmartWorkz.StarterKitMVC.Web
 @using SmartWorkz.StarterKitMVC.Web.Areas.Admin
+@using SmartWorkz.StarterKitMVC.Web.Configuration
+@using SmartWorkz.StarterKitMVC.Web.Localization
+@using SmartWorkz.StarterKitMVC.Shared.Constants
+@using Microsoft.Extensions.Options
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IOptions<UISettings> UISettings
+@inject IViewLocalizer L

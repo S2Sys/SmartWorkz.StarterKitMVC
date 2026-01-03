@@ -22,4 +22,12 @@
     <ProjectReference Include="..\SmartWorkz.StarterKitMVC.Shared\SmartWorkz.StarterKitMVC.Shared.csproj" />
   </ItemGroup>
 
+  <!-- Copy DefaultResources.resx to output directory for runtime access -->
+  <ItemGroup>
+    <Content Include="Localization\Resources\DefaultResources.resx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Localization\Resources\DefaultResources.resx</Link>
+    </Content>
+  </ItemGroup>
+
 </Project>

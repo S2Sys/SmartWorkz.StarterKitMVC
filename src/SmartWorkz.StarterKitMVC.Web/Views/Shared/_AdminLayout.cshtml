@@ -47,6 +47,14 @@
                    class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "identity" ? "active" : "")">
                     <i class="bi bi-people me-2"></i><span class="sidebar-text">Identity</span>
                 </a>
+                <a asp-area="Admin" asp-controller="Permissions" asp-action="Index" 
+                   class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "permissions" ? "active" : "")">
+                    <i class="bi bi-shield-lock me-2"></i><span class="sidebar-text">Permissions</span>
+                </a>
+                <a asp-area="Admin" asp-controller="Resources" asp-action="Index" 
+                   class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "resources" ? "active" : "")">
+                    <i class="bi bi-translate me-2"></i><span class="sidebar-text">Localization</span>
+                </a>
                 <a asp-area="Admin" asp-controller="Tenants" asp-action="Index" 
                    class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "tenants" ? "active" : "")">
                     <i class="bi bi-building me-2"></i><span class="sidebar-text">Tenants</span>
@@ -55,9 +63,27 @@
                    class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "notifications" ? "active" : "")">
                     <i class="bi bi-bell me-2"></i><span class="sidebar-text">Notifications</span>
                 </a>
+                <a asp-area="Admin" asp-controller="EmailTemplates" asp-action="Index" 
+                   class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "emailtemplates" ? "active" : "")">
+                    <i class="bi bi-envelope-paper me-2"></i><span class="sidebar-text">Email Templates</span>
+                </a>
                 <a asp-area="Admin" asp-controller="Theme" asp-action="Index" 
                    class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "theme" ? "active" : "")">
                     <i class="bi bi-palette me-2"></i><span class="sidebar-text">Theme</span>
+                </a>
+                <a asp-area="Admin" asp-controller="Calendar" asp-action="Index" 
+                   class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "calendar" ? "active" : "")">
+                    <i class="bi bi-calendar3 me-2"></i><span class="sidebar-text">Calendar</span>
+                </a>
+                <a asp-area="Admin" asp-controller="Wiki" asp-action="Index" 
+                   class="list-group-item list-group-item-action bg-dark text-white border-0 @(currentController == "wiki" ? "active" : "")">
+                    <i class="bi bi-book me-2"></i><span class="sidebar-text">Documentation</span>
+                </a>
+            </div>
+            <!-- Back to Site Link -->
+            <div class="mt-auto border-top border-secondary p-2">
+                <a href="/" class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center" title="Back to Site">
+                    <i class="bi bi-box-arrow-left"></i><span class="sidebar-text ms-2">Back to Site</span>
                 </a>
             </div>
         </nav>

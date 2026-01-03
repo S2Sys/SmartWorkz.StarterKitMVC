@@ -1,0 +1,122 @@
+@model List<SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.LanguageViewModel>
+@{
+    ViewData["Title"] = "Manage Languages";
+}
+
+@section PageActions {
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-2">
+        <i class="bi bi-arrow-left me-1"></i>Back
+    </a>
+    <a asp-action="LanguageCreate" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>Add Language
+    </a>
+}
+
+<div class="card admin-card">
+    <div class="card-header">
+        <i class="bi bi-globe me-2"></i>Languages
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Language</th>
+                        <th>Code</th>
+                        <th>Native Name</th>
+                        <th>Direction</th>
+                        <th>Status</th>
+                        <th style="width: 150px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var lang in Model)
+                    {
+                        <tr>
+                            <td>
+                                <span class="fw-medium">@lang.Name</span>
+                                @if (lang.IsDefault)
+                                {
+                                    <span class="badge bg-primary ms-1">Default</span>
+                                }
+                            </td>
+                            <td><code>@lang.Code</code></td>
+                            <td>@lang.NativeName</td>
+                            <td>
+                                @if (lang.IsRtl)
+                                {
+                                    <span class="badge bg-warning">RTL</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">LTR</span>
+                                }
+                            </td>
+                            <td>
+                                @if (lang.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="Translations" asp-route-languageCode="@lang.Code" class="btn btn-outline-secondary" title="Translations">
+                                        <i class="bi bi-translate"></i>
+                                    </a>
+                                    <a asp-action="LanguageEdit" asp-route-code="@lang.Code" class="btn btn-outline-secondary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    @if (!lang.IsDefault)
+                                    {
+                                        <button type="button" class="btn btn-outline-danger" title="Delete"
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                data-code="@lang.Code" data-name="@lang.Name">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete language <strong id="deleteLanguageName"></strong>?</p>
+                <p class="text-danger mb-0"><small>All translations for this language will also be deleted.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="LanguageDelete" method="post" class="d-inline">
+                    <input type="hidden" name="code" id="deleteLanguageCode">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('deleteModal')?.addEventListener('show.bs.modal', function(e) {
+        const button = e.relatedTarget;
+        document.getElementById('deleteLanguageCode').value = button.dataset.code;
+        document.getElementById('deleteLanguageName').textContent = button.dataset.name;
+    });
+</script>
+}

@@ -1,0 +1,115 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.EmailTemplateImportViewModel
+@{
+    ViewData["Title"] = "Import Email Templates";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">
+            <i class="bi bi-upload me-2"></i>Import Email Templates
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a asp-action="Index">Email Templates</a></li>
+                <li class="breadcrumb-item active">Import</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-file-earmark-code me-2"></i>Import from JSON
+            </div>
+            <div class="card-body">
+                <form asp-action="Import" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Upload JSON File</label>
+                        <input type="file" id="fileInput" class="form-control" accept=".json">
+                        <div class="form-text">Select a previously exported JSON file</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="JsonContent" class="form-label">Or Paste JSON Content</label>
+                        <textarea asp-for="JsonContent" class="form-control font-monospace" rows="15" 
+                                  placeholder='{"templates": [...], "sections": [...]}'></textarea>
+                        <span asp-validation-for="JsonContent" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input asp-for="Overwrite" class="form-check-input" type="checkbox">
+                            <label asp-for="Overwrite" class="form-check-label">
+                                Overwrite existing templates and sections
+                            </label>
+                        </div>
+                        <div class="form-text text-warning">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            If checked, existing items with the same ID will be replaced
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-upload me-1"></i>Import
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg me-1"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="bi bi-info-circle me-2"></i>Import Format
+            </div>
+            <div class="card-body">
+                <p class="mb-2">The JSON file should have the following structure:</p>
+                <pre class="bg-light p-3 rounded"><code>{
+  "templates": [
+    {
+      "id": "template-id",
+      "name": "Template Name",
+      "subject": "Email Subject",
+      "bodyContent": "&lt;div&gt;HTML content&lt;/div&gt;",
+      "headerId": "header-id",
+      "footerId": "footer-id",
+      "placeholders": [...]
+    }
+  ],
+  "sections": [
+    {
+      "id": "section-id",
+      "name": "Section Name",
+      "type": "Header",
+      "htmlContent": "&lt;div&gt;...&lt;/div&gt;"
+    }
+  ]
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('fileInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                try {
+                    const text = await file.text();
+                    document.getElementById('JsonContent').value = text;
+                    SW.toast.success('File loaded successfully');
+                } catch (error) {
+                    SW.toast.error('Failed to read file: ' + error.message);
+                }
+            }
+        });
+    </script>
+}

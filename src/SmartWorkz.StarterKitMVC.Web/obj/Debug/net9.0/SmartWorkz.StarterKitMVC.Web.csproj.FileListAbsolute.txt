@@ -41,9 +41,7 @@ S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitM
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\rjimswa.dswa.cache.json
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\rjsmrazor.dswa.cache.json
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\rjsmcshtml.dswa.cache.json
-S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\scopedcss\Pages\Shared\_Layout.cshtml.rz.scp.css
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\scopedcss\bundle\SmartWorkz.StarterKitMVC.Web.styles.css
-S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\scopedcss\projectbundle\SmartWorkz.StarterKitMVC.Web.bundle.scp.css
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\jf8e7yic8m-{0}-mlv21k5csn-mlv21k5csn.gz
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\6usqwj2e11-{0}-87fc7y1x7t-87fc7y1x7t.gz
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\mlkcytmv42-{0}-muycvpuwrr-muycvpuwrr.gz
@@ -105,10 +103,7 @@ S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitM
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\xv1trhgqse-{0}-bqjiyaj88i-bqjiyaj88i.gz
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\cpc2jlqpws-{0}-vctx1dbcou-vctx1dbcou.gz
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\5qiw8wqzlp-{0}-61n19gt1b8-61n19gt1b8.gz
-S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\98ydeo1j5o-{0}-hobhr4r3ov-hobhr4r3ov.gz
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\tq01be7255-{0}-4yjf95k106-4yjf95k106.gz
-S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\amerblz07r-{0}-ta4kw3z633-ta4kw3z633.gz
-S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\07qevvxikg-{0}-ta4kw3z633-ta4kw3z633.gz
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\staticwebassets.build.json
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\staticwebassets.build.json.cache
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\staticwebassets.development.json
@@ -120,6 +115,7 @@ S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitM
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Web.pdb
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Web.genruntimeconfig.cache
 S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\ref\SmartWorkz.StarterKitMVC.Web.dll
-S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
-S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\pq2r8a0ty9-{0}-2upb79u0nd-2upb79u0nd.gz
-S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\l6vkkq9e5d-{0}-lvkf5rbat1-lvkf5rbat1.gz
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\98ydeo1j5o-{0}-m5izznyi0h-m5izznyi0h.gz
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\l6vkkq9e5d-{0}-rcj25z0fow-rcj25z0fow.gz
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\pq2r8a0ty9-{0}-gsac151f1b-gsac151f1b.gz
+S:\SmartWorkz\StarterKit\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Localization\Resources\DefaultResources.resx

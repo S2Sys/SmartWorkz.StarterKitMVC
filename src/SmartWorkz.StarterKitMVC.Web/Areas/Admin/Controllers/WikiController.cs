@@ -18,4 +18,8 @@ public class WikiController : Controller
     public IActionResult Security() => View();
     
     public IActionResult Api() => View();
+    
+    public IActionResult CodingStandards() => View();
+    
+    public IActionResult EmailTemplates() => View();
 }

@@ -1,0 +1,196 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.EmailTemplateFormViewModel
+
+<script>
+    let placeholderIndex = @Model.Placeholders.Count;
+    let lastFocusedInput = null;
+
+    // Track last focused input for placeholder insertion
+    document.querySelectorAll('input[type="text"], textarea').forEach(input => {
+        input.addEventListener('focus', function() {
+            lastFocusedInput = this;
+        });
+    });
+
+    function insertPlaceholder(key) {
+        if (lastFocusedInput) {
+            const start = lastFocusedInput.selectionStart;
+            const end = lastFocusedInput.selectionEnd;
+            const text = lastFocusedInput.value;
+            lastFocusedInput.value = text.substring(0, start) + key + text.substring(end);
+            lastFocusedInput.focus();
+            lastFocusedInput.setSelectionRange(start + key.length, start + key.length);
+        } else {
+            // Default to body content
+            const bodyContent = document.getElementById('BodyContent');
+            bodyContent.value += key;
+            bodyContent.focus();
+        }
+    }
+
+    function addPlaceholder() {
+        const container = document.getElementById('placeholdersContainer');
+        const noMessage = document.getElementById('noPlaceholdersMessage');
+        if (noMessage) noMessage.remove();
+
+        const html = `
+            <div class="placeholder-row border rounded p-3 mb-3" data-index="${placeholderIndex}">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label small">Key</label>
+                        <input name="Placeholders[${placeholderIndex}].Key" 
+                               class="form-control form-control-sm" placeholder="{{MyPlaceholder}}">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label small">Display Name</label>
+                        <input name="Placeholders[${placeholderIndex}].DisplayName" 
+                               class="form-control form-control-sm" placeholder="My Placeholder">
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label small">Type</label>
+                        <select name="Placeholders[${placeholderIndex}].Type" class="form-select form-select-sm">
+                            <option value="Text">Text</option>
+                            <option value="Html">Html</option>
+                            <option value="Date">Date</option>
+                            <option value="Url">Url</option>
+                            <option value="Image">Image</option>
+                            <option value="Number">Number</option>
+                            <option value="Currency">Currency</option>
+                            <option value="Boolean">Boolean</option>
+                            <option value="List">List</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label small">Default Value</label>
+                        <input name="Placeholders[${placeholderIndex}].DefaultValue" 
+                               class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label small">Sample Value</label>
+                        <input name="Placeholders[${placeholderIndex}].SampleValue" 
+                               class="form-control form-control-sm">
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <input name="Placeholders[${placeholderIndex}].Description" 
+                               class="form-control form-control-sm" placeholder="Description (optional)">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input type="checkbox" name="Placeholders[${placeholderIndex}].IsRequired" value="true" 
+                                   class="form-check-input">
+                            <label class="form-check-label small">Required</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <input type="hidden" name="Placeholders[${placeholderIndex}].Order" value="${placeholderIndex}">
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removePlaceholder(this)">
+                            <i class="bi bi-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.insertAdjacentHTML('beforeend', html);
+        placeholderIndex++;
+    }
+
+    function removePlaceholder(btn) {
+        const row = btn.closest('.placeholder-row');
+        row.remove();
+        reindexPlaceholders();
+    }
+
+    function reindexPlaceholders() {
+        const rows = document.querySelectorAll('.placeholder-row');
+        rows.forEach((row, index) => {
+            row.dataset.index = index;
+            row.querySelectorAll('[name^="Placeholders["]').forEach(input => {
+                const name = input.name.replace(/Placeholders\[\d+\]/, `Placeholders[${index}]`);
+                input.name = name;
+            });
+        });
+        placeholderIndex = rows.length;
+    }
+
+    async function previewTemplate() {
+        SW.loading.show('Generating preview...');
+
+        const form = document.getElementById('templateForm');
+        const formData = new FormData(form);
+        
+        // Build the model object
+        const model = {
+            id: formData.get('Id'),
+            name: formData.get('Name'),
+            subject: formData.get('Subject'),
+            headerId: formData.get('HeaderId'),
+            footerId: formData.get('FooterId'),
+            bodyContent: formData.get('BodyContent'),
+            placeholders: []
+        };
+
+        // Collect placeholders
+        const placeholderRows = document.querySelectorAll('.placeholder-row');
+        placeholderRows.forEach((row, index) => {
+            model.placeholders.push({
+                key: formData.get(`Placeholders[${index}].Key`) || '',
+                displayName: formData.get(`Placeholders[${index}].DisplayName`) || '',
+                description: formData.get(`Placeholders[${index}].Description`) || '',
+                defaultValue: formData.get(`Placeholders[${index}].DefaultValue`) || '',
+                sampleValue: formData.get(`Placeholders[${index}].SampleValue`) || '',
+                type: formData.get(`Placeholders[${index}].Type`) || 'Text',
+                isRequired: formData.get(`Placeholders[${index}].IsRequired`) === 'true'
+            });
+        });
+
+        try {
+            const response = await fetch('@Url.Action("Preview", "EmailTemplates", new { area = "Admin" })', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                },
+                body: JSON.stringify(model)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                document.getElementById('previewSubject').textContent = result.subject;
+                const frame = document.getElementById('previewFrame');
+                frame.srcdoc = result.htmlBody;
+                new bootstrap.Modal(document.getElementById('previewModal')).show();
+            } else {
+                SW.toast.error('Preview failed: ' + (result.errors?.join(', ') || 'Unknown error'));
+            }
+        } catch (error) {
+            SW.toast.error('Preview failed: ' + error.message);
+        } finally {
+            SW.loading.hide();
+        }
+    }
+
+    // Auto-generate ID from name (only for create mode)
+    @if (!Model.IsEditMode)
+    {
+        <text>
+        document.getElementById('Name').addEventListener('input', function() {
+            const idField = document.getElementById('Id');
+            if (!idField.dataset.userModified) {
+                idField.value = this.value
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .replace(/\s+/g, '-')
+                    .replace(/-+/g, '-')
+                    .substring(0, 100);
+            }
+        });
+
+        document.getElementById('Id').addEventListener('input', function() {
+            this.dataset.userModified = 'true';
+        });
+        </text>
+    }
+</script>

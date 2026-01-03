@@ -1,0 +1,238 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.EmailTemplateListViewModel
+@{
+    ViewData["Title"] = "Email Templates";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">
+            <i class="bi bi-envelope-paper me-2"></i>Email Templates
+        </h1>
+        <p class="text-muted mb-0">Manage email templates with dynamic placeholders</p>
+    </div>
+    <div class="btn-group">
+        <a asp-action="Sections" class="btn btn-outline-secondary">
+            <i class="bi bi-layout-text-sidebar me-1"></i>Headers & Footers
+        </a>
+        <a asp-action="Export" class="btn btn-outline-secondary">
+            <i class="bi bi-download me-1"></i>Export
+        </a>
+        <a asp-action="Import" class="btn btn-outline-secondary">
+            <i class="bi bi-upload me-1"></i>Import
+        </a>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>New Template
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control" placeholder="Search templates..." 
+                           value="@Model.SearchTerm">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    @foreach (var cat in Model.Categories)
+                    {
+                        <option value="@cat" selected="@(Model.CategoryFilter == cat)">@cat</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-secondary w-100">
+                    <i class="bi bi-funnel me-1"></i>Filter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Templates Grid -->
+@if (Model.Templates.Count == 0)
+{
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-envelope-paper display-1 text-muted mb-3"></i>
+            <h4>No Templates Found</h4>
+            <p class="text-muted">Create your first email template to get started.</p>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>Create Template
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+        @foreach (var template in Model.Templates)
+        {
+            <div class="col">
+                <div class="card h-100 @(template.IsActive ? "" : "border-warning")">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title mb-0">@template.Name</h5>
+                            @if (!string.IsNullOrEmpty(template.Category))
+                            {
+                                <small class="text-muted">@template.Category</small>
+                            }
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@template.Id">
+                                        <i class="bi bi-pencil me-2"></i>Edit
+                                    </a>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item" onclick="showCloneModal('@template.Id', '@template.Name')">
+                                        <i class="bi bi-copy me-2"></i>Clone
+                                    </button>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                @if (!template.IsSystem)
+                                {
+                                    <li>
+                                        <button class="dropdown-item text-danger" onclick="confirmDelete('@template.Id', '@template.Name')">
+                                            <i class="bi bi-trash me-2"></i>Delete
+                                        </button>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <span class="dropdown-item text-muted">
+                                            <i class="bi bi-lock me-2"></i>System Template
+                                        </span>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text text-muted small mb-2">
+                            <strong>Subject:</strong> @template.Subject
+                        </p>
+                        @if (!string.IsNullOrEmpty(template.Description))
+                        {
+                            <p class="card-text small">@template.Description</p>
+                        }
+                        <div class="d-flex flex-wrap gap-1 mb-2">
+                            @foreach (var tag in template.Tags.Take(3))
+                            {
+                                <span class="badge bg-secondary">@tag</span>
+                            }
+                            @if (template.Tags.Count > 3)
+                            {
+                                <span class="badge bg-light text-dark">+@(template.Tags.Count - 3)</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge @(template.IsActive ? "bg-success" : "bg-warning")">
+                                @(template.IsActive ? "Active" : "Inactive")
+                            </span>
+                            @if (template.IsSystem)
+                            {
+                                <span class="badge bg-info">System</span>
+                            }
+                            <span class="badge bg-light text-dark" title="Placeholders">
+                                <i class="bi bi-braces"></i> @template.PlaceholderCount
+                            </span>
+                        </div>
+                        <small class="text-muted">@template.UpdatedAt.ToString("MMM dd, yyyy")</small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<!-- Clone Modal -->
+<div class="modal fade" id="cloneModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Clone" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Clone Template</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="cloneSourceId">
+                    <div class="mb-3">
+                        <label class="form-label">New Template ID</label>
+                        <input type="text" name="newId" id="cloneNewId" class="form-control" required
+                               pattern="^[a-z0-9\-]+$" placeholder="e.g., my-new-template">
+                        <div class="form-text">Lowercase letters, numbers, and hyphens only</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Template Name</label>
+                        <input type="text" name="newName" id="cloneNewName" class="form-control" required
+                               placeholder="e.g., My New Template">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Clone Template</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Form -->
+<form id="deleteForm" asp-action="Delete" method="post" style="display:none;">
+    <input type="hidden" name="id" id="deleteId">
+</form>
+
+@section Scripts {
+    <script>
+        function showCloneModal(id, name) {
+            document.getElementById('cloneSourceId').value = id;
+            document.getElementById('cloneNewId').value = id + '-copy';
+            document.getElementById('cloneNewName').value = name + ' (Copy)';
+            new bootstrap.Modal(document.getElementById('cloneModal')).show();
+        }
+
+        async function confirmDelete(id, name) {
+            const confirmed = await SW.confirm.show({
+                title: 'Delete Template?',
+                message: `Are you sure you want to delete "${name}"? This action cannot be undone.`,
+                confirmText: 'Delete',
+                confirmClass: 'btn-danger'
+            });
+
+            if (confirmed) {
+                document.getElementById('deleteId').value = id;
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+}

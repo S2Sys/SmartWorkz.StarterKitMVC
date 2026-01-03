@@ -1,0 +1,380 @@
+@{
+    ViewData["Title"] = "Email Templates";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">
+            <i class="bi bi-envelope-paper me-2"></i>Email Templates Documentation
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a asp-action="Index">Wiki</a></li>
+                <li class="breadcrumb-item active">Email Templates</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-area="Admin" asp-controller="EmailTemplates" asp-action="Index" class="btn btn-primary">
+        <i class="bi bi-arrow-right me-1"></i>Go to Email Templates
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-9">
+        <!-- Overview -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-info-circle me-2"></i>Overview
+            </div>
+            <div class="card-body">
+                <p>
+                    The Email Template Builder is a feature that allows you to create, manage, and render 
+                    dynamic email templates with placeholder support. Templates are stored locally as JSON 
+                    files and can be easily exported/imported for backup or migration.
+                </p>
+                
+                <h5 class="text-primary mt-4">Key Features</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Dynamic placeholders</li>
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Reusable headers & footers</li>
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Live preview</li>
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Template cloning</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Import/Export (JSON)</li>
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Category & tag organization</li>
+                            <li><i class="bi bi-check-circle text-success me-2"></i>System placeholders</li>
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Notification integration</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-layers me-2"></i>Architecture
+            </div>
+            <div class="card-body">
+                <h5 class="text-primary">Domain Layer</h5>
+                <p>Located in <code>SmartWorkz.StarterKitMVC.Domain/EmailTemplates/</code></p>
+                <table class="table table-bordered table-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Class</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>EmailTemplate</code></td>
+                            <td>Main template entity with subject, body, placeholders</td>
+                        </tr>
+                        <tr>
+                            <td><code>EmailTemplateSection</code></td>
+                            <td>Reusable header/footer sections</td>
+                        </tr>
+                        <tr>
+                            <td><code>TemplatePlaceholder</code></td>
+                            <td>Placeholder definition with type, default value</td>
+                        </tr>
+                        <tr>
+                            <td><code>PlaceholderType</code></td>
+                            <td>Enum: Text, Html, Date, Url, Image, Number, Currency, Boolean, List</td>
+                        </tr>
+                        <tr>
+                            <td><code>SectionType</code></td>
+                            <td>Enum: Header, Footer</td>
+                        </tr>
+                        <tr>
+                            <td><code>SystemPlaceholders</code></td>
+                            <td>Built-in placeholders (AppName, UserName, etc.)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h5 class="text-primary mt-4">Application Layer</h5>
+                <p>Located in <code>SmartWorkz.StarterKitMVC.Application/EmailTemplates/</code></p>
+                <table class="table table-bordered table-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Interface</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>IEmailTemplateRepository</code></td>
+                            <td>Data access contract for templates and sections</td>
+                        </tr>
+                        <tr>
+                            <td><code>IEmailTemplateService</code></td>
+                            <td>Business logic for CRUD, rendering, validation</td>
+                        </tr>
+                        <tr>
+                            <td><code>ITemplatedEmailSender</code></td>
+                            <td>Integration with notification queue</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h5 class="text-primary mt-4">Infrastructure Layer</h5>
+                <p>Located in <code>SmartWorkz.StarterKitMVC.Infrastructure/EmailTemplates/</code></p>
+                <table class="table table-bordered table-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Class</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>JsonEmailTemplateRepository</code></td>
+                            <td>JSON file-based storage implementation</td>
+                        </tr>
+                        <tr>
+                            <td><code>EmailTemplateService</code></td>
+                            <td>Service implementation with rendering engine</td>
+                        </tr>
+                        <tr>
+                            <td><code>TemplatedEmailSender</code></td>
+                            <td>Sends emails via notification queue</td>
+                        </tr>
+                        <tr>
+                            <td><code>DefaultEmailTemplates</code></td>
+                            <td>Predefined templates for seeding</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Setup -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-gear me-2"></i>Setup & Configuration
+            </div>
+            <div class="card-body">
+                <h5 class="text-primary">1. Register Services</h5>
+                <p>In <code>Program.cs</code>:</p>
+                <pre class="bg-light p-3 rounded"><code>// Add email template services
+builder.Services.AddEmailTemplates();
+
+// Or with custom storage path
+builder.Services.AddEmailTemplates("C:\\MyApp\\Templates");</code></pre>
+
+                <h5 class="text-primary mt-4">2. Seed Default Templates (Optional)</h5>
+                <pre class="bg-light p-3 rounded"><code>// After building the app
+var app = builder.Build();
+
+// Seed default templates
+await app.Services.SeedDefaultEmailTemplatesAsync();</code></pre>
+
+                <h5 class="text-primary mt-4">3. Storage Location</h5>
+                <p>
+                    By default, templates are stored in <code>App_Data/EmailTemplates/</code>:
+                </p>
+                <pre class="bg-light p-3 rounded"><code>App_Data/
+└── EmailTemplates/
+    ├── templates/
+    │   ├── welcome-email.json
+    │   ├── password-reset.json
+    │   └── email-verification.json
+    └── sections/
+        ├── header-default.json
+        ├── header-minimal.json
+        ├── footer-default.json
+        └── footer-minimal.json</code></pre>
+            </div>
+        </div>
+
+        <!-- Usage -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-code-slash me-2"></i>Usage Examples
+            </div>
+            <div class="card-body">
+                <h5 class="text-primary">Sending a Templated Email</h5>
+                <pre class="bg-light p-3 rounded"><code>public class UserService
+{
+    private readonly ITemplatedEmailSender _emailSender;
+    
+    public UserService(ITemplatedEmailSender emailSender)
+    {
+        _emailSender = emailSender;
+    }
+    
+    public async Task SendWelcomeEmailAsync(User user)
+    {
+        await _emailSender.SendTemplatedEmailAsync(
+            templateId: "welcome-email",
+            recipient: user.Email,
+            data: new Dictionary&lt;string, object&gt;
+            {
+                ["UserName"] = user.FullName,
+                ["LoginUrl"] = "https://myapp.com/login",
+                ["ActivationLink"] = $"https://myapp.com/activate/{user.ActivationToken}"
+            }
+        );
+    }
+}</code></pre>
+
+                <h5 class="text-primary mt-4">Rendering a Template (Without Sending)</h5>
+                <pre class="bg-light p-3 rounded"><code>public class PreviewService
+{
+    private readonly IEmailTemplateService _templateService;
+    
+    public async Task&lt;string&gt; GetPreviewHtmlAsync(string templateId)
+    {
+        var result = await _templateService.RenderTemplateAsync(
+            templateId,
+            new Dictionary&lt;string, object&gt;
+            {
+                ["UserName"] = "John Doe",
+                ["AppName"] = "MyApp"
+            }
+        );
+        
+        if (result.Success)
+        {
+            return result.HtmlBody;
+        }
+        
+        throw new Exception(string.Join(", ", result.Errors));
+    }
+}</code></pre>
+
+                <h5 class="text-primary mt-4">Bulk Personalized Emails</h5>
+                <pre class="bg-light p-3 rounded"><code>var recipientData = new Dictionary&lt;string, IDictionary&lt;string, object&gt;&gt;
+{
+    ["user1@example.com"] = new Dictionary&lt;string, object&gt;
+    {
+        ["UserName"] = "Alice",
+        ["OrderId"] = "ORD-001"
+    },
+    ["user2@example.com"] = new Dictionary&lt;string, object&gt;
+    {
+        ["UserName"] = "Bob",
+        ["OrderId"] = "ORD-002"
+    }
+};
+
+int sent = await _emailSender.SendPersonalizedEmailsAsync(
+    "order-confirmation",
+    recipientData
+);</code></pre>
+            </div>
+        </div>
+
+        <!-- Placeholders -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-braces me-2"></i>Placeholders
+            </div>
+            <div class="card-body">
+                <h5 class="text-primary">System Placeholders</h5>
+                <p>These are automatically available in all templates:</p>
+                <table class="table table-bordered table-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Placeholder</th>
+                            <th>Description</th>
+                            <th>Sample Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>{{AppName}}</code></td><td>Application name</td><td>SmartWorkz</td></tr>
+                        <tr><td><code>{{AppUrl}}</code></td><td>Application URL</td><td>https://example.com</td></tr>
+                        <tr><td><code>{{UserName}}</code></td><td>User's display name</td><td>John Doe</td></tr>
+                        <tr><td><code>{{UserEmail}}</code></td><td>User's email address</td><td>john@example.com</td></tr>
+                        <tr><td><code>{{CurrentDate}}</code></td><td>Current date</td><td>December 6, 2024</td></tr>
+                        <tr><td><code>{{CurrentYear}}</code></td><td>Current year</td><td>2024</td></tr>
+                        <tr><td><code>{{CompanyName}}</code></td><td>Company name</td><td>SmartWorkz Inc.</td></tr>
+                        <tr><td><code>{{SupportEmail}}</code></td><td>Support email</td><td>support@example.com</td></tr>
+                        <tr><td><code>{{UnsubscribeUrl}}</code></td><td>Unsubscribe link</td><td>#unsubscribe</td></tr>
+                        <tr><td><code>{{LogoUrl}}</code></td><td>Logo image URL</td><td>/images/logo.png</td></tr>
+                        <tr><td><code>{{PrivacyUrl}}</code></td><td>Privacy policy URL</td><td>/privacy</td></tr>
+                        <tr><td><code>{{TermsUrl}}</code></td><td>Terms of service URL</td><td>/terms</td></tr>
+                    </tbody>
+                </table>
+
+                <h5 class="text-primary mt-4">Custom Placeholders</h5>
+                <p>Define template-specific placeholders with types:</p>
+                <ul>
+                    <li><strong>Text</strong> - Plain text values</li>
+                    <li><strong>Html</strong> - HTML content (not escaped)</li>
+                    <li><strong>Date</strong> - Date values (formatted)</li>
+                    <li><strong>Url</strong> - URL values</li>
+                    <li><strong>Image</strong> - Image URLs</li>
+                    <li><strong>Number</strong> - Numeric values</li>
+                    <li><strong>Currency</strong> - Currency values</li>
+                    <li><strong>Boolean</strong> - True/false values</li>
+                    <li><strong>List</strong> - List of items</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Default Templates -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-file-earmark-text me-2"></i>Default Templates
+            </div>
+            <div class="card-body">
+                <p>The following templates are seeded by default:</p>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card border-primary">
+                            <div class="card-body text-center">
+                                <i class="bi bi-person-plus display-4 text-primary"></i>
+                                <h6 class="mt-2">Welcome Email</h6>
+                                <small class="text-muted">welcome-email</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-warning">
+                            <div class="card-body text-center">
+                                <i class="bi bi-key display-4 text-warning"></i>
+                                <h6 class="mt-2">Password Reset</h6>
+                                <small class="text-muted">password-reset</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-success">
+                            <div class="card-body text-center">
+                                <i class="bi bi-envelope-check display-4 text-success"></i>
+                                <h6 class="mt-2">Email Verification</h6>
+                                <small class="text-muted">email-verification</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar TOC -->
+    <div class="col-lg-3">
+        <div class="card sticky-top" style="top: 1rem;">
+            <div class="card-header">
+                <i class="bi bi-list-ul me-2"></i>On This Page
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action">Overview</a>
+                    <a href="#" class="list-group-item list-group-item-action">Architecture</a>
+                    <a href="#" class="list-group-item list-group-item-action">Setup & Configuration</a>
+                    <a href="#" class="list-group-item list-group-item-action">Usage Examples</a>
+                    <a href="#" class="list-group-item list-group-item-action">Placeholders</a>
+                    <a href="#" class="list-group-item list-group-item-action">Default Templates</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

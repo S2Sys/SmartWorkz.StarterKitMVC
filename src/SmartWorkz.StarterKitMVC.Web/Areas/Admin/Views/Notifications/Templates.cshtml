@@ -1,15 +1,17 @@
 @model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.NotificationTemplatesPageViewModel
 @{
     ViewData["Title"] = "Notification Templates";
+    var formDisplayMode = UISettings.Value.Admin.FormDisplayMode;
 }
 
 @section PageActions {
     <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-2">
         <i class="bi bi-bell me-1"></i>Notifications
     </a>
-    <a asp-action="TemplateCreate" class="btn btn-primary btn-sm">
+    <button type="button" class="btn btn-primary btn-sm" id="btnAddTemplate"
+            data-mode="@formDisplayMode" data-url="@Url.Action("TemplateCreate")">
         <i class="bi bi-plus-lg me-1"></i>Add Template
-    </a>
+    </button>
 }
 
 <div class="card admin-card">
@@ -76,9 +78,12 @@
                                     <a asp-action="TemplatePreview" asp-route-id="@template.Id" class="btn btn-outline-secondary" title="Preview" target="_blank">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a asp-action="TemplateEdit" asp-route-id="@template.Id" class="btn btn-outline-secondary" title="Edit">
+                                    <button type="button" class="btn btn-outline-secondary btn-edit-template" title="Edit"
+                                            data-mode="@formDisplayMode" 
+                                            data-url="@Url.Action("TemplateEdit", new { id = template.Id })"
+                                            data-name="@template.Name">
                                         <i class="bi bi-pencil"></i>
-                                    </a>
+                                    </button>
                                     <button type="button" class="btn btn-outline-danger" title="Delete"
                                             data-bs-toggle="modal" data-bs-target="#deleteModal"
                                             data-id="@template.Id" data-name="@template.Name">
@@ -126,12 +131,185 @@
     </div>
 </div>
 
+<!-- Template Form Modal -->
+<div class="modal fade" id="templateModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="templateModalTitle">
+                    <i class="bi bi-file-earmark-text me-2"></i>Template
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="templateModalBody">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btnSaveTemplateModal">
+                    <i class="bi bi-save me-1"></i>Save Template
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Template Form Offcanvas (Right Sidebar) -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="templateOffcanvas" style="width: 550px;">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="templateOffcanvasTitle">
+            <i class="bi bi-file-earmark-text me-2"></i>Template
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body" id="templateOffcanvasBody">
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+    <div class="offcanvas-footer border-top p-3 bg-light">
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-secondary flex-fill" data-bs-dismiss="offcanvas">Cancel</button>
+            <button type="button" class="btn btn-primary flex-fill" id="btnSaveTemplateOffcanvas">
+                <i class="bi bi-save me-1"></i>Save Template
+            </button>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
 <script>
+(function() {
+    // Delete modal handler
     document.getElementById('deleteModal')?.addEventListener('show.bs.modal', function(e) {
         const button = e.relatedTarget;
         document.getElementById('deleteTemplateId').value = button.dataset.id;
         document.getElementById('deleteTemplateName').textContent = button.dataset.name;
     });
+
+    // Template form handler
+    const templateModal = document.getElementById('templateModal');
+    const templateOffcanvas = document.getElementById('templateOffcanvas');
+    let bsModal = templateModal ? new bootstrap.Modal(templateModal) : null;
+    let bsOffcanvas = templateOffcanvas ? new bootstrap.Offcanvas(templateOffcanvas) : null;
+    let currentMode = 'offcanvas';
+
+    // Load template form
+    async function loadTemplateForm(url, title, mode) {
+        currentMode = mode;
+        const isModal = mode === 'modal';
+        const container = isModal ? 'templateModalBody' : 'templateOffcanvasBody';
+        const titleEl = isModal ? 'templateModalTitle' : 'templateOffcanvasTitle';
+        
+        // Show loading
+        document.getElementById(container).innerHTML = `
+            <div class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>`;
+        document.getElementById(titleEl).innerHTML = `<i class="bi bi-file-earmark-text me-2"></i>${title}`;
+        
+        // Show modal/offcanvas
+        if (isModal) {
+            bsModal?.show();
+        } else {
+            bsOffcanvas?.show();
+        }
+        
+        try {
+            const response = await fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const html = await response.text();
+            document.getElementById(container).innerHTML = html;
+        } catch (error) {
+            document.getElementById(container).innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Failed to load form. Please try again.
+                </div>`;
+        }
+    }
+
+    // Save template form
+    async function saveTemplateForm() {
+        const isModal = currentMode === 'modal';
+        const container = isModal ? 'templateModalBody' : 'templateOffcanvasBody';
+        const form = document.getElementById('templateForm');
+        
+        if (!form) return;
+        
+        const formData = new FormData(form);
+        const saveBtn = isModal ? document.getElementById('btnSaveTemplateModal') : document.getElementById('btnSaveTemplateOffcanvas');
+        
+        // Disable button and show loading
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Saving...';
+        
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Close and reload
+                if (isModal) {
+                    bsModal?.hide();
+                } else {
+                    bsOffcanvas?.hide();
+                }
+                SW.toast?.success?.(result.message) || alert(result.message);
+                location.reload();
+            } else {
+                // Show errors
+                const errorHtml = result.errors?.map(e => `<li>${e}</li>`).join('') || 'Validation failed';
+                const alertEl = document.createElement('div');
+                alertEl.className = 'alert alert-danger mb-3';
+                alertEl.innerHTML = `<ul class="mb-0">${errorHtml}</ul>`;
+                
+                const existingAlert = document.querySelector(`#${container} .alert-danger`);
+                if (existingAlert) existingAlert.remove();
+                
+                form.insertAdjacentElement('beforebegin', alertEl);
+            }
+        } catch (error) {
+            SW.toast?.error?.('Failed to save template') || alert('Failed to save template');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="bi bi-save me-1"></i>Save Template';
+        }
+    }
+
+    // Add Template button
+    document.getElementById('btnAddTemplate')?.addEventListener('click', function() {
+        const mode = this.dataset.mode || 'offcanvas';
+        const url = this.dataset.url;
+        loadTemplateForm(url, 'Create Template', mode);
+    });
+
+    // Edit Template buttons
+    document.querySelectorAll('.btn-edit-template').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const mode = this.dataset.mode || 'offcanvas';
+            const url = this.dataset.url;
+            const name = this.dataset.name || 'Template';
+            loadTemplateForm(url, `Edit: ${name}`, mode);
+        });
+    });
+
+    // Save buttons
+    document.getElementById('btnSaveTemplateModal')?.addEventListener('click', saveTemplateForm);
+    document.getElementById('btnSaveTemplateOffcanvas')?.addEventListener('click', saveTemplateForm);
+})();
 </script>
 }

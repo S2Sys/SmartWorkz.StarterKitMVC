@@ -18,6 +18,20 @@ public class SettingCategoryViewModel
 }
 
 /// <summary>
+/// View model for setting category list
+/// </summary>
+public class SettingCategoryListViewModel
+{
+    public Guid Id { get; set; }
+    public string Key { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string? Icon { get; set; }
+    public int SortOrder { get; set; }
+    public int SettingCount { get; set; }
+}
+
+/// <summary>
 /// View model for setting definition
 /// </summary>
 public class SettingDefinitionViewModel
@@ -143,4 +157,29 @@ public class SettingDefinitionFormViewModel
 
     // For dropdown
     public List<SettingCategoryViewModel> AvailableCategories { get; set; } = [];
+}
+
+/// <summary>
+/// View model for application configuration (appsettings.json)
+/// </summary>
+public class AppConfigViewModel
+{
+    public string? RawJson { get; set; }
+    public List<ConfigSectionViewModel> Sections { get; set; } = [];
+}
+
+/// <summary>
+/// View model for a configuration section
+/// </summary>
+public class ConfigSectionViewModel
+{
+    public string Key { get; set; } = string.Empty;
+    public string Path { get; set; } = string.Empty;
+    public string? Value { get; set; }
+    public string? JsonValue { get; set; }
+    public string ValueType { get; set; } = "string";
+    public string Icon { get; set; } = "bi-gear";
+    public bool IsObject { get; set; }
+    public bool IsArray { get; set; }
+    public List<ConfigSectionViewModel> Children { get; set; } = [];
 }

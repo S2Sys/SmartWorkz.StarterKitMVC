@@ -1,4 +1,109 @@
-@model string
-@{ ViewData["Title"] = "Tenant Settings"; }
-<h1>Tenant Settings: @Model</h1>
-<p>Tenant settings shell.</p>
+@{
+    ViewData["Title"] = "Tenant Settings";
+    var tenantId = ViewData["TenantId"]?.ToString();
+}
+
+@section PageActions {
+    <a asp-action="Details" asp-route-id="@tenantId" class="btn btn-outline-secondary btn-sm me-2">
+        <i class="bi bi-arrow-left me-1"></i>Back to Tenant
+    </a>
+    <a asp-action="Branding" asp-route-id="@tenantId" class="btn btn-outline-info btn-sm">
+        <i class="bi bi-palette me-1"></i>Branding
+    </a>
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-gear me-2"></i>Tenant Settings
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <input type="hidden" name="tenantId" value="@tenantId" />
+                    
+                    <h6 class="text-muted mb-3">General</h6>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Max Users</label>
+                        <input type="number" name="maxUsers" class="form-control" value="50" />
+                        <small class="text-muted">Maximum number of users allowed for this tenant</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Storage Limit (GB)</label>
+                        <input type="number" name="storageLimit" class="form-control" value="10" />
+                        <small class="text-muted">Maximum storage space in gigabytes</small>
+                    </div>
+                    
+                    <hr />
+                    <h6 class="text-muted mb-3">Features</h6>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input type="checkbox" class="form-check-input" id="enableNotifications" checked />
+                            <label class="form-check-label" for="enableNotifications">Enable Notifications</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input type="checkbox" class="form-check-input" id="enableAuditLog" checked />
+                            <label class="form-check-label" for="enableAuditLog">Enable Audit Log</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input type="checkbox" class="form-check-input" id="enableApi" />
+                            <label class="form-check-label" for="enableApi">Enable API Access</label>
+                        </div>
+                    </div>
+                    
+                    <hr />
+                    <h6 class="text-muted mb-3">Security</h6>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Session Timeout (minutes)</label>
+                        <input type="number" name="sessionTimeout" class="form-control" value="30" />
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input type="checkbox" class="form-check-input" id="require2FA" />
+                            <label class="form-check-label" for="require2FA">Require Two-Factor Authentication</label>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-3 border-top">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>Save Settings
+                        </button>
+                        <a asp-action="Details" asp-route-id="@tenantId" class="btn btn-secondary">
+                            <i class="bi bi-x-lg me-1"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-info-circle me-2"></i>Quick Links
+            </div>
+            <div class="list-group list-group-flush">
+                <a asp-action="Branding" asp-route-id="@tenantId" class="list-group-item list-group-item-action">
+                    <i class="bi bi-palette me-2"></i>Branding
+                </a>
+                <a asp-action="Edit" asp-route-id="@tenantId" class="list-group-item list-group-item-action">
+                    <i class="bi bi-pencil me-2"></i>Edit Tenant
+                </a>
+                <a asp-action="Details" asp-route-id="@tenantId" class="list-group-item list-group-item-action">
+                    <i class="bi bi-eye me-2"></i>View Details
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

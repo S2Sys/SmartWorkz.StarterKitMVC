@@ -10,14 +10,26 @@ using SmartWorkz.StarterKitMVC.Infrastructure.Storage;
 using SmartWorkz.StarterKitMVC.Infrastructure.Logging;
 using SmartWorkz.StarterKitMVC.Infrastructure.Resilience;
 using SmartWorkz.StarterKitMVC.Infrastructure.Telemetry;
+using SmartWorkz.StarterKitMVC.Infrastructure.EmailTemplates;
+using SmartWorkz.StarterKitMVC.Infrastructure.Notifications;
+using SmartWorkz.StarterKitMVC.Application.Notifications;
+using SmartWorkz.StarterKitMVC.Application.Authorization;
+using SmartWorkz.StarterKitMVC.Application.Localization;
+using SmartWorkz.StarterKitMVC.Infrastructure.Authorization;
+using SmartWorkz.StarterKitMVC.Infrastructure.Localization;
 using SmartWorkz.StarterKitMVC.Shared.Primitives;
+using SmartWorkz.StarterKitMVC.Web.Configuration;
 using SmartWorkz.StarterKitMVC.Web.Middleware;
+using SmartWorkz.StarterKitMVC.Web.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
+
+// UI Settings
+builder.Services.Configure<UISettings>(builder.Configuration.GetSection(UISettings.SectionName));
 
 builder.Services.AddLocalization();
 
@@ -36,14 +48,35 @@ builder.Services.AddSingleton<IAiClient, NoOpAiClient>();
 
 builder.Services.AddHttpClient<IHttpService, HttpService>();
 
+// Notifications
+builder.Services.AddSingleton<INotificationQueue, InMemoryNotificationQueue>();
+
+// Email Templates
+builder.Services.AddEmailTemplates();
+
+// Authorization & Permissions
+builder.Services.AddSingleton<IPermissionService, PermissionService>();
+builder.Services.AddSingleton<IClaimService, ClaimService>();
+
+// Localization Resources
+builder.Services.AddSingleton<IResourceService, ResourceService>();
+builder.Services.AddScoped<IViewLocalizer, ViewLocalizer>();
+builder.Services.AddHttpContextAccessor();
+
 // API Versioning - uncomment and add Asp.Versioning.Mvc package to enable
 // builder.Services.AddApiVersioning(options =>
 // {
 //     options.DefaultApiVersion = new ApiVersion(1, 0);
 //     options.AssumeDefaultVersionWhenUnspecified = true;
 // });
-
+    
 var app = builder.Build();
+
+// Seed default email templates
+await app.Services.SeedDefaultEmailTemplatesAsync();
+
+// Sync default localization resources (adds new resources without overwriting existing)
+await app.Services.SyncDefaultResourcesAsync();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -63,6 +96,9 @@ app.UseRouting();
 app.UseMiddleware<CorrelationIdMiddleware>();
 
 app.UseAuthorization();
+
+// Permission claims middleware (adds permission claims based on roles)
+app.UsePermissions();
 
 app.MapStaticAssets();
 

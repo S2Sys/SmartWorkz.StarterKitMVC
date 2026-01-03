@@ -1,0 +1,442 @@
+@{
+    ViewData["Title"] = "Calendar";
+}
+
+<div class="row">
+    <!-- Calendar -->
+    <div class="col-lg-9">
+        <div class="card">
+            <div class="card-body p-0">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-3">
+        <!-- Quick Add Event -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Quick Add Event</h5>
+            </div>
+            <div class="card-body">
+                <form id="quickAddForm">
+                    <div class="mb-3">
+                        <label class="form-label">Event Title</label>
+                        <input type="text" class="form-control" id="eventTitle" placeholder="Enter event title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control" id="eventDate" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label">Start Time</label>
+                            <input type="time" class="form-control" id="eventStartTime" value="09:00">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">End Time</label>
+                            <input type="time" class="form-control" id="eventEndTime" value="10:00">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Color</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <input type="radio" class="btn-check" name="eventColor" id="color1" value="#6366f1" checked>
+                            <label class="btn btn-sm rounded-circle p-0" for="color1" style="width: 30px; height: 30px; background: #6366f1;"></label>
+                            
+                            <input type="radio" class="btn-check" name="eventColor" id="color2" value="#10b981">
+                            <label class="btn btn-sm rounded-circle p-0" for="color2" style="width: 30px; height: 30px; background: #10b981;"></label>
+                            
+                            <input type="radio" class="btn-check" name="eventColor" id="color3" value="#f59e0b">
+                            <label class="btn btn-sm rounded-circle p-0" for="color3" style="width: 30px; height: 30px; background: #f59e0b;"></label>
+                            
+                            <input type="radio" class="btn-check" name="eventColor" id="color4" value="#ef4444">
+                            <label class="btn btn-sm rounded-circle p-0" for="color4" style="width: 30px; height: 30px; background: #ef4444;"></label>
+                            
+                            <input type="radio" class="btn-check" name="eventColor" id="color5" value="#8b5cf6">
+                            <label class="btn btn-sm rounded-circle p-0" for="color5" style="width: 30px; height: 30px; background: #8b5cf6;"></label>
+                            
+                            <input type="radio" class="btn-check" name="eventColor" id="color6" value="#06b6d4">
+                            <label class="btn btn-sm rounded-circle p-0" for="color6" style="width: 30px; height: 30px; background: #06b6d4;"></label>
+                        </div>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="allDayEvent">
+                        <label class="form-check-label" for="allDayEvent">All day event</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-plus-lg me-2"></i>Add Event
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Upcoming Events -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-clock me-2"></i>Upcoming Events</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush" id="upcomingEvents">
+                    <div class="list-group-item">
+                        <div class="d-flex align-items-center">
+                            <div class="event-dot me-3" style="background: #6366f1;"></div>
+                            <div>
+                                <h6 class="mb-0">Team Meeting</h6>
+                                <small class="text-muted">Today, 9:00 AM</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex align-items-center">
+                            <div class="event-dot me-3" style="background: #10b981;"></div>
+                            <div>
+                                <h6 class="mb-0">Project Review</h6>
+                                <small class="text-muted">Today, 2:00 PM</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex align-items-center">
+                            <div class="event-dot me-3" style="background: #f59e0b;"></div>
+                            <div>
+                                <h6 class="mb-0">Client Call</h6>
+                                <small class="text-muted">Tomorrow, 11:00 AM</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Calendar Legend -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-palette me-2"></i>Event Categories</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="event-dot me-2" style="background: #6366f1;"></div>
+                    <span>Meetings</span>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <div class="event-dot me-2" style="background: #10b981;"></div>
+                    <span>Reviews</span>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <div class="event-dot me-2" style="background: #f59e0b;"></div>
+                    <span>Calls</span>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <div class="event-dot me-2" style="background: #ef4444;"></div>
+                    <span>Deadlines</span>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <div class="event-dot me-2" style="background: #8b5cf6;"></div>
+                    <span>Development</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="event-dot me-2" style="background: #06b6d4;"></div>
+                    <span>Training</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Event Detail Modal -->
+<div class="modal fade" id="eventModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalTitle">Event Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm">
+                    <input type="hidden" id="editEventId">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" id="editEventTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Start</label>
+                        <input type="datetime-local" class="form-control" id="editEventStart" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">End</label>
+                        <input type="datetime-local" class="form-control" id="editEventEnd">
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="editAllDay">
+                        <label class="form-check-label" for="editAllDay">All day event</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger me-auto" id="deleteEventBtn">
+                    <i class="bi bi-trash me-1"></i>Delete
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveEventBtn">
+                    <i class="bi bi-check-lg me-1"></i>Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
+<style>
+    #calendar {
+        padding: 1rem;
+    }
+    
+    .fc {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .fc-toolbar-title {
+        font-size: 1.25rem !important;
+        font-weight: 600;
+    }
+    
+    .fc-button {
+        background-color: var(--bs-primary) !important;
+        border-color: var(--bs-primary) !important;
+        font-weight: 500 !important;
+        text-transform: capitalize !important;
+    }
+    
+    .fc-button:hover {
+        background-color: #4f46e5 !important;
+        border-color: #4f46e5 !important;
+    }
+    
+    .fc-button-active {
+        background-color: #4338ca !important;
+        border-color: #4338ca !important;
+    }
+    
+    .fc-event {
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 0.8rem;
+        cursor: pointer;
+    }
+    
+    .fc-daygrid-day:hover {
+        background-color: rgba(99, 102, 241, 0.05);
+    }
+    
+    .fc-day-today {
+        background-color: rgba(99, 102, 241, 0.1) !important;
+    }
+    
+    .fc-daygrid-day-number {
+        font-weight: 500;
+        padding: 8px;
+    }
+    
+    .fc-col-header-cell {
+        background-color: #f8fafc;
+        font-weight: 600;
+    }
+    
+    .event-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    
+    .btn-check:checked + label {
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
+    }
+    
+    /* Dark mode support */
+    [data-bs-theme="dark"] .fc-col-header-cell {
+        background-color: #1e293b;
+    }
+    
+    [data-bs-theme="dark"] .fc-daygrid-day:hover {
+        background-color: rgba(99, 102, 241, 0.1);
+    }
+    
+    [data-bs-theme="dark"] .fc-day-today {
+        background-color: rgba(99, 102, 241, 0.2) !important;
+    }
+    
+    [data-bs-theme="dark"] .fc-theme-standard td,
+    [data-bs-theme="dark"] .fc-theme-standard th {
+        border-color: #334155;
+    }
+</style>
+}
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+    
+    // Initialize FullCalendar
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+        },
+        editable: true,
+        selectable: true,
+        selectMirror: true,
+        dayMaxEvents: true,
+        weekNumbers: true,
+        navLinks: true,
+        
+        // Fetch events from server
+        events: function(info, successCallback, failureCallback) {
+            fetch(`/Admin/Calendar/GetEvents?start=${info.startStr}&end=${info.endStr}`)
+                .then(response => response.json())
+                .then(data => successCallback(data))
+                .catch(error => failureCallback(error));
+        },
+        
+        // Click on date to create event
+        select: function(info) {
+            document.getElementById('eventDate').value = info.startStr.split('T')[0];
+            document.getElementById('eventTitle').focus();
+        },
+        
+        // Click on event to edit
+        eventClick: function(info) {
+            const event = info.event;
+            document.getElementById('editEventId').value = event.id;
+            document.getElementById('editEventTitle').value = event.title;
+            document.getElementById('editEventStart').value = formatDateTimeLocal(event.start);
+            document.getElementById('editEventEnd').value = event.end ? formatDateTimeLocal(event.end) : '';
+            document.getElementById('editAllDay').checked = event.allDay;
+            document.getElementById('eventModalTitle').textContent = 'Edit Event';
+            eventModal.show();
+        },
+        
+        // Drag and drop event
+        eventDrop: function(info) {
+            updateEvent(info.event);
+        },
+        
+        // Resize event
+        eventResize: function(info) {
+            updateEvent(info.event);
+        }
+    });
+    
+    calendar.render();
+    
+    // Set default date to today
+    document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
+    
+    // Quick Add Form
+    document.getElementById('quickAddForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const title = document.getElementById('eventTitle').value;
+        const date = document.getElementById('eventDate').value;
+        const startTime = document.getElementById('eventStartTime').value;
+        const endTime = document.getElementById('eventEndTime').value;
+        const color = document.querySelector('input[name="eventColor"]:checked').value;
+        const allDay = document.getElementById('allDayEvent').checked;
+        
+        const eventData = {
+            title: title,
+            start: allDay ? date : `${date}T${startTime}`,
+            end: allDay ? null : `${date}T${endTime}`,
+            allDay: allDay,
+            backgroundColor: color
+        };
+        
+        // Add to calendar
+        calendar.addEvent({
+            ...eventData,
+            borderColor: color
+        });
+        
+        // Save to server
+        fetch('/Admin/Calendar/CreateEvent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(eventData)
+        });
+        
+        // Reset form
+        this.reset();
+        document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
+        
+        // Show success toast
+        if (typeof SW !== 'undefined' && SW.toast) {
+            SW.toast.success('Event added successfully');
+        }
+    });
+    
+    // Save Event Changes
+    document.getElementById('saveEventBtn').addEventListener('click', function() {
+        const id = document.getElementById('editEventId').value;
+        const event = calendar.getEventById(id);
+        
+        if (event) {
+            event.setProp('title', document.getElementById('editEventTitle').value);
+            event.setStart(document.getElementById('editEventStart').value);
+            event.setEnd(document.getElementById('editEventEnd').value || null);
+            event.setAllDay(document.getElementById('editAllDay').checked);
+            
+            updateEvent(event);
+        }
+        
+        eventModal.hide();
+    });
+    
+    // Delete Event
+    document.getElementById('deleteEventBtn').addEventListener('click', function() {
+        const id = document.getElementById('editEventId').value;
+        const event = calendar.getEventById(id);
+        
+        if (event && confirm('Are you sure you want to delete this event?')) {
+            event.remove();
+            
+            fetch(`/Admin/Calendar/DeleteEvent?id=${id}`, { method: 'DELETE' });
+            
+            if (typeof SW !== 'undefined' && SW.toast) {
+                SW.toast.success('Event deleted');
+            }
+        }
+        
+        eventModal.hide();
+    });
+    
+    // Helper functions
+    function formatDateTimeLocal(date) {
+        if (!date) return '';
+        const d = new Date(date);
+        return d.toISOString().slice(0, 16);
+    }
+    
+    function updateEvent(event) {
+        fetch('/Admin/Calendar/UpdateEvent', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: event.id,
+                title: event.title,
+                start: event.start,
+                end: event.end,
+                allDay: event.allDay
+            })
+        });
+    }
+});
+</script>
+}

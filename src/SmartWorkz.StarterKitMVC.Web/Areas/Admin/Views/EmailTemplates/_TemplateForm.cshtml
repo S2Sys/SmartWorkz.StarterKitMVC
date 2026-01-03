@@ -1,0 +1,249 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.EmailTemplateFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+<div class="row">
+    <!-- Left Column: Form Fields -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-info-circle me-2"></i>Basic Information
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Id" class="form-label">Template ID <span class="text-danger">*</span></label>
+                        @if (Model.IsEditMode)
+                        {
+                            <input asp-for="Id" class="form-control" placeholder="e.g., welcome-email" readonly>
+                        }
+                        else
+                        {
+                            <input asp-for="Id" class="form-control" placeholder="e.g., welcome-email">
+                        }
+                        <span asp-validation-for="Id" class="text-danger"></span>
+                        <div class="form-text">Lowercase letters, numbers, and hyphens only</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Name" class="form-label">Template Name <span class="text-danger">*</span></label>
+                        <input asp-for="Name" class="form-control" placeholder="e.g., Welcome Email">
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label">Description</label>
+                    <input asp-for="Description" class="form-control" placeholder="Brief description of this template">
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Category" class="form-label">Category</label>
+                        <input asp-for="Category" class="form-control" placeholder="e.g., Onboarding, Security">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="TagsInput" class="form-label">Tags</label>
+                        <input asp-for="TagsInput" class="form-control" placeholder="tag1, tag2, tag3">
+                        <div class="form-text">Comma-separated tags for filtering</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-envelope me-2"></i>Email Content
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label asp-for="Subject" class="form-label">Subject Line <span class="text-danger">*</span></label>
+                    <input asp-for="Subject" class="form-control" placeholder="e.g., Welcome to {{AppName}}, {{UserName}}!">
+                    <span asp-validation-for="Subject" class="text-danger"></span>
+                    <div class="form-text">Use placeholders like <code>{{UserName}}</code></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="HeaderId" class="form-label">Header</label>
+                        <select asp-for="HeaderId" class="form-select">
+                            <option value="">-- No Header --</option>
+                            @foreach (var header in Model.AvailableHeaders)
+                            {
+                                <option value="@header.Id">@header.Name @(header.IsDefault ? "(Default)" : "")</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FooterId" class="form-label">Footer</label>
+                        <select asp-for="FooterId" class="form-select">
+                            <option value="">-- No Footer --</option>
+                            @foreach (var footer in Model.AvailableFooters)
+                            {
+                                <option value="@footer.Id">@footer.Name @(footer.IsDefault ? "(Default)" : "")</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="BodyContent" class="form-label">HTML Body <span class="text-danger">*</span></label>
+                    <textarea asp-for="BodyContent" class="form-control font-monospace" rows="15" 
+                              placeholder="<div>Your HTML content here...</div>"></textarea>
+                    <span asp-validation-for="BodyContent" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="PlainTextContent" class="form-label">Plain Text Version (Optional)</label>
+                    <textarea asp-for="PlainTextContent" class="form-control font-monospace" rows="6"
+                              placeholder="Plain text version for email clients that don't support HTML"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Placeholders Section -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-braces me-2"></i>Custom Placeholders</span>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addPlaceholder()">
+                    <i class="bi bi-plus-lg me-1"></i>Add Placeholder
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="placeholdersContainer">
+                    @for (int i = 0; i < Model.Placeholders.Count; i++)
+                    {
+                        <div class="placeholder-row border rounded p-3 mb-3" data-index="@i">
+                            <div class="row">
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label small">Key</label>
+                                    <input name="Placeholders[@i].Key" value="@Model.Placeholders[i].Key" 
+                                           class="form-control form-control-sm" placeholder="{{MyPlaceholder}}">
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label small">Display Name</label>
+                                    <input name="Placeholders[@i].DisplayName" value="@Model.Placeholders[i].DisplayName" 
+                                           class="form-control form-control-sm" placeholder="My Placeholder">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label small">Type</label>
+                                    <select name="Placeholders[@i].Type" class="form-select form-select-sm">
+                                        @foreach (var type in Enum.GetValues<SmartWorkz.StarterKitMVC.Domain.EmailTemplates.PlaceholderType>())
+                                        {
+                                            <option value="@type" selected="@(Model.Placeholders[i].Type == type)">@type</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label small">Default Value</label>
+                                    <input name="Placeholders[@i].DefaultValue" value="@Model.Placeholders[i].DefaultValue" 
+                                           class="form-control form-control-sm">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label small">Sample Value</label>
+                                    <input name="Placeholders[@i].SampleValue" value="@Model.Placeholders[i].SampleValue" 
+                                           class="form-control form-control-sm">
+                                </div>
+                            </div>
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <input name="Placeholders[@i].Description" value="@Model.Placeholders[i].Description" 
+                                           class="form-control form-control-sm" placeholder="Description (optional)">
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="Placeholders[@i].IsRequired" value="true" 
+                                               class="form-check-input" @(Model.Placeholders[i].IsRequired ? "checked" : "")>
+                                        <label class="form-check-label small">Required</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <input type="hidden" name="Placeholders[@i].Order" value="@i">
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removePlaceholder(this)">
+                                        <i class="bi bi-trash"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                @if (Model.Placeholders.Count == 0)
+                {
+                    <p class="text-muted text-center mb-0" id="noPlaceholdersMessage">
+                        No custom placeholders defined. Click "Add Placeholder" to create one.
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Sidebar -->
+    <div class="col-lg-4">
+        <!-- Actions Card -->
+        <div class="card mb-4 sticky-top" style="top: 1rem;">
+            <div class="card-header">
+                <i class="bi bi-gear me-2"></i>Actions
+            </div>
+            <div class="card-body">
+                <div class="form-check form-switch mb-3">
+                    <input asp-for="IsActive" class="form-check-input" type="checkbox">
+                    <label asp-for="IsActive" class="form-check-label">Active</label>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i>@(Model.IsEditMode ? "Update Template" : "Create Template")
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="previewTemplate()">
+                        <i class="bi bi-eye me-1"></i>Preview
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-lg me-1"></i>Cancel
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Placeholders Reference -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-bookmark me-2"></i>System Placeholders
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
+                    @foreach (var ph in Model.SystemPlaceholders)
+                    {
+                        <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                onclick="insertPlaceholder('@ph.Key')" title="@ph.Description">
+                            <div>
+                                <code class="text-primary">@ph.Key</code>
+                                <br><small class="text-muted">@ph.DisplayName</small>
+                            </div>
+                            <i class="bi bi-plus-circle text-muted"></i>
+                        </button>
+                    }
+                </div>
+            </div>
+            <div class="card-footer text-muted small">
+                Click to insert into the focused field
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-eye me-2"></i>Template Preview
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="bg-light p-3 border-bottom">
+                    <strong>Subject:</strong> <span id="previewSubject"></span>
+                </div>
+                <iframe id="previewFrame" style="width: 100%; height: 500px; border: none;"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

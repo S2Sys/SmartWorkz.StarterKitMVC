@@ -1,0 +1,152 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.TranslationsViewModel
+@{
+    ViewData["Title"] = $"Translations: {Model.LanguageName}";
+}
+
+@section PageActions {
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-2">
+        <i class="bi bi-arrow-left me-1"></i>Back
+    </a>
+    <a asp-action="Export" asp-route-languageCode="@Model.LanguageCode" class="btn btn-outline-info btn-sm">
+        <i class="bi bi-download me-1"></i>Export
+    </a>
+}
+
+<div class="row">
+    <div class="col-lg-2 mb-4">
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-globe me-2"></i>Languages
+            </div>
+            <div class="list-group list-group-flush">
+                @foreach (var lang in Model.Languages)
+                {
+                    <a asp-action="Translations" asp-route-languageCode="@lang.Code" 
+                       class="list-group-item list-group-item-action @(lang.Code == Model.LanguageCode ? "active" : "")">
+                        @lang.Code.ToUpperInvariant()
+                        @if (lang.IsDefault)
+                        {
+                            <i class="bi bi-star-fill ms-1"></i>
+                        }
+                    </a>
+                }
+            </div>
+        </div>
+        
+        <!-- Stats -->
+        <div class="card admin-card mt-3">
+            <div class="card-body text-center">
+                <h4 class="mb-0">@Model.Stats.CompletionPercentage.ToString("F1")%</h4>
+                <small class="text-muted">Complete</small>
+                <div class="progress mt-2" style="height: 6px;">
+                    <div class="progress-bar bg-success" style="width: @Model.Stats.CompletionPercentage%"></div>
+                </div>
+                <div class="mt-2 small">
+                    <span class="text-success">@Model.Stats.TranslatedCount translated</span><br />
+                    <span class="text-muted">@(Model.Stats.TotalResources - Model.Stats.TranslatedCount) missing</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-10">
+        <form asp-action="SaveAllTranslations" method="post">
+            <input type="hidden" name="languageCode" value="@Model.LanguageCode" />
+            
+            <div class="card admin-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-translate me-2"></i>Translations: <strong>@Model.LanguageName</strong></span>
+                    <div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="showMissing">Show Missing Only</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="showAll">Show All</button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table admin-table mb-0" id="translationsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">Resource Key</th>
+                                    <th style="width: 15%;">Category</th>
+                                    <th>Translation</th>
+                                    <th style="width: 10%;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (var i = 0; i < Model.Resources.Count; i++)
+                                {
+                                    var resource = Model.Resources[i];
+                                    var isMissing = string.IsNullOrEmpty(resource.Value);
+                                    <tr class="@(isMissing ? "table-warning translation-missing" : "translation-complete")">
+                                        <td>
+                                            <code>@resource.ResourceKey</code>
+                                            @if (!string.IsNullOrEmpty(resource.Description))
+                                            {
+                                                <br /><small class="text-muted">@resource.Description</small>
+                                            }
+                                            @if (resource.Placeholders.Count > 0)
+                                            {
+                                                <br /><small class="text-info">Placeholders: @string.Join(", ", resource.Placeholders)</small>
+                                            }
+                                            <input type="hidden" name="translations[@i].ResourceId" value="@resource.ResourceId" />
+                                        </td>
+                                        <td><span class="badge bg-secondary">@resource.Category</span></td>
+                                        <td>
+                                            <input type="text" class="form-control form-control-sm" 
+                                                   name="translations[@i].Value" 
+                                                   value="@resource.Value"
+                                                   placeholder="Enter translation..." />
+                                            @if (resource.SupportsPluralForms)
+                                            {
+                                                <input type="text" class="form-control form-control-sm mt-1" 
+                                                       name="translations[@i].PluralValue" 
+                                                       value="@resource.PluralValue"
+                                                       placeholder="Plural form..." />
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (isMissing)
+                                            {
+                                                <span class="badge bg-warning">Missing</span>
+                                            }
+                                            else if (resource.Status == SmartWorkz.StarterKitMVC.Domain.Localization.TranslationStatus.Published)
+                                            {
+                                                <span class="badge bg-success">Published</span>
+                                            }
+                                            else if (resource.Status == SmartWorkz.StarterKitMVC.Domain.Localization.TranslationStatus.Approved)
+                                            {
+                                                <span class="badge bg-info">Approved</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Draft</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>Save All Translations
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('showMissing')?.addEventListener('click', function() {
+        document.querySelectorAll('.translation-complete').forEach(row => row.style.display = 'none');
+        document.querySelectorAll('.translation-missing').forEach(row => row.style.display = '');
+    });
+    
+    document.getElementById('showAll')?.addEventListener('click', function() {
+        document.querySelectorAll('#translationsTable tbody tr').forEach(row => row.style.display = '');
+    });
+</script>
+}

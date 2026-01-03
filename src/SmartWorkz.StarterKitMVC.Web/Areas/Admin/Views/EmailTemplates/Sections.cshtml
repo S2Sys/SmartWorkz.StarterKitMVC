@@ -1,0 +1,177 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.EmailTemplateSectionListViewModel
+@{
+    ViewData["Title"] = "Email Template Sections";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">
+            <i class="bi bi-layout-text-sidebar me-2"></i>Headers & Footers
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a asp-action="Index">Email Templates</a></li>
+                <li class="breadcrumb-item active">Sections</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="btn-group">
+        <a asp-action="CreateSection" asp-route-type="Header" class="btn btn-outline-primary">
+            <i class="bi bi-plus-lg me-1"></i>New Header
+        </a>
+        <a asp-action="CreateSection" asp-route-type="Footer" class="btn btn-outline-primary">
+            <i class="bi bi-plus-lg me-1"></i>New Footer
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row">
+    <!-- Headers -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-arrow-bar-up me-2"></i>Headers</span>
+                <span class="badge bg-secondary">@Model.Headers.Count</span>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Headers.Count == 0)
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox display-4 mb-3"></i>
+                        <p>No headers defined</p>
+                        <a asp-action="CreateSection" asp-route-type="Header" class="btn btn-sm btn-outline-primary">
+                            Create Header
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var header in Model.Headers)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">
+                                        @header.Name
+                                        @if (header.IsDefault)
+                                        {
+                                            <span class="badge bg-primary ms-1">Default</span>
+                                        }
+                                        @if (!header.IsActive)
+                                        {
+                                            <span class="badge bg-warning ms-1">Inactive</span>
+                                        }
+                                    </h6>
+                                    <small class="text-muted">@header.Id</small>
+                                </div>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="EditSection" asp-route-id="@header.Id" class="btn btn-outline-secondary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" title="Delete"
+                                            onclick="confirmDeleteSection('@header.Id', '@header.Name')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Footers -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-arrow-bar-down me-2"></i>Footers</span>
+                <span class="badge bg-secondary">@Model.Footers.Count</span>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Footers.Count == 0)
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox display-4 mb-3"></i>
+                        <p>No footers defined</p>
+                        <a asp-action="CreateSection" asp-route-type="Footer" class="btn btn-sm btn-outline-primary">
+                            Create Footer
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var footer in Model.Footers)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">
+                                        @footer.Name
+                                        @if (footer.IsDefault)
+                                        {
+                                            <span class="badge bg-primary ms-1">Default</span>
+                                        }
+                                        @if (!footer.IsActive)
+                                        {
+                                            <span class="badge bg-warning ms-1">Inactive</span>
+                                        }
+                                    </h6>
+                                    <small class="text-muted">@footer.Id</small>
+                                </div>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="EditSection" asp-route-id="@footer.Id" class="btn btn-outline-secondary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" title="Delete"
+                                            onclick="confirmDeleteSection('@footer.Id', '@footer.Name')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Form -->
+<form id="deleteSectionForm" asp-action="DeleteSection" method="post" style="display:none;">
+    <input type="hidden" name="id" id="deleteSectionId">
+</form>
+
+@section Scripts {
+    <script>
+        async function confirmDeleteSection(id, name) {
+            const confirmed = await SW.confirm.show({
+                title: 'Delete Section?',
+                message: `Are you sure you want to delete "${name}"? Templates using this section will no longer have it.`,
+                confirmText: 'Delete',
+                confirmClass: 'btn-danger'
+            });
+
+            if (confirmed) {
+                document.getElementById('deleteSectionId').value = id;
+                document.getElementById('deleteSectionForm').submit();
+            }
+        }
+    </script>
+}

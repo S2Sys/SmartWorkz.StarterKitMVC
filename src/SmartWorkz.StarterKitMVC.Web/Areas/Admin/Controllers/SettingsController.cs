@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Mvc;
 using SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models;
 
@@ -6,6 +8,13 @@ namespace SmartWorkz.StarterKitMVC.Web.Areas.Admin.Controllers;
 [Area("Admin")]
 public class SettingsController : Controller
 {
+    private readonly IWebHostEnvironment _environment;
+    
+    public SettingsController(IWebHostEnvironment environment)
+    {
+        _environment = environment;
+    }
+    
     public IActionResult Index(string? category = null)
     {
         ViewData["Title"] = "Settings";
@@ -93,6 +102,211 @@ public class SettingsController : Controller
         ViewData["Title"] = "Setting Definitions";
         return View();
     }
+    
+    #region Application Configuration (appsettings.json)
+    
+    public IActionResult AppConfig()
+    {
+        ViewData["Title"] = "Application Configuration";
+        var model = new AppConfigViewModel();
+        
+        try
+        {
+            var appSettingsPath = Path.Combine(_environment.ContentRootPath, "appsettings.json");
+            if (System.IO.File.Exists(appSettingsPath))
+            {
+                var json = System.IO.File.ReadAllText(appSettingsPath);
+                var jsonNode = JsonNode.Parse(json);
+                
+                if (jsonNode != null)
+                {
+                    model.RawJson = JsonSerializer.Serialize(jsonNode, new JsonSerializerOptions { WriteIndented = true });
+                    model.Sections = ParseConfigSections(jsonNode);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = $"Failed to load configuration: {ex.Message}";
+        }
+        
+        return View(model);
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult SaveAppConfig(AppConfigViewModel model)
+    {
+        try
+        {
+            var appSettingsPath = Path.Combine(_environment.ContentRootPath, "appsettings.json");
+            
+            // Validate JSON
+            var jsonNode = JsonNode.Parse(model.RawJson ?? "{}");
+            if (jsonNode == null)
+            {
+                TempData["Error"] = "Invalid JSON format.";
+                return RedirectToAction(nameof(AppConfig));
+            }
+            
+            // Create backup
+            var backupPath = Path.Combine(_environment.ContentRootPath, $"appsettings.backup.{DateTime.Now:yyyyMMddHHmmss}.json");
+            if (System.IO.File.Exists(appSettingsPath))
+            {
+                System.IO.File.Copy(appSettingsPath, backupPath);
+            }
+            
+            // Save new config
+            var formattedJson = JsonSerializer.Serialize(jsonNode, new JsonSerializerOptions { WriteIndented = true });
+            System.IO.File.WriteAllText(appSettingsPath, formattedJson);
+            
+            TempData["Success"] = "Configuration saved successfully. Note: Some changes may require an application restart to take effect.";
+        }
+        catch (JsonException)
+        {
+            TempData["Error"] = "Invalid JSON format. Please check your syntax.";
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = $"Failed to save configuration: {ex.Message}";
+        }
+        
+        return RedirectToAction(nameof(AppConfig));
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult SaveConfigSection(string sectionPath, string sectionJson)
+    {
+        try
+        {
+            var appSettingsPath = Path.Combine(_environment.ContentRootPath, "appsettings.json");
+            var json = System.IO.File.ReadAllText(appSettingsPath);
+            var rootNode = JsonNode.Parse(json);
+            
+            if (rootNode == null)
+            {
+                TempData["Error"] = "Failed to parse configuration file.";
+                return RedirectToAction(nameof(AppConfig));
+            }
+            
+            // Parse the new section value
+            var newSectionValue = JsonNode.Parse(sectionJson);
+            
+            // Navigate to the section and update it
+            var pathParts = sectionPath.Split(':');
+            JsonNode? current = rootNode;
+            
+            for (int i = 0; i < pathParts.Length - 1; i++)
+            {
+                current = current?[pathParts[i]];
+            }
+            
+            if (current is JsonObject parentObj)
+            {
+                parentObj[pathParts[^1]] = newSectionValue;
+            }
+            
+            // Create backup and save
+            var backupPath = Path.Combine(_environment.ContentRootPath, $"appsettings.backup.{DateTime.Now:yyyyMMddHHmmss}.json");
+            System.IO.File.Copy(appSettingsPath, backupPath);
+            
+            var formattedJson = JsonSerializer.Serialize(rootNode, new JsonSerializerOptions { WriteIndented = true });
+            System.IO.File.WriteAllText(appSettingsPath, formattedJson);
+            
+            TempData["Success"] = $"Section '{sectionPath}' saved successfully.";
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = $"Failed to save section: {ex.Message}";
+        }
+        
+        return RedirectToAction(nameof(AppConfig));
+    }
+    
+    private static List<ConfigSectionViewModel> ParseConfigSections(JsonNode rootNode, string parentPath = "")
+    {
+        var sections = new List<ConfigSectionViewModel>();
+        
+        if (rootNode is JsonObject obj)
+        {
+            foreach (var property in obj)
+            {
+                var path = string.IsNullOrEmpty(parentPath) ? property.Key : $"{parentPath}:{property.Key}";
+                var section = new ConfigSectionViewModel
+                {
+                    Key = property.Key,
+                    Path = path,
+                    Icon = GetSectionIcon(property.Key)
+                };
+                
+                if (property.Value is JsonObject childObj)
+                {
+                    section.IsObject = true;
+                    section.JsonValue = JsonSerializer.Serialize(property.Value, new JsonSerializerOptions { WriteIndented = true });
+                    section.Children = ParseConfigSections(property.Value, path);
+                }
+                else if (property.Value is JsonArray arr)
+                {
+                    section.IsArray = true;
+                    section.JsonValue = JsonSerializer.Serialize(property.Value, new JsonSerializerOptions { WriteIndented = true });
+                }
+                else
+                {
+                    section.Value = property.Value?.ToString() ?? "";
+                    section.ValueType = GetValueType(property.Value);
+                }
+                
+                sections.Add(section);
+            }
+        }
+        
+        return sections;
+    }
+    
+    private static string GetSectionIcon(string key) => key.ToLower() switch
+    {
+        "logging" => "bi-journal-text",
+        "connectionstrings" => "bi-database",
+        "features" => "bi-toggles",
+        "identity" => "bi-person-badge",
+        "authentication" => "bi-shield-lock",
+        "multitenancy" => "bi-building",
+        "caching" => "bi-hdd-stack",
+        "backgroundjobs" => "bi-clock-history",
+        "eventbus" => "bi-broadcast",
+        "notifications" => "bi-bell",
+        "storage" => "bi-folder",
+        "ai" => "bi-robot",
+        "apiversioning" => "bi-code-slash",
+        "ratelimiting" => "bi-speedometer",
+        "healthchecks" => "bi-heart-pulse",
+        "swagger" => "bi-file-earmark-code",
+        "localization" => "bi-globe",
+        "compression" => "bi-file-zip",
+        "cors" => "bi-shield",
+        "security" => "bi-lock",
+        "app" => "bi-app-indicator",
+        "email" => "bi-envelope",
+        "sms" => "bi-chat-dots",
+        "push" => "bi-send",
+        "jwt" => "bi-key",
+        "oauth" => "bi-box-arrow-in-right",
+        "ui" => "bi-window",
+        "admin" => "bi-layout-sidebar",
+        _ => "bi-gear"
+    };
+    
+    private static string GetValueType(JsonNode? node) => node?.GetValueKind() switch
+    {
+        JsonValueKind.String => "string",
+        JsonValueKind.Number => "number",
+        JsonValueKind.True or JsonValueKind.False => "boolean",
+        JsonValueKind.Null => "null",
+        _ => "string"
+    };
+    
+    #endregion
 
     public IActionResult DefinitionCreate()
     {
