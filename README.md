@@ -303,6 +303,9 @@ dotnet test --collect:"XPlat Code Coverage"
 
 ## 📚 Documentation
 
+- [README.md](README.md) - Project overview and getting started
+- [CHANGELOG.md](CHANGELOG.md) - Version history and release notes
+- [TODO.md](TODO.md) - Current tasks, bugs, and feature roadmap
 - [About & Features](docs/about.md)
 - [How to Use](docs/how-to-use.md)
 - [API Reference](https://localhost:5001/swagger)
