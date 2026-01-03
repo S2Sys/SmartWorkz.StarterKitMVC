@@ -20,8 +20,9 @@ Admin.sidebar = {
     closeBtn: null,
     
     init() {
-        this.sidebar = document.getElementById('adminSidebar');
-        this.overlay = document.getElementById('sidebarOverlay');
+        // Support both adminSidebar and sidebar-wrapper IDs
+        this.sidebar = document.getElementById('adminSidebar') || document.getElementById('sidebar-wrapper');
+        this.overlay = document.getElementById('sidebarOverlay') || document.getElementById('sidebarBackdrop');
         this.toggleBtn = document.getElementById('sidebarToggle');
         this.closeBtn = document.getElementById('sidebarClose');
         

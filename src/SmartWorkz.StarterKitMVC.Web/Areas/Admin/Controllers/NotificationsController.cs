@@ -109,7 +109,15 @@ public class NotificationsController : Controller
     public IActionResult TemplateCreate()
     {
         ViewData["Title"] = "Create Template";
-        return View(new NotificationTemplateFormViewModel());
+        var model = new NotificationTemplateFormViewModel();
+        
+        // Return partial view for AJAX requests (modal/offcanvas)
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            return PartialView("_TemplateForm", model);
+        }
+        
+        return View(model);
     }
 
     [HttpPost]
@@ -117,9 +125,21 @@ public class NotificationsController : Controller
     public IActionResult TemplateCreate(NotificationTemplateFormViewModel model)
     {
         if (!ModelState.IsValid)
+        {
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+            }
             return View(model);
+        }
 
         // TODO: Save template via service
+        
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            return Json(new { success = true, message = "Template created successfully." });
+        }
+        
         TempData["Success"] = "Template created successfully.";
         return RedirectToAction(nameof(Templates));
     }
@@ -140,6 +160,13 @@ public class NotificationsController : Controller
             Channel = "Email",
             IsActive = true
         };
+        
+        // Return partial view for AJAX requests (modal/offcanvas)
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            return PartialView("_TemplateForm", model);
+        }
+        
         return View(model);
     }
 
@@ -148,9 +175,21 @@ public class NotificationsController : Controller
     public IActionResult TemplateEdit(Guid id, NotificationTemplateFormViewModel model)
     {
         if (!ModelState.IsValid)
+        {
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+            }
             return View(model);
+        }
 
         // TODO: Update template via service
+        
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            return Json(new { success = true, message = "Template updated successfully." });
+        }
+        
         TempData["Success"] = "Template updated successfully.";
         return RedirectToAction(nameof(Templates));
     }

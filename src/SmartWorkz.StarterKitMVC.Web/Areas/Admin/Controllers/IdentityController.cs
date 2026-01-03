@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using SmartWorkz.StarterKitMVC.Application.Authorization;
+using SmartWorkz.StarterKitMVC.Domain.Authorization;
 using SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models;
 
 namespace SmartWorkz.StarterKitMVC.Web.Areas.Admin.Controllers;
@@ -6,6 +8,13 @@ namespace SmartWorkz.StarterKitMVC.Web.Areas.Admin.Controllers;
 [Area("Admin")]
 public class IdentityController : Controller
 {
+    private readonly IClaimService _claimService;
+
+    public IdentityController(IClaimService claimService)
+    {
+        _claimService = claimService;
+    }
+
     #region Dashboard
     
     public IActionResult Index()
@@ -188,10 +197,326 @@ public class IdentityController : Controller
 
     #region Claims
     
-    public IActionResult Claims()
+    public async Task<IActionResult> Claims()
     {
-        ViewData["Title"] = "Claims";
-        return View();
+        ViewData["Title"] = "Claims Management";
+        
+        var claimTypes = await _claimService.GetAllClaimTypesAsync();
+        var roleClaims = new List<RoleClaim>();
+        foreach (var role in new[] { "Admin", "Manager", "User", "Guest" })
+        {
+            roleClaims.AddRange(await _claimService.GetRoleClaimsAsync(role));
+        }
+        
+        var model = new ClaimsIndexViewModel
+        {
+            ClaimTypes = claimTypes.Select(ct => new ClaimTypeViewModel
+            {
+                Id = ct.Id,
+                Key = ct.Key,
+                Name = ct.Name,
+                Description = ct.Description,
+                Icon = ct.Icon,
+                Category = ct.Category,
+                AllowMultiple = ct.AllowMultiple,
+                IsSystem = ct.IsSystem,
+                IsActive = ct.IsActive,
+                SortOrder = ct.SortOrder,
+                ValueCount = ct.PredefinedValues.Count,
+                PredefinedValues = ct.PredefinedValues.Select(v => new ClaimValueViewModel
+                {
+                    Id = v.Id,
+                    Value = v.Value,
+                    Label = v.Label,
+                    Description = v.Description,
+                    SortOrder = v.SortOrder,
+                    IsActive = v.IsActive
+                }).ToList()
+            }).ToList(),
+            TotalClaimTypes = claimTypes.Count,
+            TotalRoleClaims = roleClaims.Count,
+            Categories = claimTypes.Select(ct => ct.Category).Distinct().OrderBy(c => c).ToList()
+        };
+        
+        return View(model);
+    }
+
+    public async Task<IActionResult> ClaimTypeCreate()
+    {
+        ViewData["Title"] = "Create Claim Type";
+        var claimTypes = await _claimService.GetAllClaimTypesAsync();
+        
+        var model = new ClaimTypeFormViewModel
+        {
+            AvailableCategories = claimTypes.Select(ct => ct.Category).Distinct().OrderBy(c => c).ToList()
+        };
+        
+        if (!model.AvailableCategories.Contains("General"))
+            model.AvailableCategories.Insert(0, "General");
+        
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ClaimTypeCreate(ClaimTypeFormViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            var claimTypes = await _claimService.GetAllClaimTypesAsync();
+            model.AvailableCategories = claimTypes.Select(ct => ct.Category).Distinct().OrderBy(c => c).ToList();
+            return View(model);
+        }
+
+        var claimType = new ClaimType
+        {
+            Key = model.Key,
+            Name = model.Name,
+            Description = model.Description,
+            Icon = model.Icon,
+            Category = model.Category,
+            AllowMultiple = model.AllowMultiple,
+            SortOrder = model.SortOrder,
+            IsActive = true
+        };
+
+        await _claimService.CreateClaimTypeAsync(claimType);
+        TempData["Success"] = $"Claim type '{model.Name}' created successfully.";
+        return RedirectToAction(nameof(Claims));
+    }
+
+    public async Task<IActionResult> ClaimTypeEdit(Guid id)
+    {
+        var claimType = await _claimService.GetClaimTypeByIdAsync(id);
+        if (claimType == null)
+        {
+            TempData["Error"] = "Claim type not found.";
+            return RedirectToAction(nameof(Claims));
+        }
+
+        ViewData["Title"] = $"Edit Claim Type: {claimType.Name}";
+        var claimTypes = await _claimService.GetAllClaimTypesAsync();
+        
+        var model = new ClaimTypeFormViewModel
+        {
+            Id = claimType.Id,
+            Key = claimType.Key,
+            Name = claimType.Name,
+            Description = claimType.Description,
+            Icon = claimType.Icon,
+            Category = claimType.Category,
+            AllowMultiple = claimType.AllowMultiple,
+            SortOrder = claimType.SortOrder,
+            IsSystem = claimType.IsSystem,
+            AvailableCategories = claimTypes.Select(ct => ct.Category).Distinct().OrderBy(c => c).ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ClaimTypeEdit(Guid id, ClaimTypeFormViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            var claimTypes = await _claimService.GetAllClaimTypesAsync();
+            model.AvailableCategories = claimTypes.Select(ct => ct.Category).Distinct().OrderBy(c => c).ToList();
+            return View(model);
+        }
+
+        var claimType = await _claimService.GetClaimTypeByIdAsync(id);
+        if (claimType == null)
+        {
+            TempData["Error"] = "Claim type not found.";
+            return RedirectToAction(nameof(Claims));
+        }
+
+        claimType.Name = model.Name;
+        claimType.Description = model.Description;
+        claimType.Icon = model.Icon;
+        claimType.Category = model.Category;
+        claimType.AllowMultiple = model.AllowMultiple;
+        claimType.SortOrder = model.SortOrder;
+
+        await _claimService.UpdateClaimTypeAsync(claimType);
+        TempData["Success"] = $"Claim type '{model.Name}' updated successfully.";
+        return RedirectToAction(nameof(Claims));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ClaimTypeDelete(Guid id)
+    {
+        try
+        {
+            await _claimService.DeleteClaimTypeAsync(id);
+            TempData["Success"] = "Claim type deleted successfully.";
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+        return RedirectToAction(nameof(Claims));
+    }
+
+    public async Task<IActionResult> ClaimTypeDetails(Guid id)
+    {
+        var claimType = await _claimService.GetClaimTypeByIdAsync(id);
+        if (claimType == null)
+        {
+            TempData["Error"] = "Claim type not found.";
+            return RedirectToAction(nameof(Claims));
+        }
+
+        ViewData["Title"] = $"Claim Type: {claimType.Name}";
+        
+        var model = new ClaimTypeViewModel
+        {
+            Id = claimType.Id,
+            Key = claimType.Key,
+            Name = claimType.Name,
+            Description = claimType.Description,
+            Icon = claimType.Icon,
+            Category = claimType.Category,
+            AllowMultiple = claimType.AllowMultiple,
+            IsSystem = claimType.IsSystem,
+            IsActive = claimType.IsActive,
+            SortOrder = claimType.SortOrder,
+            ValueCount = claimType.PredefinedValues.Count,
+            PredefinedValues = claimType.PredefinedValues.Select(v => new ClaimValueViewModel
+            {
+                Id = v.Id,
+                Value = v.Value,
+                Label = v.Label,
+                Description = v.Description,
+                SortOrder = v.SortOrder,
+                IsActive = v.IsActive
+            }).ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddClaimValue(ClaimValueFormViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            TempData["Error"] = "Invalid claim value data.";
+            return RedirectToAction(nameof(ClaimTypeDetails), new { id = model.ClaimTypeId });
+        }
+
+        var value = new ClaimValue
+        {
+            Value = model.Value,
+            Label = model.Label,
+            Description = model.Description,
+            SortOrder = model.SortOrder
+        };
+
+        await _claimService.AddClaimValueAsync(model.ClaimTypeId, value);
+        TempData["Success"] = $"Claim value '{model.Label}' added successfully.";
+        return RedirectToAction(nameof(ClaimTypeDetails), new { id = model.ClaimTypeId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveClaimValue(Guid claimTypeId, Guid valueId)
+    {
+        await _claimService.RemoveClaimValueAsync(claimTypeId, valueId);
+        TempData["Success"] = "Claim value removed successfully.";
+        return RedirectToAction(nameof(ClaimTypeDetails), new { id = claimTypeId });
+    }
+
+    public async Task<IActionResult> RoleClaims(string roleId = "Admin")
+    {
+        ViewData["Title"] = $"Claims for Role: {roleId}";
+        
+        var claimTypes = await _claimService.GetActiveClaimTypesAsync();
+        var roleClaims = await _claimService.GetRoleClaimsAsync(roleId);
+        var grantedClaims = roleClaims.Where(rc => rc.IsGranted)
+            .Select(rc => $"{rc.ClaimType}:{rc.ClaimValue}")
+            .ToHashSet();
+        
+        var model = new RoleClaimsViewModel
+        {
+            RoleId = roleId,
+            AvailableRoles = ["Admin", "Manager", "User", "Guest"], // TODO: Get from identity service
+            ClaimTypes = claimTypes.Select(ct => new ClaimTypeWithValuesViewModel
+            {
+                Id = ct.Id,
+                Key = ct.Key,
+                Name = ct.Name,
+                Icon = ct.Icon,
+                Category = ct.Category,
+                AllowMultiple = ct.AllowMultiple,
+                Values = ct.PredefinedValues.Select(v => new ClaimValueCheckboxViewModel
+                {
+                    Id = v.Id,
+                    Value = v.Value,
+                    Label = v.Label,
+                    Description = v.Description,
+                    IsGranted = grantedClaims.Contains($"{ct.Key}:{v.Value}")
+                }).ToList()
+            }).ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveRoleClaims(string roleId, string claimType, List<string>? claimValues)
+    {
+        await _claimService.SetRoleClaimsAsync(roleId, claimType, claimValues ?? []);
+        TempData["Success"] = $"Claims for role '{roleId}' saved successfully.";
+        return RedirectToAction(nameof(RoleClaims), new { roleId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveAllRoleClaims(string roleId, Dictionary<string, List<string>>? claims)
+    {
+        if (claims != null)
+        {
+            foreach (var (claimType, values) in claims)
+            {
+                await _claimService.SetRoleClaimsAsync(roleId, claimType, values ?? []);
+            }
+        }
+        TempData["Success"] = $"All claims for role '{roleId}' saved successfully.";
+        return RedirectToAction(nameof(RoleClaims), new { roleId });
+    }
+
+    public async Task<IActionResult> EntityClaims()
+    {
+        ViewData["Title"] = "Entity Claims";
+        
+        var entities = await _claimService.GetEntitiesWithClaimsAsync();
+        var permissionType = await _claimService.GetClaimTypeByKeyAsync("permission");
+        
+        var model = entities.Select(e => new EntityClaimsSummaryViewModel
+        {
+            Entity = e,
+            DisplayName = char.ToUpper(e[0]) + e[1..],
+            Claims = permissionType?.PredefinedValues
+                .Where(v => v.Value.StartsWith($"{e}."))
+                .Select(v => v.Value)
+                .ToList() ?? []
+        }).ToList();
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> GenerateEntityClaims(string entity, string displayName)
+    {
+        await _claimService.GenerateEntityClaimsAsync(entity, displayName);
+        TempData["Success"] = $"Claims for entity '{displayName}' generated successfully.";
+        return RedirectToAction(nameof(EntityClaims));
     }
 
     #endregion

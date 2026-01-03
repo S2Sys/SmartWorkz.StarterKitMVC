@@ -1,0 +1,125 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.PermissionListViewModel
+@{
+    ViewData["Title"] = "Manage Permissions";
+}
+
+@section PageActions {
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-2">
+        <i class="bi bi-arrow-left me-1"></i>Back to Features
+    </a>
+    <a asp-action="PermissionCreate" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>Add Permission
+    </a>
+}
+
+<div class="card admin-card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Filter by Entity</label>
+                <select name="entity" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Entities</option>
+                    @foreach (var entity in Model.Entities)
+                    {
+                        <option value="@entity" selected="@(entity == Model.EntityFilter)">@entity</option>
+                    }
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card admin-card">
+    <div class="card-header">
+        <i class="bi bi-key me-2"></i>Permissions
+        @if (!string.IsNullOrEmpty(Model.EntityFilter))
+        {
+            <span class="badge bg-info ms-2">@Model.EntityFilter</span>
+        }
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Permission</th>
+                        <th>Key</th>
+                        <th>Entity</th>
+                        <th>Action</th>
+                        <th>Type</th>
+                        <th style="width: 100px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var permission in Model.Permissions)
+                    {
+                        <tr>
+                            <td>
+                                <span class="fw-medium">@permission.Name</span>
+                                @if (!string.IsNullOrEmpty(permission.Description))
+                                {
+                                    <br /><small class="text-muted">@permission.Description</small>
+                                }
+                            </td>
+                            <td><code>@permission.Key</code></td>
+                            <td><span class="badge bg-secondary">@permission.Entity</span></td>
+                            <td><span class="badge bg-primary">@permission.Action</span></td>
+                            <td>
+                                @if (permission.IsSystem)
+                                {
+                                    <span class="badge bg-info">System</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">Custom</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!permission.IsSystem)
+                                {
+                                    <button type="button" class="btn btn-outline-danger btn-sm" title="Delete"
+                                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                            data-id="@permission.Id" data-name="@permission.Name">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete permission <strong id="deletePermissionName"></strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="PermissionDelete" method="post" class="d-inline">
+                    <input type="hidden" name="id" id="deletePermissionId">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('deleteModal')?.addEventListener('show.bs.modal', function(e) {
+        const button = e.relatedTarget;
+        document.getElementById('deletePermissionId').value = button.dataset.id;
+        document.getElementById('deletePermissionName').textContent = button.dataset.name;
+    });
+</script>
+}

@@ -1,0 +1,75 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.EmailTemplateSectionFormViewModel
+
+<script>
+    function insertPlaceholder(key) {
+        const textarea = document.getElementById('HtmlContent');
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        textarea.value = text.substring(0, start) + key + text.substring(end);
+        textarea.focus();
+        textarea.setSelectionRange(start + key.length, start + key.length);
+    }
+
+    function previewSection() {
+        const content = document.getElementById('HtmlContent').value;
+        
+        // Replace placeholders with sample values for preview
+        const sampleData = {
+            '{{AppName}}': 'SmartWorkz',
+            '{{AppUrl}}': 'https://example.com',
+            '{{CompanyName}}': 'SmartWorkz Inc.',
+            '{{SupportEmail}}': 'support@example.com',
+            '{{CurrentYear}}': new Date().getFullYear().toString(),
+            '{{CurrentDate}}': new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+            '{{LogoUrl}}': 'https://via.placeholder.com/150x50?text=Logo',
+            '{{PrivacyUrl}}': '#privacy',
+            '{{TermsUrl}}': '#terms',
+            '{{UnsubscribeUrl}}': '#unsubscribe'
+        };
+
+        let previewContent = content;
+        for (const [key, value] of Object.entries(sampleData)) {
+            previewContent = previewContent.replaceAll(key, value);
+        }
+
+        const frame = document.getElementById('sectionPreviewFrame');
+        frame.srcdoc = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+            </head>
+            <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                ${previewContent}
+            </body>
+            </html>
+        `;
+        
+        new bootstrap.Modal(document.getElementById('sectionPreviewModal')).show();
+    }
+
+    // Auto-generate ID from name (only for create mode)
+    @if (!Model.IsEditMode)
+    {
+        <text>
+        document.getElementById('Name').addEventListener('input', function() {
+            const idField = document.getElementById('Id');
+            if (!idField.dataset.userModified) {
+                const prefix = '@Model.Type.ToString().ToLower()' + '-';
+                idField.value = prefix + this.value
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .replace(/\s+/g, '-')
+                    .replace(/-+/g, '-')
+                    .substring(0, 100 - prefix.length);
+            }
+        });
+
+        document.getElementById('Id').addEventListener('input', function() {
+            this.dataset.userModified = 'true';
+        });
+        </text>
+    }
+</script>

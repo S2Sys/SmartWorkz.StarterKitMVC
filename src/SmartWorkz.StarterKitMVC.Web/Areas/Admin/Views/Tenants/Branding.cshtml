@@ -1,4 +1,123 @@
-@model string
-@{ ViewData["Title"] = "Tenant Branding"; }
-<h1>Tenant Branding: @Model</h1>
-<p>Tenant branding shell.</p>
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.TenantBrandingViewModel
+@{
+    ViewData["Title"] = "Tenant Branding";
+    var tenantId = ViewData["TenantId"]?.ToString();
+}
+
+@section PageActions {
+    <a asp-action="Details" asp-route-id="@tenantId" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Back to Tenant
+    </a>
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-palette me-2"></i>Tenant Branding
+            </div>
+            <div class="card-body">
+                <form asp-action="Branding" asp-route-id="@tenantId" method="post">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="PrimaryColor" class="form-label">Primary Color</label>
+                            <div class="input-group">
+                                <input type="color" class="form-control form-control-color" id="primaryColorPicker" value="@Model.PrimaryColor" />
+                                <input asp-for="PrimaryColor" class="form-control" />
+                            </div>
+                            <span asp-validation-for="PrimaryColor" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="SecondaryColor" class="form-label">Secondary Color</label>
+                            <div class="input-group">
+                                <input type="color" class="form-control form-control-color" id="secondaryColorPicker" value="@Model.SecondaryColor" />
+                                <input asp-for="SecondaryColor" class="form-control" />
+                            </div>
+                            <span asp-validation-for="SecondaryColor" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="AccentColor" class="form-label">Accent Color</label>
+                            <div class="input-group">
+                                <input type="color" class="form-control form-control-color" id="accentColorPicker" value="@Model.AccentColor" />
+                                <input asp-for="AccentColor" class="form-control" />
+                            </div>
+                            <span asp-validation-for="AccentColor" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="LogoUrl" class="form-label">Logo URL</label>
+                        <input asp-for="LogoUrl" class="form-control" placeholder="https://example.com/logo.png" />
+                        <span asp-validation-for="LogoUrl" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="FaviconUrl" class="form-label">Favicon URL</label>
+                        <input asp-for="FaviconUrl" class="form-control" placeholder="https://example.com/favicon.ico" />
+                        <span asp-validation-for="FaviconUrl" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="FooterText" class="form-label">Footer Text</label>
+                        <input asp-for="FooterText" class="form-control" placeholder="© 2024 Company Name" />
+                        <span asp-validation-for="FooterText" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="CustomCss" class="form-label">Custom CSS</label>
+                        <textarea asp-for="CustomCss" class="form-control font-monospace" rows="4" placeholder="/* Custom CSS */"></textarea>
+                        <span asp-validation-for="CustomCss" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="pt-3 border-top">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>Save Branding
+                        </button>
+                        <a asp-action="Details" asp-route-id="@tenantId" class="btn btn-secondary">
+                            <i class="bi bi-x-lg me-1"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Preview Card -->
+        <div class="card admin-card mt-4">
+            <div class="card-header">
+                <i class="bi bi-eye me-2"></i>Preview
+            </div>
+            <div class="card-body" id="brandingPreview" style="background: linear-gradient(135deg, @Model.PrimaryColor 0%, @Model.SecondaryColor 100%); min-height: 100px; border-radius: 0.25rem;">
+                <div class="text-white text-center py-4">
+                    <h5>Brand Preview</h5>
+                    <p class="mb-0">Colors will be applied to the tenant's interface</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // Color picker sync
+    document.getElementById('primaryColorPicker')?.addEventListener('input', function() {
+        document.getElementById('PrimaryColor').value = this.value;
+        updatePreview();
+    });
+    document.getElementById('secondaryColorPicker')?.addEventListener('input', function() {
+        document.getElementById('SecondaryColor').value = this.value;
+        updatePreview();
+    });
+    document.getElementById('accentColorPicker')?.addEventListener('input', function() {
+        document.getElementById('AccentColor').value = this.value;
+    });
+    
+    function updatePreview() {
+        const primary = document.getElementById('PrimaryColor').value;
+        const secondary = document.getElementById('SecondaryColor').value;
+        document.getElementById('brandingPreview').style.background = 
+            `linear-gradient(135deg, ${primary} 0%, ${secondary} 100%)`;
+    }
+</script>
+}

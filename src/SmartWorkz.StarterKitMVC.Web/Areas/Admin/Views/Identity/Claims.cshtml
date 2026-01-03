@@ -1,3 +1,153 @@
-@{ ViewData["Title"] = "Claims"; }
-<h1>Claims</h1>
-<p>Claims management shell.</p>
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.ClaimsIndexViewModel
+@{
+    ViewData["Title"] = "Claims Management";
+}
+
+@section PageActions {
+    <a asp-action="ClaimTypeCreate" class="btn btn-primary btn-sm me-2">
+        <i class="bi bi-plus-lg me-1"></i>New Claim Type
+    </a>
+    <a asp-action="RoleClaims" class="btn btn-outline-secondary btn-sm me-2">
+        <i class="bi bi-shield me-1"></i>Role Claims
+    </a>
+    <a asp-action="EntityClaims" class="btn btn-outline-info btn-sm">
+        <i class="bi bi-diagram-3 me-1"></i>Entity Claims
+    </a>
+}
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card admin-card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Claim Types</h6>
+                        <h2 class="mb-0">@Model.TotalClaimTypes</h2>
+                    </div>
+                    <i class="bi bi-key fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card admin-card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Role Claims</h6>
+                        <h2 class="mb-0">@Model.TotalRoleClaims</h2>
+                    </div>
+                    <i class="bi bi-shield-check fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card admin-card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Categories</h6>
+                        <h2 class="mb-0">@Model.Categories.Count</h2>
+                    </div>
+                    <i class="bi bi-folder fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Claim Types by Category -->
+@foreach (var category in Model.Categories)
+{
+    var categoryTypes = Model.ClaimTypes.Where(ct => ct.Category == category).ToList();
+    <div class="card admin-card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-folder me-2"></i>@category</span>
+            <span class="badge bg-secondary">@categoryTypes.Count claim types</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 50px;"></th>
+                            <th>Key</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th class="text-center">Values</th>
+                            <th class="text-center">Multiple</th>
+                            <th class="text-center">System</th>
+                            <th style="width: 150px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var claimType in categoryTypes.OrderBy(ct => ct.SortOrder))
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    @if (!string.IsNullOrEmpty(claimType.Icon))
+                                    {
+                                        <i class="bi @claimType.Icon text-primary"></i>
+                                    }
+                                </td>
+                                <td><code>@claimType.Key</code></td>
+                                <td><strong>@claimType.Name</strong></td>
+                                <td class="text-muted small">@claimType.Description</td>
+                                <td class="text-center">
+                                    <a asp-action="ClaimTypeDetails" asp-route-id="@claimType.Id" class="badge bg-primary text-decoration-none">
+                                        @claimType.ValueCount values
+                                    </a>
+                                </td>
+                                <td class="text-center">
+                                    @if (claimType.AllowMultiple)
+                                    {
+                                        <i class="bi bi-check-circle text-success"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-x-circle text-muted"></i>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (claimType.IsSystem)
+                                    {
+                                        <span class="badge bg-secondary">System</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="ClaimTypeDetails" asp-route-id="@claimType.Id" class="btn btn-outline-primary" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="ClaimTypeEdit" asp-route-id="@claimType.Id" class="btn btn-outline-secondary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        @if (!claimType.IsSystem)
+                                        {
+                                            <form asp-action="ClaimTypeDelete" asp-route-id="@claimType.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this claim type?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@if (!Model.ClaimTypes.Any())
+{
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        No claim types defined yet. <a asp-action="ClaimTypeCreate">Create your first claim type</a>.
+    </div>
+}

@@ -1,0 +1,13 @@
+{
+  "id": "footer-minimal",
+  "name": "Minimal Footer",
+  "type": 1,
+  "htmlContent": "\u003Cdiv style=\u0022padding: 20px; border-top: 1px solid #dee2e6; text-align: center;\u0022\u003E\r\n    \u003Cp style=\u0022margin: 0; color: #6c757d; font-size: 12px; font-family: \u0027Segoe UI\u0027, Tahoma, Geneva, Verdana, sans-serif;\u0022\u003E\r\n        \u00A9 {{CurrentYear}} {{CompanyName}}\r\n    \u003C/p\u003E\r\n\u003C/div\u003E",
+  "isDefault": false,
+  "tenantId": null,
+  "isActive": true,
+  "createdAt": "2025-12-08T04:09:16.130211Z",
+  "updatedAt": "2025-12-08T04:09:16.3310959Z",
+  "createdBy": null,
+  "updatedBy": null
+}

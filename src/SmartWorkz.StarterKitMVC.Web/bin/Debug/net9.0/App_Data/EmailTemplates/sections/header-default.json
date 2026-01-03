@@ -1,0 +1,13 @@
+{
+  "id": "header-default",
+  "name": "Default Header",
+  "type": 0,
+  "htmlContent": "\u003Cdiv style=\u0022background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px 20px; text-align: center;\u0022\u003E\r\n    \u003Cimg src=\u0022{{LogoUrl}}\u0022 alt=\u0022{{AppName}}\u0022 style=\u0022max-height: 50px; margin-bottom: 10px;\u0022 onerror=\u0022this.style.display=\u0027none\u0027\u0022\u003E\r\n    \u003Ch1 style=\u0022color: #ffffff; margin: 0; font-family: \u0027Segoe UI\u0027, Tahoma, Geneva, Verdana, sans-serif; font-size: 24px;\u0022\u003E\r\n        {{AppName}}\r\n    \u003C/h1\u003E\r\n\u003C/div\u003E",
+  "isDefault": true,
+  "tenantId": null,
+  "isActive": true,
+  "createdAt": "2025-12-08T04:09:16.1290828Z",
+  "updatedAt": "2025-12-08T04:09:16.1372074Z",
+  "createdBy": null,
+  "updatedBy": null
+}

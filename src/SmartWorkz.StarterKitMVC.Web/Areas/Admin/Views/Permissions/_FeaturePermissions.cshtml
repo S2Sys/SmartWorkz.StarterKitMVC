@@ -1,0 +1,38 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.FeatureWithPermissionsViewModel
+@{
+    var level = (int)(ViewData["Level"] ?? 0);
+}
+
+<div class="mb-4 @(level > 0 ? "ms-4" : "")">
+    <div class="d-flex align-items-center mb-2">
+        <i class="@(Model.Icon ?? "bi-folder") me-2 text-primary"></i>
+        <h6 class="mb-0 me-2">@Model.Name</h6>
+        <button type="button" class="btn btn-outline-secondary btn-sm feature-toggle" data-feature-id="@Model.Id">
+            Toggle All
+        </button>
+    </div>
+    
+    <div class="row">
+        @foreach (var permission in Model.Permissions)
+        {
+            <div class="col-md-3 col-sm-6 mb-2">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" 
+                           name="permissionIds" 
+                           value="@permission.Id"
+                           id="perm_@permission.Id"
+                           data-feature="@Model.Id"
+                           @(permission.IsGranted ? "checked" : "") />
+                    <label class="form-check-label" for="perm_@permission.Id">
+                        @permission.Action
+                    </label>
+                </div>
+            </div>
+        }
+    </div>
+    
+    @foreach (var child in Model.Children)
+    {
+        @await Html.PartialAsync("_FeaturePermissions", child, new ViewDataDictionary(ViewData) { { "Level", level + 1 } })
+    }
+</div>

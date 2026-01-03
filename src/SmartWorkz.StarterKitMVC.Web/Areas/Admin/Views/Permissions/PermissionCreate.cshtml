@@ -1,0 +1,102 @@
+@model SmartWorkz.StarterKitMVC.Web.Areas.Admin.Models.PermissionFormViewModel
+@{
+    ViewData["Title"] = "Create Permission";
+}
+
+@section PageActions {
+    <a asp-action="Permissions" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Back to Permissions
+    </a>
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card admin-card">
+            <div class="card-header">
+                <i class="bi bi-plus-lg me-2"></i>Create Permission
+            </div>
+            <div class="card-body">
+                <form asp-action="PermissionCreate" method="post">
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Name <span class="text-danger">*</span></label>
+                        <input asp-for="Name" class="form-control" placeholder="e.g., View Orders" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="2" placeholder="What this permission allows"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Entity" class="form-label">Entity/Feature <span class="text-danger">*</span></label>
+                            <select asp-for="Entity" class="form-select">
+                                <option value="">-- Select Entity --</option>
+                                @foreach (var entity in Model.AvailableEntities)
+                                {
+                                    <option value="@entity.Value">@entity.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Entity" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Action" class="form-label">Action <span class="text-danger">*</span></label>
+                            <select asp-for="Action" class="form-select">
+                                <option value="">-- Select Action --</option>
+                                @foreach (var action in Model.AvailableActions)
+                                {
+                                    <option value="@action.Value">@action.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Action" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label asp-for="Group" class="form-label">Group</label>
+                            <input asp-for="Group" class="form-control" placeholder="For organizing in UI" />
+                            <span asp-validation-for="Group" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="SortOrder" class="form-label">Sort Order</label>
+                            <input asp-for="SortOrder" type="number" class="form-control" />
+                            <span asp-validation-for="SortOrder" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Permission key will be generated as: <code><span id="permKeyPreview">entity.action</span></code>
+                    </div>
+                    
+                    <div class="pt-3 border-top">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>Create Permission
+                        </button>
+                        <a asp-action="Permissions" class="btn btn-secondary">
+                            <i class="bi bi-x-lg me-1"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function updatePreview() {
+            const entity = document.getElementById('Entity')?.value?.toLowerCase() || 'entity';
+            const action = document.getElementById('Action')?.value?.toLowerCase() || 'action';
+            document.getElementById('permKeyPreview').textContent = `${entity}.${action}`;
+        }
+        document.getElementById('Entity')?.addEventListener('change', updatePreview);
+        document.getElementById('Action')?.addEventListener('change', updatePreview);
+    </script>
+}

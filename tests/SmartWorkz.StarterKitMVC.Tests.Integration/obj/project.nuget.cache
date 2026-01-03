@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "IZNlSXbQMBI=",
+  "dgSpecHash": "/nflR6wCX0k=",
   "success": true,
   "projectFilePath": "S:\\SmartWorkz\\StarterKit\\MVC\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\SmartWorkz.StarterKitMVC.Tests.Integration.csproj",
   "expectedPackageFiles": [
@@ -17,7 +17,20 @@
     "C:\\Users\\tsent\\.nuget\\packages\\xunit.core\\2.9.3\\xunit.core.2.9.3.nupkg.sha512",
     "C:\\Users\\tsent\\.nuget\\packages\\xunit.extensibility.core\\2.9.3\\xunit.extensibility.core.2.9.3.nupkg.sha512",
     "C:\\Users\\tsent\\.nuget\\packages\\xunit.extensibility.execution\\2.9.3\\xunit.extensibility.execution.2.9.3.nupkg.sha512",
-    "C:\\Users\\tsent\\.nuget\\packages\\xunit.runner.visualstudio\\3.1.4\\xunit.runner.visualstudio.3.1.4.nupkg.sha512"
+    "C:\\Users\\tsent\\.nuget\\packages\\xunit.runner.visualstudio\\3.1.4\\xunit.runner.visualstudio.3.1.4.nupkg.sha512",
+    "C:\\Users\\tsent\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.11\\microsoft.windowsdesktop.app.ref.9.0.11.nupkg.sha512",
+    "C:\\Users\\tsent\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.11\\microsoft.netcore.app.ref.9.0.11.nupkg.sha512",
+    "C:\\Users\\tsent\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.11\\microsoft.aspnetcore.app.ref.9.0.11.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json.",
+      "projectPath": "S:\\SmartWorkz\\StarterKit\\MVC\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\SmartWorkz.StarterKitMVC.Tests.Integration.csproj",
+      "warningLevel": 1,
+      "filePath": "S:\\SmartWorkz\\StarterKit\\MVC\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\SmartWorkz.StarterKitMVC.Tests.Integration.csproj",
+      "targetGraphs": []
+    }
+  ]
 }
