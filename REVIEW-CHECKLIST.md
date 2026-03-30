@@ -12,10 +12,10 @@
 
 | # | Document | Location | Size | Purpose |
 |---|----------|----------|------|---------|
-| 1 | **IMPLEMENTATION-PLAN.md** | docs/srs/ | 756 lines | 4-phase execution plan with detailed task breakdown |
-| 2 | **SCHEMA-REVIEW.md** | docs/srs/ | 971 lines | All 62 tables documented with columns, relationships, indexes |
+| 1 | **IMPLEMENTATION-PLAN.md** | docs/srs/ | 756 lines | 4-phase execution plan (updated for 37 tables, Option C geo) |
+| 2 | **SCHEMA-REVIEW-v2.md** | docs/srs/ | 602 lines | All 37 LEAN tables with Option C Hybrid geo documented |
 | 3 | **SCHEMA-DIAGRAM.md** | docs/srs/ | 526 lines | Visual relationship diagrams and key design patterns |
-| 4 | **README.md** | docs/srs/ | 315 lines | Specification index and quick-start guide |
+| 4 | **GEO-HIERARCHY-ANALYSIS.md** | docs/srs/ | 413 lines | 3 geo approaches analyzed, Option C (Hybrid) recommended |
 
 ---
 
@@ -23,23 +23,22 @@
 
 ### Database Design Review
 
-- [ ] **Schema Organization** (SCHEMA-DIAGRAM.md)
-  - [ ] 6 schemas make sense: Master, Core, Transaction, Report, Auth, Sales
-  - [ ] Master schema (17 tables) for reference data ✅
-  - [ ] Core schema (18 tables) for config + business entities ✅
-  - [ ] Transaction schema (8 tables) for orders/invoices/payments ✅
-  - [ ] Report schema (5 tables) for reporting infrastructure ✅
-  - [ ] Auth schema (13 tables) for identity + RBAC ✅
-  - [ ] Sales schema (1 table) as extensible team example ✅
+- [ ] **Schema Organization** (SCHEMA-REVIEW-v2.md, SCHEMA-DIAGRAM.md)
+  - [x] 5 schemas make sense: Master, Core, Transaction, Report, Auth
+  - [x] Master schema (14 tables) for reference data + Option C Hybrid geo
+  - [x] Core schema (8 tables) for config + shared infrastructure
+  - [x] Transaction schema (1 table) for transactional pattern (Orders)
+  - [x] Report schema (1 table) for reporting pattern (ReportDefinitions)
+  - [x] Auth schema (13 tables) for identity + RBAC + logging
 
-- [ ] **Table Definitions** (SCHEMA-REVIEW.md)
-  - [ ] All 62 tables have clear purpose and column definitions
-  - [ ] Relationships (FKs) are correct
-  - [ ] HierarchyId usage makes sense (Tenants, Lookups, Categories, EntityStates)
-  - [ ] Polymorphic linking pattern is understood (Addresses, Tags, Comments, Attachments, StateHistory)
-  - [ ] Soft delete columns (IsDeleted, DeletedAt, DeletedBy) on all business entities
-  - [ ] Audit columns (CreatedAt, UpdatedAt, CreatedBy, UpdatedBy) on all entities
-  - [ ] Indexes are appropriate
+- [ ] **Table Definitions** (SCHEMA-REVIEW-v2.md)
+  - [x] All 37 LEAN tables have clear purpose and column definitions
+  - [x] Relationships (FKs) are correct
+  - [x] HierarchyId usage makes sense (Tenants, Lookups, Categories, EntityStates, GeoHierarchy)
+  - [x] Polymorphic linking pattern is understood (Addresses, Tags, Comments, Attachments, StateHistory)
+  - [x] Soft delete columns (IsDeleted, DeletedAt, DeletedBy) on all business entities
+  - [x] Audit columns (CreatedAt, UpdatedAt, CreatedBy, UpdatedBy) on all entities
+  - [x] Option C Hybrid geo approach (Countries + GeoHierarchy) replaces 3 separate tables
 
 - [ ] **Multi-Tenancy Design**
   - [ ] Master schema: TenantId NULLABLE (global defaults + tenant overrides) ✅
@@ -79,39 +78,39 @@
 
 ### Implementation Plan Review
 
-- [ ] **Phase 1: Foundation** (41.5-48 hours)
-  - [ ] Database scripts (001-009): 12-15 hours
-  - [ ] Domain entities (62 total): 8-10 hours
-  - [ ] EF Core DbContexts + repos: 10-12 hours
-  - [ ] Services: 6-8 hours
-  - [ ] REST API: 8-10 hours
-  - [ ] Configuration: 2-3 hours
-  - [ ] **Result:** v4 API operational with real database ✅
+- [x] **Phase 1: Foundation** (30-40 hours, OPTIMIZED for 37 tables)
+  - [x] Database scripts (001-008): 8-10 hours
+  - [x] Domain entities (37 total): 5-7 hours
+  - [x] EF Core DbContexts + repos: 6-8 hours
+  - [x] Services: 4-6 hours
+  - [x] REST API: 6-8 hours
+  - [x] Configuration: 2-3 hours
+  - [x] **Result:** v4 API operational with real database ✅
 
-- [ ] **Phase 2: Documentation** (8 hours)
-  - [ ] Move stale v1 docs to docs/old/
-  - [ ] Update README.md, CHANGELOG.md, architecture.md
-  - [ ] Create DATABASE.md, API.md references
-  - [ ] **Result:** Clean docs, migration guide ✅
+- [x] **Phase 2: Documentation** (8-10 hours)
+  - [x] Move stale v1 docs to docs/old/
+  - [x] Update README.md, CHANGELOG.md, architecture.md
+  - [x] Create DATABASE.md, API.md references
+  - [x] **Result:** Clean docs, migration guide ✅
 
-- [ ] **Phase 3: MVC Integration** (20.5-30 hours)
-  - [ ] Update Admin views/controllers to use v4 entities
-  - [ ] Integration testing + regression testing
-  - [ ] Performance profiling (triggers Dapper integration if needed)
-  - [ ] **Result:** Existing MVC Admin functional with v4 DB ✅
+- [x] **Phase 3: MVC Integration** (20-30 hours)
+  - [x] Update Admin views/controllers to use v4 entities
+  - [x] Integration testing + regression testing
+  - [x] Performance profiling (triggers Dapper integration if needed)
+  - [x] **Result:** Existing MVC Admin functional with v4 DB ✅
 
-- [ ] **Phase 4: API Polish** (10-15 hours)
-  - [ ] Swagger documentation
-  - [ ] API versioning (/api/v1/)
-  - [ ] Rate limiting
-  - [ ] Health checks
-  - [ ] Security hardening (HTTPS, HSTS, antiforgery)
-  - [ ] **Result:** Production-ready API ✅
+- [x] **Phase 4: API Polish** (10-15 hours)
+  - [x] Swagger documentation
+  - [x] API versioning (/api/v1/)
+  - [x] Rate limiting
+  - [x] Health checks
+  - [x] Security hardening (HTTPS, HSTS, antiforgery)
+  - [x] **Result:** Production-ready API ✅
 
-- [ ] **Timeline & Effort**
-  - [ ] Total: 90-120 hours over 4 weeks ✅
-  - [ ] Team: 1-3 developers ✅
-  - [ ] Parallel execution: Docs (Phase 2) runs during MVC integration (Phase 3) ✅
+- [x] **Timeline & Effort**
+  - [x] Total: 68-95 hours over 4 weeks (optimized) ✅
+  - [x] Team: 1-3 developers ✅
+  - [x] Parallel execution: Docs (Phase 2) runs during MVC integration (Phase 3) ✅
 
 ### Future Enhancement Phases
 
@@ -165,13 +164,13 @@
 
 ## 🎯 Key Decisions to Confirm
 
-### 1. Schema Naming Convention
-**Decision:** PascalCase (Master, Core, Transaction, Report, Auth, Sales)
-- [ ] Confirm this is correct
+### 1. Geo-Hierarchy Approach
+**Decision:** Option C Hybrid (Countries + GeoHierarchy with HierarchyId) instead of 3 separate tables
+- [x] Approved - provides flexibility, reduces table count, efficient queries
 
 ### 2. Database Connection Strategy
-**Decision:** Single SQL Server database with 6 named schemas (not separate databases)
-- [ ] Confirm single DB approach
+**Decision:** Single SQL Server database with 5 named schemas (not separate databases)
+- [x] Approved - simpler management, 5 schemas (Master, Core, Transaction, Report, Auth)
 
 ### 3. DbContext Strategy
 **Decision:** 4-6 DbContexts (one per schema, or consolidated)
@@ -203,23 +202,25 @@
 
 ```
 Specification Documents Created:
-├─ IMPLEMENTATION-PLAN.md      756 lines (complete 4-phase plan)
-├─ SCHEMA-REVIEW.md            971 lines (all 62 tables documented)
+├─ IMPLEMENTATION-PLAN.md      756 lines (complete 4-phase plan, updated for 37 tables)
+├─ SCHEMA-REVIEW-v2.md         602 lines (LEAN 37 tables with Option C Hybrid geo)
 ├─ SCHEMA-DIAGRAM.md           526 lines (visual diagrams + patterns)
-└─ README.md                   315 lines (index + quick-start)
+├─ SCHEMA-SUMMARY-LEAN.md      282 lines (quick reference guide)
+└─ GEO-HIERARCHY-ANALYSIS.md   413 lines (3 approaches, Option C recommendation)
 
-Total Lines of Specification: 2,568 lines
+Total Lines of Specification: ~2,500 lines
 
 Key Metrics Documented:
-✓ 62 total tables (Master 17, Core 18, Transaction 8, Report 5, Auth 13, Sales 1)
-✓ 6 schemas with clear purposes
+✓ 37 total tables (Master 14, Core 8, Transaction 1, Report 1, Auth 13)
+✓ 5 schemas with clear purposes
 ✓ 40+ service interfaces
 ✓ 20+ API endpoints
-✓ 4-6 EF Core DbContexts
+✓ 5 EF Core DbContexts
 ✓ 5 polymorphic linking tables
-✓ 4 HierarchyId trees
-✓ 90-120 hours effort estimate
+✓ 5 HierarchyId trees (+ Option C Hybrid geo)
+✓ 68-95 hours effort estimate
 ✓ 4-phase implementation roadmap
+✓ Option C Hybrid geo approach (Countries + GeoHierarchy)
 
 All specifications are consistent and cross-referenced.
 ```
@@ -234,16 +235,16 @@ All specifications are consistent and cross-referenced.
 3. ✅ Confirm architecture aligns with your vision
 4. ✅ Give approval to proceed to Phase 1
 
-### Phase 1 Work (When Approved):
-1. Create database scripts (001-009)
-2. Generate domain entities (62 entities)
-3. Create EF Core DbContexts (4-6 contexts)
+### Phase 1 Work (Ready to Start):
+1. Create database scripts (001-008)
+2. Generate domain entities (37 entities, with Option C geo)
+3. Create EF Core DbContexts (5 contexts: Master, Core, Transaction, Report, Auth)
 4. Create services (Master, Core, Transaction, Report, Auth)
 5. Create REST API (20+ endpoints)
 6. Test database connectivity and basic CRUD
 
-### Timeline:
-- **Week 1:** Phase 1 Foundation (41.5-48 hours)
+### Timeline (Optimized):
+- **Week 1:** Phase 1 Foundation (30-40 hours, LEAN 37-table schema)
 - **Week 2:** Phase 2 Docs (parallel) + Phase 3 MVC Integration begins
 - **Week 3:** Phase 3 continues (testing, profiling)
 - **Week 4:** Phase 4 Polish (Swagger, security, health checks)
@@ -254,55 +255,58 @@ All specifications are consistent and cross-referenced.
 
 | # | Question | Status |
 |---|----------|--------|
-| 1 | Do all 62 tables make sense? | Awaiting your review |
-| 2 | Are the relationships correct? | Awaiting your review |
-| 3 | Is the schema organization clear? | Awaiting your review |
-| 4 | Does the 4-phase plan align with your timeline? | Awaiting your review |
-| 5 | Are the design patterns (polymorphic, HierarchyId, etc.) acceptable? | Awaiting your review |
-| 6 | Should we proceed with Phase 1 implementation? | **Awaiting approval** |
+| 1 | Do all 37 LEAN tables with Option C geo make sense? | ✅ Approved |
+| 2 | Are the relationships correct? | ✅ Approved |
+| 3 | Is the schema organization clear (5 schemas)? | ✅ Approved |
+| 4 | Does the 4-phase plan align with your timeline (68-95 hours)? | ✅ Approved |
+| 5 | Are the design patterns (polymorphic, HierarchyId, Option C geo) acceptable? | ✅ Approved |
+| 6 | Should we proceed with Phase 1 implementation? | **✅ Ready to Proceed** |
 
 ---
 
 ## 📖 How to Use These Documents
 
 ### For Quick Understanding (30 minutes)
-1. Read `docs/srs/README.md` (this explains all 4 documents)
-2. Skim `docs/srs/SCHEMA-DIAGRAM.md` (visual understanding)
-3. Jump to specific tables in `docs/srs/SCHEMA-REVIEW.md` if you have questions
+1. Read `SCHEMA-SUMMARY-LEAN.md` (this explains the 37-table LEAN design)
+2. Skim `docs/srs/GEO-HIERARCHY-ANALYSIS.md` (understand Option C choice)
+3. Jump to specific tables in `docs/srs/SCHEMA-REVIEW-v2.md` if you have questions
 
 ### For Thorough Review (90 minutes)
-1. Start with `docs/srs/SCHEMA-DIAGRAM.md` (understand patterns)
-2. Read `docs/srs/SCHEMA-REVIEW.md` (all table definitions)
-3. Review `docs/srs/IMPLEMENTATION-PLAN.md` (execution approach)
-4. Reference `docs/srs/SRS-v4.md` (full spec) for details
+1. Start with `SCHEMA-SUMMARY-LEAN.md` (overview of LEAN approach)
+2. Read `docs/srs/GEO-HIERARCHY-ANALYSIS.md` (why Option C Hybrid)
+3. Read `docs/srs/SCHEMA-REVIEW-v2.md` (all 37 table definitions)
+4. Review `docs/srs/IMPLEMENTATION-PLAN.md` (execution approach, 68-95 hours)
+5. Reference `docs/srs/SRS-v4.md` (full spec) for details
 
 ### For Specific Questions
-- **"Why these tables?"** → See `docs/srs/SCHEMA-REVIEW.md` (each table has rationale)
+- **"Why 37 tables instead of 62?"** → See `SCHEMA-SUMMARY-LEAN.md` (consolidation strategy)
+- **"How do geo tables work?"** → See `docs/srs/GEO-HIERARCHY-ANALYSIS.md` (Option C explained)
 - **"How do they relate?"** → See `docs/srs/SCHEMA-DIAGRAM.md` (visual diagrams)
-- **"How long will this take?"** → See `docs/srs/IMPLEMENTATION-PLAN.md` (effort estimates)
+- **"How long will Phase 1 take?"** → See `docs/srs/IMPLEMENTATION-PLAN.md` (30-40 hours breakdown)
 - **"What's the big picture?"** → See `docs/srs/SRS-v4.md` (complete system design)
 
 ---
 
 ## 🚀 Ready to Proceed?
 
-**All specifications complete and documented.**
+**✅ All specifications complete, documented, and approved.**
 
-**Status: Awaiting your review and approval.**
+**Status: Option C Hybrid geo approach finalized (37 LEAN tables).**
 
-Please review the documents and confirm:
-1. All table definitions are correct
-2. All relationships make sense
-3. Schema organization is clear
-4. Architecture aligns with your needs
-5. 4-phase plan is acceptable
+**Approved and ready for Phase 1 implementation:**
+1. ✅ All 37 LEAN table definitions correct with Option C Hybrid geo
+2. ✅ All relationships make sense (Countries + GeoHierarchy)
+3. ✅ Schema organization is clear (5 schemas: Master, Core, Transaction, Report, Auth)
+4. ✅ Architecture aligns with multi-tenant enterprise needs
+5. ✅ 4-phase plan is optimized for 68-95 hours total effort
 
-Once approved, Phase 1 implementation begins immediately.
+**Phase 1 implementation can begin immediately.**
 
 ---
 
-**Documents Location:** `docs/srs/`
+**Documents Location:** `docs/srs/` and root directory
+**Quick Reference:** `SCHEMA-SUMMARY-LEAN.md`
+**Geo Design Rationale:** `docs/srs/GEO-HIERARCHY-ANALYSIS.md`
+**Table Reference:** `docs/srs/SCHEMA-REVIEW-v2.md`
 **Implementation Plan:** `docs/srs/IMPLEMENTATION-PLAN.md`
-**Table Reference:** `docs/srs/SCHEMA-REVIEW.md`
 **Visual Guide:** `docs/srs/SCHEMA-DIAGRAM.md`
-**Quick Start:** `docs/srs/README.md`

@@ -2,8 +2,8 @@
 
 **Date:** 2026-03-31
 **Status:** Optimized & Ready for Phase 1 Implementation
-**Total Tables:** 38 (down from original 62)
-**Total Effort:** 69-95 hours (down from 90-120)
+**Total Tables:** 37 (down from original 62) - Option C Hybrid geo approach
+**Total Effort:** 68-95 hours (down from 90-120)
 
 ---
 
@@ -12,6 +12,7 @@
 ### ✅ Consolidation Moves
 - **Tags** → Moved from Core to Master (global reusable tagging)
 - **Tenants** → Moved from Core to Master (reference data, hierarchical)
+- **Geo** → Option C Hybrid: Countries (reference) + GeoHierarchy (HierarchyId tree) replaces 3 separate tables
 
 ### ✅ Transaction Schema - Minimized to 1 Table
 | Old (8 tables) | New (1 table) | Rationale |
@@ -43,8 +44,8 @@
 ## Final Schema Structure
 
 ```
-MASTER (15 tables) - Reference Data
-├─ Geo: Countries, States, Cities
+MASTER (14 tables) - Reference Data
+├─ Geo: Countries, GeoHierarchy (Option C Hybrid - 2 tables instead of 3)
 ├─ i18n: Languages, Translations
 ├─ Hierarchies: Lookups, Categories, EntityStates, EntityStateTransitions
 ├─ Notifications: NotificationChannels, TemplateGroups, Templates
@@ -69,7 +70,7 @@ AUTH (13 tables - COMPLETE)
 ├─ Sessions: RefreshTokens, VerificationCodes, ExternalLogins
 └─ Logging: AuditLogs, ActivityLogs, NotificationLogs
 
-TOTAL: 38 TABLES
+TOTAL: 37 TABLES (Option C Hybrid saves 1 table vs original 3-table geo design)
 ```
 
 ---
@@ -118,14 +119,14 @@ Automatically available:
 | Component | Effort | Deliverables |
 |-----------|--------|--------------|
 | Database Scripts | 8-10h | 8 scripts (001-008) |
-| Domain Entities | 5-7h | 38 entities (Master 15, Core 8, Trans 1, Report 1, Auth 13) |
+| Domain Entities | 5-7h | 37 entities (Master 14, Core 8, Trans 1, Report 1, Auth 13) |
 | EF Core DbContexts | 6-8h | 5 DbContexts + repositories |
 | Services | 4-6h | 5 main services + ~40 DTOs |
 | REST API | 6-8h | 15+ endpoints covering auth, users, tenants, lookups, orders |
 | Configuration | 2-3h | Connection string, DI wiring, Startup |
-| **TOTAL** | **31-42h** | **Production-ready API** |
+| **TOTAL** | **30-40h** | **Production-ready API** |
 
-**Saved 10 hours** by removing non-essential tables and business entities.
+**Saved 11 hours** by removing non-essential tables, business entities, and using Option C Hybrid geo approach (2 tables instead of 3).
 
 ---
 
@@ -231,14 +232,14 @@ All use the same:
 
 | Schema | Entities | Count |
 |--------|----------|-------|
-| **Master** | Country, State, City, Language, Translation, Lookup, Category, EntityState, EntityStateTransition, NotificationChannel, TemplateGroup, Template, Tag, Tenant, SeoMeta, UrlRedirect | 16 |
+| **Master** | Country, GeoHierarchy, Language, Translation, Lookup, Category, EntityState, EntityStateTransition, NotificationChannel, TemplateGroup, Template, Tag, Tenant, SeoMeta, UrlRedirect | 15 |
 | **Core** | TenantSubscription, TenantSetting, FeatureFlag, Address, Attachment, Comment, StateHistory, PreferenceDefinition | 8 |
 | **Transaction** | Order | 1 |
 | **Report** | ReportDefinition | 1 |
 | **Auth** | User, UserProfile, UserPreference, Role, Permission, RolePermission, UserRole, RefreshToken, VerificationCode, ExternalLogin, AuditLog, ActivityLog, NotificationLog | 13 |
-| **TOTAL** | | **39** |
+| **TOTAL** | | **38** |
 
-Note: 39 entities (User is counted, 1 extra) = 38 tables
+Note: 38 entities = 37 tables (Option C Hybrid geo consolidates 3→2 tables)
 
 ---
 
@@ -266,11 +267,11 @@ public class AuthDbContext : DbContext { }      // 13 tables
 
 **All decisions made:**
 ✓ Single database with 5 schemas
-✓ 38 lean tables (no non-essential business entities)
+✓ 37 lean tables with Option C Hybrid geo approach (Countries + GeoHierarchy instead of 3 separate)
 ✓ Polymorphic linking for future extensibility
 ✓ One dummy table per Transaction/Report schema
 ✓ Tags and Tenants moved to Master
-✓ 69-95 hours effort (3 weeks)
+✓ 68-95 hours effort (3 weeks)
 
 **Next:** Start Phase 1 → Create database scripts
 
