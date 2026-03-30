@@ -14,9 +14,9 @@
 | **Shared** | 5 | Polymorphic infrastructure (reusable across all schemas) | Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions |
 | **Core** | 3 | Tenant configuration only | TenantSubscriptions, TenantSettings, FeatureFlags |
 | **Transaction** | 1 | ONE dummy transactional table | LEAN: removed all but Orders |
-| **Report** | 1 | ONE dummy reporting table | LEAN: removed all but ReportDefinitions |
+| **Report** | 4 | SQL reports + Dashboard APIs + Scheduling + Execution history | ReportDefinitions, ReportSchedules, ReportExecutions, ReportMetadata |
 | **Auth** | 13 | Identity + RBAC + logs | UNCHANGED |
-| **TOTAL** | **37** | Single database, clean minimal structure | 6 schemas (cleaner separation) |
+| **TOTAL** | **40** | Single database, clean minimal structure with production-ready reporting | 6 schemas (cleaner separation) |
 
 ---
 
@@ -415,30 +415,239 @@ Purpose: Minimal table showing transactional pattern
 
 ---
 
-## 5. Report Schema (1 table - LEAN)
+## 5. Report Schema (4 tables - Common Patterns)
 
 ### Purpose
-**ONE dummy reporting table** to demonstrate reporting pattern. Teams extend with their report types.
+Flexible reporting framework supporting:
+- SQL-based reports (queries, stored procedures, ad-hoc)
+- Dashboard APIs (metrics, KPIs, charts, aggregations)
+- Report scheduling and execution tracking
+- Result caching and export capabilities
 
 ---
 
 ```sql
-ReportDefinitions (ONE dummy table representing reports)
-├─ ReportCode (VARCHAR 100, unique)
+ReportDefinitions (report/dashboard metadata)
+├─ ReportCode (VARCHAR 100, unique) -- 'SalesReport', 'UserKPIDashboard', 'OrderAnalysis'
 ├─ ReportName (NVARCHAR 255)
+├─ ReportType (VARCHAR 50) -- 'SQL', 'Dashboard', 'Stored_Procedure', 'API'
 ├─ Description (NVARCHAR MAX)
-├─ QuerySql (VARCHAR MAX) -- Raw SQL or stored procedure
-├─ Parameters (VARCHAR MAX, JSON) -- [{"Name": "StartDate", "Type": "date"}]
-├─ FK → Master.Tenants (TenantId, nullable)
+├─ QuerySql (VARCHAR MAX, nullable) -- Raw SQL for SQL/StoredProc types
+├─ ApiEndpoint (VARCHAR 500, nullable) -- For Dashboard/API types: /api/v1/metrics/sales
+├─ Parameters (VARCHAR MAX, JSON) -- [{"Name": "StartDate", "Type": "date", "Required": true}]
+├─ OutputFormat (VARCHAR 50) -- 'Table', 'Chart', 'Metric', 'HTML', 'JSON'
+├─ RefreshFrequency (VARCHAR 50) -- 'Realtime', 'Hourly', 'Daily', 'Weekly', 'Monthly', 'OnDemand'
+├─ CacheTtlMinutes (INT, nullable) -- Cache duration (NULL = no cache, 0 = always fresh)
+├─ Owner (UNIQUEIDENTIFIER, FK → Auth.Users)
+├─ FK → Master.Tenants (TenantId, nullable) -- NULL=global, GUID=tenant-specific
 ├─ IsActive (BIT)
-└─ Indexes: (ReportCode, TenantId)
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
+├─ IsDeleted (BIT)
+└─ Indexes: (ReportCode, TenantId), (ReportType, IsActive), (Owner)
 
-Purpose: Minimal table showing reporting pattern
-├─ Can schedule report runs
-├─ Can cache results
-├─ Can export to Excel/PDF/CSV
-└─ Teams extend: ReportSchedules, ReportResults, DashboardWidgets, etc. as needed
+ReportSchedules (scheduling metadata - for background execution)
+├─ ReportScheduleId (GUID)
+├─ FK → Report.ReportDefinitions (ReportCode)
+├─ ScheduleCron (VARCHAR 100) -- '0 9 * * 1' (9am Mon), '0 0 * * *' (midnight daily)
+├─ ExecutionType (VARCHAR 50) -- 'Scheduled', 'OnDemand'
+├─ IsEnabled (BIT)
+├─ LastExecutedAt (DATETIME2, nullable)
+├─ NextScheduledAt (DATETIME2, nullable)
+├─ NotifyEmail (VARCHAR 255, nullable) -- Send results to email
+├─ ExportFormat (VARCHAR 50, nullable) -- 'PDF', 'Excel', 'CSV', 'JSON'
+├─ FK → Master.Tenants (TenantId)
+├─ IsDeleted (BIT)
+└─ Indexes: (ReportCode, IsEnabled, NextScheduledAt), (TenantId)
+
+ReportExecutions (execution history for auditing and result tracking)
+├─ ExecutionId (GUID)
+├─ FK → Report.ReportDefinitions (ReportCode)
+├─ ExecutionStartTime (DATETIME2)
+├─ ExecutionEndTime (DATETIME2, nullable)
+├─ Status (VARCHAR 50) -- 'Running', 'Completed', 'Failed', 'Cancelled'
+├─ RowsReturned (INT, nullable)
+├─ ExecutionTimeMs (INT, nullable) -- Query duration
+├─ ErrorMessage (NVARCHAR MAX, nullable)
+├─ ExecutedBy (UNIQUEIDENTIFIER, FK → Auth.Users)
+├─ StorageUrl (VARCHAR 500, nullable) -- S3/Blob path to cached result
+├─ StorageExpiresAt (DATETIME2, nullable) -- When to delete cached result
+├─ FK → Master.Tenants (TenantId)
+├─ IsDeleted (BIT)
+└─ Indexes: (ReportCode, ExecutionStartTime DESC), (Status), (TenantId, ExecutionStartTime DESC)
+
+ReportMetadata (extensible metadata for filters, drill-downs, conditional formatting)
+├─ MetadataId (GUID)
+├─ FK → Report.ReportDefinitions (ReportCode)
+├─ MetadataKey (VARCHAR 100) -- 'ColumnOrder', 'Filters', 'Drill_Down_Config', 'Conditional_Formatting'
+├─ MetadataValue (NVARCHAR MAX, JSON) -- Complex config as JSON
+├─ MetadataType (VARCHAR 50) -- 'Column', 'Filter', 'Drill_Down', 'Conditional', 'Visualization'
+├─ FK → Master.Tenants (TenantId, nullable)
+├─ CreatedAt (DATETIME2)
+├─ UpdatedAt (DATETIME2)
+└─ Indexes: (ReportCode, MetadataKey), (TenantId)
 ```
+
+---
+
+### **Report Schema Summary: 4 tables** (Production-ready patterns)
+
+| Table | Purpose | Key Use Case |
+|-------|---------|--------------|
+| **ReportDefinitions** | Report/dashboard metadata | Define once, use everywhere (SQL, API, Dashboard) |
+| **ReportSchedules** | Scheduling & automation | Background reports, email delivery, export jobs |
+| **ReportExecutions** | Audit trail & history | Track execution, cache results, debug failures |
+| **ReportMetadata** | Extensible configuration | Filters, drill-downs, column order, charts, conditional formatting |
+
+### **Common Report Patterns Supported**
+
+#### 1️⃣ **SQL-Based Reports**
+```json
+{
+  "ReportCode": "SalesAnalysis",
+  "ReportType": "SQL",
+  "QuerySql": "SELECT ProductCategory, SUM(Amount) FROM Orders WHERE Date >= @StartDate",
+  "Parameters": [{"Name": "StartDate", "Type": "date"}],
+  "OutputFormat": "Table",
+  "CacheTtlMinutes": 60
+}
+```
+**Use Case:** Custom analytics, business intelligence, ad-hoc queries
+
+#### 2️⃣ **Dashboard Metrics/KPIs**
+```json
+{
+  "ReportCode": "SalesDashboard",
+  "ReportType": "Dashboard",
+  "ApiEndpoint": "/api/v1/metrics/sales",
+  "OutputFormat": "JSON",
+  "RefreshFrequency": "Realtime",
+  "CacheTtlMinutes": 5,
+  "Metadata": {
+    "Widgets": [
+      {"Type": "Metric", "Label": "Total Revenue", "Value": "{{SUM(Amount)}}"},
+      {"Type": "Chart", "ChartType": "Line", "Label": "Revenue Trend"},
+      {"Type": "Table", "Label": "Top Products"}
+    ]
+  }
+}
+```
+**Use Case:** Executive dashboards, live KPIs, real-time metrics
+
+#### 3️⃣ **Stored Procedure Reports**
+```json
+{
+  "ReportCode": "MonthlyFinancials",
+  "ReportType": "Stored_Procedure",
+  "QuerySql": "EXEC sp_GenerateMonthlyFinancials @Month, @Year",
+  "Parameters": [
+    {"Name": "Month", "Type": "int"},
+    {"Name": "Year", "Type": "int"}
+  ],
+  "OutputFormat": "Table"
+}
+```
+**Use Case:** Complex calculations, regulatory reports, financial statements
+
+#### 4️⃣ **Scheduled/Automated Reports**
+```json
+{
+  "ReportCode": "DailyRevenueEmail",
+  "ReportType": "SQL",
+  "RefreshFrequency": "Daily",
+  "ScheduleCron": "0 9 * * *",
+  "ExportFormat": "PDF",
+  "NotifyEmail": "finance@company.com",
+  "CacheTtlMinutes": 1440
+}
+```
+**Schedule:** 9am daily, export to PDF, email results
+**Execution Tracking:** ReportExecutions table tracks success/failure
+
+#### 5️⃣ **Master-Detail Reports with Drill-Down**
+```json
+{
+  "ReportCode": "SalesOrderDetail",
+  "ReportType": "SQL",
+  "OutputFormat": "Table",
+  "Metadata": {
+    "ColumnOrder": ["OrderNumber", "OrderDate", "TotalAmount", "Status"],
+    "Drill_Down": {
+      "OrderNumber": "/api/v1/orders/{id}/lines"
+    },
+    "Conditional_Formatting": {
+      "Status": {"Completed": "#90EE90", "Pending": "#FFD700", "Failed": "#FF6B6B"}
+    }
+  }
+}
+```
+**Use Case:** Click OrderNumber → see OrderLines, color-coded status
+
+#### 6️⃣ **Filter & Parameter Reports**
+```json
+{
+  "Parameters": [
+    {"Name": "StartDate", "Type": "date", "Required": true},
+    {"Name": "EndDate", "Type": "date", "Required": true},
+    {"Name": "Category", "Type": "string", "Required": false, "AllowedValues": ["Electronics", "Clothing", "Books"]},
+    {"Name": "MinAmount", "Type": "decimal", "Required": false, "Default": 0}
+  ]
+}
+```
+**API Call:** `/api/v1/reports/SalesReport?StartDate=2026-01-01&EndDate=2026-03-31&Category=Electronics`
+
+---
+
+### **Key Design Benefits**
+
+✅ **Unified Framework** — SQL reports, Dashboards, APIs use same ReportDefinitions table
+✅ **Scheduling Built-in** — ReportSchedules table handles background execution
+✅ **Audit Trail** — ReportExecutions tracks every run (status, timing, errors)
+✅ **Result Caching** — StorageUrl + CacheTtlMinutes for performance
+✅ **Extensible Metadata** — ReportMetadata handles filters, drill-downs, visualizations without schema changes
+✅ **Multi-tenant** — TenantId support for tenant-specific reports
+✅ **Export Ready** — PDF, Excel, CSV, JSON formats supported
+✅ **Real-time + Scheduled** — RefreshFrequency handles both live dashboards and batch reports
+
+---
+
+### **Real-World Example: Sales Dashboard**
+
+```
+1. Define Report (ReportDefinitions)
+   ReportCode: "SalesDashboard"
+   ReportType: "Dashboard"
+   ApiEndpoint: "/api/v1/metrics/sales"
+   RefreshFrequency: "Hourly"
+   CacheTtlMinutes: 60
+
+2. API Handler gets /api/v1/metrics/sales
+   → Queries ReportDefinitions for "SalesDashboard"
+   → Checks ReportExecutions for cached result
+   → If not cached, executes ApiEndpoint
+   → Stores result in ReportExecutions.StorageUrl
+   → Returns JSON with widgets/metrics
+
+3. Dashboard renders
+   Metric: Total Revenue (from cache)
+   Chart: Revenue Trend (last 30 days)
+   Table: Top 10 Products (drill-down to product detail)
+   Filters: Date Range, Category, Min Amount
+
+4. When expired (CacheTtlMinutes)
+   Background job in ReportSchedules
+   Executes fresh query, updates cache
+   Logs execution in ReportExecutions
+```
+
+---
+
+### **Teams Extend With (Phase 1+)**
+
+- **ReportDistribution** — Email, Slack, Teams notifications
+- **ReportPermissions** — Row-level security (who can see what reports)
+- **ReportTemplates** — Pre-built templates (Sales, Finance, HR)
+- **DashboardWidgets** — Custom widget definitions
+- **DataSourceConfig** — Support multiple databases, APIs, data warehouses
 
 ---
 
