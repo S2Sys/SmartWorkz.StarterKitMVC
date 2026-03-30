@@ -2,8 +2,8 @@
 
 **Date:** 2026-03-31
 **Status:** Optimized & Ready for Phase 1 Implementation
-**Total Tables:** 37 (down from original 62) - Option C Hybrid geo approach
-**Total Effort:** 68-95 hours (down from 90-120)
+**Total Tables:** 40 (down from original 62) - Option C Hybrid geo + Production-ready Reports
+**Total Effort:** 72-99 hours (includes comprehensive reporting framework)
 
 ---
 
@@ -68,8 +68,11 @@ CORE (3 tables) - Tenant Configuration
 TRANSACTION (1 table - LEAN)
 └─ Orders (dummy - represents transactional pattern)
 
-REPORT (1 table - LEAN)
-└─ ReportDefinitions (dummy - represents reporting pattern)
+REPORT (4 tables - PRODUCTION-READY)
+├─ ReportDefinitions (SQL + Dashboard + Scheduled reports metadata)
+├─ ReportSchedules (Background job scheduling with cron)
+├─ ReportExecutions (Audit trail, caching, result storage)
+└─ ReportMetadata (Filters, drill-downs, conditional formatting, extensible config)
 
 AUTH (13 tables - COMPLETE)
 ├─ Identity: Users, UserProfiles, UserPreferences
@@ -77,7 +80,7 @@ AUTH (13 tables - COMPLETE)
 ├─ Sessions: RefreshTokens, VerificationCodes, ExternalLogins
 └─ Logging: AuditLogs, ActivityLogs, NotificationLogs
 
-TOTAL: 37 TABLES (6 schemas: cleaner separation of concerns)
+TOTAL: 40 TABLES (6 schemas: cleaner separation + production-ready reporting)
 ```
 
 ---
@@ -125,15 +128,35 @@ Automatically available:
 
 | Component | Effort | Deliverables |
 |-----------|--------|--------------|
-| Database Scripts | 8-10h | 8 scripts (001-008) |
-| Domain Entities | 5-7h | 37 entities (Master 14, Core 8, Trans 1, Report 1, Auth 13) |
-| EF Core DbContexts | 6-8h | 5 DbContexts + repositories |
-| Services | 4-6h | 5 main services + ~40 DTOs |
-| REST API | 6-8h | 15+ endpoints covering auth, users, tenants, lookups, orders |
+| Database Scripts | 8-10h | 9 scripts (001-009) with Report schema |
+| Domain Entities | 5-7h | 40 entities (Master 14, Shared 5, Core 3, Trans 1, Report 4, Auth 13) |
+| EF Core DbContexts | 7-9h | 6 DbContexts (Master, Shared, Core, Trans, Report, Auth) + repositories |
+| Services | 5-7h | 6 main services + ~50 DTOs (incl. Report/Dashboard services) |
+| REST API | 8-10h | 20+ endpoints (auth, users, tenants, lookups, orders, **reports, dashboards**) |
 | Configuration | 2-3h | Connection string, DI wiring, Startup |
-| **TOTAL** | **30-40h** | **Production-ready API** |
+| **TOTAL** | **35-46h** | **Production-ready API with Reports & Dashboards** |
 
-**Saved 11 hours** by removing non-essential tables, business entities, and using Option C Hybrid geo approach (2 tables instead of 3).
+**Added production-ready reporting** with 4-table schema supporting SQL reports, dashboards, scheduling, execution history, and caching.
+
+---
+
+## Report Schema Capabilities (Phase 1 ready)
+
+**Supports all reporting patterns:**
+- SQL-based reports (custom queries, stored procedures)
+- Dashboard/KPI APIs (real-time metrics)
+- Master-detail reports (with drill-down)
+- Scheduled reports (daily/weekly/monthly with email)
+- Result caching (configurable TTL)
+- Export formats (PDF, Excel, CSV, JSON)
+- Audit trail (execution history, performance metrics)
+- Extensible metadata (filters, conditional formatting, visualizations)
+
+**Phase 1+ Extensions:**
+- ReportDistribution (email, Slack, Teams)
+- ReportPermissions (row-level security)
+- ReportTemplates (pre-built dashboards)
+- DashboardWidgets (custom components)
 
 ---
 
@@ -273,12 +296,12 @@ public class AuthDbContext : DbContext { }      // 13 tables
 ## Ready for Implementation ✅
 
 **All decisions made:**
-✓ Single database with 5 schemas
-✓ 37 lean tables with Option C Hybrid geo approach (Countries + GeoHierarchy instead of 3 separate)
-✓ Polymorphic linking for future extensibility
-✓ One dummy table per Transaction/Report schema
+✓ Single database with 6 schemas (Master, Shared, Core, Transaction, Report, Auth)
+✓ 40 tables with Option C Hybrid geo approach (Countries + GeoHierarchy instead of 3 separate)
+✓ Production-ready Report schema (SQL reports, Dashboards, Scheduling, Audit trail)
+✓ Polymorphic linking (Shared infrastructure) for future extensibility
 ✓ Tags and Tenants moved to Master
-✓ 68-95 hours effort (3 weeks)
+✓ 72-99 hours effort (3-4 weeks with comprehensive reporting)
 
 **Next:** Start Phase 1 → Create database scripts
 
