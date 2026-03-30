@@ -53,10 +53,17 @@ MASTER (14 tables) - Reference Data
 ├─ Tenants: Tenants ← MOVED (HierarchyId tree)
 └─ SEO: SeoMeta, UrlRedirects
 
-CORE (8 tables) - Configuration + Shared Infrastructure
-├─ Tenant Config: TenantSubscriptions, TenantSettings
-├─ Features: FeatureFlags
-└─ Shared Infrastructure: Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions
+SHARED (5 tables) - Polymorphic Infrastructure (reusable across ALL schemas)
+├─ Addresses (links to any entity: Customer, Order, Employee, etc.)
+├─ Attachments (file references for any entity)
+├─ Comments (discussion threads for any entity)
+├─ StateHistory (workflow tracking for any entity)
+└─ PreferenceDefinitions (configuration for system/tenant/user)
+
+CORE (3 tables) - Tenant Configuration
+├─ TenantSubscriptions (subscription plans)
+├─ TenantSettings (key-value config)
+└─ FeatureFlags (feature toggles)
 
 TRANSACTION (1 table - LEAN)
 └─ Orders (dummy - represents transactional pattern)
@@ -70,7 +77,7 @@ AUTH (13 tables - COMPLETE)
 ├─ Sessions: RefreshTokens, VerificationCodes, ExternalLogins
 └─ Logging: AuditLogs, ActivityLogs, NotificationLogs
 
-TOTAL: 37 TABLES (Option C Hybrid saves 1 table vs original 3-table geo design)
+TOTAL: 37 TABLES (6 schemas: cleaner separation of concerns)
 ```
 
 ---

@@ -10,12 +10,13 @@
 
 | Schema | Tables | Purpose | Change from v1 |
 |--------|--------|---------|-----------------|
-| **Master** | 14 | Global reference data + Tags (moved from Core) | NEW: Tags, Tenants; GEO: Countries + GeoHierarchy (Option C Hybrid) |
-| **Core** | 8 | Tenant config + shared infrastructure | LEAN: removed business entities |
+| **Master** | 14 | Global reference data + Tags, Tenants | GEO: Countries + GeoHierarchy (Option C Hybrid) |
+| **Shared** | 5 | Polymorphic infrastructure (reusable across all schemas) | Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions |
+| **Core** | 3 | Tenant configuration only | TenantSubscriptions, TenantSettings, FeatureFlags |
 | **Transaction** | 1 | ONE dummy transactional table | LEAN: removed all but Orders |
 | **Report** | 1 | ONE dummy reporting table | LEAN: removed all but ReportDefinitions |
 | **Auth** | 13 | Identity + RBAC + logs | UNCHANGED |
-| **TOTAL** | **37** | Single database, clean minimal structure | -25 tables (62 → 37) |
+| **TOTAL** | **37** | Single database, clean minimal structure | 6 schemas (cleaner separation) |
 
 ---
 
@@ -262,54 +263,14 @@ UrlRedirects
 
 ---
 
-## 2. Core Schema (8 tables)
+## 2. Shared Schema (5 tables)
 
 ### Purpose
-Tenant configuration and shared infrastructure for polymorphic linking. All tenant-specific.
+Polymorphic infrastructure used across ALL schemas. Enables flexible entity linking without schema changes.
 
 ---
 
-### 2.1 Tenant Configuration (2 tables)
-
-```sql
-TenantSubscriptions
-├─ FK → Master.Tenants (TenantId)
-├─ SubscriptionPlanCode (VARCHAR 50) -- 'Starter', 'Professional', 'Enterprise'
-├─ SubscriptionStartDate (DATETIME2)
-├─ SubscriptionEndDate (DATETIME2)
-├─ Status (VARCHAR 50) -- 'Active', 'Suspended', 'Expired', 'Cancelled'
-├─ AutoRenew (BIT)
-├─ Notes (NVARCHAR MAX)
-└─ Indexes: (TenantId, Status)
-
-TenantSettings (key-value store, flexible config)
-├─ FK → Master.Tenants (TenantId)
-├─ SettingKey (VARCHAR 255) -- 'EmailFromAddress', 'TimeZone', 'DateFormat'
-├─ SettingValue (NVARCHAR MAX)
-├─ SettingType (VARCHAR 50) -- 'string', 'int', 'bool', 'datetime', 'json'
-├─ IsEncrypted (BIT)
-├─ Indexes: (TenantId, SettingKey)
-└─ Rationale: Flexible key-value store, no schema changes for new settings
-```
-
----
-
-### 2.2 Feature Flags (1 table)
-
-```sql
-FeatureFlags (tenant-scoped feature toggles)
-├─ FK → Master.Tenants (TenantId, nullable for global flags)
-├─ FeatureName (VARCHAR 100) -- 'AdvancedReporting', 'CustomDomain', '2FA'
-├─ IsEnabled (BIT)
-├─ RolloutPercent (INT) -- 0-100 for gradual rollout
-├─ ValidFrom (DATETIME2, nullable)
-├─ ValidTo (DATETIME2, nullable)
-└─ Indexes: (TenantId, FeatureName)
-```
-
----
-
-### 2.3 Shared Infrastructure (5 tables - polymorphic linking via EntityType+EntityId)
+### 2.1 Shared Infrastructure (5 tables - polymorphic linking via EntityType+EntityId)
 
 ```sql
 Addresses (polymorphic - links to any entity)
@@ -372,14 +333,60 @@ PreferenceDefinitions (extensible user/tenant preferences)
 
 ---
 
-### **Core Schema Summary: 8 tables**
-- Tenant Config (2): TenantSubscriptions, TenantSettings
-- Feature Flags (1): FeatureFlags
-- Shared Infrastructure (5): Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions
+### **Shared Schema Summary: 5 tables**
+- Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions
+- **Used by:** Transaction, Report, Core, and all future domain schemas
+- **Pattern:** EntityType + EntityId allows linking to any entity type
 
 ---
 
-## 3. Transaction Schema (1 table - LEAN)
+## 3. Core Schema (3 tables)
+
+### Purpose
+Tenant configuration. All tenant-specific.
+
+---
+
+### 3.1 Tenant Configuration (3 tables)
+
+```sql
+TenantSubscriptions
+├─ FK → Master.Tenants (TenantId)
+├─ SubscriptionPlanCode (VARCHAR 50) -- 'Starter', 'Professional', 'Enterprise'
+├─ SubscriptionStartDate (DATETIME2)
+├─ SubscriptionEndDate (DATETIME2)
+├─ Status (VARCHAR 50) -- 'Active', 'Suspended', 'Expired', 'Cancelled'
+├─ AutoRenew (BIT)
+├─ Notes (NVARCHAR MAX)
+└─ Indexes: (TenantId, Status)
+
+TenantSettings (key-value store, flexible config)
+├─ FK → Master.Tenants (TenantId)
+├─ SettingKey (VARCHAR 255) -- 'EmailFromAddress', 'TimeZone', 'DateFormat'
+├─ SettingValue (NVARCHAR MAX)
+├─ SettingType (VARCHAR 50) -- 'string', 'int', 'bool', 'datetime', 'json'
+├─ IsEncrypted (BIT)
+├─ Indexes: (TenantId, SettingKey)
+└─ Rationale: Flexible key-value store, no schema changes for new settings
+
+FeatureFlags (tenant-scoped feature toggles)
+├─ FK → Master.Tenants (TenantId, nullable for global flags)
+├─ FeatureName (VARCHAR 100) -- 'AdvancedReporting', 'CustomDomain', '2FA'
+├─ IsEnabled (BIT)
+├─ RolloutPercent (INT) -- 0-100 for gradual rollout
+├─ ValidFrom (DATETIME2, nullable)
+├─ ValidTo (DATETIME2, nullable)
+└─ Indexes: (TenantId, FeatureName)
+```
+
+---
+
+### **Core Schema Summary: 3 tables**
+- Tenant Config (3): TenantSubscriptions, TenantSettings, FeatureFlags
+
+---
+
+## 4. Transaction Schema (1 table - LEAN)
 
 ### Purpose
 **ONE dummy transactional table** to demonstrate order/invoice pattern. Teams extend with their domain entities.
@@ -408,7 +415,7 @@ Purpose: Minimal table showing transactional pattern
 
 ---
 
-## 4. Report Schema (1 table - LEAN)
+## 5. Report Schema (1 table - LEAN)
 
 ### Purpose
 **ONE dummy reporting table** to demonstrate reporting pattern. Teams extend with their report types.
@@ -435,7 +442,7 @@ Purpose: Minimal table showing reporting pattern
 
 ---
 
-## 5. Auth Schema (13 tables - UNCHANGED)
+## 6. Auth Schema (13 tables - UNCHANGED)
 
 ### Purpose
 Identity, RBAC, sessions, verification, external logins, audit/activity logging.
