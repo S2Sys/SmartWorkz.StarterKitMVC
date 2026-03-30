@@ -10,47 +10,84 @@
 
 | Schema | Tables | Purpose | Change from v1 |
 |--------|--------|---------|-----------------|
-| **Master** | 15 | Global reference data + Tags (moved from Core) | NEW: Tags, Tenants |
+| **Master** | 14 | Global reference data + Tags (moved from Core) | NEW: Tags, Tenants; GEO: Countries + GeoHierarchy (Option C Hybrid) |
 | **Core** | 8 | Tenant config + shared infrastructure | LEAN: removed business entities |
 | **Transaction** | 1 | ONE dummy transactional table | LEAN: removed all but Orders |
 | **Report** | 1 | ONE dummy reporting table | LEAN: removed all but ReportDefinitions |
 | **Auth** | 13 | Identity + RBAC + logs | UNCHANGED |
-| **TOTAL** | **38** | Single database, clean minimal structure | -24 tables (62 → 38) |
+| **TOTAL** | **37** | Single database, clean minimal structure | -25 tables (62 → 37) |
 
 ---
 
-## 1. Master Schema (15 tables)
+## 1. Master Schema (14 tables)
 
 ### Purpose
 Global reference data used across all tenants. TenantId NULLABLE for global + tenant-specific overrides.
+**Note:** Option C (Hybrid) Geo approach consolidates 3 tables (Countries, States, Cities) into 2 tables (Countries + GeoHierarchy).
 
 ---
 
-### 1.1 Geo Reference (3 tables)
+### 1.1 Geo Reference - OPTION C (HYBRID: 2 tables)
 
+#### Countries (Reference Data - Fast Lookups)
 ```sql
 Countries
-├─ CountryCode2 (CHAR 2, unique)
-├─ CountryCode3 (CHAR 3, unique)
+├─ CountryId (GUID)
+├─ CountryCode2 (CHAR 2, unique) -- 'US', 'CA', 'GB'
+├─ CountryCode3 (CHAR 3, unique) -- 'USA', 'CAN', 'GBR'
 ├─ CountryName (NVARCHAR 100)
 ├─ PhoneCode (VARCHAR 20)
 ├─ CurrencyCode (CHAR 3)
+├─ TimeZone (VARCHAR 50, nullable)
+├─ Population (BIGINT, nullable)
+├─ IsActive (BIT)
+└─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
+```
+
+#### GeoHierarchy (Flexible State/City/District - HierarchyId Tree)
+```sql
+GeoHierarchy
+├─ GeoHierarchyId (GUID)
+├─ FK → Countries (CountryId) -- Link to country
+├─ NodePath (HierarchyId) -- Tree: /1/ (State) → /1/1/ (City) → /1/1/1/ (District)
+├─ GeoType (VARCHAR 50) -- 'State', 'City', 'District', 'Region', 'Neighborhood'
+├─ Code (VARCHAR 20) -- 'CA', 'NY', 'SF'
+├─ Name (NVARCHAR 100)
+├─ Latitude, Longitude (DECIMAL, nullable)
+├─ TimeZone (VARCHAR 50, nullable)
+├─ Population (BIGINT, nullable)
+├─ IsActive (BIT)
 └─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
 
-States
-├─ FK → Countries (CountryId)
-├─ StateCode (VARCHAR 10)
-├─ StateName (NVARCHAR 100)
-├─ Latitude, Longitude (DECIMAL)
-└─ Audit columns
+Example Hierarchy (USA):
+/1/                     States
+├─ /1/1/                California (State)
+│  ├─ /1/1/1/           San Francisco (City)
+│  ├─ /1/1/2/           Los Angeles (City)
+│  └─ /1/1/3/           Bay Area (District/Region)
+├─ /1/2/                New York (State)
+│  ├─ /1/2/1/           New York City (City)
+│  └─ /1/2/2/           Manhattan (District)
+└─ /1/3/                Texas (State)
+   └─ /1/3/1/           Dallas (City)
 
-Cities
-├─ FK → Countries (CountryId)
-├─ FK → States (StateId, nullable)
-├─ CityName (NVARCHAR 100)
-├─ Latitude, Longitude (DECIMAL)
-└─ Audit columns
+Example Hierarchy (UK):
+/1/                     Regions
+├─ /1/1/                England (Region)
+│  ├─ /1/1/1/           Greater London (County)
+│  │  ├─ /1/1/1/1/      Westminster (City)
+│  │  └─ /1/1/1/2/      Tower Hamlets (City)
+│  └─ /1/1/2/           Greater Manchester (County)
+└─ /1/2/                Scotland (Region)
+   └─ /1/2/1/           Edinburgh (City)
 ```
+
+**Why Option C (Hybrid)?**
+- ✅ Countries: Fast lookups for currency, phone code (indexed)
+- ✅ GeoHierarchy: Flexible State/City/District structure (HierarchyId, no schema changes)
+- ✅ Handles global variations (USA States, UK Districts, varying depths)
+- ✅ Address FK → GeoHierarchy for any geo level
+- ✅ Efficient: 2 tables instead of 3, better than single large table
 
 ---
 
@@ -214,8 +251,8 @@ UrlRedirects
 
 ---
 
-### **Master Schema Summary: 15 tables**
-- Geo (3): Countries, States, Cities
+### **Master Schema Summary: 14 tables** (Option C Hybrid Geo)
+- Geo (2): Countries, GeoHierarchy ← OPTION C (hybrid: reference + hierarchical)
 - i18n (2): Languages, Translations
 - Hierarchies (4): Lookups, Categories, EntityStates, EntityStateTransitions
 - Notifications (3): NotificationChannels, TemplateGroups, Templates

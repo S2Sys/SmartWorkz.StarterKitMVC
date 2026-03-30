@@ -8,23 +8,23 @@
 
 ## Executive Summary
 
-This document outlines the detailed execution plan to upgrade SmartWorkz StarterKitMVC from v1 (single-client MVC boilerplate with no real database) to v4 (multi-client enterprise platform with **38-table LEAN database**, REST API, and support for MVC, Razor Pages, Blazor WASM, and .NET MAUI).
+This document outlines the detailed execution plan to upgrade SmartWorkz StarterKitMVC from v1 (single-client MVC boilerplate with no real database) to v4 (multi-client enterprise platform with **37-table LEAN database** (Option C Hybrid geo approach), REST API, and support for MVC, Razor Pages, Blazor WASM, and .NET MAUI).
 
 **Key milestones:**
-- Phase 1: Foundation (31-42 hours) — Database, entities, EF Core DbContexts, API layer ⬇️ -10h (optimized)
+- Phase 1: Foundation (30-40 hours) — Database, entities, EF Core DbContexts, API layer ⬇️ -11h (37 tables, Option C geo)
 - Phase 2: Documentation & Cleanup (8-10 hours) — Move files, update docs
 - Phase 3: MVC Integration (20-30 hours) — Connect MVC to real database
 - Phase 4: API Polish (10-15 hours) — Swagger, versioning, rate limiting, CORS
 
-**Total Effort: 69-97 hours (down from 90-120 hours)**
+**Total Effort: 68-95 hours (down from 90-120 hours)**
 
 **Go-live readiness:** After Phase 1 completion, v4 is production-ready for API clients. Phases 2-4 add polish and full MVC integration.
 
 ---
 
-## 1. Phase 1: Foundation (31-42 hours) — CRITICAL PATH
+## 1. Phase 1: Foundation (30-40 hours) — CRITICAL PATH
 
-**OPTIMIZED for LEAN schema (38 tables instead of 62)**
+**OPTIMIZED for LEAN schema (37 tables with Option C Hybrid geo approach instead of 62)**
 
 ### 1.1 Database Layer (8-10 hours) — LEAN Schema
 
@@ -34,7 +34,7 @@ This document outlines the detailed execution plan to upgrade SmartWorkz Starter
 |---|------|--------|--------------|--------------|
 | 1.1.1 | Create `.gitignore` (standard .NET) | 0.5h | None | `.gitignore` file |
 | 1.1.2 | Create `database/v4/001_CreateSchemas.sql` | 0.5h | None | 5 schemas (Master, Core, Transaction, Report, Auth) |
-| 1.1.3 | Create `database/v4/002_CreateTables_Master.sql` | 1.5h | 1.1.2 | 15 tables: Countries, States, Cities, Languages, Translations, Lookups, Categories, EntityStates, EntityStateTransitions, NotificationChannels, TemplateGroups, Templates, Tags (moved), Tenants (moved), SeoMeta, UrlRedirects |
+| 1.1.3 | Create `database/v4/002_CreateTables_Master.sql` | 1.5h | 1.1.2 | 14 tables: Countries, GeoHierarchy (Option C Hybrid), Languages, Translations, Lookups, Categories, EntityStates, EntityStateTransitions, NotificationChannels, TemplateGroups, Templates, Tags (moved), Tenants (moved), SeoMeta, UrlRedirects |
 | 1.1.4 | Create `database/v4/003_CreateTables_Core.sql` | 1h | 1.1.2 | 8 tables: TenantSubscriptions, TenantSettings, FeatureFlags, Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions |
 | 1.1.5 | Create `database/v4/004_CreateTables_Transaction.sql` | 0.5h | 1.1.2 | 1 table: Orders (dummy) |
 | 1.1.6 | Create `database/v4/005_CreateTables_Report.sql` | 0.5h | 1.1.2 | 1 table: ReportDefinitions (dummy) |
@@ -58,12 +58,12 @@ This document outlines the detailed execution plan to upgrade SmartWorkz Starter
 | # | Task | Effort | Dependencies | Deliverables |
 |---|------|--------|--------------|--------------|
 | 1.2.1 | Create base entity classes (AuditableEntity, SoftDeletableEntity, TenantEntity, TenantSoftDeletableEntity) | 1.5h | None | 4 base classes in `Domain/Common/` |
-| 1.2.2 | Create Master schema entities (15 entities) | 1.5h | 1.2.1 | Country, State, City, Language, Translation, Lookup, Category, EntityState, EntityStateTransition, NotificationChannel, TemplateGroup, Template, Tag, Tenant, SeoMeta, UrlRedirect |
+| 1.2.2 | Create Master schema entities (14 entities) | 1.5h | 1.2.1 | Country, GeoHierarchy, Language, Translation, Lookup, Category, EntityState, EntityStateTransition, NotificationChannel, TemplateGroup, Template, Tag, Tenant, SeoMeta, UrlRedirect |
 | 1.2.3 | Create Core schema entities (8 entities) | 1h | 1.2.1 | TenantSubscription, TenantSetting, FeatureFlag, Address, Attachment, Comment, StateHistory, PreferenceDefinition |
 | 1.2.4 | Create Transaction schema entities (1 entity) | 0.5h | 1.2.1 | Order (dummy) |
 | 1.2.5 | Create Report schema entities (1 entity) | 0.5h | 1.2.1 | ReportDefinition (dummy) |
 | 1.2.6 | Create Auth schema entities (13 entities) | 1.5h | 1.2.1 | User, UserProfile, UserPreference, Role, Permission, RolePermission, UserRole, RefreshToken, VerificationCode, ExternalLogin, AuditLog, ActivityLog, NotificationLog |
-| **Subtotal** | | **5.5h** | | **All 38 domain entities with XML docs** |
+| **Subtotal** | | **5.5h** | | **All 37 domain entities with XML docs** |
 
 **Success criteria:**
 - All entities have proper navigation properties
@@ -79,7 +79,7 @@ This document outlines the detailed execution plan to upgrade SmartWorkz Starter
 
 | # | Task | Effort | Dependencies | Deliverables |
 |---|------|--------|--------------|--------------|
-| 1.3.1 | Create MasterDbContext | 1.5h | 1.2.2 | DbContext with 15 DbSets, fluent configurations |
+| 1.3.1 | Create MasterDbContext | 1.5h | 1.2.2 | DbContext with 14 DbSets (Countries, GeoHierarchy + others), fluent configurations |
 | 1.3.2 | Create CoreDbContext | 1h | 1.2.3 | DbContext with 8 DbSets, HierarchyId setup for Tenants (in Master) |
 | 1.3.3 | Create TransactionDbContext | 0.5h | 1.2.4 | DbContext with 1 DbSet (Orders), minimal setup |
 | 1.3.4 | Create ReportDbContext | 0.5h | 1.2.5 | DbContext with 1 DbSet (ReportDefinitions), minimal setup |
@@ -87,7 +87,7 @@ This document outlines the detailed execution plan to upgrade SmartWorkz Starter
 | 1.3.6 | Create generic Repository<T> pattern | 1h | All DbContexts | IRepository<T>, IQueryableRepository<T> with common CRUD + filtering |
 | 1.3.7 | Create tenant-scoped repositories (ITenantRepository<T>) | 1h | 1.3.6 | Tenant-filtered queries automatically |
 | 1.3.8 | Wire DbContexts in DI container | 0.5h | 1.3.1-1.3.5 | Register all 5 DbContexts with connection string |
-| **Subtotal** | | **7.5h** | | **All DbContexts + repositories + DI wiring** |
+| **Subtotal** | | **7.5h** | | **All 5 DbContexts + repositories + DI wiring** |
 
 **Success criteria:**
 - `dotnet build` succeeds with no EF Core warnings
