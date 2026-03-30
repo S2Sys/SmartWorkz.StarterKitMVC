@@ -274,21 +274,24 @@ Polymorphic infrastructure used across ALL schemas. Enables flexible entity link
 
 ```sql
 Addresses (polymorphic - links to any entity)
+├─ AddressId (GUID)
 ├─ EntityType (VARCHAR 50) -- 'Customer', 'Vendor', 'Employee', 'Order'
 ├─ EntityId (UNIQUEIDENTIFIER)
-├─ AddressType (VARCHAR 50) -- 'Billing', 'Shipping', 'Home', 'Office'
+├─ Type (VARCHAR 50) -- 'Billing', 'Shipping', 'Home', 'Office'
 ├─ Street1 (NVARCHAR 255)
 ├─ Street2 (NVARCHAR 255, nullable)
 ├─ City (NVARCHAR 100)
-├─ FK → Master.States (StateId, nullable)
+├─ FK → Master.GeoHierarchy (GeoHierarchyId, nullable) -- For City level
 ├─ FK → Master.Countries (CountryId)
 ├─ PostalCode (VARCHAR 20)
 ├─ Latitude, Longitude (DECIMAL, nullable)
 ├─ IsDefault (BIT)
 ├─ FK → Master.Tenants (TenantId)
-└─ Indexes: (EntityType, EntityId), (TenantId)
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
+└─ Indexes: (EntityType, EntityId), (TenantId), (Type)
 
 Attachments (polymorphic file references)
+├─ AttachmentId (GUID)
 ├─ EntityType (VARCHAR 50) -- 'Order', 'Invoice', 'Project'
 ├─ EntityId (UNIQUEIDENTIFIER)
 ├─ FileName (NVARCHAR 255)
@@ -298,37 +301,43 @@ Attachments (polymorphic file references)
 ├─ UploadedBy (UNIQUEIDENTIFIER, FK → Auth.Users)
 ├─ UploadedAt (DATETIME2)
 ├─ FK → Master.Tenants (TenantId)
-└─ Indexes: (EntityType, EntityId), (TenantId)
+├─ IsDeleted (BIT)
+└─ Indexes: (EntityType, EntityId), (TenantId), (UploadedAt)
 
 Comments (polymorphic commenting system)
+├─ CommentId (GUID)
 ├─ EntityType (VARCHAR 50) -- 'Order', 'Invoice', 'Project'
 ├─ EntityId (UNIQUEIDENTIFIER)
-├─ CommentText (NVARCHAR MAX)
-├─ CommentedBy (UNIQUEIDENTIFIER, FK → Auth.Users)
-├─ CommentedAt (DATETIME2)
+├─ Text (NVARCHAR MAX)
+├─ CreatedBy (UNIQUEIDENTIFIER, FK → Auth.Users)
+├─ CreatedAt (DATETIME2)
 ├─ ParentCommentId (UNIQUEIDENTIFIER, nullable) -- Nested replies
 ├─ FK → Master.Tenants (TenantId)
-└─ Indexes: (EntityType, EntityId), (TenantId, CommentedAt)
+├─ IsDeleted (BIT)
+└─ Indexes: (EntityType, EntityId), (TenantId, CreatedAt), (ParentCommentId)
 
 StateHistory (polymorphic state machine tracking)
+├─ StateHistoryId (GUID)
 ├─ EntityType (VARCHAR 50) -- 'Order', 'Invoice'
 ├─ EntityId (UNIQUEIDENTIFIER)
-├─ FromStateCode (VARCHAR 50)
-├─ ToStateCode (VARCHAR 50)
+├─ FromState (VARCHAR 50)
+├─ ToState (VARCHAR 50)
 ├─ ChangedBy (UNIQUEIDENTIFIER, FK → Auth.Users)
 ├─ ChangedAt (DATETIME2)
-├─ ChangeReason (NVARCHAR MAX)
+├─ Reason (NVARCHAR MAX, nullable)
 ├─ FK → Master.Tenants (TenantId)
-└─ Indexes: (EntityType, EntityId, ChangedAt), (TenantId)
+└─ Indexes: (EntityType, EntityId, ChangedAt DESC), (TenantId), (ToState)
 
 PreferenceDefinitions (extensible user/tenant preferences)
-├─ PreferenceKey (VARCHAR 100, unique) -- 'Theme', 'Language', 'TimeZone'
+├─ PreferenceDefinitionId (GUID)
+├─ Key (VARCHAR 100, unique) -- 'Theme', 'Language', 'TimeZone'
 ├─ DataType (VARCHAR 50) -- 'string', 'int', 'bool', 'datetime', 'json'
 ├─ DefaultValue (NVARCHAR MAX)
 ├─ AllowedValues (VARCHAR MAX, JSON) -- ["Light", "Dark", "Auto"]
 ├─ Scope (VARCHAR 50) -- 'System', 'User', 'Tenant'
 ├─ Description (NVARCHAR 500)
-└─ Indexes: PreferenceKey
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy
+└─ Indexes: Key, Scope
 ```
 
 ---
@@ -351,32 +360,38 @@ Tenant configuration. All tenant-specific.
 
 ```sql
 TenantSubscriptions
+├─ TenantSubscriptionId (GUID)
 ├─ FK → Master.Tenants (TenantId)
-├─ SubscriptionPlanCode (VARCHAR 50) -- 'Starter', 'Professional', 'Enterprise'
-├─ SubscriptionStartDate (DATETIME2)
-├─ SubscriptionEndDate (DATETIME2)
+├─ PlanCode (VARCHAR 50) -- 'Starter', 'Professional', 'Enterprise'
+├─ StartDate (DATETIME2)
+├─ EndDate (DATETIME2)
 ├─ Status (VARCHAR 50) -- 'Active', 'Suspended', 'Expired', 'Cancelled'
 ├─ AutoRenew (BIT)
 ├─ Notes (NVARCHAR MAX)
-└─ Indexes: (TenantId, Status)
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
+└─ Indexes: (TenantId, Status), (PlanCode)
 
 TenantSettings (key-value store, flexible config)
+├─ TenantSettingId (GUID)
 ├─ FK → Master.Tenants (TenantId)
-├─ SettingKey (VARCHAR 255) -- 'EmailFromAddress', 'TimeZone', 'DateFormat'
-├─ SettingValue (NVARCHAR MAX)
-├─ SettingType (VARCHAR 50) -- 'string', 'int', 'bool', 'datetime', 'json'
+├─ Key (VARCHAR 255) -- 'EmailFromAddress', 'TimeZone', 'DateFormat'
+├─ Value (NVARCHAR MAX)
+├─ DataType (VARCHAR 50) -- 'string', 'int', 'bool', 'datetime', 'json'
 ├─ IsEncrypted (BIT)
-├─ Indexes: (TenantId, SettingKey)
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy
+├─ Indexes: (TenantId, Key)
 └─ Rationale: Flexible key-value store, no schema changes for new settings
 
 FeatureFlags (tenant-scoped feature toggles)
+├─ FeatureFlagId (GUID)
 ├─ FK → Master.Tenants (TenantId, nullable for global flags)
-├─ FeatureName (VARCHAR 100) -- 'AdvancedReporting', 'CustomDomain', '2FA'
+├─ Name (VARCHAR 100) -- 'AdvancedReporting', 'CustomDomain', '2FA'
 ├─ IsEnabled (BIT)
 ├─ RolloutPercent (INT) -- 0-100 for gradual rollout
 ├─ ValidFrom (DATETIME2, nullable)
 ├─ ValidTo (DATETIME2, nullable)
-└─ Indexes: (TenantId, FeatureName)
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy
+└─ Indexes: (TenantId, Name), (Name, IsEnabled)
 ```
 
 ---
@@ -428,9 +443,10 @@ Flexible reporting framework supporting:
 
 ```sql
 ReportDefinitions (report/dashboard metadata)
-├─ ReportCode (VARCHAR 100, unique) -- 'SalesReport', 'UserKPIDashboard', 'OrderAnalysis'
-├─ ReportName (NVARCHAR 255)
-├─ ReportType (VARCHAR 50) -- 'SQL', 'Dashboard', 'Stored_Procedure', 'API'
+├─ ReportDefinitionId (GUID)
+├─ Code (VARCHAR 100, unique) -- 'SalesReport', 'UserKPIDashboard', 'OrderAnalysis'
+├─ Name (NVARCHAR 255)
+├─ Type (VARCHAR 50) -- 'SQL', 'Dashboard', 'Stored_Procedure', 'API'
 ├─ Description (NVARCHAR MAX)
 ├─ QuerySql (VARCHAR MAX, nullable) -- Raw SQL for SQL/StoredProc types
 ├─ ApiEndpoint (VARCHAR 500, nullable) -- For Dashboard/API types: /api/v1/metrics/sales
@@ -441,14 +457,14 @@ ReportDefinitions (report/dashboard metadata)
 ├─ Owner (UNIQUEIDENTIFIER, FK → Auth.Users)
 ├─ FK → Master.Tenants (TenantId, nullable) -- NULL=global, GUID=tenant-specific
 ├─ IsActive (BIT)
-├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy
 ├─ IsDeleted (BIT)
-└─ Indexes: (ReportCode, TenantId), (ReportType, IsActive), (Owner)
+└─ Indexes: (Code, TenantId), (Type, IsActive), (Owner)
 
 ReportSchedules (scheduling metadata - for background execution)
 ├─ ReportScheduleId (GUID)
-├─ FK → Report.ReportDefinitions (ReportCode)
-├─ ScheduleCron (VARCHAR 100) -- '0 9 * * 1' (9am Mon), '0 0 * * *' (midnight daily)
+├─ FK → Report.ReportDefinitions (ReportDefinitionId)
+├─ CronExpression (VARCHAR 100) -- '0 9 * * 1' (9am Mon), '0 0 * * *' (midnight daily)
 ├─ ExecutionType (VARCHAR 50) -- 'Scheduled', 'OnDemand'
 ├─ IsEnabled (BIT)
 ├─ LastExecutedAt (DATETIME2, nullable)
@@ -456,14 +472,15 @@ ReportSchedules (scheduling metadata - for background execution)
 ├─ NotifyEmail (VARCHAR 255, nullable) -- Send results to email
 ├─ ExportFormat (VARCHAR 50, nullable) -- 'PDF', 'Excel', 'CSV', 'JSON'
 ├─ FK → Master.Tenants (TenantId)
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy
 ├─ IsDeleted (BIT)
-└─ Indexes: (ReportCode, IsEnabled, NextScheduledAt), (TenantId)
+└─ Indexes: (ReportDefinitionId, IsEnabled, NextScheduledAt), (TenantId)
 
 ReportExecutions (execution history for auditing and result tracking)
-├─ ExecutionId (GUID)
-├─ FK → Report.ReportDefinitions (ReportCode)
-├─ ExecutionStartTime (DATETIME2)
-├─ ExecutionEndTime (DATETIME2, nullable)
+├─ ReportExecutionId (GUID)
+├─ FK → Report.ReportDefinitions (ReportDefinitionId)
+├─ StartTime (DATETIME2)
+├─ EndTime (DATETIME2, nullable)
 ├─ Status (VARCHAR 50) -- 'Running', 'Completed', 'Failed', 'Cancelled'
 ├─ RowsReturned (INT, nullable)
 ├─ ExecutionTimeMs (INT, nullable) -- Query duration
@@ -473,18 +490,17 @@ ReportExecutions (execution history for auditing and result tracking)
 ├─ StorageExpiresAt (DATETIME2, nullable) -- When to delete cached result
 ├─ FK → Master.Tenants (TenantId)
 ├─ IsDeleted (BIT)
-└─ Indexes: (ReportCode, ExecutionStartTime DESC), (Status), (TenantId, ExecutionStartTime DESC)
+└─ Indexes: (ReportDefinitionId, StartTime DESC), (Status), (TenantId, StartTime DESC)
 
 ReportMetadata (extensible metadata for filters, drill-downs, conditional formatting)
-├─ MetadataId (GUID)
-├─ FK → Report.ReportDefinitions (ReportCode)
-├─ MetadataKey (VARCHAR 100) -- 'ColumnOrder', 'Filters', 'Drill_Down_Config', 'Conditional_Formatting'
-├─ MetadataValue (NVARCHAR MAX, JSON) -- Complex config as JSON
-├─ MetadataType (VARCHAR 50) -- 'Column', 'Filter', 'Drill_Down', 'Conditional', 'Visualization'
+├─ ReportMetadataId (GUID)
+├─ FK → Report.ReportDefinitions (ReportDefinitionId)
+├─ Key (VARCHAR 100) -- 'ColumnOrder', 'Filters', 'Drill_Down_Config', 'Conditional_Formatting'
+├─ Value (NVARCHAR MAX, JSON) -- Complex config as JSON
+├─ Type (VARCHAR 50) -- 'Column', 'Filter', 'Drill_Down', 'Conditional', 'Visualization'
 ├─ FK → Master.Tenants (TenantId, nullable)
-├─ CreatedAt (DATETIME2)
-├─ UpdatedAt (DATETIME2)
-└─ Indexes: (ReportCode, MetadataKey), (TenantId)
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy
+└─ Indexes: (ReportDefinitionId, Key), (TenantId)
 ```
 
 ---
