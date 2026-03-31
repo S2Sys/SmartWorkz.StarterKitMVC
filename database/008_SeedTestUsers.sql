@@ -51,16 +51,16 @@ VALUES
 -- ============================================
 -- 4. Assign Permissions to Test Users
 -- ============================================
-DECLARE @PermCreateProduct NVARCHAR(MAX) = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Create Product');
-DECLARE @PermReadProduct NVARCHAR(MAX) = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Read Product');
-DECLARE @PermUpdateProduct NVARCHAR(MAX) = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Update Product');
-DECLARE @PermDeleteProduct NVARCHAR(MAX) = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Delete Product');
-DECLARE @PermCreateOrder NVARCHAR(MAX) = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Create Order');
-DECLARE @PermReadOrder NVARCHAR(MAX) = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Read Order');
-DECLARE @PermUpdateOrder NVARCHAR(MAX) = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Update Order');
-DECLARE @PermDeleteOrder NVARCHAR(MAX) = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Delete Order');
-DECLARE @PermViewReport NVARCHAR(MAX) = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'View Report');
-DECLARE @PermManageUsers NVARCHAR(MAX) = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Manage Users');
+DECLARE @PermCreateProduct INT = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Create Product');
+DECLARE @PermReadProduct INT = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Read Product');
+DECLARE @PermUpdateProduct INT = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Update Product');
+DECLARE @PermDeleteProduct INT = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Delete Product');
+DECLARE @PermCreateOrder INT = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Create Order');
+DECLARE @PermReadOrder INT = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Read Order');
+DECLARE @PermUpdateOrder INT = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Update Order');
+DECLARE @PermDeleteOrder INT = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Delete Order');
+DECLARE @PermViewReport INT = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'View Report');
+DECLARE @PermManageUsers INT = (SELECT TOP 1 PermissionId FROM Auth.Permissions WHERE Name = 'Manage Users');
 
 -- Admin User - All permissions
 INSERT INTO Auth.UserPermissions (UserPermissionId, UserId, PermissionId, TenantId, GrantedAt)
