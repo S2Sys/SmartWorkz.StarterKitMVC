@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Domain.Entities.Master;
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
+using SmartWorkz.StarterKitMVC.Shared.Validation;
+using SmartWorkz.StarterKitMVC.Web.Middleware;
 
 namespace SmartWorkz.StarterKitMVC.Web.Controllers.Api;
 
@@ -41,18 +44,53 @@ public class CategoryController : ControllerBase
 
     [HttpGet("root")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<Category>>> GetRootCategories(string tenantId)
+    public async Task<ActionResult<PaginationResponse<Category>>> GetRootCategories(
+        string tenantId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
+        if (page < 1 || pageSize < 1 || pageSize > 100)
+            throw new ValidationException(new List<ValidationFailure>
+            {
+                new() { PropertyName = "page", ErrorMessage = "Page must be >= 1" },
+                new() { PropertyName = "pageSize", ErrorMessage = "PageSize must be between 1 and 100" }
+            });
+
         var categories = await _categoryRepository.GetRootCategoriesAsync(tenantId);
-        return Ok(categories);
+        var paginated = categories
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        var totalCount = categories.Count;
+        var totalPages = (int)Math.Ceiling(totalCount / (decimal)pageSize);
+
+        return Ok(new PaginationResponse<Category>(paginated, page, pageSize, totalCount, totalPages));
     }
 
     [HttpGet("{parentId}/children")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<Category>>> GetChildCategories(string tenantId, int parentId)
+    public async Task<ActionResult<PaginationResponse<Category>>> GetChildCategories(
+        string tenantId,
+        int parentId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
+        if (page < 1 || pageSize < 1 || pageSize > 100)
+            throw new ValidationException(new List<ValidationFailure>
+            {
+                new() { PropertyName = "page", ErrorMessage = "Page must be >= 1" },
+                new() { PropertyName = "pageSize", ErrorMessage = "PageSize must be between 1 and 100" }
+            });
+
         var categories = await _categoryRepository.GetChildCategoriesAsync(tenantId, parentId);
-        return Ok(categories);
+        var paginated = categories
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        var totalCount = categories.Count;
+        var totalPages = (int)Math.Ceiling(totalCount / (decimal)pageSize);
+
+        return Ok(new PaginationResponse<Category>(paginated, page, pageSize, totalCount, totalPages));
     }
 
     [HttpGet("{id}/hierarchy")]
@@ -73,7 +111,10 @@ public class CategoryController : ControllerBase
     public async Task<ActionResult<Category>> CreateCategory(string tenantId, [FromBody] Category category)
     {
         if (string.IsNullOrWhiteSpace(category.Name))
-            return BadRequest("Category name is required");
+            throw new ValidationException(new List<ValidationFailure>
+            {
+                new() { PropertyName = nameof(category.Name), ErrorMessage = "Category name is required" }
+            });
 
         category.TenantId = tenantId;
         category.CreatedAt = DateTime.UtcNow;

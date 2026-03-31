@@ -1,0 +1,154 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|s:\\02_projects\\starter\\03_development\\mvc\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.shared\\extensions\\enumextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|solutionrelative:src\\smartworkz.starterkitmvc.shared\\extensions\\enumextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C12C656-CED5-4732-8756-31C978619309}|src\\SmartWorkz.StarterKitMVC.Web\\SmartWorkz.StarterKitMVC.Web.csproj|s:\\02_projects\\starter\\03_development\\mvc\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C12C656-CED5-4732-8756-31C978619309}|src\\SmartWorkz.StarterKitMVC.Web\\SmartWorkz.StarterKitMVC.Web.csproj|solutionrelative:src\\smartworkz.starterkitmvc.web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|s:\\02_projects\\starter\\03_development\\mvc\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.shared\\extensions\\filehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|solutionrelative:src\\smartworkz.starterkitmvc.shared\\extensions\\filehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|s:\\02_projects\\starter\\03_development\\mvc\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.shared\\extensions\\datetimeextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|solutionrelative:src\\smartworkz.starterkitmvc.shared\\extensions\\datetimeextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|s:\\02_projects\\starter\\03_development\\mvc\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.shared\\extensions\\collectionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|solutionrelative:src\\smartworkz.starterkitmvc.shared\\extensions\\collectionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C12C656-CED5-4732-8756-31C978619309}|src\\SmartWorkz.StarterKitMVC.Web\\SmartWorkz.StarterKitMVC.Web.csproj|s:\\02_projects\\starter\\03_development\\mvc\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.web\\areas\\admin\\views\\dashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0C12C656-CED5-4732-8756-31C978619309}|src\\SmartWorkz.StarterKitMVC.Web\\SmartWorkz.StarterKitMVC.Web.csproj|solutionrelative:src\\smartworkz.starterkitmvc.web\\areas\\admin\\views\\dashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4FF70D98-439E-454B-B3BE-09C0D427092E}|src\\SmartWorkz.StarterKitMVC.Infrastructure\\SmartWorkz.StarterKitMVC.Infrastructure.csproj|s:\\02_projects\\starter\\03_development\\mvc\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.infrastructure\\ai\\noopaiclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4FF70D98-439E-454B-B3BE-09C0D427092E}|src\\SmartWorkz.StarterKitMVC.Infrastructure\\SmartWorkz.StarterKitMVC.Infrastructure.csproj|solutionrelative:src\\smartworkz.starterkitmvc.infrastructure\\ai\\noopaiclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|s:\\02_projects\\starter\\03_development\\mvc\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\abstractions\\ihttpservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\abstractions\\ihttpservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Web\\Program.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Web\\Program.cs",
+              "ToolTip": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Web\\Program.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Web\\Program.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAABcAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T21:51:12.662Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "FileHelper.cs",
+              "DocumentMoniker": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\FileHelper.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\FileHelper.cs",
+              "ToolTip": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\FileHelper.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\FileHelper.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T21:51:12.725Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "EnumExtensions.cs",
+              "DocumentMoniker": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\EnumExtensions.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\EnumExtensions.cs",
+              "ToolTip": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\EnumExtensions.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\EnumExtensions.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAAAwAgAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T21:51:12.727Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DateTimeExtensions.cs",
+              "DocumentMoniker": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\DateTimeExtensions.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\DateTimeExtensions.cs",
+              "ToolTip": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\DateTimeExtensions.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\DateTimeExtensions.cs",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAQwBAAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T21:51:12.728Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "CollectionExtensions.cs",
+              "DocumentMoniker": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\CollectionExtensions.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\CollectionExtensions.cs",
+              "ToolTip": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\CollectionExtensions.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\CollectionExtensions.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T21:51:12.729Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Web\\Areas\\Admin\\Views\\Dashboard\\Index.cshtml",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Web\\Areas\\Admin\\Views\\Dashboard\\Index.cshtml",
+              "ToolTip": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Web\\Areas\\Admin\\Views\\Dashboard\\Index.cshtml",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Web\\Areas\\Admin\\Views\\Dashboard\\Index.cshtml",
+              "ViewState": "AgIAADMAAAAAAAAAAAAAACUAAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-30T21:51:12.732Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "NoOpAiClient.cs",
+              "DocumentMoniker": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Infrastructure\\AI\\NoOpAiClient.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Infrastructure\\AI\\NoOpAiClient.cs",
+              "ToolTip": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Infrastructure\\AI\\NoOpAiClient.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Infrastructure\\AI\\NoOpAiClient.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T21:51:12.733Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "IHttpService.cs",
+              "DocumentMoniker": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Abstractions\\IHttpService.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Abstractions\\IHttpService.cs",
+              "ToolTip": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Abstractions\\IHttpService.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Abstractions\\IHttpService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T21:51:12.735Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
