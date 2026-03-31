@@ -10,13 +10,12 @@
 
 | Schema | Tables | Purpose | Change from v1 |
 |--------|--------|---------|-----------------|
-| **Master** | 14 | Global reference data + Tags, Tenants | GEO: Countries + GeoHierarchy (Option C Hybrid) |
+| **Master** | 19 | Global reference data + Tags, Tenants, Config, Navigation | GEO: Countries + GeoHierarchy (Option C Hybrid); Config moved from Core; Menus + MenuItems NEW |
 | **Shared** | 5 | Polymorphic infrastructure (reusable across all schemas) | Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions |
-| **Core** | 3 | Tenant configuration only | TenantSubscriptions, TenantSettings, FeatureFlags |
 | **Transaction** | 1 | ONE dummy transactional table | LEAN: removed all but Orders |
 | **Report** | 4 | SQL reports + Dashboard APIs + Scheduling + Execution history | ReportDefinitions, ReportSchedules, ReportExecutions, ReportMetadata |
 | **Auth** | 13 | Identity + RBAC + logs | UNCHANGED |
-| **TOTAL** | **40** | Single database, clean minimal structure with production-ready reporting | 6 schemas (cleaner separation) |
+| **TOTAL** | **42** | Single database, clean minimal structure with production-ready reporting + dynamic navigation | 5 schemas (Core merged into Master) |
 
 ---
 
@@ -252,7 +251,106 @@ UrlRedirects
 
 ---
 
-### **Master Schema Summary: 14 tables** (Option C Hybrid Geo)
+### 1.8 Tenant Configuration (MOVED FROM CORE - Master reference)
+
+```sql
+TenantSubscriptions
+├─ TenantSubscriptionId (GUID)
+├─ FK → Master.Tenants (TenantId)
+├─ PlanCode (VARCHAR 50) -- 'Starter', 'Professional', 'Enterprise'
+├─ StartDate (DATETIME2)
+├─ EndDate (DATETIME2)
+├─ Status (VARCHAR 50) -- 'Active', 'Suspended', 'Expired', 'Cancelled'
+├─ AutoRenew (BIT)
+├─ Notes (NVARCHAR MAX)
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
+└─ Indexes: (TenantId, Status), (PlanCode)
+
+TenantSettings (key-value store, flexible config)
+├─ TenantSettingId (GUID)
+├─ FK → Master.Tenants (TenantId)
+├─ Key (VARCHAR 255) -- 'EmailFromAddress', 'TimeZone', 'DateFormat'
+├─ Value (NVARCHAR MAX)
+├─ DataType (VARCHAR 50) -- 'string', 'int', 'bool', 'datetime', 'json'
+├─ IsEncrypted (BIT)
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy
+└─ Indexes: (TenantId, Key)
+
+FeatureFlags (tenant-scoped feature toggles)
+├─ FeatureFlagId (GUID)
+├─ FK → Master.Tenants (TenantId, nullable for global flags)
+├─ Name (VARCHAR 100) -- 'AdvancedReporting', 'CustomDomain', '2FA'
+├─ IsEnabled (BIT)
+├─ RolloutPercent (INT) -- 0-100 for gradual rollout
+├─ ValidFrom (DATETIME2, nullable)
+├─ ValidTo (DATETIME2, nullable)
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy
+└─ Indexes: (TenantId, Name), (Name, IsEnabled)
+```
+
+---
+
+### 1.9 Navigation (NEW - Dynamic Menus + Sitemap)
+
+```sql
+Menus (menu definitions - groups of menu items)
+├─ MenuId (GUID)
+├─ Code (VARCHAR 50, unique) -- 'Main', 'Admin', 'Footer', 'Sidebar'
+├─ Name (NVARCHAR 200) -- 'Main Navigation', 'Admin Menu'
+├─ Description (NVARCHAR 500, nullable)
+├─ TenantId (GUID, nullable) -- NULL=global menu, GUID=tenant-specific override
+├─ IsActive (BIT)
+├─ DisplayOrder (INT)
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
+└─ Indexes: (Code), (TenantId, Code), (DisplayOrder)
+
+MenuItems (hierarchical menu items with HierarchyId)
+├─ MenuItemId (GUID)
+├─ FK → Master.Menus (MenuId)
+├─ NodePath (HierarchyId) -- Tree: /1/ → /1/1/ → /1/1/1/ (unlimited depth)
+├─ Code (VARCHAR 100) -- 'dashboard', 'products', 'reports'
+├─ Name (NVARCHAR 200) -- 'Dashboard', 'Products', 'Reports'
+├─ Url (NVARCHAR 500, nullable) -- '/admin/dashboard', '/products', NULL for groups
+├─ Icon (VARCHAR 100, nullable) -- 'fa-home', 'fa-box', 'fa-chart-bar'
+├─ DisplayOrder (INT) -- sort order within parent
+├─ ParentMenuItemId (GUID, nullable) -- FK: derived from HierarchyId
+├─ IsVisible (BIT) -- show/hide without deleting
+├─ RequiredRole (VARCHAR 100, nullable) -- 'Admin', 'Manager'; NULL=all users
+├─ RequiredPermission (VARCHAR 200, nullable) -- Fine-grained control; NULL=role-based only
+├─ OpenInNewTab (BIT)
+├─ CssClass (VARCHAR 200, nullable) -- 'active', 'disabled', custom styling
+├─ BadgeText (VARCHAR 50, nullable) -- '3', 'NEW', 'Beta'
+├─ BadgeColor (VARCHAR 50, nullable) -- 'red', 'green', 'blue', 'orange'
+├─ TenantId (GUID, nullable) -- NULL=global item, GUID=tenant-specific override
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
+└─ Indexes: (MenuId, NodePath), (MenuId, DisplayOrder), (TenantId, MenuId), (RequiredRole)
+
+**Example Menu Hierarchy:**
+Main Menu (/1/)
+├─ /1/1/ Home (route: /, icon: fa-home, role: NULL)
+├─ /1/2/ Products (route: /products, icon: fa-box, role: NULL)
+│  ├─ /1/2/1/ Electronics (route: /products/electronics)
+│  ├─ /1/2/2/ Clothing (route: /products/clothing)
+│  └─ /1/2/3/ Books (route: /products/books)
+├─ /1/3/ Orders (route: /orders, icon: fa-shopping-cart, role: "Customer")
+└─ /1/4/ Admin (name only, no route, icon: fa-cog, role: "Admin")
+   ├─ /1/4/1/ Dashboard (route: /admin/dashboard)
+   ├─ /1/4/2/ Users (route: /admin/users)
+   └─ /1/4/3/ Settings (route: /admin/settings)
+```
+
+**Benefits:**
+- Dynamic navigation without code changes
+- HierarchyId supports unlimited depth (breadcrumbs, tree views)
+- Role-based visibility (show/hide by RequiredRole or RequiredPermission)
+- Multi-tenant menus (global defaults + tenant overrides)
+- Badges for notifications (unread counts, status)
+- Auto-generates sitemap.xml from menu items
+- Efficient queries: Get all items in menu, get children of item, get breadcrumb path
+
+---
+
+### **Master Schema Summary: 20 tables** (Option C Hybrid Geo + Config + Navigation)
 - Geo (2): Countries, GeoHierarchy ← OPTION C (hybrid: reference + hierarchical)
 - i18n (2): Languages, Translations
 - Hierarchies (4): Lookups, Categories, EntityStates, EntityStateTransitions
@@ -260,6 +358,8 @@ UrlRedirects
 - Tags (1): Tags ← MOVED FROM CORE
 - Tenants (1): Tenants ← MOVED FROM CORE
 - SEO (2): SeoMeta, UrlRedirects
+- Config (3): TenantSubscriptions, TenantSettings, FeatureFlags ← MOVED FROM CORE
+- Navigation (2): Menus, MenuItems ← NEW (HierarchyId trees, role-based, auto-sitemap)
 
 ---
 
@@ -349,54 +449,13 @@ PreferenceDefinitions (extensible user/tenant preferences)
 
 ---
 
-## 3. Core Schema (3 tables)
+## 3. Core Schema (MERGED INTO MASTER)
 
-### Purpose
-Tenant configuration. All tenant-specific.
-
----
-
-### 3.1 Tenant Configuration (3 tables)
-
-```sql
-TenantSubscriptions
-├─ TenantSubscriptionId (GUID)
-├─ FK → Master.Tenants (TenantId)
-├─ PlanCode (VARCHAR 50) -- 'Starter', 'Professional', 'Enterprise'
-├─ StartDate (DATETIME2)
-├─ EndDate (DATETIME2)
-├─ Status (VARCHAR 50) -- 'Active', 'Suspended', 'Expired', 'Cancelled'
-├─ AutoRenew (BIT)
-├─ Notes (NVARCHAR MAX)
-├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
-└─ Indexes: (TenantId, Status), (PlanCode)
-
-TenantSettings (key-value store, flexible config)
-├─ TenantSettingId (GUID)
-├─ FK → Master.Tenants (TenantId)
-├─ Key (VARCHAR 255) -- 'EmailFromAddress', 'TimeZone', 'DateFormat'
-├─ Value (NVARCHAR MAX)
-├─ DataType (VARCHAR 50) -- 'string', 'int', 'bool', 'datetime', 'json'
-├─ IsEncrypted (BIT)
-├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy
-├─ Indexes: (TenantId, Key)
-└─ Rationale: Flexible key-value store, no schema changes for new settings
-
-FeatureFlags (tenant-scoped feature toggles)
-├─ FeatureFlagId (GUID)
-├─ FK → Master.Tenants (TenantId, nullable for global flags)
-├─ Name (VARCHAR 100) -- 'AdvancedReporting', 'CustomDomain', '2FA'
-├─ IsEnabled (BIT)
-├─ RolloutPercent (INT) -- 0-100 for gradual rollout
-├─ ValidFrom (DATETIME2, nullable)
-├─ ValidTo (DATETIME2, nullable)
-├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy
-└─ Indexes: (TenantId, Name), (Name, IsEnabled)
-```
+**NOTE:** Core schema tables (TenantSubscriptions, TenantSettings, FeatureFlags) have been moved to Master schema (section 1.8) for cleaner organization. Master now contains all global reference data + tenant configuration.
 
 ---
 
-### **Core Schema Summary: 3 tables**
+## 3. Transaction Schema (1 table - LEAN)
 - Tenant Config (3): TenantSubscriptions, TenantSettings, FeatureFlags
 
 ---
