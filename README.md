@@ -9,6 +9,9 @@
 - **✅ Implementation Plan:** [`docs/srs/IMPLEMENTATION-PLAN.md`](docs/srs/IMPLEMENTATION-PLAN.md) — 4-phase roadmap (34-45 hours)
 - **🔍 Geo Design Analysis:** [`docs/srs/GEO-HIERARCHY-ANALYSIS.md`](docs/srs/GEO-HIERARCHY-ANALYSIS.md) — Option C (Hybrid) approach
 - **📋 Review Checklist:** [`REVIEW-CHECKLIST.md`](REVIEW-CHECKLIST.md) — Pre-implementation validation
+- **🗺️ Menu System Guide:** [`docs/srs/MENU-SYSTEM-GUIDE.md`](docs/srs/MENU-SYSTEM-GUIDE.md) — Complete navigation implementation
+- **⚡ Quick Reference:** [`docs/srs/QUICK-REFERENCE-v4.md`](docs/srs/QUICK-REFERENCE-v4.md) — One-page schema overview
+- **📝 Updates Summary:** [`docs/srs/UPDATES-SUMMARY-v4.md`](docs/srs/UPDATES-SUMMARY-v4.md) — What changed in v4
 
 ## Architecture Overview
 
