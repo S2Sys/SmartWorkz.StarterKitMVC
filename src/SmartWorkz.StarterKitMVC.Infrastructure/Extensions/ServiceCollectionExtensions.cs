@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SmartWorkz.StarterKitMVC.Application.Mappings;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Application.Services;
 using SmartWorkz.StarterKitMVC.Infrastructure.Data;
@@ -62,16 +61,6 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds AutoMapper with all mapping profiles
-    /// </summary>
-    public static IServiceCollection AddAutoMapperProfiles(this IServiceCollection services)
-    {
-        services.AddAutoMapper(typeof(MappingProfiles));
-
-        return services;
-    }
-
-    /// <summary>
     /// Adds all infrastructure and application services at once
     /// </summary>
     public static IServiceCollection AddApplicationStack(
@@ -81,7 +70,6 @@ public static class ServiceCollectionExtensions
         services.AddInfrastructureServices(configuration);
         services.AddRepositories();
         services.AddApplicationServices();
-        services.AddAutoMapperProfiles();
 
         return services;
     }
