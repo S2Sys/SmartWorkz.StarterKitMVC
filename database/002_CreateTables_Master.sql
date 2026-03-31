@@ -1,7 +1,7 @@
 ﻿-- ============================================
 -- SmartWorkz v4 Phase 1: Master Schema Tables
 -- Date: 2026-03-31
--- 18 Tables: Configuration, Navigation, Menu system
+-- 17 Tables: Configuration, Navigation, Menu system, Core Master Data
 -- ============================================
 
 USE Boilerplate;
@@ -400,62 +400,7 @@ CREATE INDEX IX_Customers_Email ON Master.Customers(Email);
 CREATE INDEX IX_Customers_TenantId ON Master.Customers(TenantId);
 
 -- ============================================
--- 17. Suppliers (Supplier Master)
--- ============================================
-CREATE TABLE Master.Suppliers (
-    SupplierId INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(256) NOT NULL,
-    ContactPerson NVARCHAR(256),
-    Email NVARCHAR(256),
-    Phone NVARCHAR(20),
-    Address NVARCHAR(500),
-    City NVARCHAR(100),
-    State NVARCHAR(100),
-    PostalCode NVARCHAR(20),
-    CountryId INT,
-    TenantId NVARCHAR(128),
-    IsActive BIT NOT NULL DEFAULT 1,
-    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-    CreatedBy NVARCHAR(256),
-    UpdatedAt DATETIME2,
-    UpdatedBy NVARCHAR(256),
-    IsDeleted BIT NOT NULL DEFAULT 0,
-    FOREIGN KEY (CountryId) REFERENCES Master.Countries(CountryId),
-    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
-);
-
-CREATE INDEX IX_Suppliers_Name ON Master.Suppliers(Name);
-CREATE INDEX IX_Suppliers_TenantId ON Master.Suppliers(TenantId);
-
--- ============================================
--- 18. Inventory (Stock Management)
--- ============================================
-CREATE TABLE Master.Inventory (
-    InventoryId INT PRIMARY KEY IDENTITY(1,1),
-    ProductId INT NOT NULL,
-    SupplierId INT,
-    QuantityAvailable INT NOT NULL DEFAULT 0,
-    QuantityReserved INT NOT NULL DEFAULT 0,
-    QuantityInTransit INT NOT NULL DEFAULT 0,
-    WarehouseLocation NVARCHAR(100),
-    TenantId NVARCHAR(128),
-    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-    CreatedBy NVARCHAR(256),
-    UpdatedAt DATETIME2,
-    UpdatedBy NVARCHAR(256),
-    IsDeleted BIT NOT NULL DEFAULT 0,
-    FOREIGN KEY (ProductId) REFERENCES Master.Products(ProductId),
-    FOREIGN KEY (SupplierId) REFERENCES Master.Suppliers(SupplierId),
-    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
-    UNIQUE (TenantId, ProductId)
-);
-
-CREATE INDEX IX_Inventory_ProductId ON Master.Inventory(ProductId);
-CREATE INDEX IX_Inventory_SupplierId ON Master.Inventory(SupplierId);
-CREATE INDEX IX_Inventory_TenantId ON Master.Inventory(TenantId);
-
--- ============================================
--- 19. TenantUsers (User to Tenant Mapping)
+-- 17. TenantUsers (User to Tenant Mapping)
 -- ============================================
 CREATE TABLE Master.TenantUsers (
     TenantUserId INT PRIMARY KEY IDENTITY(1,1),
@@ -476,5 +421,5 @@ CREATE TABLE Master.TenantUsers (
 CREATE INDEX IX_TenantUsers_TenantId ON Master.TenantUsers(TenantId);
 CREATE INDEX IX_TenantUsers_UserId ON Master.TenantUsers(UserId);
 
-PRINT '✓ Master schema: 19 tables created successfully'
+PRINT '✓ Master schema: 17 tables created successfully'
 
