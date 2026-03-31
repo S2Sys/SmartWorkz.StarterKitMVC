@@ -7,8 +7,12 @@ using SmartWorkz.StarterKitMVC.Web.Middleware;
 
 namespace SmartWorkz.StarterKitMVC.Web.Controllers.Api;
 
+/// <summary>
+/// Product management endpoints for CRUD operations and product search/filtering.
+/// </summary>
 [ApiController]
 [Route("api/{tenantId}/[controller]")]
+[Produces("application/json")]
 public class ProductController : ControllerBase
 {
     private readonly IProductRepository _productRepository;

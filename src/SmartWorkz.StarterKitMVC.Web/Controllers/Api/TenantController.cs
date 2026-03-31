@@ -4,8 +4,12 @@ using SmartWorkz.StarterKitMVC.Domain.Entities.Master;
 
 namespace SmartWorkz.StarterKitMVC.Web.Controllers.Api;
 
+/// <summary>
+/// Tenant management endpoints for multi-tenant operations.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Produces("application/json")]
 public class TenantController : ControllerBase
 {
     private readonly ITenantRepository _tenantRepository;
