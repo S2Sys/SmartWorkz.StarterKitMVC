@@ -139,18 +139,7 @@ VALUES
     (@MenuId, 'Users', '/admin/users', 'fas fa-user-tie', 7, '/7/', 'Super Admin', 'DEFAULT', 1, 'System');
 
 -- ============================================
--- 9. Seed Categories
--- ============================================
-INSERT INTO Master.Categories (Name, Slug, Description, NodePath, TenantId, IsActive, CreatedBy)
-VALUES
-    ('Electronics', 'electronics', 'Electronic products', '/1/', 'DEFAULT', 1, 'System'),
-    ('Clothing', 'clothing', 'Clothing and apparel', '/2/', 'DEFAULT', 1, 'System'),
-    ('Books', 'books', 'Books and publications', '/3/', 'DEFAULT', 1, 'System'),
-    ('Home & Garden', 'home-garden', 'Home and garden products', '/4/', 'DEFAULT', 1, 'System'),
-    ('Sports', 'sports', 'Sports and outdoor equipment', '/5/', 'DEFAULT', 1, 'System');
-
--- ============================================
--- 10. Seed TimeZones
+-- 9. Seed TimeZones
 -- ============================================
 INSERT INTO Master.TimeZones (Identifier, DisplayName, StandardName, OffsetHours, TenantId, IsActive, CreatedBy)
 VALUES
@@ -165,7 +154,7 @@ VALUES
     ('Australia/Sydney', 'Australian Eastern Time', 'AEST', 10, 'DEFAULT', 1, 'System');
 
 -- ============================================
--- 11. Seed Configuration
+-- 10. Seed Configuration
 -- ============================================
 INSERT INTO Master.Configuration ([Key], Value, ConfigType, Description, TenantId, IsActive, CreatedBy)
 VALUES
@@ -179,7 +168,7 @@ VALUES
     ('EmailSmtpPort', '587', 'Int', 'SMTP server port', 'DEFAULT', 1, 'System');
 
 -- ============================================
--- 12. Seed Feature Flags
+-- 11. Seed Feature Flags
 -- ============================================
 INSERT INTO Master.FeatureFlags (Name, Description, IsEnabled, TenantId, CreatedBy)
 VALUES
@@ -199,7 +188,6 @@ PRINT '✓ Roles: 6'
 PRINT '✓ Permissions: 12'
 PRINT '✓ Menus: 3'
 PRINT '✓ Menu Items: 13'
-PRINT '✓ Categories: 5'
 PRINT '✓ TimeZones: 9'
 PRINT '✓ Configuration: 8'
 PRINT '✓ Feature Flags: 6'

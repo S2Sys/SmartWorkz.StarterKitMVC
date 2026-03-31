@@ -1,7 +1,7 @@
 ﻿-- ============================================
 -- SmartWorkz v4 Phase 1: Master Schema Tables
 -- Date: 2026-03-31
--- 17 Tables: Configuration, Navigation, Menu system, Core Master Data
+-- 14 Tables: Core boilerplate - Configuration, Navigation, Localization, CMS, Multi-tenancy
 -- ============================================
 
 USE Boilerplate;
@@ -212,67 +212,7 @@ CREATE INDEX IX_MenuItems_TenantId ON Master.MenuItems(TenantId);
 CREATE INDEX IX_MenuItems_Level ON Master.MenuItems(Level);
 
 -- ============================================
--- 10. Categories (Product Categories with hierarchy)
--- ============================================
-CREATE TABLE Master.Categories (
-    CategoryId INT PRIMARY KEY IDENTITY(1,1),
-    ParentCategoryId INT,
-    Name NVARCHAR(256) NOT NULL,
-    Slug NVARCHAR(256) NOT NULL,
-    Description NVARCHAR(MAX),
-    NodePath HIERARCHYID, -- For unlimited nesting
-    Level AS (NodePath.GetLevel()) PERSISTED,
-    TenantId NVARCHAR(128),
-    IsActive BIT NOT NULL DEFAULT 1,
-    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-    CreatedBy NVARCHAR(256),
-    UpdatedAt DATETIME2,
-    UpdatedBy NVARCHAR(256),
-    IsDeleted BIT NOT NULL DEFAULT 0,
-    FOREIGN KEY (ParentCategoryId) REFERENCES Master.Categories(CategoryId),
-    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
-    UNIQUE (TenantId, Slug)
-);
-
-CREATE INDEX IX_Categories_ParentCategoryId ON Master.Categories(ParentCategoryId);
-CREATE INDEX IX_Categories_Slug ON Master.Categories(Slug);
-CREATE INDEX IX_Categories_NodePath ON Master.Categories(NodePath);
-CREATE INDEX IX_Categories_TenantId ON Master.Categories(TenantId);
-
--- ============================================
--- 11. Products (Base product table)
--- ============================================
-CREATE TABLE Master.Products (
-    ProductId INT PRIMARY KEY IDENTITY(1,1),
-    CategoryId INT NOT NULL,
-    SKU NVARCHAR(100) NOT NULL,
-    Name NVARCHAR(256) NOT NULL,
-    Slug NVARCHAR(256) NOT NULL,
-    Description NVARCHAR(MAX),
-    Price DECIMAL(18, 2) NOT NULL,
-    Cost DECIMAL(18, 2),
-    Stock INT NOT NULL DEFAULT 0,
-    ImageUrl NVARCHAR(500),
-    TenantId NVARCHAR(128),
-    IsActive BIT NOT NULL DEFAULT 1,
-    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-    CreatedBy NVARCHAR(256),
-    UpdatedAt DATETIME2,
-    UpdatedBy NVARCHAR(256),
-    IsDeleted BIT NOT NULL DEFAULT 0,
-    FOREIGN KEY (CategoryId) REFERENCES Master.Categories(CategoryId),
-    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
-    UNIQUE (TenantId, SKU),
-    UNIQUE (TenantId, Slug)
-);
-
-CREATE INDEX IX_Products_CategoryId ON Master.Products(CategoryId);
-CREATE INDEX IX_Products_SKU ON Master.Products(SKU);
-CREATE INDEX IX_Products_Slug ON Master.Products(Slug);
-CREATE INDEX IX_Products_TenantId ON Master.Products(TenantId);
-
--- ============================================
--- 12. GeoHierarchy (Geographic Hierarchy)
+-- 10. GeoHierarchy (Geographic Hierarchy)
 -- ============================================
 CREATE TABLE Master.GeoHierarchy (
     GeoId INT PRIMARY KEY IDENTITY(1,1),
@@ -297,7 +237,7 @@ CREATE INDEX IX_GeoHierarchy_NodePath ON Master.GeoHierarchy(NodePath);
 CREATE INDEX IX_GeoHierarchy_TenantId ON Master.GeoHierarchy(TenantId);
 
 -- ============================================
--- 13. GeolocationPages (Regional Content)
+-- 11. GeolocationPages (Regional Content)
 -- ============================================
 CREATE TABLE Master.GeolocationPages (
     GeoPageId INT PRIMARY KEY IDENTITY(1,1),
@@ -322,7 +262,7 @@ CREATE INDEX IX_GeolocationPages_Slug ON Master.GeolocationPages(Slug);
 CREATE INDEX IX_GeolocationPages_TenantId ON Master.GeolocationPages(TenantId);
 
 -- ============================================
--- 14. CustomPages (CMS Pages)
+-- 12. CustomPages (CMS Pages)
 -- ============================================
 CREATE TABLE Master.CustomPages (
     PageId INT PRIMARY KEY IDENTITY(1,1),
@@ -345,7 +285,7 @@ CREATE INDEX IX_CustomPages_Slug ON Master.CustomPages(Slug);
 CREATE INDEX IX_CustomPages_TenantId ON Master.CustomPages(TenantId);
 
 -- ============================================
--- 15. BlogPosts (Blog Content)
+-- 13. BlogPosts (Blog Content)
 -- ============================================
 CREATE TABLE Master.BlogPosts (
     PostId INT PRIMARY KEY IDENTITY(1,1),
@@ -370,37 +310,7 @@ CREATE INDEX IX_BlogPosts_PublishedAt ON Master.BlogPosts(PublishedAt);
 CREATE INDEX IX_BlogPosts_TenantId ON Master.BlogPosts(TenantId);
 
 -- ============================================
--- 16. Customers (Customer Master)
--- ============================================
-CREATE TABLE Master.Customers (
-    CustomerId INT PRIMARY KEY IDENTITY(1,1),
-    FirstName NVARCHAR(100) NOT NULL,
-    LastName NVARCHAR(100) NOT NULL,
-    Email NVARCHAR(256) NOT NULL,
-    Phone NVARCHAR(20),
-    Address NVARCHAR(500),
-    City NVARCHAR(100),
-    State NVARCHAR(100),
-    PostalCode NVARCHAR(20),
-    CountryId INT,
-    DateOfBirth DATE,
-    TenantId NVARCHAR(128),
-    IsActive BIT NOT NULL DEFAULT 1,
-    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-    CreatedBy NVARCHAR(256),
-    UpdatedAt DATETIME2,
-    UpdatedBy NVARCHAR(256),
-    IsDeleted BIT NOT NULL DEFAULT 0,
-    FOREIGN KEY (CountryId) REFERENCES Master.Countries(CountryId),
-    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
-    UNIQUE (TenantId, Email)
-);
-
-CREATE INDEX IX_Customers_Email ON Master.Customers(Email);
-CREATE INDEX IX_Customers_TenantId ON Master.Customers(TenantId);
-
--- ============================================
--- 17. TenantUsers (User to Tenant Mapping)
+-- 14. TenantUsers (User to Tenant Mapping)
 -- ============================================
 CREATE TABLE Master.TenantUsers (
     TenantUserId INT PRIMARY KEY IDENTITY(1,1),
@@ -421,5 +331,5 @@ CREATE TABLE Master.TenantUsers (
 CREATE INDEX IX_TenantUsers_TenantId ON Master.TenantUsers(TenantId);
 CREATE INDEX IX_TenantUsers_UserId ON Master.TenantUsers(UserId);
 
-PRINT '✓ Master schema: 17 tables created successfully'
+PRINT '✓ Master schema: 14 tables created successfully'
 
