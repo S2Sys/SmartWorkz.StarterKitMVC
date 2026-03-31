@@ -1,7 +1,7 @@
 ﻿-- ============================================
 -- SmartWorkz v4 Phase 1: Master Schema Tables
 -- Date: 2026-03-31
--- 14 Tables: Core boilerplate - Configuration, Navigation, Localization, CMS, Multi-tenancy
+-- 15 Tables: Core boilerplate - Configuration, Navigation, Hierarchy, Localization, CMS, Multi-tenancy
 -- ============================================
 
 USE Boilerplate;
@@ -180,7 +180,36 @@ CREATE INDEX IX_Menus_MenuType ON Master.Menus(MenuType);
 CREATE INDEX IX_Menus_TenantId ON Master.Menus(TenantId);
 
 -- ============================================
--- 9. MenuItems (Hierarchical Menu Items)
+-- 9. Categories (Hierarchical Categories with multiple levels)
+-- ============================================
+CREATE TABLE Master.Categories (
+    CategoryId INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(256) NOT NULL,
+    Slug NVARCHAR(256) NOT NULL,
+    Description NVARCHAR(MAX),
+    NodePath HIERARCHYID, -- For unlimited nesting: /1/, /1/1/, /1/1/1/
+    Level AS (NodePath.GetLevel()) PERSISTED,
+    DisplayOrder INT NOT NULL DEFAULT 0,
+    Icon NVARCHAR(100),
+    ImageUrl NVARCHAR(500),
+    TenantId NVARCHAR(128),
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    UNIQUE (TenantId, Slug)
+);
+
+CREATE INDEX IX_Categories_NodePath ON Master.Categories(NodePath);
+CREATE INDEX IX_Categories_Slug ON Master.Categories(Slug);
+CREATE INDEX IX_Categories_Level ON Master.Categories(Level);
+CREATE INDEX IX_Categories_TenantId ON Master.Categories(TenantId);
+
+-- ============================================
+-- 10. MenuItems (Hierarchical Menu Items)
 -- ============================================
 CREATE TABLE Master.MenuItems (
     MenuItemId INT PRIMARY KEY IDENTITY(1,1),
@@ -212,7 +241,7 @@ CREATE INDEX IX_MenuItems_TenantId ON Master.MenuItems(TenantId);
 CREATE INDEX IX_MenuItems_Level ON Master.MenuItems(Level);
 
 -- ============================================
--- 10. GeoHierarchy (Geographic Hierarchy)
+-- 11. GeoHierarchy (Geographic Hierarchy)
 -- ============================================
 CREATE TABLE Master.GeoHierarchy (
     GeoId INT PRIMARY KEY IDENTITY(1,1),
@@ -237,7 +266,7 @@ CREATE INDEX IX_GeoHierarchy_NodePath ON Master.GeoHierarchy(NodePath);
 CREATE INDEX IX_GeoHierarchy_TenantId ON Master.GeoHierarchy(TenantId);
 
 -- ============================================
--- 11. GeolocationPages (Regional Content)
+-- 12. GeolocationPages (Regional Content)
 -- ============================================
 CREATE TABLE Master.GeolocationPages (
     GeoPageId INT PRIMARY KEY IDENTITY(1,1),
@@ -262,7 +291,7 @@ CREATE INDEX IX_GeolocationPages_Slug ON Master.GeolocationPages(Slug);
 CREATE INDEX IX_GeolocationPages_TenantId ON Master.GeolocationPages(TenantId);
 
 -- ============================================
--- 12. CustomPages (CMS Pages)
+-- 13. CustomPages (CMS Pages)
 -- ============================================
 CREATE TABLE Master.CustomPages (
     PageId INT PRIMARY KEY IDENTITY(1,1),
@@ -285,7 +314,7 @@ CREATE INDEX IX_CustomPages_Slug ON Master.CustomPages(Slug);
 CREATE INDEX IX_CustomPages_TenantId ON Master.CustomPages(TenantId);
 
 -- ============================================
--- 13. BlogPosts (Blog Content)
+-- 14. BlogPosts (Blog Content)
 -- ============================================
 CREATE TABLE Master.BlogPosts (
     PostId INT PRIMARY KEY IDENTITY(1,1),
@@ -310,7 +339,7 @@ CREATE INDEX IX_BlogPosts_PublishedAt ON Master.BlogPosts(PublishedAt);
 CREATE INDEX IX_BlogPosts_TenantId ON Master.BlogPosts(TenantId);
 
 -- ============================================
--- 14. TenantUsers (User to Tenant Mapping)
+-- 15. TenantUsers (User to Tenant Mapping)
 -- ============================================
 CREATE TABLE Master.TenantUsers (
     TenantUserId INT PRIMARY KEY IDENTITY(1,1),
@@ -331,5 +360,5 @@ CREATE TABLE Master.TenantUsers (
 CREATE INDEX IX_TenantUsers_TenantId ON Master.TenantUsers(TenantId);
 CREATE INDEX IX_TenantUsers_UserId ON Master.TenantUsers(UserId);
 
-PRINT '✓ Master schema: 14 tables created successfully'
+PRINT '✓ Master schema: 15 tables created successfully'
 

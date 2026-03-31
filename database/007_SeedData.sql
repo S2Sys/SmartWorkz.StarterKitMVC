@@ -139,7 +139,58 @@ VALUES
     (@MenuId, 'Users', '/admin/users', 'fas fa-user-tie', 7, '/7/', 'Super Admin', 'DEFAULT', 1, 'System');
 
 -- ============================================
--- 9. Seed TimeZones
+-- 9. Seed Categories (Hierarchical with multiple levels)
+-- ============================================
+-- Level 1: Root categories
+INSERT INTO Master.Categories (Name, Slug, Description, NodePath, DisplayOrder, TenantId, IsActive, CreatedBy)
+VALUES
+    ('Products', 'products', 'Products and services', '/1/', 1, 'DEFAULT', 1, 'System'),
+    ('Resources', 'resources', 'Learning resources and guides', '/2/', 2, 'DEFAULT', 1, 'System'),
+    ('Documentation', 'documentation', 'Technical documentation', '/3/', 3, 'DEFAULT', 1, 'System'),
+    ('Support', 'support', 'Support and help', '/4/', 4, 'DEFAULT', 1, 'System');
+
+-- Level 2: Subcategories under Products
+DECLARE @ProductsCatId INT = (SELECT TOP 1 CategoryId FROM Master.Categories WHERE Slug = 'products' AND TenantId = 'DEFAULT');
+DECLARE @ResourcesCatId INT = (SELECT TOP 1 CategoryId FROM Master.Categories WHERE Slug = 'resources' AND TenantId = 'DEFAULT');
+DECLARE @DocsCatId INT = (SELECT TOP 1 CategoryId FROM Master.Categories WHERE Slug = 'documentation' AND TenantId = 'DEFAULT');
+DECLARE @SupportCatId INT = (SELECT TOP 1 CategoryId FROM Master.Categories WHERE Slug = 'support' AND TenantId = 'DEFAULT');
+
+-- Get parent NodePaths
+DECLARE @ProductsPath HIERARCHYID = (SELECT TOP 1 NodePath FROM Master.Categories WHERE CategoryId = @ProductsCatId);
+DECLARE @ResourcesPath HIERARCHYID = (SELECT TOP 1 NodePath FROM Master.Categories WHERE CategoryId = @ResourcesCatId);
+DECLARE @DocsPath HIERARCHYID = (SELECT TOP 1 NodePath FROM Master.Categories WHERE CategoryId = @DocsCatId);
+DECLARE @SupportPath HIERARCHYID = (SELECT TOP 1 NodePath FROM Master.Categories WHERE CategoryId = @SupportCatId);
+
+-- Insert level 2 categories under Products
+INSERT INTO Master.Categories (Name, Slug, Description, NodePath, DisplayOrder, TenantId, IsActive, CreatedBy)
+VALUES
+    ('Electronics', 'electronics', 'Electronic products', @ProductsPath.GetDescendant(NULL, NULL), 1, 'DEFAULT', 1, 'System'),
+    ('Software', 'software', 'Software products', @ProductsPath.GetDescendant(NULL, NULL), 2, 'DEFAULT', 1, 'System'),
+    ('Services', 'services', 'Service offerings', @ProductsPath.GetDescendant(NULL, NULL), 3, 'DEFAULT', 1, 'System');
+
+-- Insert level 2 categories under Resources
+INSERT INTO Master.Categories (Name, Slug, Description, NodePath, DisplayOrder, TenantId, IsActive, CreatedBy)
+VALUES
+    ('Tutorials', 'tutorials', 'Step-by-step tutorials', @ResourcesPath.GetDescendant(NULL, NULL), 1, 'DEFAULT', 1, 'System'),
+    ('Guides', 'guides', 'How-to guides', @ResourcesPath.GetDescendant(NULL, NULL), 2, 'DEFAULT', 1, 'System'),
+    ('Best Practices', 'best-practices', 'Best practices and tips', @ResourcesPath.GetDescendant(NULL, NULL), 3, 'DEFAULT', 1, 'System');
+
+-- Insert level 2 categories under Documentation
+INSERT INTO Master.Categories (Name, Slug, Description, NodePath, DisplayOrder, TenantId, IsActive, CreatedBy)
+VALUES
+    ('API Documentation', 'api-docs', 'API reference and documentation', @DocsPath.GetDescendant(NULL, NULL), 1, 'DEFAULT', 1, 'System'),
+    ('User Manual', 'user-manual', 'User manual and reference', @DocsPath.GetDescendant(NULL, NULL), 2, 'DEFAULT', 1, 'System'),
+    ('Architecture', 'architecture', 'System architecture documentation', @DocsPath.GetDescendant(NULL, NULL), 3, 'DEFAULT', 1, 'System');
+
+-- Insert level 2 categories under Support
+INSERT INTO Master.Categories (Name, Slug, Description, NodePath, DisplayOrder, TenantId, IsActive, CreatedBy)
+VALUES
+    ('FAQs', 'faqs', 'Frequently asked questions', @SupportPath.GetDescendant(NULL, NULL), 1, 'DEFAULT', 1, 'System'),
+    ('Troubleshooting', 'troubleshooting', 'Troubleshooting guides', @SupportPath.GetDescendant(NULL, NULL), 2, 'DEFAULT', 1, 'System'),
+    ('Contact Us', 'contact-us', 'Contact support', @SupportPath.GetDescendant(NULL, NULL), 3, 'DEFAULT', 1, 'System');
+
+-- ============================================
+-- 10. Seed TimeZones
 -- ============================================
 INSERT INTO Master.TimeZones (Identifier, DisplayName, StandardName, OffsetHours, TenantId, IsActive, CreatedBy)
 VALUES
@@ -154,7 +205,7 @@ VALUES
     ('Australia/Sydney', 'Australian Eastern Time', 'AEST', 10, 'DEFAULT', 1, 'System');
 
 -- ============================================
--- 10. Seed Configuration
+-- 11. Seed Configuration
 -- ============================================
 INSERT INTO Master.Configuration ([Key], Value, ConfigType, Description, TenantId, IsActive, CreatedBy)
 VALUES
@@ -168,7 +219,7 @@ VALUES
     ('EmailSmtpPort', '587', 'Int', 'SMTP server port', 'DEFAULT', 1, 'System');
 
 -- ============================================
--- 11. Seed Feature Flags
+-- 12. Seed Feature Flags
 -- ============================================
 INSERT INTO Master.FeatureFlags (Name, Description, IsEnabled, TenantId, CreatedBy)
 VALUES
@@ -188,6 +239,7 @@ PRINT '✓ Roles: 6'
 PRINT '✓ Permissions: 12'
 PRINT '✓ Menus: 3'
 PRINT '✓ Menu Items: 13'
+PRINT '✓ Categories: 13 (4 root + 9 subcategories)'
 PRINT '✓ TimeZones: 9'
 PRINT '✓ Configuration: 8'
 PRINT '✓ Feature Flags: 6'
