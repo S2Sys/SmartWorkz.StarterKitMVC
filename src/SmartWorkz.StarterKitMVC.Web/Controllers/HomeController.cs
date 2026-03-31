@@ -31,6 +31,7 @@ public class HomeController : Controller
         return View();
     }
     
+    [HttpGet]
     [Route("/error/{code?}")]
     public IActionResult Error(int? code)
     {
