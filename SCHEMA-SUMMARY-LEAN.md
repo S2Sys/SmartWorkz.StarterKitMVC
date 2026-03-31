@@ -1,8 +1,8 @@
-# SmartWorkz v4 - LEAN Schema Summary (42 Tables)
+# SmartWorkz v4 - LEAN Schema Summary (41 Tables)
 
 **Date:** 2026-03-31
 **Status:** Optimized & Ready for Phase 1 Implementation
-**Total Tables:** 42 (down from original 62) - Option C Hybrid geo + Production-ready Reports + Dynamic Navigation
+**Total Tables:** 41 (down from original 62) - Option C Hybrid geo + Production-ready Reports + Dynamic Navigation + Polymorphic Infrastructure
 **Total Effort:** 34-45 hours (Phase 1 - includes comprehensive reporting + navigation framework)
 **Schemas:** 5 (Master, Shared, Transaction, Report, Auth) — Core schema merged into Master
 
@@ -11,7 +11,8 @@
 ## What Changed - Simplification Strategy
 
 ### ✅ Consolidation Moves
-- **Tags** → Moved from Core to Master (global reusable tagging)
+- **Tags** → Moved from Core to Shared (polymorphic tagging for any entity)
+- **SeoMeta** → Moved from Master to Shared (polymorphic SEO for Products, Categories, MenuItems, etc.)
 - **Tenants** → Moved from Core to Master (reference data, hierarchical)
 - **TenantSubscriptions, TenantSettings, FeatureFlags** → Moved from Core to Master (configuration reference)
 - **Menus, MenuItems** → New tables in Master (dynamic navigation, sitemap generation)
@@ -33,37 +34,40 @@
 | Products, Customers, Vendors, Projects, Teams, Departments, Employees, Assets, Contracts | Business entities are project-specific; teams add their own in Phase 1+ |
 | SubscriptionPlans, PreferenceDefinitions | Now in Master |
 
-### ✅ Shared Infrastructure - KEPT INTACT
+### ✅ Shared Infrastructure - EXPANDED FOR POLYMORPHISM
 | Polymorphic Tables | Use |
 |---|---|
-| Addresses | Link to any entity (Orders, Customers, Vendors, Employees, etc.) |
-| Attachments | Link to any entity (Orders, Invoices, Projects, etc.) |
+| Addresses | Link to any entity (Orders, Customers, Vendors, Employees, Products, etc.) |
+| Attachments | Link to any entity (Orders, Invoices, Projects, Products, etc.) |
 | Comments | Link to any entity for discussion/notes |
-| Tags | Link to any entity for categorization/filtering |
+| Tags | Link to any entity for categorization/filtering (VIP, Rush, Featured, etc.) |
 | StateHistory | Track state changes for any workflow entity |
+| SeoMeta | SEO metadata for Products, Categories, MenuItems, BlogPosts, GeolocationPages |
+| PreferenceDefinitions | System/Tenant/User configuration (Theme, Language, TimeZone) |
 
 ---
 
 ## Final Schema Structure
 
 ```
-MASTER (19 tables) - Global + Tenant Reference Data
+MASTER (17 tables) - Global + Tenant Reference Data
 ├─ Geo: Countries, GeoHierarchy (Option C Hybrid - 2 tables instead of 3)
 ├─ i18n: Languages, Translations
 ├─ Hierarchies: Lookups, Categories, EntityStates, EntityStateTransitions
 ├─ Notifications: NotificationChannels, TemplateGroups, Templates
-├─ Global Reference: Tags
-├─ Tenants: Tenants (HierarchyId tree)
-├─ SEO: SeoMeta, UrlRedirects
+├─ Tenants: Tenants (HierarchyId tree, reference data)
+├─ SEO: UrlRedirects (301/302 redirects)
 ├─ Config: TenantSubscriptions, TenantSettings, FeatureFlags ← MOVED FROM CORE
 └─ Navigation: Menus, MenuItems (hierarchical, role-based, auto-sitemap) ← NEW
 
-SHARED (5 tables) - Polymorphic Infrastructure (reusable across ALL schemas)
-├─ Addresses (links to any entity: Customer, Order, Employee, etc.)
+SHARED (7 tables) - Polymorphic Infrastructure (reusable across ALL schemas)
+├─ Addresses (links to any entity: Customer, Order, Employee, Product, etc.)
 ├─ Attachments (file references for any entity)
 ├─ Comments (discussion threads for any entity)
 ├─ StateHistory (workflow tracking for any entity)
-└─ PreferenceDefinitions (configuration for system/tenant/user)
+├─ PreferenceDefinitions (configuration for system/tenant/user)
+├─ SeoMeta ← MOVED FROM MASTER (polymorphic SEO for all entities)
+└─ Tags ← MOVED FROM CORE (polymorphic tagging for all entities)
 
 TRANSACTION (1 table - LEAN)
 └─ Orders (dummy - represents transactional pattern)
@@ -128,17 +132,19 @@ Automatically available:
 
 | Component | Effort | Deliverables |
 |-----------|--------|--------------|
-| Database Scripts | 8-10h | 8 scripts (001-008) with Report + Navigation schemas |
-| Domain Entities | 5-7h | 42 entities (Master 19, Shared 5, Trans 1, Report 4, Auth 13) |
+| Database Scripts | 8-10h | 8 scripts (001-008) with Report + Navigation + Polymorphic schemas |
+| Domain Entities | 5-7h | 41 entities (Master 18, Shared 7, Trans 1, Report 4, Auth 13) |
 | EF Core DbContexts | 6-8h | 3-4 DbContexts (Reference, Transaction, Report, Auth) + repositories |
-| Services | 5-7h | 5 main services + MenuService + ~50 DTOs (incl. Report/Menu services) |
-| REST API | 6-8h | 25+ endpoints (auth, users, tenants, lookups, orders, **reports, menus, sitemap**) |
+| Services | 5-7h | 5 main services + MenuService + SeoMetaService + ~50 DTOs (incl. Report/Menu/SEO services) |
+| REST API | 6-8h | 25+ endpoints (auth, users, tenants, lookups, orders, **reports, menus, sitemap, seometa, tags**) |
 | Configuration | 2-3h | Connection string, DI wiring, Startup |
-| **TOTAL** | **34-45h** | **Production-ready API with Reports, Navigation & Dynamic Sitemap** |
+| **TOTAL** | **34-45h** | **Production-ready API with Reports, Navigation, Polymorphic SEO & Tagging** |
 
 **Added production-ready reporting** with 4-table schema supporting SQL reports, dashboards, scheduling, execution history, and caching.
 
 **Added dynamic navigation** with Menus + MenuItems (HierarchyId trees, role-based visibility, auto-sitemap generation).
+
+**Added polymorphic infrastructure** with Shared.SeoMeta (Products, Categories, MenuItems, BlogPosts) and Shared.Tags (flexible categorization for any entity).
 
 ---
 
@@ -265,14 +271,14 @@ All use the same:
 
 | Schema | Entities | Count |
 |--------|----------|-------|
-| **Master** | Country, GeoHierarchy, Language, Translation, Lookup, Category, EntityState, EntityStateTransition, NotificationChannel, TemplateGroup, Template, Tag, Tenant, SeoMeta, UrlRedirect, TenantSubscription, TenantSetting, FeatureFlag, Menu, MenuItem | 20 |
-| **Shared** | Address, Attachment, Comment, StateHistory, PreferenceDefinition | 5 |
+| **Master** | Country, GeoHierarchy, Language, Translation, Lookup, Category, EntityState, EntityStateTransition, NotificationChannel, TemplateGroup, Template, Tenant, UrlRedirect, TenantSubscription, TenantSetting, FeatureFlag, Menu, MenuItem | 18 |
+| **Shared** | Address, Attachment, Comment, StateHistory, PreferenceDefinition, SeoMeta, Tag | 7 |
 | **Transaction** | Order | 1 |
 | **Report** | ReportDefinition, ReportSchedule, ReportExecution, ReportMetadata | 4 |
 | **Auth** | User, UserProfile, UserPreference, Role, Permission, RolePermission, UserRole, RefreshToken, VerificationCode, ExternalLogin, AuditLog, ActivityLog, NotificationLog | 13 |
-| **TOTAL** | | **42** |
+| **TOTAL** | | **41** |
 
-Note: 42 entities = 42 tables total (Master 20, Shared 5, Trans 1, Report 4, Auth 13)
+Note: 41 entities = 41 tables total (Master 18, Shared 7, Trans 1, Report 4, Auth 13)
 
 ---
 
@@ -306,11 +312,13 @@ public class AuthDbContext : DbContext { }           // Auth (13) tables
 
 **All decisions made:**
 ✓ Single database with 5 schemas (Master, Shared, Transaction, Report, Auth)
-✓ 42 tables with Option C Hybrid geo approach (Countries + GeoHierarchy instead of 3 separate)
-✓ Master schema now includes: Config (TenantSubscriptions, TenantSettings, FeatureFlags) + Navigation (Menus, MenuItems)
+✓ 41 tables with Option C Hybrid geo approach (Countries + GeoHierarchy instead of 3 separate)
+✓ Master schema (17 tables): Config + Navigation + Reference data (no Tags, no SeoMeta)
+✓ Shared schema (7 tables): Polymorphic infrastructure (Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions, **SeoMeta, Tags**)
 ✓ Production-ready Report schema (SQL reports, Dashboards, Scheduling, Audit trail)
 ✓ Dynamic Navigation system (role-based menus, auto-sitemap, hierarchical MenuItems with HierarchyId)
-✓ Polymorphic linking (Shared infrastructure) for future extensibility
+✓ Polymorphic SEO (Shared.SeoMeta for Products, Categories, MenuItems, BlogPosts, GeolocationPages)
+✓ Polymorphic Tagging (Shared.Tags for flexible categorization of any entity)
 ✓ 3-4 DbContexts instead of 6 (cleaner, lighter)
 ✓ 34-45 hours Phase 1 effort (much faster!)
 
@@ -319,6 +327,7 @@ public class AuthDbContext : DbContext { }           // Auth (13) tables
 ---
 
 **Documents:**
-- Full spec: `docs/srs/SCHEMA-REVIEW-v2.md` (LEAN schema detailed)
-- Implementation plan: `docs/srs/IMPLEMENTATION-PLAN.md` (updated for 38 tables)
+- Full spec: `docs/srs/SCHEMA-REVIEW-v2.md` (LEAN schema detailed with all 41 tables)
+- Implementation plan: `docs/srs/IMPLEMENTATION-PLAN.md` (updated for 41 tables)
+- SEO Design: `docs/srs/SEO-POLYMORPHIC-DESIGN.md` (complete SEO implementation guide)
 - This summary: `SCHEMA-SUMMARY-LEAN.md`
