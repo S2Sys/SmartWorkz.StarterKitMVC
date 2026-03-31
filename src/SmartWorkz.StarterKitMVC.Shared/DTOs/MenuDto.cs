@@ -1,48 +1,48 @@
 namespace SmartWorkz.StarterKitMVC.Shared.DTOs;
 
-public class MenuDto
-{
-    public int MenuId { get; set; }
-    public string TenantId { get; set; }
-    public string Name { get; set; }
-    public string Slug { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-}
+public record MenuDto(
+    int MenuId,
+    string TenantId,
+    string Name,
+    string MenuType,
+    int DisplayOrder,
+    DateTime CreatedAt,
+    DateTime? UpdatedAt
+);
 
-public class MenuItemDto
-{
-    public int MenuItemId { get; set; }
-    public int MenuId { get; set; }
-    public string Label { get; set; }
-    public string Url { get; set; }
-    public int DisplayOrder { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-}
+public record MenuItemDto(
+    int MenuItemId,
+    int MenuId,
+    string Title,
+    string URL,
+    string Icon,
+    int DisplayOrder,
+    DateTime CreatedAt,
+    DateTime? UpdatedAt
+);
 
-public class CreateMenuDto
-{
-    public string Name { get; set; }
-    public string Slug { get; set; }
-}
+public record CreateMenuDto(
+    string Name,
+    string MenuType,
+    int DisplayOrder
+);
 
-public class UpdateMenuDto
-{
-    public string Name { get; set; }
-    public string Slug { get; set; }
-}
+public record UpdateMenuDto(
+    string Name,
+    string MenuType,
+    int DisplayOrder
+);
 
-public class CreateMenuItemDto
-{
-    public string Label { get; set; }
-    public string Url { get; set; }
-    public int DisplayOrder { get; set; }
-}
+public record CreateMenuItemDto(
+    string Title,
+    string URL,
+    string Icon,
+    int DisplayOrder
+);
 
-public class UpdateMenuItemDto
-{
-    public string Label { get; set; }
-    public string Url { get; set; }
-    public int DisplayOrder { get; set; }
-}
+public record UpdateMenuItemDto(
+    string Title,
+    string URL,
+    string Icon,
+    int DisplayOrder
+);

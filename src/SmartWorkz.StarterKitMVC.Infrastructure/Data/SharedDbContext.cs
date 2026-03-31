@@ -43,7 +43,7 @@ public class SharedDbContext : DbContext
             .HasIndex(t => new { t.TenantId, t.EntityType, t.EntityId });
 
         modelBuilder.Entity<Tag>()
-            .HasIndex(t => new { t.TenantId, t.Name })
+            .HasIndex(t => new { t.TenantId, t.TagName })
             .IsUnique();
 
         // Translation Configuration
@@ -51,7 +51,7 @@ public class SharedDbContext : DbContext
             .HasKey(t => t.TranslationId);
 
         modelBuilder.Entity<Translation>()
-            .HasIndex(t => new { t.TenantId, t.LanguageCode, t.EntityType, t.EntityId })
+            .HasIndex(t => new { t.TenantId, t.LanguageId, t.EntityType, t.EntityId })
             .IsUnique();
 
         // Notification Configuration
@@ -59,7 +59,7 @@ public class SharedDbContext : DbContext
             .HasKey(n => n.NotificationId);
 
         modelBuilder.Entity<Notification>()
-            .HasIndex(n => new { n.TenantId, n.UserId });
+            .HasIndex(n => new { n.TenantId, n.RecipientId });
 
         modelBuilder.Entity<Notification>()
             .HasIndex(n => new { n.TenantId, n.ReadAt });
@@ -72,17 +72,17 @@ public class SharedDbContext : DbContext
             .HasIndex(al => new { al.TenantId, al.EntityType, al.EntityId });
 
         modelBuilder.Entity<AuditLog>()
-            .HasIndex(al => new { al.TenantId, al.UserId });
+            .HasIndex(al => new { al.TenantId, al.ChangedBy });
 
         modelBuilder.Entity<AuditLog>()
-            .HasIndex(al => new { al.TenantId, al.CreatedAt });
+            .HasIndex(al => new { al.TenantId, al.ChangedAt });
 
         // FileStorage Configuration
         modelBuilder.Entity<FileStorage>()
             .HasKey(fs => fs.FileStorageId);
 
         modelBuilder.Entity<FileStorage>()
-            .HasIndex(fs => new { fs.TenantId, fs.Slug })
+            .HasIndex(fs => new { fs.TenantId, fs.FilePath })
             .IsUnique();
 
         modelBuilder.Entity<FileStorage>()

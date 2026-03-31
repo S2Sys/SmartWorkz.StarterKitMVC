@@ -99,6 +99,7 @@ app.UseRouting();
 
 app.UseMiddleware<CorrelationIdMiddleware>();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Permission claims middleware (adds permission claims based on roles)

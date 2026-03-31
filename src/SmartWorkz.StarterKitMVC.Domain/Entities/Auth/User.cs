@@ -3,8 +3,8 @@ namespace SmartWorkz.StarterKitMVC.Domain.Entities.Auth;
 public class User
 {
     public string UserId { get; set; }
-    public string UserName { get; set; }
-    public string NormalizedUserName { get; set; }
+    public string Username { get; set; }
+    public string NormalizedUsername { get; set; }
     public string Email { get; set; }
     public string NormalizedEmail { get; set; }
     public bool EmailConfirmed { get; set; }
@@ -32,4 +32,8 @@ public class User
     public ICollection<UserPermission> UserPermissions { get; set; }
     public ICollection<RefreshToken> RefreshTokens { get; set; }
     public ICollection<LoginAttempt> LoginAttempts { get; set; }
+    public ICollection<TenantUser> TenantUsers { get; set; }
+    public ICollection<PasswordResetToken> PasswordResetTokens { get; set; }
+    public ICollection<EmailVerificationToken> EmailVerificationTokens { get; set; }
+    public ICollection<TwoFactorToken> TwoFactorTokens { get; set; }
 }

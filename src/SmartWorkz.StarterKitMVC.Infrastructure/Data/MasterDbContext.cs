@@ -12,8 +12,8 @@ public class MasterDbContext : DbContext
     public DbSet<Country> Countries { get; set; }
     public DbSet<Currency> Currencies { get; set; }
     public DbSet<Language> Languages { get; set; }
-    public DbSet<TimeZone> TimeZones { get; set; }
-    public DbSet<Configuration> Configurations { get; set; }
+    public DbSet<Domain.Entities.Master.TimeZone> TimeZones { get; set; }
+    public DbSet<Domain.Entities.Master.Configuration> Configurations { get; set; }
     public DbSet<FeatureFlag> FeatureFlags { get; set; }
     public DbSet<Menu> Menus { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
@@ -129,7 +129,7 @@ public class MasterDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
         // Configuration unique constraints
-        modelBuilder.Entity<Configuration>()
+        modelBuilder.Entity<Domain.Entities.Master.Configuration>()
             .HasIndex(c => new { c.TenantId, c.Key })
             .IsUnique();
 
@@ -145,7 +145,7 @@ public class MasterDbContext : DbContext
             .HasIndex(l => new { l.TenantId, l.Code })
             .IsUnique();
 
-        modelBuilder.Entity<TimeZone>()
+        modelBuilder.Entity<Domain.Entities.Master.TimeZone>()
             .HasIndex(tz => new { tz.TenantId, tz.Identifier })
             .IsUnique();
 

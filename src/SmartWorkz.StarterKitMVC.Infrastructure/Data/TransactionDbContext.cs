@@ -31,6 +31,6 @@ public class TransactionDbContext : DbContext
             .HasIndex(tl => new { tl.TenantId, tl.CreatedAt });
 
         modelBuilder.Entity<TransactionLog>()
-            .HasIndex(tl => new { tl.TenantId, tl.UserId });
+            .HasIndex(tl => new { tl.TenantId, tl.CreatedBy });
     }
 }

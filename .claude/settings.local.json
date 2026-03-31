@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Bash(mkdir -p \"s:/02_Projects/Starter/03_Development/MVC/SmartWorkz.StarterKitMVC/docs/srs\")",
+      "Bash(mkdir -p \"s:/02_Projects/Starter/03_Development/MVC/SmartWorkz.StarterKitMVC/docs/old\")",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"chore: Update memory with Phase 1 implementation plan:*)",
+      "Bash(/tmp/htmx_summary.txt:*)",
+      "Read(//tmp/**)",
+      "Bash(powershell -NoProfile -Command \".\\\\Deploy-Database.ps1 -ServerName ''''localhost'''' -DatabaseName ''''SmartWorkz_v4'''' -IntegratedSecurity\")",
+      "Bash(grep \"\\\\.sql$\")",
+      "Read(//mnt/s/02_Projects/Starter/03_Development/MVC/SmartWorkz.StarterKitMVC/**)",
+      "Bash(powershell -NoProfile -Command '. .\\\\Deploy-Database.ps1 -ServerName \"\"\"\"localhost\"\"\"\" -DatabaseName \"\"\"\"SmartWorkz_v4\"\"\"\" -IntegratedSecurity')",
+      "Bash(powershell -ExecutionPolicy Bypass -Command \".\\\\QUICK-DEPLOY.ps1 -ServerName ''115.124.106.158'' -DatabaseName ''Boilerplate'' -Username ''zenthil'' -Password ''PinkPanther#1''\")",
+      "Bash(powershell -ExecutionPolicy Bypass -Command \".\\\\QUICK-DEPLOY.ps1 -ServerName ''115.124.106.158'' -DatabaseName ''Boilerplate'' -Username ''zenthil'' -Password ''PinkPanther#1'' 2>&1 | tail -50\")",
+      "Bash(/tmp/create_entities.ps1:*)",
+      "Bash(powershell -ExecutionPolicy Bypass /tmp/create_entities.ps1)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet add:*)",
+      "Bash(dotnet remove:*)",
+      "Bash(for f:*)",
+      "Bash(do sed:*)",
+      "Bash(done)"
+    ]
+  }
+}

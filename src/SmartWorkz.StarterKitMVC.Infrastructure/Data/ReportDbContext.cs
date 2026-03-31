@@ -31,13 +31,13 @@ public class ReportDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Report>()
-            .HasMany(r => r.ReportDatas)
+            .HasMany(r => r.ReportDataCollection)
             .WithOne(rd => rd.Report)
             .HasForeignKey(rd => rd.ReportId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Report>()
-            .HasIndex(r => new { r.TenantId, r.Slug })
+            .HasIndex(r => new { r.TenantId, r.Name })
             .IsUnique();
 
         // ReportSchedule Configuration
@@ -45,10 +45,10 @@ public class ReportDbContext : DbContext
             .HasKey(rs => rs.ReportScheduleId);
 
         modelBuilder.Entity<ReportSchedule>()
-            .HasIndex(rs => new { rs.TenantId, rs.Status });
+            .HasIndex(rs => new { rs.TenantId, rs.IsActive });
 
         modelBuilder.Entity<ReportSchedule>()
-            .HasIndex(rs => new { rs.TenantId, rs.NextRunAt });
+            .HasIndex(rs => new { rs.TenantId, rs.NextRun });
 
         // ReportData Configuration
         modelBuilder.Entity<ReportData>()
@@ -65,7 +65,7 @@ public class ReportDbContext : DbContext
             .HasKey(a => a.AnalyticsId);
 
         modelBuilder.Entity<Analytics>()
-            .HasIndex(a => new { a.TenantId, a.EventType });
+            .HasIndex(a => new { a.TenantId, a.EventName });
 
         modelBuilder.Entity<Analytics>()
             .HasIndex(a => new { a.TenantId, a.UserId });

@@ -30,9 +30,9 @@ public class TenantController : ControllerBase
     [HttpGet("slug/{slug}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Tenant>> GetTenantBySlug(string slug)
+    public async Task<ActionResult<Tenant>> GetTenantByName(string name)
     {
-        var tenant = await _tenantRepository.GetBySlugAsync(slug);
+        var tenant = await _tenantRepository.GetByNameAsync(name);
         if (tenant == null)
             return NotFound();
 
@@ -80,7 +80,7 @@ public class TenantController : ControllerBase
             return NotFound();
 
         existing.Name = tenant.Name;
-        existing.Slug = tenant.Slug;
+        existing.DisplayName = tenant.DisplayName;
         existing.IsActive = tenant.IsActive;
         existing.UpdatedAt = DateTime.UtcNow;
 

@@ -18,9 +18,9 @@ public class MenuController : ControllerBase
     [HttpGet("slug/{slug}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Menu>> GetMenuBySlug(string tenantId, string slug)
+    public async Task<ActionResult<Menu>> GetMenuByName(string tenantId, string name)
     {
-        var menu = await _menuService.GetMenuBySlugAsync(tenantId, slug);
+        var menu = await _menuService.GetMenuByNameAsync(tenantId, name);
         if (menu == null)
             return NotFound();
 
@@ -44,7 +44,7 @@ public class MenuController : ControllerBase
             return BadRequest("Menu name is required");
 
         var createdMenu = await _menuService.CreateMenuAsync(tenantId, menu);
-        return CreatedAtAction(nameof(GetMenuBySlug), new { tenantId, slug = menu.Slug }, createdMenu);
+        return CreatedAtAction(nameof(GetMenuByName), new { tenantId, name = menu.Name }, createdMenu);
     }
 
     [HttpPost("{menuId}/items")]
@@ -52,7 +52,7 @@ public class MenuController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<MenuItem>> AddMenuItem(int menuId, [FromBody] MenuItem menuItem)
     {
-        if (string.IsNullOrWhiteSpace(menuItem.Label))
+        if (string.IsNullOrWhiteSpace(menuItem.Title))
             return BadRequest("Menu item label is required");
 
         var createdItem = await _menuService.AddMenuItemAsync(menuId, menuItem);
