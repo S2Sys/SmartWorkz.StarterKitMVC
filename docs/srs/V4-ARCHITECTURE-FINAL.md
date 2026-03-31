@@ -1,15 +1,15 @@
 # SmartWorkz v4 - Final Architecture Summary
 
-**Date:** 2026-03-31 (Updated: Core schema added for business-domain configuration)
+**Date:** 2026-03-31
 **Status:** Phase 0 Complete (Design finalized, all decisions made)
 **Total Effort:** 34-45 hours Phase 1 (database, entities, services, REST API)
-**Total Tables:** 43 (Master 15, Core 3, Shared 7, Transaction 1, Report 4, Auth 13)
+**Total Tables:** 43 (Master 18, Shared 7, Transaction 1, Report 4, Auth 13)
 
 ---
 
-## Schema Overview (43 Tables, 6 Schemas)
+## Schema Overview (43 Tables, 5 Schemas)
 
-### Master Schema (15 tables) - Global Reference Data
+### Master Schema (18 tables) - Global Reference Data + Config + Navigation
 
 ```
 Master
@@ -35,36 +35,24 @@ Master
 ├─ Tenants (1 table)
 │  └─ Tenants (HierarchyId: Agency → Client → SubClient, reference data)
 │
-└─ Config (2 tables)
-   ├─ TenantSubscriptions (PlanCode, StartDate, EndDate, Status)
-   └─ TenantSettings (Key-value, encrypted optional)
-```
-
-**Master Schema Totals:** 15 tables (removed Menus, MenuItems, FeatureFlags → moved to Core)
-
----
-
-### Core Schema (3 tables) - Business-Domain Configuration (per-tenant)
-
-```
-Core
-├─ Navigation (2 tables) ← Business-domain, not global reference
-│  ├─ Menus (MenuId, Code, Name, TenantId) ← Main, Admin, Footer, Sidebar
-│  │  └─ Each tenant manages their own menu structure
-│  └─ MenuItems (NodePath HierarchyId, Code, Url, Icon, TenantId)
-│     ├─ Role-based visibility (RequiredRole, RequiredPermission)
-│     ├─ Badges for notifications
-│     └─ Auto-generates sitemap.xml
+├─ SEO (1 table)
+│  └─ UrlRedirects (301, 302 redirects, hit tracking)
+│     └─ NOTE: SeoMeta MOVED TO SHARED for polymorphic linking
 │
-└─ Features (1 table)
-   └─ TenantFeatures (TenantId, FeatureCode, IsEnabled)
-      └─ Which features enabled per tenant (not global)
+├─ Config (3 tables)
+│  ├─ TenantSubscriptions (PlanCode, StartDate, EndDate, Status)
+│  ├─ TenantSettings (Key-value, encrypted optional)
+│  └─ FeatureFlags (A/B testing, gradual rollout, feature toggles per tenant)
+│
+└─ Navigation (2 tables)
+   ├─ Menus (MenuId, Code, Name, TenantId) ← Main, Admin, Footer, Sidebar
+   └─ MenuItems (NodePath HierarchyId, Code, Url, Icon, TenantId)
+      ├─ Role-based visibility (RequiredRole, RequiredPermission)
+      ├─ Badges for notifications
+      └─ Auto-generates sitemap.xml
 ```
 
-**Core Schema Rationale:** Menus and FeatureFlags are operational decisions that:
-- Change frequently as the business evolves
-- Are customized per tenant (each tenant's own navigation)
-- Are NOT static reference data like Countries or Languages
+**Master Schema Totals:** 18 tables (includes Navigation + all Config)
 
 ---
 
@@ -162,13 +150,12 @@ Auth (Complete authentication, authorization, session management)
 
 | Schema | Tables | Purpose |
 |--------|--------|---------|
-| **Master** | 15 | Global reference data only (Geo, i18n, Hierarchies, Notifications, Tenants, Config) |
-| **Core** | 3 | Business-domain configuration per-tenant (Navigation, Features) |
+| **Master** | 18 | Global reference data + Config + Navigation (Geo, i18n, Hierarchies, Notifications, Tenants, Config, Menus) |
 | **Shared** | 7 | Polymorphic infrastructure (Addresses, Comments, Attachments, StateHistory, Prefs, **SeoMeta, Tags**) |
 | **Transaction** | 1 | Extensible transactional pattern (Orders dummy) |
 | **Report** | 4 | Production-ready reporting (SQL, Dashboards, Scheduling, Execution history) |
 | **Auth** | 13 | Complete identity + RBAC + sessions + logging |
-| **TOTAL** | **43** | Single database, 6 schemas, LEAN design, maximum flexibility |
+| **TOTAL** | **43** | Single database, 5 schemas, LEAN design, maximum flexibility |
 
 ---
 
@@ -250,7 +237,7 @@ No schema changes needed as business domains grow!
 ```
 
 ### Step 2: Domain Entities (5-7 hours)
-- 43 domain entity classes (Master: 15, Core: 3, Shared: 7, Transaction: 1, Report: 4, Auth: 13)
+- 43 domain entity classes (Master: 18, Shared: 7, Transaction: 1, Report: 4, Auth: 13)
 - Relationships (FK, HierarchyId, polymorphic EntityType+EntityId)
 - Audit columns (CreatedAt, UpdatedAt, CreatedBy, UpdatedBy)
 - Soft delete (IsDeleted)

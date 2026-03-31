@@ -10,13 +10,12 @@
 
 | Schema | Tables | Purpose | Change from v1 |
 |--------|--------|---------|-----------------|
-| **Master** | 15 | Global reference data + Tenants, Config | GEO: Countries + GeoHierarchy (Option C Hybrid); Config moved from Core; SeoMeta, Tags moved to Shared |
+| **Master** | 18 | Global reference data + Config + Navigation | GEO: Countries + GeoHierarchy (Option C Hybrid); Config moved from Core; SeoMeta, Tags moved to Shared; Menus/MenuItems for dynamic navigation |
 | **Shared** | 7 | Polymorphic infrastructure (reusable across all schemas) | Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions, SeoMeta, Tags |
 | **Transaction** | 1 | ONE dummy transactional table | LEAN: removed all but Orders |
 | **Report** | 4 | SQL reports + Dashboard APIs + Scheduling + Execution history | ReportDefinitions, ReportSchedules, ReportExecutions, ReportMetadata |
 | **Auth** | 13 | Identity + RBAC + logs | UNCHANGED |
-| **Core** | 3 | Business-domain configuration + navigation | Menus, MenuItems (HierarchyId, role-based), TenantFeatures |
-| **TOTAL** | **43** | Single database, clean minimal structure with production-ready reporting + dynamic navigation | 6 schemas (Master reference, Core business domain, Shared polymorphic, Transaction, Report, Auth) |
+| **TOTAL** | **43** | Single database, clean minimal structure with production-ready reporting + dynamic navigation | 5 schemas (Master reference + config + navigation, Shared polymorphic, Transaction, Report, Auth) |
 
 ---
 
@@ -269,112 +268,26 @@ FeatureFlags (tenant-scoped feature toggles)
 
 ---
 
-### **Master Schema Summary: 15 tables** (Option C Hybrid Geo + Config)
+### **Master Schema Summary: 18 tables** (Option C Hybrid Geo + Config + Navigation)
 - Geo (2): Countries, GeoHierarchy ← OPTION C (hybrid: reference + hierarchical)
 - i18n (2): Languages, Translations
 - Hierarchies (4): Lookups, Categories, EntityStates, EntityStateTransitions
 - Notifications (3): NotificationChannels, TemplateGroups, Templates
 - Tenants (1): Tenants ← MOVED FROM CORE (reference data)
 - SEO (1): UrlRedirects ← SeoMeta MOVED TO SHARED for polymorphic linking
-- Config (2): TenantSubscriptions, TenantSettings ← FeatureFlags MOVED TO CORE
-
-**Note:** Navigation (Menus, MenuItems) moved to Core schema—business-domain configuration, not global reference data.
-
----
-
-## 2. Core Schema (3 tables)
-
-### Purpose
-Business-domain configuration managed per-tenant. Defines how each tenant's application behaves: navigation structure, feature access, operational settings.
-
-**Key Principle:** Core ≠ Master. Master has static reference data (countries, languages). Core has operational decisions that change frequently and differ per tenant.
+- Config (3): TenantSubscriptions, TenantSettings, FeatureFlags (per-tenant operational toggles)
+- Navigation (2): Menus, MenuItems (HierarchyId trees, role-based, per-tenant menus)
 
 ---
 
-### 2.1 Navigation (2 tables - HierarchyId trees, role-based, per-tenant)
-
-```sql
-Menus (menu definitions - groups of menu items)
-├─ MenuId (GUID)
-├─ Code (VARCHAR 50) -- 'Main', 'Admin', 'Footer', 'Sidebar'
-├─ Name (NVARCHAR 200) -- 'Main Navigation', 'Admin Menu'
-├─ Description (NVARCHAR 500, nullable)
-├─ FK → Master.Tenants (TenantId) -- Each tenant has their own menus
-├─ IsActive (BIT)
-├─ DisplayOrder (INT)
-├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
-└─ Indexes: (TenantId, Code), (TenantId, DisplayOrder)
-
-MenuItems (hierarchical menu items with HierarchyId)
-├─ MenuItemId (GUID)
-├─ FK → Core.Menus (MenuId)
-├─ NodePath (HierarchyId) -- Tree: /1/ → /1/1/ → /1/1/1/ (unlimited depth)
-├─ Code (VARCHAR 100) -- 'dashboard', 'products', 'reports'
-├─ Name (NVARCHAR 200) -- 'Dashboard', 'Products', 'Reports'
-├─ Url (NVARCHAR 500, nullable) -- '/admin/dashboard', '/products', NULL for groups
-├─ Icon (VARCHAR 100, nullable) -- 'fa-home', 'fa-box', 'fa-chart-bar'
-├─ DisplayOrder (INT) -- sort order within parent
-├─ ParentMenuItemId (GUID, nullable) -- FK: derived from HierarchyId
-├─ IsVisible (BIT) -- show/hide without deleting
-├─ RequiredRole (VARCHAR 100, nullable) -- 'Admin', 'Manager'; NULL=all users
-├─ RequiredPermission (VARCHAR 200, nullable) -- Fine-grained control; NULL=role-based only
-├─ OpenInNewTab (BIT)
-├─ CssClass (VARCHAR 200, nullable) -- 'active', 'disabled', custom styling
-├─ BadgeText (VARCHAR 50, nullable) -- '3', 'NEW', 'Beta'
-├─ BadgeColor (VARCHAR 50, nullable) -- 'red', 'green', 'blue', 'orange'
-├─ FK → Master.Tenants (TenantId) -- Each tenant's items, no global items
-├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
-└─ Indexes: (TenantId, MenuId, NodePath), (TenantId, DisplayOrder), (RequiredRole)
-
-**Example Menu Hierarchy:**
-Main Menu (/1/)
-├─ /1/1/ Home (route: /, icon: fa-home, role: NULL)
-├─ /1/2/ Products (route: /products, icon: fa-box, role: NULL)
-│  ├─ /1/2/1/ Electronics (route: /products/electronics)
-│  ├─ /1/2/2/ Clothing (route: /products/clothing)
-│  └─ /1/2/3/ Books (route: /products/books)
-├─ /1/3/ Orders (route: /orders, icon: fa-shopping-cart, role: "Customer")
-└─ /1/4/ Admin (name only, no route, icon: fa-cog, role: "Admin")
-   ├─ /1/4/1/ Dashboard (route: /admin/dashboard)
-   ├─ /1/4/2/ Users (route: /admin/users)
-   └─ /1/4/3/ Settings (route: /admin/settings)
-```
-
-**Benefits:**
-- Dynamic navigation without code changes
-- HierarchyId supports unlimited depth (breadcrumbs, tree views)
-- Role-based visibility (show/hide by RequiredRole or RequiredPermission)
-- Each tenant manages their own menu structure
-- Badges for notifications (unread counts, status)
-- Auto-generates sitemap.xml from menu items
-- Efficient queries: Get all items in menu, get children of item, get breadcrumb path
-
----
-
-### 2.2 Feature Access (1 table)
-
-```sql
-TenantFeatures (which features are enabled per tenant)
-├─ TenantFeatureId (GUID)
-├─ FK → Master.Tenants (TenantId)
-├─ FeatureCode (VARCHAR 100) -- 'products', 'orders', 'reports', 'analytics'
-├─ IsEnabled (BIT) -- Feature toggle per tenant
-├─ CreatedAt (DATETIME2)
-└─ Indexes: (TenantId, FeatureCode)
-```
-
-**Why Core:** Feature flags are operational decisions—which tenant gets which capabilities. Changes frequently as the business scales.
-
----
-
-## 3. Shared Schema (7 tables)
+## 2. Shared Schema (7 tables)
 
 ### Purpose
 Polymorphic infrastructure used across ALL schemas. Enables flexible entity linking without schema changes. SeoMeta and Tags moved here for consistency with polymorphic pattern.
 
 ---
 
-### 2.1 Shared Infrastructure (7 tables - polymorphic linking via EntityType+EntityId)
+### 2.1 Shared Infrastructure (7 tables - polymorphic linking via EntityType+EntityId - REUSABLE ACROSS ALL SCHEMAS)
 
 ```sql
 Addresses (polymorphic - links to any entity)
@@ -503,7 +416,7 @@ Tags (polymorphic tagging - MOVED FROM MASTER)
 
 ---
 
-## 4. Transaction Schema (1 table - LEAN)
+## 3. Transaction Schema (1 table - LEAN)
 
 ### Purpose
 **ONE dummy transactional table** to demonstrate order/invoice pattern. Teams extend with their domain entities.
@@ -532,7 +445,7 @@ Purpose: Minimal table showing transactional pattern
 
 ---
 
-## 5. Report Schema (4 tables)
+## 4. Report Schema (4 tables)
 
 ### Purpose
 Flexible reporting framework supporting:
@@ -769,7 +682,7 @@ ReportMetadata (extensible metadata for filters, drill-downs, conditional format
 
 ---
 
-## 6. Auth Schema (13 tables - UNCHANGED)
+## 5. Auth Schema (13 tables - UNCHANGED)
 
 ### Purpose
 Identity, RBAC, sessions, verification, external logins, audit/activity logging.
@@ -857,8 +770,7 @@ Auth Schema (13 tables - UNCHANGED)
 └─ Logging (3): AuditLogs, ActivityLogs, NotificationLogs
 
 TOTAL: 43 tables (LEAN design with maximum flexibility)
-- Master: 15 tables (global reference data, geo, i18n, hierarchies, notifications, config)
-- Core: 3 tables (business-domain configuration, navigation, feature access)
+- Master: 18 tables (global reference data, geo, i18n, hierarchies, notifications, tenants, config, navigation)
 - Shared: 7 tables (polymorphic infrastructure)
 - Transaction: 1 table (Orders dummy)
 - Report: 4 tables (ReportDefinitions, ReportSchedules, ReportExecutions, ReportMetadata)
