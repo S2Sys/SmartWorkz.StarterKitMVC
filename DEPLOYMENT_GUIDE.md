@@ -10,19 +10,19 @@
 
 ### Fresh Database Deployment
 ```powershell
-.\scripts\QUICK-DEPLOY.ps1 -ServerName ".\SQLEXPRESS" -DatabaseName "Boilerplate" -IntegratedAuth
+.\database\QUICK-DEPLOY.ps1 -ServerName ".\SQLEXPRESS" -DatabaseName "Boilerplate" -IntegratedAuth
 ```
 
 ### Remote Server with SQL Authentication
 ```powershell
-.\scripts\QUICK-DEPLOY.ps1 -ServerName "115.124.106.158" -DatabaseName "Boilerplate" -Username "admin" -Password "YourPassword"
+.\database\QUICK-DEPLOY.ps1 -ServerName "115.124.106.158" -DatabaseName "Boilerplate" -Username "admin" -Password "YourPassword"
 ```
 
 ---
 
 ## QUICK-DEPLOY.ps1 Script
 
-**Location:** `scripts/QUICK-DEPLOY.ps1`  
+**Location:** `database/QUICK-DEPLOY.ps1`  
 **Purpose:** Automated end-to-end database deployment
 
 **What it does:**
@@ -44,13 +44,13 @@
 
 ```powershell
 # With Windows Integrated Authentication (default)
-.\scripts\QUICK-DEPLOY.ps1 -ServerName ".\SQLEXPRESS" -IntegratedAuth
+.\database\QUICK-DEPLOY.ps1 -ServerName ".\SQLEXPRESS" -IntegratedAuth
 
 # With SQL Server Authentication
-.\scripts\QUICK-DEPLOY.ps1 -ServerName "115.124.106.158" -DatabaseName "Boilerplate" -Username "admin" -Password "P@ssw0rd"
+.\database\QUICK-DEPLOY.ps1 -ServerName "115.124.106.158" -DatabaseName "Boilerplate" -Username "admin" -Password "P@ssw0rd"
 
 # Custom database name
-.\scripts\QUICK-DEPLOY.ps1 -ServerName "localhost" -DatabaseName "MyDatabase" -IntegratedAuth
+.\database\QUICK-DEPLOY.ps1 -ServerName "localhost" -DatabaseName "MyDatabase" -IntegratedAuth
 ```
 
 **Execution Time:** ~2-3 minutes  
@@ -119,18 +119,18 @@ If you prefer to run scripts manually:
 
 ```powershell
 # Step 1: Create database
-sqlcmd -S ".\SQLEXPRESS" -i "database/001_InitializeDatabase.sql"
+sqlcmd -S ".\SQLEXPRESS" -i "database/v1/001_InitializeDatabase.sql"
 
 # Step 2: Create schemas and tables (in order)
-sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/002_CreateTables_Master.sql"
-sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/003_CreateTables_Shared.sql"
-sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/004_CreateTables_Transaction.sql"
-sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/005_CreateTables_Report.sql"
-sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/006_CreateTables_Auth.sql"
+sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/002_CreateTables_Master.sql"
+sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/003_CreateTables_Shared.sql"
+sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/004_CreateTables_Transaction.sql"
+sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/005_CreateTables_Report.sql"
+sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/006_CreateTables_Auth.sql"
 
 # Step 3: Seed data
-sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/007_SeedData.sql"
-sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/008_SeedTestUsers.sql"
+sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/007_SeedData.sql"
+sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/008_SeedTestUsers.sql"
 ```
 
 ---
