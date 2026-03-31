@@ -11,7 +11,8 @@
     -- Test User Credentials (for reference)
     -- ============================================
     -- All test users use password: TestPassword123!
-    -- PBKDF2 Hash format: PBKDF2$HMACSHA256$iterations$salt$hash
+    -- Hash format: salt.hash (Base64 encoded with PBKDF2-SHA256, 100,000 iterations)
+    -- Use PasswordHasher to generate actual hash if needed
     -- ============================================
 
     -- ============================================
@@ -25,13 +26,15 @@
     -- ============================================
     -- 2. Insert Test Users (Password: TestPassword123!)
     -- ============================================
-    -- PBKDF2$HMACSHA256$10000$h9U5e2VfkJ8=$G9UjC5xF2p8K/F3vH8kL4m2nP9qR6sT1vW3xY5zB7cD9eF2gH4iJ6kL8mN0oP2qR
+    -- PBKDF2-SHA256 Hash (100,000 iterations)
+    -- Password: TestPassword123!
+    -- Note: These are placeholder values - UPDATE WITH ACTUAL HASHES
     INSERT INTO Auth.Users (UserId, Email, NormalizedEmail, Username, NormalizedUsername, DisplayName, PasswordHash, SecurityStamp, ConcurrencyStamp, TenantId, EmailConfirmed, TwoFactorEnabled, LockoutEnabled, AccessFailedCount, IsActive, IsDeleted, CreatedAt)
     VALUES
-        (NEWID(), 'admin@smartworkz.test', 'ADMIN@SMARTWORKZ.TEST', 'admin', 'ADMIN', 'Admin User', 'PBKDF2$HMACSHA256$10000$h9U5e2VfkJ8=$G9UjC5xF2p8K/F3vH8kL4m2nP9qR6sT1vW3xY5zB7cD9eF2gH4iJ6kL8mN0oP2qR', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE()),
-        (NEWID(), 'manager@smartworkz.test', 'MANAGER@SMARTWORKZ.TEST', 'manager', 'MANAGER', 'Manager User', 'PBKDF2$HMACSHA256$10000$h9U5e2VfkJ8=$G9UjC5xF2p8K/F3vH8kL4m2nP9qR6sT1vW3xY5zB7cD9eF2gH4iJ6kL8mN0oP2qR', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE()),
-        (NEWID(), 'staff@smartworkz.test', 'STAFF@SMARTWORKZ.TEST', 'staff', 'STAFF', 'Staff User', 'PBKDF2$HMACSHA256$10000$h9U5e2VfkJ8=$G9UjC5xF2p8K/F3vH8kL4m2nP9qR6sT1vW3xY5zB7cD9eF2gH4iJ6kL8mN0oP2qR', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE()),
-        (NEWID(), 'customer@smartworkz.test', 'CUSTOMER@SMARTWORKZ.TEST', 'customer', 'CUSTOMER', 'Customer User', 'PBKDF2$HMACSHA256$10000$h9U5e2VfkJ8=$G9UjC5xF2p8K/F3vH8kL4m2nP9qR6sT1vW3xY5zB7cD9eF2gH4iJ6kL8mN0oP2qR', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE());
+        (NEWID(), 'admin@smartworkz.test', 'ADMIN@SMARTWORKZ.TEST', 'admin', 'ADMIN', 'Admin User', 'PLACEHOLDER_HASH', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE()),
+        (NEWID(), 'manager@smartworkz.test', 'MANAGER@SMARTWORKZ.TEST', 'manager', 'MANAGER', 'Manager User', 'PLACEHOLDER_HASH', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE()),
+        (NEWID(), 'staff@smartworkz.test', 'STAFF@SMARTWORKZ.TEST', 'staff', 'STAFF', 'Staff User', 'PLACEHOLDER_HASH', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE()),
+        (NEWID(), 'customer@smartworkz.test', 'CUSTOMER@SMARTWORKZ.TEST', 'customer', 'CUSTOMER', 'Customer User', 'PLACEHOLDER_HASH', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE());
 
     -- ============================================
     -- 3. Assign Roles to Test Users
