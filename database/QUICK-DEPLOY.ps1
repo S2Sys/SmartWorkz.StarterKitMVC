@@ -191,6 +191,7 @@ Write-Success "All 8 migration files found"
 Write-Header "Executing Database Migrations"
 Write-Info "Database: $DatabaseName"
 Write-Info "Server: $ServerName"
+Write-Info "All scripts run on Boilerplate database"
 Write-Host ""
 
 $step = 1
@@ -198,41 +199,14 @@ $totalSteps = $migrations.Count
 
 foreach ($migration in $migrations) {
     $filePath = Join-Path $databasePath $migration
+    Write-Info "[$step/$totalSteps] Running $migration..."
 
-    # Special handling for delete script (uses master database)
-    if ($migration -eq "000_DeleteAllSchemas.sql") {
-        Write-Info "[$step/$totalSteps] Running $migration (using master database)..."
-        try {
-            if ($IntegratedAuth) {
-                & sqlcmd -S $ServerName -i $filePath -b
-            }
-            else {
-                & sqlcmd -S $ServerName -U $Username -P $Password -i $filePath -b
-            }
-
-            if ($LASTEXITCODE -eq 0) {
-                Write-Success "$migration completed"
-            }
-            else {
-                Write-Error "Failed to execute $migration"
-                exit 1
-            }
-        }
-        catch {
-            Write-Error $_.Exception.Message
-            exit 1
-        }
+    if (Invoke-SqlMigration -ServerName $ServerName -DatabaseName $DatabaseName -FilePath $filePath -Username $Username -Password $Password -IntegratedAuth $IntegratedAuth) {
+        Write-Success "$migration completed"
     }
     else {
-        Write-Info "[$step/$totalSteps] Running $migration..."
-
-        if (Invoke-SqlMigration -ServerName $ServerName -DatabaseName $DatabaseName -FilePath $filePath -Username $Username -Password $Password -IntegratedAuth $IntegratedAuth) {
-            Write-Success "$migration completed"
-        }
-        else {
-            Write-Error "Failed to execute $migration"
-            exit 1
-        }
+        Write-Error "Failed to execute $migration"
+        exit 1
     }
 
     $step++
@@ -266,8 +240,8 @@ if (-not $SkipBuild) {
 
 # Step 5: Summary
 Write-Header "Deployment Summary"
-Write-Success "Old database deleted (if existed)"
-Write-Success "Database: $DatabaseName created successfully"
+Write-Success "All old objects removed (tables, stored procedures, indexes)"
+Write-Success "Database: $DatabaseName preserved and cleaned"
 Write-Success "All 9 migration scripts executed in order"
 Write-Success "All schemas initialized (Master, Shared, Auth, Transaction, Report)"
 Write-Success "All 43 tables created with proper relationships and constraints"
