@@ -169,10 +169,10 @@ public class AuthDbContext : DbContext
             .HasKey(la => la.LoginAttemptId);
 
         modelBuilder.Entity<LoginAttempt>()
-            .HasIndex(la => new { la.TenantId, la.UserId, la.CreatedAt });
+            .HasIndex(la => new { la.TenantId, la.UserId, la.AttemptedAt });
 
         modelBuilder.Entity<LoginAttempt>()
-            .HasIndex(la => new { la.TenantId, la.IpAddress });
+            .HasIndex(la => new { la.TenantId, la.IPAddress });
 
         // AuditTrail Configuration
         modelBuilder.Entity<AuditTrail>()

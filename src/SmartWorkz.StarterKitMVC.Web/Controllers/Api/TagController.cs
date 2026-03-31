@@ -36,11 +36,11 @@ public class TagController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Tag>> CreateTag(string tenantId, [FromBody] Tag tag)
     {
-        if (string.IsNullOrWhiteSpace(tag.Name))
+        if (string.IsNullOrWhiteSpace(tag.TagName))
             return BadRequest("Tag name is required");
 
         var createdTag = await _tagService.CreateTagAsync(tenantId, tag);
-        return CreatedAtAction(nameof(GetByName), new { tenantId, name = tag.Name }, createdTag);
+        return CreatedAtAction(nameof(GetByName), new { tenantId, name = tag.TagName }, createdTag);
     }
 
     [HttpPost("{tagId}/assign")]

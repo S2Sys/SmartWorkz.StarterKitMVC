@@ -107,7 +107,7 @@ public class ProductController : ControllerBase
         existing.Name = product.Name;
         existing.Description = product.Description;
         existing.Price = product.Price;
-        existing.StockQuantity = product.StockQuantity;
+        existing.Stock = product.Stock;
         existing.Slug = product.Slug;
         existing.IsFeatured = product.IsFeatured;
         existing.UpdatedAt = DateTime.UtcNow;

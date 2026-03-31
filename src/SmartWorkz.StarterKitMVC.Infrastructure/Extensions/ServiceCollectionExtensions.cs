@@ -1,9 +1,14 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Application.Services;
 using SmartWorkz.StarterKitMVC.Infrastructure.Data;
+using SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
+using SmartWorkz.StarterKitMVC.Infrastructure.Services;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Extensions;
 
@@ -56,6 +61,43 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IMenuService, MenuService>();
         services.AddScoped<ISeoMetaService, SeoMetaService>();
         services.AddScoped<ITagService, TagService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddSingleton<IPasswordHasher, PasswordHasher>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds JWT Bearer authentication
+    /// </summary>
+    public static IServiceCollection AddJwtAuthentication(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        var secret = configuration["Features:Authentication:Jwt:Secret"];
+        var issuer = configuration["Features:Authentication:Jwt:Issuer"];
+        var audience = configuration["Features:Authentication:Jwt:Audience"];
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = issuer,
+                ValidateAudience = true,
+                ValidAudience = audience,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+        });
 
         return services;
     }
@@ -70,6 +112,7 @@ public static class ServiceCollectionExtensions
         services.AddInfrastructureServices(configuration);
         services.AddRepositories();
         services.AddApplicationServices();
+        services.AddJwtAuthentication(configuration);
 
         return services;
     }
