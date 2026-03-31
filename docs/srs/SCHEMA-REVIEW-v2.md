@@ -10,12 +10,12 @@
 
 | Schema | Tables | Purpose | Change from v1 |
 |--------|--------|---------|-----------------|
-| **Master** | 18 | Global reference data + Tags, Tenants, Config, Navigation | GEO: Countries + GeoHierarchy (Option C Hybrid); Config moved from Core; Menus + MenuItems NEW; SeoMeta moved to Shared |
-| **Shared** | 6 | Polymorphic infrastructure (reusable across all schemas) | Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions, SeoMeta |
+| **Master** | 17 | Global reference data + Tenants, Config, Navigation | GEO: Countries + GeoHierarchy (Option C Hybrid); Config moved from Core; Menus + MenuItems NEW; SeoMeta, Tags moved to Shared |
+| **Shared** | 7 | Polymorphic infrastructure (reusable across all schemas) | Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions, SeoMeta, Tags |
 | **Transaction** | 1 | ONE dummy transactional table | LEAN: removed all but Orders |
 | **Report** | 4 | SQL reports + Dashboard APIs + Scheduling + Execution history | ReportDefinitions, ReportSchedules, ReportExecutions, ReportMetadata |
 | **Auth** | 13 | Identity + RBAC + logs | UNCHANGED |
-| **TOTAL** | **42** | Single database, clean minimal structure with production-ready reporting + dynamic navigation | 5 schemas (Core merged into Master; SeoMeta polymorphic to Shared) |
+| **TOTAL** | **41** | Single database, clean minimal structure with production-ready reporting + dynamic navigation | 5 schemas (Core merged into Master; SeoMeta, Tags polymorphic to Shared) |
 
 ---
 
@@ -190,20 +190,6 @@ Templates (multi-channel, multi-language)
 
 ---
 
-### 1.5 Tags (MOVED FROM CORE - Global filtering)
-
-```sql
-Tags (polymorphic tagging - global reference)
-├─ EntityType (VARCHAR 50) -- 'Order', 'Customer', 'Project', etc.
-├─ EntityId (UNIQUEIDENTIFIER)
-├─ TagName (NVARCHAR 100) -- Can be used as filter criteria
-├─ TagCategory (VARCHAR 50, nullable) -- 'Priority', 'Status', 'Owner', 'Department'
-├─ TenantId (GUID, nullable) -- NULL=global tag, GUID=tenant-specific
-├─ Indexes: (TagName), (TenantId, TagName)
-└─ Rationale: Global tag definitions for filtering across entities
-```
-
----
 
 ### 1.6 Tenants (MOVED FROM CORE - Master reference)
 
@@ -342,27 +328,26 @@ Main Menu (/1/)
 
 ---
 
-### **Master Schema Summary: 18 tables** (Option C Hybrid Geo + Config + Navigation)
+### **Master Schema Summary: 17 tables** (Option C Hybrid Geo + Config + Navigation)
 - Geo (2): Countries, GeoHierarchy ← OPTION C (hybrid: reference + hierarchical)
 - i18n (2): Languages, Translations
 - Hierarchies (4): Lookups, Categories, EntityStates, EntityStateTransitions
 - Notifications (3): NotificationChannels, TemplateGroups, Templates
-- Tags (1): Tags ← MOVED FROM CORE
-- Tenants (1): Tenants ← MOVED FROM CORE
+- Tenants (1): Tenants ← MOVED FROM CORE (reference data)
 - SEO (1): UrlRedirects ← SeoMeta MOVED TO SHARED for polymorphic linking
 - Config (3): TenantSubscriptions, TenantSettings, FeatureFlags ← MOVED FROM CORE
 - Navigation (2): Menus, MenuItems ← NEW (HierarchyId trees, role-based, auto-sitemap)
 
 ---
 
-## 2. Shared Schema (6 tables)
+## 2. Shared Schema (7 tables)
 
 ### Purpose
-Polymorphic infrastructure used across ALL schemas. Enables flexible entity linking without schema changes. SeoMeta moved here for consistency with polymorphic pattern.
+Polymorphic infrastructure used across ALL schemas. Enables flexible entity linking without schema changes. SeoMeta and Tags moved here for consistency with polymorphic pattern.
 
 ---
 
-### 2.1 Shared Infrastructure (6 tables - polymorphic linking via EntityType+EntityId)
+### 2.1 Shared Infrastructure (7 tables - polymorphic linking via EntityType+EntityId)
 
 ```sql
 Addresses (polymorphic - links to any entity)
@@ -450,6 +435,19 @@ SeoMeta (polymorphic SEO metadata - MOVED FROM MASTER)
 ├─ IsActive (BIT, default 1)
 ├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
 └─ Indexes: (TenantId, EntityType), (TenantId, Slug), (EntityType, EntityId), (IsActive)
+
+Tags (polymorphic tagging - MOVED FROM MASTER)
+├─ TagId (GUID)
+├─ TenantId (GUID, NOT NULL) -- Row-level isolation (changed from nullable)
+├─ EntityType (VARCHAR 50) -- 'Product', 'Order', 'Customer', 'Project', 'BlogPost'
+├─ EntityId (UNIQUEIDENTIFIER) -- Polymorphic link to any entity
+├─ TagName (NVARCHAR 100) -- Used as filter criteria: 'VIP', 'Rush', 'Urgent'
+├─ TagCategory (VARCHAR 50, nullable) -- 'Priority', 'Status', 'Owner', 'Department'
+├─ Color (VARCHAR 10, nullable) -- Hex color for UI: '#FF0000', '#00FF00'
+├─ DisplayOrder (INT, nullable) -- Sort order for display
+├─ IsActive (BIT, default 1)
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
+└─ Indexes: (TenantId, TagName), (TenantId, EntityType, EntityId), (TagName), (TagCategory)
 ```
 
 **Why SeoMeta in Shared?**
@@ -458,15 +456,23 @@ SeoMeta (polymorphic SEO metadata - MOVED FROM MASTER)
 - ✅ Automatic SEO for any new entity type (no schema changes)
 - ✅ TenantId NOT NULL for proper row-level isolation
 
+**Why Tags in Shared?**
+- ✅ Single table serves Products, Orders, Customers, Projects, BlogPosts, etc.
+- ✅ Consistent with polymorphic linking pattern (EntityType + EntityId)
+- ✅ Flexible filtering/categorization for any entity
+- ✅ TenantId NOT NULL ensures multi-tenant isolation
+- ✅ New entity types automatically get tagging (no schema changes)
+
 **See:** [`docs/srs/SEO-POLYMORPHIC-DESIGN.md`](SEO-POLYMORPHIC-DESIGN.md) for complete examples: Products, Categories/Subcategories (HierarchyId), Geo-based listings, MenuItems, BlogPosts, URL routing strategies.
 
 ---
 
-### **Shared Schema Summary: 6 tables**
-- Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions, SeoMeta
+### **Shared Schema Summary: 7 tables**
+- Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions, SeoMeta, Tags
 - **Used by:** Transaction, Report, Core, and all future domain schemas
 - **Pattern:** EntityType + EntityId allows linking to any entity type
 - **SEO:** Single SeoMeta table replaces embedded SEO columns, supports polymorphic linking
+- **Tagging:** Single Tags table for flexible filtering/categorization across all entities
 
 ---
 
@@ -800,24 +806,24 @@ All Auth tables have FK → Master.Tenants (TenantId) except Permissions/Roles (
 ## Schema Summary - FINAL LEAN VERSION
 
 ```
-Master Schema (18 tables - Option C Geo + Config + Navigation)
+Master Schema (17 tables - Option C Geo + Config + Navigation)
 ├─ Geo Reference (2): Countries, GeoHierarchy ← OPTION C (Hybrid: Reference + HierarchyId)
 ├─ Localization (2): Languages, Translations
 ├─ Hierarchies (4): Lookups, Categories, EntityStates, EntityStateTransitions
 ├─ Notifications (3): NotificationChannels, TemplateGroups, Templates
-├─ Tags (1): Tags ← MOVED FROM CORE (global filtering)
 ├─ Tenants (1): Tenants ← MOVED FROM CORE (reference data)
 ├─ SEO (1): UrlRedirects ← SeoMeta MOVED TO SHARED
 ├─ Config (3): TenantSubscriptions, TenantSettings, FeatureFlags ← MOVED FROM CORE
 └─ Navigation (2): Menus, MenuItems ← NEW (HierarchyId trees, role-based)
 
-Shared Schema (6 tables - Polymorphic Infrastructure)
+Shared Schema (7 tables - Polymorphic Infrastructure)
 ├─ Addresses (polymorphic address linking)
 ├─ Attachments (polymorphic file references)
 ├─ Comments (polymorphic commenting system)
 ├─ StateHistory (polymorphic state machine tracking)
 ├─ PreferenceDefinitions (extensible preferences)
-└─ SeoMeta ← MOVED FROM MASTER (polymorphic SEO metadata)
+├─ SeoMeta ← MOVED FROM MASTER (polymorphic SEO metadata)
+└─ Tags ← MOVED FROM MASTER (polymorphic tagging/categorization)
 
 Transaction Schema (1 table - LEAN)
 └─ Orders (ONE dummy transactional table)
@@ -834,7 +840,7 @@ Auth Schema (13 tables - UNCHANGED)
 ├─ Sessions (3): RefreshTokens, VerificationCodes, ExternalLogins
 └─ Logging (3): AuditLogs, ActivityLogs, NotificationLogs
 
-TOTAL: 42 tables (LEAN design with maximum flexibility)
+TOTAL: 41 tables (LEAN design with maximum flexibility)
 Single Database: StarterKitMVC
 All tables with audit columns, soft delete, TenantId for row-level isolation
 ```
@@ -870,21 +876,24 @@ All tables with audit columns, soft delete, TenantId for row-level isolation
 Even with lean schema, you can link to ANY entity:
 ```
 Orders (transaction dummy)
-├─ Addresses (EntityType='Order', EntityId=123)
-├─ Attachments (EntityType='Order', EntityId=123)
-├─ Comments (EntityType='Order', EntityId=123)
-├─ Tags (EntityType='Order', EntityId=123)
-└─ StateHistory (EntityType='Order', EntityId=123)
+├─ Addresses (EntityType='Order', EntityId=123) ← Billing, Shipping addresses
+├─ Attachments (EntityType='Order', EntityId=123) ← Invoices, Labels
+├─ Comments (EntityType='Order', EntityId=123) ← Customer notes, support
+├─ Tags (EntityType='Order', EntityId=123) ← 'VIP', 'Rush', 'Urgent'
+├─ SeoMeta (EntityType='Order', EntityId=123) ← Order detail page SEO
+└─ StateHistory (EntityType='Order', EntityId=123) ← Draft → Shipped → Delivered
 
 When teams add Customers:
-├─ Addresses (EntityType='Customer', EntityId=456)
-├─ Comments (EntityType='Customer', EntityId=456)
-└─ Tags (EntityType='Customer', EntityId=456)
+├─ Addresses (EntityType='Customer', EntityId=456) ← Home, Office, Billing
+├─ Comments (EntityType='Customer', EntityId=456) ← Notes, feedback
+├─ Tags (EntityType='Customer', EntityId=456) ← 'Premium', 'At-Risk', 'New'
+└─ SeoMeta (EntityType='Customer', EntityId=456) ← Customer profile page SEO
 
-When teams add Invoices:
-├─ Attachments (EntityType='Invoice', EntityId=789)
-├─ Comments (EntityType='Invoice', EntityId=789)
-└─ StateHistory (EntityType='Invoice', EntityId=789)
+When teams add Products:
+├─ Attachments (EntityType='Product', EntityId=789) ← Images, datasheets
+├─ Comments (EntityType='Product', EntityId=789) ← Reviews, ratings
+├─ Tags (EntityType='Product', EntityId=789) ← 'Featured', 'Sale', 'New Arrival'
+└─ SeoMeta (EntityType='Product', EntityId=789) ← Product detail page SEO
 ```
 
 No schema changes needed as you add entities!
