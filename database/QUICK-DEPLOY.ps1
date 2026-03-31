@@ -6,8 +6,7 @@
 
 .DESCRIPTION
     This script handles:
-    - Database creation
-    - Running all 8 migration scripts in correct order
+    - Running all 9 migration scripts in correct order
     - Seeding reference data and test users
     - Building the application
 
@@ -100,30 +99,30 @@ $colors = @{
 # ============================================
 function Write-Header {
     param([string]$Message)
-    Write-Host "`n" -NoNewline
-    Write-Host "╔════════════════════════════════════════════════════╗" -ForegroundColor $colors.Header
-    Write-Host "║ $Message" -ForegroundColor $colors.Header
-    Write-Host "╚════════════════════════════════════════════════════╝" -ForegroundColor $colors.Header
+    Write-Host ""
+    Write-Host "============================================================" -ForegroundColor $colors.Header
+    Write-Host "  $Message" -ForegroundColor $colors.Header
+    Write-Host "============================================================" -ForegroundColor $colors.Header
 }
 
 function Write-Success {
     param([string]$Message)
-    Write-Host "✅ $Message" -ForegroundColor $colors.Success
+    Write-Host "[OK] $Message" -ForegroundColor $colors.Success
 }
 
 function Write-Error {
     param([string]$Message)
-    Write-Host "❌ $Message" -ForegroundColor $colors.Error
+    Write-Host "[ERROR] $Message" -ForegroundColor $colors.Error
 }
 
 function Write-Warning {
     param([string]$Message)
-    Write-Host "⚠️  $Message" -ForegroundColor $colors.Warning
+    Write-Host "[WARNING] $Message" -ForegroundColor $colors.Warning
 }
 
 function Write-Info {
     param([string]$Message)
-    Write-Host "ℹ️  $Message" -ForegroundColor $colors.Info
+    Write-Host "[INFO] $Message" -ForegroundColor $colors.Info
 }
 
 function Invoke-SqlMigration {
@@ -182,10 +181,10 @@ foreach ($migration in $migrations) {
 
 if ($missingFiles.Count -gt 0) {
     Write-Error "Missing migration files:"
-    $missingFiles | ForEach-Object { Write-Error "  • $_" }
+    $missingFiles | ForEach-Object { Write-Error "  - $_" }
     exit 1
 }
-Write-Success "All 8 migration files found"
+Write-Success "All 9 migration files found"
 
 # Step 3: Execute migrations
 Write-Header "Executing Database Migrations"
@@ -257,4 +256,5 @@ Write-Info "4. Test login with test credentials:"
 Write-Host "   Email: admin@smartworkz.test" -ForegroundColor $colors.Info
 Write-Host "   Password: TestPassword123!" -ForegroundColor $colors.Info
 
-Write-Success "`n✨ Database deployment complete!"
+Write-Host ""
+Write-Success "Database deployment complete!"
