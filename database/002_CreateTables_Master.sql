@@ -454,5 +454,27 @@ CREATE INDEX IX_Inventory_ProductId ON Master.Inventory(ProductId);
 CREATE INDEX IX_Inventory_SupplierId ON Master.Inventory(SupplierId);
 CREATE INDEX IX_Inventory_TenantId ON Master.Inventory(TenantId);
 
-PRINT '✓ Master schema: 18 tables created successfully'
+-- ============================================
+-- 19. TenantUsers (User to Tenant Mapping)
+-- ============================================
+CREATE TABLE Master.TenantUsers (
+    TenantUserId INT PRIMARY KEY IDENTITY(1,1),
+    TenantId NVARCHAR(128) NOT NULL,
+    UserId NVARCHAR(128) NOT NULL,
+    JoinedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    LeftAt DATETIME2,
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    UNIQUE (TenantId, UserId)
+);
+
+CREATE INDEX IX_TenantUsers_TenantId ON Master.TenantUsers(TenantId);
+CREATE INDEX IX_TenantUsers_UserId ON Master.TenantUsers(UserId);
+
+PRINT '✓ Master schema: 19 tables created successfully'
 
