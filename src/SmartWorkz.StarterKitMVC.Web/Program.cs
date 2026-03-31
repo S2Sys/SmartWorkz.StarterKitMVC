@@ -135,7 +135,7 @@ builder.Services.AddSwaggerGen(c =>
     }
 
     // Support for Problem Details responses
-    c.SchemaFilter<ProblemDetailsSchemaFilter>();
+    // c.SchemaFilter<ProblemDetailsSchemaFilter>(); // Disabled - causes schema generation issues
 });
 
 var app = builder.Build();
