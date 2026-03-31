@@ -126,7 +126,7 @@ public class AuthDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Permission>()
-            .HasIndex(p => p.Code)
+            .HasIndex(p => new { p.TenantId, p.Name })
             .IsUnique();
 
         // UserRole Configuration
