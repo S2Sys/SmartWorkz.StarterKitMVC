@@ -27,18 +27,18 @@
 
 **What it does:**
 - Validates parameters (ServerName, credentials)
-- Creates database if it doesn't exist
-- Executes all 8 migration scripts in correct sequence:
-  1. 001_InitializeDatabase.sql - Database initialization
-  2. 002_CreateTables_Master.sql - 15 core tables (Tenants, Config, Navigation, Menus, Categories, etc.)
-  3. 003_CreateTables_Shared.sql - 7 polymorphic tables (SeoMeta, Tags, Translations, etc.)
-  4. 004_CreateTables_Transaction.sql - Transaction schema placeholder
-  5. 005_CreateTables_Report.sql - Report schema placeholder
-  6. 006_CreateTables_Auth.sql - 13 auth tables (Users, Roles, Permissions, Tokens)
-  7. 007_SeedData.sql - Reference data and lookups
-  8. 008_SeedTestUsers.sql - 4 test users with roles and permissions
+- Executes all 9 migration scripts in correct sequence:
+  1. 000_DeleteAllSchemas.sql - Drops existing Boilerplate database (clean slate)
+  2. 001_InitializeDatabase.sql - Create fresh database and schemas
+  3. 002_CreateTables_Master.sql - Create 15 core boilerplate tables
+  4. 003_CreateTables_Shared.sql - Create 7 polymorphic tables
+  5. 004_CreateTables_Transaction.sql - Initialize Transaction schema
+  6. 005_CreateTables_Report.sql - Initialize Report schema
+  7. 006_CreateTables_Auth.sql - Create 13 auth/RBAC tables
+  8. 007_SeedData.sql - Populate reference data and lookups
+  9. 008_SeedTestUsers.sql - Create 4 test users with roles and permissions
 - Automatically builds dotnet solution
-- Provides color-coded progress output
+- Provides color-coded progress output with step numbers
 
 **Usage Examples:**
 
@@ -115,23 +115,28 @@ Password for all users: `TestPassword123!`
 
 ## Manual Deployment (Without Script)
 
-If you prefer to run scripts manually:
+If you prefer to run scripts manually, execute in this exact order:
 
 ```powershell
-# Step 1: Create database
+# Step 1: Delete existing database (runs on master database)
+sqlcmd -S ".\SQLEXPRESS" -i "database/v1/000_DeleteAllSchemas.sql"
+
+# Step 2: Create database and schemas
 sqlcmd -S ".\SQLEXPRESS" -i "database/v1/001_InitializeDatabase.sql"
 
-# Step 2: Create schemas and tables (in order)
+# Step 3: Create all tables (in order on Boilerplate database)
 sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/002_CreateTables_Master.sql"
 sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/003_CreateTables_Shared.sql"
 sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/004_CreateTables_Transaction.sql"
 sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/005_CreateTables_Report.sql"
 sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/006_CreateTables_Auth.sql"
 
-# Step 3: Seed data
+# Step 4: Seed reference data and test users
 sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/007_SeedData.sql"
 sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/008_SeedTestUsers.sql"
 ```
+
+**Important:** Script 000 must run first against master database. Scripts 001-008 run against Boilerplate database.
 
 ---
 
