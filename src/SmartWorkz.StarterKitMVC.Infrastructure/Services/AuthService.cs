@@ -47,7 +47,7 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Account is temporarily locked");
 
         var roles = user.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new();
-        var permissions = user.UserPermissions?.Select(up => up.Permission.Code).ToList() ?? new();
+        var permissions = user.UserPermissions?.Select(up => up.Permission.Name).ToList() ?? new();
 
         var accessToken = _tokenService.GenerateAccessToken(user, roles, permissions);
         var refreshToken = _tokenService.GenerateRefreshToken();
@@ -136,7 +136,7 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("User not found or inactive");
 
         var roles = user.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new();
-        var permissions = user.UserPermissions?.Select(up => up.Permission.Code).ToList() ?? new();
+        var permissions = user.UserPermissions?.Select(up => up.Permission.Name).ToList() ?? new();
 
         var newAccessToken = _tokenService.GenerateAccessToken(user, roles, permissions);
         var newRefreshToken = _tokenService.GenerateRefreshToken();
@@ -299,7 +299,7 @@ public class AuthService : IAuthService
             return null;
 
         var roles = user.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new();
-        var permissions = user.UserPermissions?.Select(up => up.Permission.Code).ToList() ?? new();
+        var permissions = user.UserPermissions?.Select(up => up.Permission.Name).ToList() ?? new();
 
         return MapToProfile(user, roles, permissions);
     }

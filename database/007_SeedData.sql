@@ -76,20 +76,20 @@ VALUES
 -- ============================================
 -- 6. Seed Permissions
 -- ============================================
-INSERT INTO Auth.Permissions (Code, Name, Description, PermissionType, ResourceType, TenantId, IsActive, CreatedBy)
+INSERT INTO Auth.Permissions (Name, Description, PermissionType, ResourceType, TenantId, IsActive, CreatedBy)
 VALUES
-    ('PRODUCT_CREATE', 'Create Product', 'Permission to create products', 'Create', 'Product', 'DEFAULT', 1, 'System'),
-    ('PRODUCT_READ', 'Read Product', 'Permission to read products', 'Read', 'Product', 'DEFAULT', 1, 'System'),
-    ('PRODUCT_UPDATE', 'Update Product', 'Permission to update products', 'Update', 'Product', 'DEFAULT', 1, 'System'),
-    ('PRODUCT_DELETE', 'Delete Product', 'Permission to delete products', 'Delete', 'Product', 'DEFAULT', 1, 'System'),
-    ('ORDER_CREATE', 'Create Order', 'Permission to create orders', 'Create', 'Order', 'DEFAULT', 1, 'System'),
-    ('ORDER_READ', 'Read Order', 'Permission to read orders', 'Read', 'Order', 'DEFAULT', 1, 'System'),
-    ('ORDER_UPDATE', 'Update Order', 'Permission to update orders', 'Update', 'Order', 'DEFAULT', 1, 'System'),
-    ('ORDER_DELETE', 'Delete Order', 'Permission to delete orders', 'Delete', 'Order', 'DEFAULT', 1, 'System'),
-    ('REPORT_READ', 'View Report', 'Permission to view reports', 'Read', 'Report', 'DEFAULT', 1, 'System'),
-    ('USER_UPDATE', 'Manage Users', 'Permission to manage users', 'Update', 'User', 'DEFAULT', 1, 'System'),
-    ('MENU_READ', 'View Menu', 'Permission to view menus', 'Read', 'Menu', 'DEFAULT', 1, 'System'),
-    ('MENU_UPDATE', 'Manage Menu', 'Permission to manage menus', 'Update', 'Menu', 'DEFAULT', 1, 'System');
+    ('Create Product', 'Permission to create products', 'Create', 'Product', 'DEFAULT', 1, 'System'),
+    ('Read Product', 'Permission to read products', 'Read', 'Product', 'DEFAULT', 1, 'System'),
+    ('Update Product', 'Permission to update products', 'Update', 'Product', 'DEFAULT', 1, 'System'),
+    ('Delete Product', 'Permission to delete products', 'Delete', 'Product', 'DEFAULT', 1, 'System'),
+    ('Create Order', 'Permission to create orders', 'Create', 'Order', 'DEFAULT', 1, 'System'),
+    ('Read Order', 'Permission to read orders', 'Read', 'Order', 'DEFAULT', 1, 'System'),
+    ('Update Order', 'Permission to update orders', 'Update', 'Order', 'DEFAULT', 1, 'System'),
+    ('Delete Order', 'Permission to delete orders', 'Delete', 'Order', 'DEFAULT', 1, 'System'),
+    ('View Report', 'Permission to view reports', 'Read', 'Report', 'DEFAULT', 1, 'System'),
+    ('Manage Users', 'Permission to manage users', 'Update', 'User', 'DEFAULT', 1, 'System'),
+    ('View Menu', 'Permission to view menus', 'Read', 'Menu', 'DEFAULT', 1, 'System'),
+    ('Manage Menu', 'Permission to manage menus', 'Update', 'Menu', 'DEFAULT', 1, 'System');
 
 -- ============================================
 -- 7. Seed Menus (Navigation Structure)
