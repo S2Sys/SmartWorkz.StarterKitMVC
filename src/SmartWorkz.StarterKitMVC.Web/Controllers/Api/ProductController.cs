@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Domain.Entities.Master;
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
+using SmartWorkz.StarterKitMVC.Shared.Validation;
+using SmartWorkz.StarterKitMVC.Web.Middleware;
 
 namespace SmartWorkz.StarterKitMVC.Web.Controllers.Api;
 
@@ -53,10 +56,28 @@ public class ProductController : ControllerBase
 
     [HttpGet("category/{categoryId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<Product>>> GetProductsByCategory(string tenantId, int categoryId)
+    public async Task<ActionResult<PaginationResponse<Product>>> GetProductsByCategory(
+        string tenantId,
+        int categoryId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
+        if (page < 1 || pageSize < 1 || pageSize > 100)
+            throw new ValidationException(new List<ValidationFailure>
+            {
+                new() { PropertyName = "page", ErrorMessage = "Page must be >= 1" },
+                new() { PropertyName = "pageSize", ErrorMessage = "PageSize must be between 1 and 100" }
+            });
+
         var products = await _productRepository.GetByCategoryAsync(tenantId, categoryId);
-        return Ok(products);
+        var paginated = products
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        var totalCount = products.Count;
+        var totalPages = (int)Math.Ceiling(totalCount / (decimal)pageSize);
+
+        return Ok(new PaginationResponse<Product>(paginated, page, pageSize, totalCount, totalPages));
     }
 
     [HttpGet("featured")]
@@ -69,13 +90,34 @@ public class ProductController : ControllerBase
 
     [HttpGet("search")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<Product>>> SearchProducts(string tenantId, [FromQuery] string q)
+    public async Task<ActionResult<PaginationResponse<Product>>> SearchProducts(
+        string tenantId,
+        [FromQuery] string q,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
         if (string.IsNullOrWhiteSpace(q))
-            return BadRequest("Search query is required");
+            throw new ValidationException(new List<ValidationFailure>
+            {
+                new() { PropertyName = "q", ErrorMessage = "Search query is required" }
+            });
+
+        if (page < 1 || pageSize < 1 || pageSize > 100)
+            throw new ValidationException(new List<ValidationFailure>
+            {
+                new() { PropertyName = "page", ErrorMessage = "Page must be >= 1" },
+                new() { PropertyName = "pageSize", ErrorMessage = "PageSize must be between 1 and 100" }
+            });
 
         var products = await _productRepository.SearchAsync(tenantId, q);
-        return Ok(products);
+        var paginated = products
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        var totalCount = products.Count;
+        var totalPages = (int)Math.Ceiling(totalCount / (decimal)pageSize);
+
+        return Ok(new PaginationResponse<Product>(paginated, page, pageSize, totalCount, totalPages));
     }
 
     [HttpPost]
@@ -84,7 +126,16 @@ public class ProductController : ControllerBase
     public async Task<ActionResult<Product>> CreateProduct(string tenantId, [FromBody] Product product)
     {
         if (string.IsNullOrWhiteSpace(product.Name))
-            return BadRequest("Product name is required");
+            throw new ValidationException(new List<ValidationFailure>
+            {
+                new() { PropertyName = nameof(product.Name), ErrorMessage = "Product name is required" }
+            });
+
+        if (product.Price < 0)
+            throw new ValidationException(new List<ValidationFailure>
+            {
+                new() { PropertyName = nameof(product.Price), ErrorMessage = "Price cannot be negative" }
+            });
 
         product.TenantId = tenantId;
         product.CreatedAt = DateTime.UtcNow;

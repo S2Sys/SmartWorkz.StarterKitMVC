@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "ivc1m9YBASY=",
+  "dgSpecHash": "VXDVP/qopoM=",
   "success": true,
   "projectFilePath": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Domain\\SmartWorkz.StarterKitMVC.Domain.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\tsent\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.14\\microsoft.windowsdesktop.app.ref.9.0.14.nupkg.sha512",
     "C:\\Users\\tsent\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.14\\microsoft.netcore.app.ref.9.0.14.nupkg.sha512",
+    "C:\\Users\\tsent\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.14\\microsoft.windowsdesktop.app.ref.9.0.14.nupkg.sha512",
     "C:\\Users\\tsent\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.14\\microsoft.aspnetcore.app.ref.9.0.14.nupkg.sha512"
   ],
   "logs": []

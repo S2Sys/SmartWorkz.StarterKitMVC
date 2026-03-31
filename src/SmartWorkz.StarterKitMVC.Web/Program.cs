@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartWorkz.StarterKitMVC.Application.Abstractions;
 using SmartWorkz.StarterKitMVC.Infrastructure.AI;
@@ -61,6 +62,15 @@ builder.Services.AddEmailTemplates();
 // Authorization & Permissions
 builder.Services.AddSingleton<IPermissionService, PermissionService>();
 builder.Services.AddSingleton<IClaimService, ClaimService>();
+builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+builder.Services.AddAuthorization(options =>
+{
+    // Dynamic policy registration for permissions
+    // Usage: [Authorize(Policy = "Permission:PRODUCT_READ")]
+    options.DefaultPolicy = new AuthorizationPolicy(
+        new[] { new PermissionRequirement("default") },
+        new[] { "Bearer" });
+});
 
 // Localization Resources
 builder.Services.AddSingleton<IResourceService, ResourceService>();
@@ -94,6 +104,9 @@ app.UseStatusCodePagesWithReExecute("/error/{0}");
 app.UseHttpsRedirection();
 
 app.UseRequestLocalization();
+
+// Global exception handling middleware
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.UseRouting();
 
