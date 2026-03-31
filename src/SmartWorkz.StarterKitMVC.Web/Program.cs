@@ -17,6 +17,7 @@ using SmartWorkz.StarterKitMVC.Application.Authorization;
 using SmartWorkz.StarterKitMVC.Application.Localization;
 using SmartWorkz.StarterKitMVC.Infrastructure.Authorization;
 using SmartWorkz.StarterKitMVC.Infrastructure.Localization;
+using SmartWorkz.StarterKitMVC.Infrastructure.Extensions;
 using SmartWorkz.StarterKitMVC.Shared.Primitives;
 using SmartWorkz.StarterKitMVC.Web.Configuration;
 using SmartWorkz.StarterKitMVC.Web.Middleware;
@@ -27,6 +28,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
+
+// Application Stack (DbContexts, Repositories, Services, AutoMapper)
+builder.Services.AddApplicationStack(builder.Configuration);
 
 // UI Settings
 builder.Services.Configure<UISettings>(builder.Configuration.GetSection(UISettings.SectionName));
@@ -109,5 +113,8 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// API routes
+app.MapControllers();
 
 app.Run();
