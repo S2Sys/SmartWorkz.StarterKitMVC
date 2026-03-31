@@ -10,12 +10,12 @@
 
 | Schema | Tables | Purpose | Change from v1 |
 |--------|--------|---------|-----------------|
-| **Master** | 19 | Global reference data + Tags, Tenants, Config, Navigation | GEO: Countries + GeoHierarchy (Option C Hybrid); Config moved from Core; Menus + MenuItems NEW |
-| **Shared** | 5 | Polymorphic infrastructure (reusable across all schemas) | Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions |
+| **Master** | 18 | Global reference data + Tags, Tenants, Config, Navigation | GEO: Countries + GeoHierarchy (Option C Hybrid); Config moved from Core; Menus + MenuItems NEW; SeoMeta moved to Shared |
+| **Shared** | 6 | Polymorphic infrastructure (reusable across all schemas) | Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions, SeoMeta |
 | **Transaction** | 1 | ONE dummy transactional table | LEAN: removed all but Orders |
 | **Report** | 4 | SQL reports + Dashboard APIs + Scheduling + Execution history | ReportDefinitions, ReportSchedules, ReportExecutions, ReportMetadata |
 | **Auth** | 13 | Identity + RBAC + logs | UNCHANGED |
-| **TOTAL** | **42** | Single database, clean minimal structure with production-ready reporting + dynamic navigation | 5 schemas (Core merged into Master) |
+| **TOTAL** | **42** | Single database, clean minimal structure with production-ready reporting + dynamic navigation | 5 schemas (Core merged into Master; SeoMeta polymorphic to Shared) |
 
 ---
 
@@ -224,29 +224,21 @@ Tenants (HierarchyId tree - moved to Master as reference data)
 
 ---
 
-### 1.7 SeoMeta (2 tables)
+### 1.7 UrlRedirects (1 table)
+
+**SeoMeta moved to Shared schema** for polymorphic linking across Products, Categories, MenuItems, BlogPosts, etc. See Section 2.1 and [SEO-POLYMORPHIC-DESIGN.md](SEO-POLYMORPHIC-DESIGN.md).
 
 ```sql
-SeoMeta
-├─ EntityType (VARCHAR 50) -- 'Product', 'BlogPost', 'Page'
-├─ EntityId (UNIQUEIDENTIFIER)
-├─ MetaTitle (NVARCHAR 255)
-├─ MetaDescription (NVARCHAR 500)
-├─ MetaKeywords (NVARCHAR MAX)
-├─ OgTitle, OgDescription, OgImage
-├─ TwitterCard (VARCHAR 50)
-├─ StructuredData (VARCHAR MAX, JSON) -- Schema.org markup
-├─ TenantId (GUID, nullable)
-└─ Indexes: (EntityType, EntityId), (TenantId)
-
 UrlRedirects
-├─ FromPath (VARCHAR 500, unique)
-├─ ToPath (VARCHAR 500)
-├─ RedirectCode (INT) -- 301, 302
-├─ IsActive (BIT)
-├─ HitCount (BIGINT)
-├─ CreatedAt (DATETIME2)
-└─ Indexes: FromPath, ToPath
+├─ UrlRedirectId (GUID)
+├─ TenantId (GUID, NOT NULL) -- Tenant-specific redirects
+├─ FromPath (VARCHAR 500) -- /old-product-page
+├─ ToPath (VARCHAR 500) -- /products/new-product-name
+├─ RedirectCode (INT) -- 301 (permanent), 302 (temporary)
+├─ IsActive (BIT, default 1)
+├─ HitCount (BIGINT, default 0) -- Track redirect usage
+├─ Audit: CreatedAt, UpdatedAt
+└─ Indexes: (TenantId, FromPath), (ToPath)
 ```
 
 ---
@@ -350,27 +342,27 @@ Main Menu (/1/)
 
 ---
 
-### **Master Schema Summary: 20 tables** (Option C Hybrid Geo + Config + Navigation)
+### **Master Schema Summary: 18 tables** (Option C Hybrid Geo + Config + Navigation)
 - Geo (2): Countries, GeoHierarchy ← OPTION C (hybrid: reference + hierarchical)
 - i18n (2): Languages, Translations
 - Hierarchies (4): Lookups, Categories, EntityStates, EntityStateTransitions
 - Notifications (3): NotificationChannels, TemplateGroups, Templates
 - Tags (1): Tags ← MOVED FROM CORE
 - Tenants (1): Tenants ← MOVED FROM CORE
-- SEO (2): SeoMeta, UrlRedirects
+- SEO (1): UrlRedirects ← SeoMeta MOVED TO SHARED for polymorphic linking
 - Config (3): TenantSubscriptions, TenantSettings, FeatureFlags ← MOVED FROM CORE
 - Navigation (2): Menus, MenuItems ← NEW (HierarchyId trees, role-based, auto-sitemap)
 
 ---
 
-## 2. Shared Schema (5 tables)
+## 2. Shared Schema (6 tables)
 
 ### Purpose
-Polymorphic infrastructure used across ALL schemas. Enables flexible entity linking without schema changes.
+Polymorphic infrastructure used across ALL schemas. Enables flexible entity linking without schema changes. SeoMeta moved here for consistency with polymorphic pattern.
 
 ---
 
-### 2.1 Shared Infrastructure (5 tables - polymorphic linking via EntityType+EntityId)
+### 2.1 Shared Infrastructure (6 tables - polymorphic linking via EntityType+EntityId)
 
 ```sql
 Addresses (polymorphic - links to any entity)
@@ -438,14 +430,43 @@ PreferenceDefinitions (extensible user/tenant preferences)
 ├─ Description (NVARCHAR 500)
 ├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy
 └─ Indexes: Key, Scope
+
+SeoMeta (polymorphic SEO metadata - MOVED FROM MASTER)
+├─ SeoMetaId (GUID)
+├─ TenantId (GUID, NOT NULL) -- Row-level isolation
+├─ EntityType (VARCHAR 50) -- 'Product', 'Category', 'MenuItem', 'BlogPost', 'GeolocationPage'
+├─ EntityId (UNIQUEIDENTIFIER) -- Polymorphic link to any entity
+├─ Slug (VARCHAR 255) -- URL-friendly identifier
+├─ MetaTitle (NVARCHAR 255)
+├─ MetaDescription (NVARCHAR 500)
+├─ MetaKeywords (NVARCHAR MAX, nullable)
+├─ OgTitle (NVARCHAR 255, nullable) -- Open Graph
+├─ OgDescription (NVARCHAR 500, nullable)
+├─ OgImage (VARCHAR MAX, nullable) -- URL or FK to Attachment
+├─ OgType (VARCHAR 50, nullable, default 'website')
+├─ CanonicalUrl (VARCHAR MAX, nullable)
+├─ SchemaMarkup (NVARCHAR MAX, nullable) -- JSON: schema.org structured data
+├─ Robots (VARCHAR 100, nullable, default 'index,follow')
+├─ IsActive (BIT, default 1)
+├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
+└─ Indexes: (TenantId, EntityType), (TenantId, Slug), (EntityType, EntityId), (IsActive)
 ```
+
+**Why SeoMeta in Shared?**
+- ✅ Single table serves Products, Categories, MenuItems, BlogPosts, CustomPages
+- ✅ Consistent with Addresses, Comments, Attachments pattern
+- ✅ Automatic SEO for any new entity type (no schema changes)
+- ✅ TenantId NOT NULL for proper row-level isolation
+
+**See:** [`docs/srs/SEO-POLYMORPHIC-DESIGN.md`](SEO-POLYMORPHIC-DESIGN.md) for complete examples: Products, Categories/Subcategories (HierarchyId), Geo-based listings, MenuItems, BlogPosts, URL routing strategies.
 
 ---
 
-### **Shared Schema Summary: 5 tables**
-- Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions
+### **Shared Schema Summary: 6 tables**
+- Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions, SeoMeta
 - **Used by:** Transaction, Report, Core, and all future domain schemas
 - **Pattern:** EntityType + EntityId allows linking to any entity type
+- **SEO:** Single SeoMeta table replaces embedded SEO columns, supports polymorphic linking
 
 ---
 
@@ -779,25 +800,33 @@ All Auth tables have FK → Master.Tenants (TenantId) except Permissions/Roles (
 ## Schema Summary - FINAL LEAN VERSION
 
 ```
-Master Schema (15 tables)
-├─ Geo Reference (3): Countries, States, Cities
+Master Schema (18 tables - Option C Geo + Config + Navigation)
+├─ Geo Reference (2): Countries, GeoHierarchy ← OPTION C (Hybrid: Reference + HierarchyId)
 ├─ Localization (2): Languages, Translations
 ├─ Hierarchies (4): Lookups, Categories, EntityStates, EntityStateTransitions
 ├─ Notifications (3): NotificationChannels, TemplateGroups, Templates
 ├─ Tags (1): Tags ← MOVED FROM CORE (global filtering)
 ├─ Tenants (1): Tenants ← MOVED FROM CORE (reference data)
-└─ SEO (2): SeoMeta, UrlRedirects
+├─ SEO (1): UrlRedirects ← SeoMeta MOVED TO SHARED
+├─ Config (3): TenantSubscriptions, TenantSettings, FeatureFlags ← MOVED FROM CORE
+└─ Navigation (2): Menus, MenuItems ← NEW (HierarchyId trees, role-based)
 
-Core Schema (8 tables)
-├─ Tenant Config (2): TenantSubscriptions, TenantSettings
-├─ Feature Flags (1): FeatureFlags
-└─ Shared Infrastructure (5): Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions
+Shared Schema (6 tables - Polymorphic Infrastructure)
+├─ Addresses (polymorphic address linking)
+├─ Attachments (polymorphic file references)
+├─ Comments (polymorphic commenting system)
+├─ StateHistory (polymorphic state machine tracking)
+├─ PreferenceDefinitions (extensible preferences)
+└─ SeoMeta ← MOVED FROM MASTER (polymorphic SEO metadata)
 
 Transaction Schema (1 table - LEAN)
 └─ Orders (ONE dummy transactional table)
 
-Report Schema (1 table - LEAN)
-└─ ReportDefinitions (ONE dummy reporting table)
+Report Schema (4 tables - Production-ready Reporting)
+├─ ReportDefinitions (SQL, Dashboard, Stored Procedure report types)
+├─ ReportSchedules (background job scheduling with cron)
+├─ ReportExecutions (audit trail, performance metrics, result caching)
+└─ ReportMetadata (filters, drill-downs, conditional formatting)
 
 Auth Schema (13 tables - UNCHANGED)
 ├─ Identity (3): Users, UserProfiles, UserPreferences
@@ -805,9 +834,9 @@ Auth Schema (13 tables - UNCHANGED)
 ├─ Sessions (3): RefreshTokens, VerificationCodes, ExternalLogins
 └─ Logging (3): AuditLogs, ActivityLogs, NotificationLogs
 
-TOTAL: 38 tables (down from 62)
+TOTAL: 42 tables (LEAN design with maximum flexibility)
 Single Database: StarterKitMVC
-All tables with audit columns, soft delete, TenantId for isolation
+All tables with audit columns, soft delete, TenantId for row-level isolation
 ```
 
 ---
