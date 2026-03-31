@@ -42,13 +42,14 @@ public static class ServiceCollectionExtensions
 
     /// <summary>
     /// Adds repository services to the dependency injection container
+    /// Uses Dapper for authentication and user data access
     /// </summary>
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
-        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUserRepository, DapperUserRepository>();
 
         return services;
     }

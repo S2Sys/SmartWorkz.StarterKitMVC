@@ -1,27 +1,25 @@
 using SmartWorkz.StarterKitMVC.Application.Services;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SmartWorkz.StarterKitMVC.Domain.Entities.Auth;
-using SmartWorkz.StarterKitMVC.Infrastructure.Data;
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly AuthDbContext _context;
+    private readonly IUserRepository _userRepository;
     private readonly ITokenService _tokenService;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IConfiguration _configuration;
 
     public AuthService(
-        AuthDbContext context,
+        IUserRepository userRepository,
         ITokenService tokenService,
         IPasswordHasher passwordHasher,
         IConfiguration configuration)
     {
-        _context = context;
+        _userRepository = userRepository;
         _tokenService = tokenService;
         _passwordHasher = passwordHasher;
         _configuration = configuration;
@@ -29,13 +27,7 @@ public class AuthService : IAuthService
 
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
-        var user = await _context.Users
-            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-            .Include(u => u.UserPermissions).ThenInclude(up => up.Permission)
-            .FirstOrDefaultAsync(u =>
-                u.Email == request.Email &&
-                u.TenantId == request.TenantId &&
-                !u.IsDeleted);
+        var user = await _userRepository.GetByEmailAsync(request.Email, request.TenantId);
 
         if (user == null || !_passwordHasher.Verify(request.Password, user.PasswordHash))
             throw new UnauthorizedAccessException("Invalid email or password");
@@ -46,16 +38,17 @@ public class AuthService : IAuthService
         if (user.LockoutEnabled && user.LockoutEnd.HasValue && user.LockoutEnd > DateTime.UtcNow)
             throw new UnauthorizedAccessException("Account is temporarily locked");
 
-        var roles = user.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new();
-        var permissions = user.UserPermissions?.Select(up => up.Permission.Name).ToList() ?? new();
+        var roles = await _userRepository.GetUserRolesAsync(user.UserId, request.TenantId);
+        var permissions = await _userRepository.GetUserPermissionsAsync(user.UserId, request.TenantId);
 
         var accessToken = _tokenService.GenerateAccessToken(user, roles, permissions);
         var refreshToken = _tokenService.GenerateRefreshToken();
 
         // Store refresh token
         var expiryDays = int.Parse(_configuration["Features:Authentication:Jwt:RefreshTokenExpiryDays"] ?? "7");
-        _context.RefreshTokens.Add(new RefreshToken
+        await _userRepository.CreateRefreshTokenAsync(new RefreshToken
         {
+            RefreshTokenId = 0,
             UserId = user.UserId,
             Token = refreshToken,
             TenantId = user.TenantId,
@@ -66,8 +59,7 @@ public class AuthService : IAuthService
         // Reset failed login attempts on success
         user.AccessFailedCount = 0;
         user.UpdatedAt = DateTime.UtcNow;
-
-        await _context.SaveChangesAsync();
+        await _userRepository.UpdateUserAsync(user);
 
         var expiryMinutes = int.Parse(_configuration["Features:Authentication:Jwt:ExpiryMinutes"] ?? "60");
 
@@ -81,10 +73,7 @@ public class AuthService : IAuthService
 
     public async Task<LoginResponse> RegisterAsync(RegisterRequest request)
     {
-        var exists = await _context.Users.AnyAsync(u =>
-            u.Email == request.Email &&
-            u.TenantId == request.TenantId &&
-            !u.IsDeleted);
+        var exists = await _userRepository.UserExistsAsync(request.Email, request.TenantId);
 
         if (exists)
             throw new InvalidOperationException("Email already registered");
@@ -104,8 +93,7 @@ public class AuthService : IAuthService
             CreatedAt = DateTime.UtcNow
         };
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        await _userRepository.CreateUserAsync(user);
 
         return await LoginAsync(new LoginRequest(request.Email, request.Password, request.TenantId));
     }
@@ -116,45 +104,35 @@ public class AuthService : IAuthService
         var userId = principal.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
                   ?? principal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-        var storedToken = await _context.RefreshTokens
-            .FirstOrDefaultAsync(rt =>
-                rt.UserId == userId &&
-                rt.Token == request.RefreshToken &&
-                rt.RevokedAt == null &&
-                rt.ExpiresAt > DateTime.UtcNow &&
-                !rt.IsDeleted);
+        var storedToken = await _userRepository.GetRefreshTokenAsync(request.RefreshToken, null);
 
         if (storedToken == null)
             throw new UnauthorizedAccessException("Invalid or expired refresh token");
 
-        var user = await _context.Users
-            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-            .Include(u => u.UserPermissions).ThenInclude(up => up.Permission)
-            .FirstOrDefaultAsync(u => u.UserId == userId && !u.IsDeleted);
+        var user = await _userRepository.GetByIdAsync(userId);
 
         if (user == null || !user.IsActive)
             throw new UnauthorizedAccessException("User not found or inactive");
 
-        var roles = user.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new();
-        var permissions = user.UserPermissions?.Select(up => up.Permission.Name).ToList() ?? new();
+        var roles = await _userRepository.GetUserRolesAsync(user.UserId, user.TenantId);
+        var permissions = await _userRepository.GetUserPermissionsAsync(user.UserId, user.TenantId);
 
         var newAccessToken = _tokenService.GenerateAccessToken(user, roles, permissions);
         var newRefreshToken = _tokenService.GenerateRefreshToken();
 
         // Rotate refresh token
-        storedToken.RevokedAt = DateTime.UtcNow;
+        await _userRepository.RevokeRefreshTokenAsync(user.UserId, request.RefreshToken);
 
         var expiryDays = int.Parse(_configuration["Features:Authentication:Jwt:RefreshTokenExpiryDays"] ?? "7");
-        _context.RefreshTokens.Add(new RefreshToken
+        await _userRepository.CreateRefreshTokenAsync(new RefreshToken
         {
+            RefreshTokenId = 0,
             UserId = user.UserId,
             Token = newRefreshToken,
             TenantId = user.TenantId,
             ExpiresAt = DateTime.UtcNow.AddDays(expiryDays),
             CreatedAt = DateTime.UtcNow
         });
-
-        await _context.SaveChangesAsync();
 
         var expiryMinutes = int.Parse(_configuration["Features:Authentication:Jwt:ExpiryMinutes"] ?? "60");
 
@@ -168,45 +146,31 @@ public class AuthService : IAuthService
 
     public async Task<bool> RevokeTokenAsync(string userId, string refreshToken)
     {
-        var token = await _context.RefreshTokens
-            .FirstOrDefaultAsync(rt => rt.UserId == userId && rt.Token == refreshToken && rt.RevokedAt == null);
-
-        if (token == null)
-            return false;
-
-        token.RevokedAt = DateTime.UtcNow;
-        await _context.SaveChangesAsync();
+        await _userRepository.RevokeRefreshTokenAsync(userId, refreshToken);
         return true;
     }
 
     public async Task<bool> ForgotPasswordAsync(ForgotPasswordRequest request)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u =>
-                u.Email == request.Email &&
-                u.TenantId == request.TenantId &&
-                !u.IsDeleted);
+        var user = await _userRepository.GetByEmailAsync(request.Email, request.TenantId);
 
         if (user == null)
             return true; // Don't reveal whether email exists
 
         // Invalidate previous tokens
-        var existing = await _context.PasswordResetTokens
-            .Where(t => t.UserId == user.UserId && t.UsedAt == null && !t.IsDeleted)
-            .ToListAsync();
-        existing.ForEach(t => t.IsDeleted = true);
+        await _userRepository.InvalidatePreviousPasswordResetTokensAsync(user.UserId);
 
         var token = new PasswordResetToken
         {
+            PasswordResetTokenId = 0,
             UserId = user.UserId,
-            Token = _tokenService.GenerateRefreshToken(), // reuse secure random gen
+            Token = _tokenService.GenerateRefreshToken(),
             TenantId = user.TenantId,
             ExpiresAt = DateTime.UtcNow.AddHours(2),
             CreatedAt = DateTime.UtcNow
         };
 
-        _context.PasswordResetTokens.Add(token);
-        await _context.SaveChangesAsync();
+        await _userRepository.CreatePasswordResetTokenAsync(token);
 
         // TODO: Send email with reset link containing token.Token
         return true;
@@ -214,22 +178,12 @@ public class AuthService : IAuthService
 
     public async Task<bool> ResetPasswordAsync(ResetPasswordRequest request)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u =>
-                u.Email == request.Email &&
-                u.TenantId == request.TenantId &&
-                !u.IsDeleted);
+        var user = await _userRepository.GetByEmailAsync(request.Email, request.TenantId);
 
         if (user == null)
             return false;
 
-        var token = await _context.PasswordResetTokens
-            .FirstOrDefaultAsync(t =>
-                t.UserId == user.UserId &&
-                t.Token == request.Token &&
-                t.UsedAt == null &&
-                t.ExpiresAt > DateTime.UtcNow &&
-                !t.IsDeleted);
+        var token = await _userRepository.GetPasswordResetTokenAsync(user.UserId, request.Token, request.TenantId);
 
         if (token == null)
             return false;
@@ -240,13 +194,14 @@ public class AuthService : IAuthService
 
         token.UsedAt = DateTime.UtcNow;
 
-        await _context.SaveChangesAsync();
+        await _userRepository.UpdateUserAsync(user);
+        await _userRepository.UpdatePasswordResetTokenAsync(token);
         return true;
     }
 
     public async Task<bool> ChangePasswordAsync(string userId, ChangePasswordRequest request)
     {
-        var user = await _context.Users.FindAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId);
         if (user == null || !_passwordHasher.Verify(request.CurrentPassword, user.PasswordHash))
             return false;
 
@@ -254,28 +209,18 @@ public class AuthService : IAuthService
         user.SecurityStamp = Guid.NewGuid().ToString();
         user.UpdatedAt = DateTime.UtcNow;
 
-        await _context.SaveChangesAsync();
+        await _userRepository.UpdateUserAsync(user);
         return true;
     }
 
     public async Task<bool> VerifyEmailAsync(VerifyEmailRequest request)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u =>
-                u.Email == request.Email &&
-                u.TenantId == request.TenantId &&
-                !u.IsDeleted);
+        var user = await _userRepository.GetByEmailAsync(request.Email, request.TenantId);
 
         if (user == null)
             return false;
 
-        var token = await _context.EmailVerificationTokens
-            .FirstOrDefaultAsync(t =>
-                t.UserId == user.UserId &&
-                t.Token == request.Token &&
-                t.VerifiedAt == null &&
-                t.ExpiresAt > DateTime.UtcNow &&
-                !t.IsDeleted);
+        var token = await _userRepository.GetEmailVerificationTokenAsync(user.UserId, request.Token, request.TenantId);
 
         if (token == null)
             return false;
@@ -284,22 +229,20 @@ public class AuthService : IAuthService
         user.UpdatedAt = DateTime.UtcNow;
         token.VerifiedAt = DateTime.UtcNow;
 
-        await _context.SaveChangesAsync();
+        await _userRepository.UpdateUserAsync(user);
+        await _userRepository.UpdateEmailVerificationTokenAsync(token);
         return true;
     }
 
     public async Task<UserProfileDto> GetProfileAsync(string userId)
     {
-        var user = await _context.Users
-            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-            .Include(u => u.UserPermissions).ThenInclude(up => up.Permission)
-            .FirstOrDefaultAsync(u => u.UserId == userId && !u.IsDeleted);
+        var user = await _userRepository.GetByIdAsync(userId);
 
         if (user == null)
             return null;
 
-        var roles = user.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new();
-        var permissions = user.UserPermissions?.Select(up => up.Permission.Name).ToList() ?? new();
+        var roles = await _userRepository.GetUserRolesAsync(user.UserId, user.TenantId);
+        var permissions = await _userRepository.GetUserPermissionsAsync(user.UserId, user.TenantId);
 
         return MapToProfile(user, roles, permissions);
     }

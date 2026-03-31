@@ -82,7 +82,8 @@ $migrations = @(
     "005_CreateTables_Report.sql",
     "006_CreateTables_Auth.sql",
     "007_SeedData.sql",
-    "008_SeedTestUsers.sql"
+    "008_SeedTestUsers.sql",
+    "009_CreateStoredProcedures.sql"
 )
 
 # Colors for output
@@ -184,7 +185,7 @@ if ($missingFiles.Count -gt 0) {
     $missingFiles | ForEach-Object { Write-Error "  - $_" }
     exit 1
 }
-Write-Success "All 9 migration files found"
+Write-Success "All 10 migration files found"
 
 # Step 3: Execute migrations
 Write-Header "Executing Database Migrations"
@@ -241,11 +242,12 @@ if (-not $SkipBuild) {
 Write-Header "Deployment Summary"
 Write-Success "All old objects removed (tables, stored procedures, indexes)"
 Write-Success "Database: $DatabaseName preserved and cleaned"
-Write-Success "All 9 migration scripts executed in order"
+Write-Success "All 10 migration scripts executed in order"
 Write-Success "All schemas initialized (Master, Shared, Auth, Transaction, Report)"
 Write-Success "All 43 tables created with proper relationships and constraints"
 Write-Success "Reference data seeded (Tenants, Languages, Countries, Currencies, Roles, Permissions)"
 Write-Success "Test users created (admin, manager, staff, customer)"
+Write-Success "All 12 stored procedures created for Dapper data access"
 
 # Step 6: Next steps
 Write-Header "Next Steps"

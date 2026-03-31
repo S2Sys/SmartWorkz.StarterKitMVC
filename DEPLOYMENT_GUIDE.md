@@ -27,7 +27,7 @@
 
 **What it does:**
 - Validates parameters (ServerName, credentials)
-- Executes all 9 migration scripts in correct sequence:
+- Executes all 10 migration scripts in correct sequence:
   1. 000_DeleteAllSchemas.sql - Drops all existing tables, stored procedures, and indexes (preserves database)
   2. 001_InitializeDatabase.sql - Recreate all schemas in clean database
   3. 002_CreateTables_Master.sql - Create 15 core boilerplate tables
@@ -37,6 +37,7 @@
   7. 006_CreateTables_Auth.sql - Create 13 auth/RBAC tables
   8. 007_SeedData.sql - Populate reference data and lookups
   9. 008_SeedTestUsers.sql - Create 4 test users with roles and permissions
+  10. 009_CreateStoredProcedures.sql - Create 12 stored procedures for Dapper data access
 - Automatically builds dotnet solution
 - Provides color-coded progress output with step numbers
 
@@ -136,7 +137,36 @@ sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/007_SeedData.sql"
 sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/008_SeedTestUsers.sql"
 ```
 
-**Important:** All 9 scripts run against Boilerplate database. Script 000 cleans existing objects but preserves the database.
+# Step 5: Create Stored Procedures for Dapper
+sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/009_CreateStoredProcedures.sql"
+
+**Important:** All 10 scripts run against Boilerplate database. Script 000 cleans existing objects but preserves the database. Script 009 creates stored procedures for Dapper ORM data access.
+
+---
+
+## Stored Procedures for Dapper
+
+The deployment includes 12 stored procedures created in step 009:
+
+### Auth Procedures
+- `sp_GetUserByEmail` - Retrieve user by email and tenant ID (for login flow)
+- `sp_GetUserRoles` - Get all roles assigned to a user
+- `sp_GetUserPermissions` - Get all permissions for a user (from roles and direct assignments)
+- `sp_GetRoleWithPermissions` - Get all permissions for a specific role
+- `sp_CreateRefreshToken` - Insert new refresh token
+- `sp_GetRefreshToken` - Retrieve valid refresh token
+
+### Master Procedures
+- `sp_GetCategoriesByTenant` - Get hierarchical categories for tenant
+- `sp_GetMenusByTenant` - Get all menus for tenant
+- `sp_GetMenuItemsByMenu` - Get hierarchical menu items
+
+### Shared Procedures
+- `sp_GetSeoMetaByEntity` - Get SEO metadata for polymorphic entities
+- `sp_GetSeoMetaBySlug` - Get SEO metadata by slug
+- `sp_GetTagsByEntity` - Get tags for polymorphic entities
+
+All procedures include proper multi-tenancy filtering and soft delete support.
 
 ---
 
@@ -149,6 +179,15 @@ SELECT COUNT(*) AS TableCount
 FROM INFORMATION_SCHEMA.TABLES 
 WHERE TABLE_SCHEMA IN ('Master', 'Shared', 'Auth', 'Transaction', 'Report');
 -- Expected: 43 tables
+```
+
+### Verify Stored Procedures
+```sql
+SELECT SCHEMA_NAME(schema_id) AS SchemaName, name AS ProcedureName
+FROM sys.objects
+WHERE type = 'P'
+ORDER BY SchemaName, name;
+-- Expected: 12 procedures in Auth, Master, and Shared schemas
 ```
 
 ### Verify Test Users
@@ -266,8 +305,8 @@ To reset database for testing:
 
 2. **Configure Application**
    - Update appsettings.json connection string
-   - Configure DbContext (ReferenceDbContext, AuthDbContext)
-   - Run EF Core migrations if needed
+   - Configure Dapper repositories to use stored procedures
+   - Implement repository interfaces for data access
 
 3. **Test API Endpoints**
    - Start application: `dotnet run --project src/SmartWorkz.StarterKitMVC.Web`
