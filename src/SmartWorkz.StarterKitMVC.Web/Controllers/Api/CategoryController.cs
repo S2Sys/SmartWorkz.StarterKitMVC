@@ -7,8 +7,12 @@ using SmartWorkz.StarterKitMVC.Web.Middleware;
 
 namespace SmartWorkz.StarterKitMVC.Web.Controllers.Api;
 
+/// <summary>
+/// Category management endpoints for hierarchical category operations.
+/// </summary>
 [ApiController]
 [Route("api/{tenantId}/[controller]")]
+[Produces("application/json")]
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryRepository _categoryRepository;

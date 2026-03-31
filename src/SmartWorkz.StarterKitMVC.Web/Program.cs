@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 using SmartWorkz.StarterKitMVC.Application.Abstractions;
 using SmartWorkz.StarterKitMVC.Infrastructure.AI;
 using SmartWorkz.StarterKitMVC.Infrastructure.Auditing;
@@ -83,7 +84,60 @@ builder.Services.AddHttpContextAccessor();
 //     options.DefaultApiVersion = new ApiVersion(1, 0);
 //     options.AssumeDefaultVersionWhenUnspecified = true;
 // });
-    
+
+// Swagger/OpenAPI Documentation
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "SmartWorkz StarterKit MVC - API",
+        Version = "v1",
+        Description = "Enterprise multi-tenant REST API with JWT authentication, RBAC, and comprehensive error handling",
+        Contact = new OpenApiContact
+        {
+            Name = "SmartWorkz",
+            Email = "support@smartworkz.com"
+        }
+    });
+
+    // Add JWT Bearer authentication to Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        In = ParameterLocation.Header
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
+
+    // Include XML documentation comments (if file exists)
+    var xmlFile = $"{typeof(Program).Assembly.GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        c.IncludeXmlComments(xmlPath);
+    }
+
+    // Support for Problem Details responses
+    c.SchemaFilter<ProblemDetailsSchemaFilter>();
+});
+
 var app = builder.Build();
 
 // Seed default email templates
@@ -93,7 +147,19 @@ await app.Services.SeedDefaultEmailTemplatesAsync();
 await app.Services.SyncDefaultResourcesAsync();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    // Swagger/OpenAPI UI - available at /swagger
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "SmartWorkz API v1");
+        c.RoutePrefix = "swagger"; // Access at /swagger instead of /swagger/ui
+        c.DefaultModelsExpandDepth(0);
+        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+    });
+}
+else
 {
     app.UseExceptionHandler("/error/500");
     app.UseHsts();

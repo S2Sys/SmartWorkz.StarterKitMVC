@@ -8,8 +8,12 @@ using SmartWorkz.StarterKitMVC.Web.Middleware;
 
 namespace SmartWorkz.StarterKitMVC.Web.Controllers.Api;
 
+/// <summary>
+/// Authentication endpoints for login, registration, token refresh, and password management.
+/// </summary>
 [ApiController]
 [Route("api/auth")]
+[Produces("application/json")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -19,6 +23,21 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
+    /// <summary>
+    /// Authenticates a user and returns JWT access token and refresh token.
+    /// </summary>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     POST /api/auth/login
+    ///     {
+    ///       "email": "user@example.com",
+    ///       "password": "SecurePass123",
+    ///       "tenantId": "tenant-id"
+    ///     }
+    ///
+    /// Returns a LoginResponse with accessToken, refreshToken, and user profile.
+    /// </remarks>
     [HttpPost("login")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
