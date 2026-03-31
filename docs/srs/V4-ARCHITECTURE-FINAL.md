@@ -1,14 +1,15 @@
 # SmartWorkz v4 - Final Architecture Summary
 
-**Date:** 2026-03-31
+**Date:** 2026-03-31 (Updated: Tags moved to Shared)
 **Status:** Phase 0 Complete (Design finalized, all decisions made)
 **Total Effort:** 34-45 hours Phase 1 (database, entities, services, REST API)
+**Total Tables:** 41 (Master 17, Shared 7, Transaction 1, Report 4, Auth 13)
 
 ---
 
 ## Schema Overview (42 Tables, 5 Schemas)
 
-### Master Schema (18 tables) - Global Reference Data + Navigation + Config
+### Master Schema (17 tables) - Global Reference Data + Navigation + Config
 
 ```
 Master
@@ -31,11 +32,8 @@ Master
 │  ├─ TemplateGroups (Welcome, Password Reset, Order Confirmation)
 │  └─ Templates (localized, tenant-specific)
 │
-├─ Reference (1 table)
-│  └─ Tags (global tagging for any entity)
-│
 ├─ Tenants (1 table)
-│  └─ Tenants (HierarchyId: Agency → Client → SubClient)
+│  └─ Tenants (HierarchyId: Agency → Client → SubClient, reference data)
 │
 ├─ SEO (1 table)
 │  └─ UrlRedirects (301, 302 redirects, hit tracking)
@@ -51,29 +49,36 @@ Master
    └─ MenuItems (NodePath HierarchyId, Code, Url, Icon, Role-based visibility)
 ```
 
-**Master Schema Totals:** 18 tables (was 20 before moving SeoMeta)
+**Master Schema Totals:** 17 tables (was 18 before moving Tags)
 
 ---
 
-### Shared Schema (6 tables) - Polymorphic Infrastructure
+### Shared Schema (7 tables) - Polymorphic Infrastructure
 
 ```
 Shared (Reusable across ALL schemas via EntityType + EntityId)
-├─ Addresses (polymorphic → Customer, Order, Employee, Vendor, Supplier)
+├─ Addresses (polymorphic → Customer, Order, Employee, Vendor, Supplier, Product)
 ├─ Attachments (file references for any entity)
 ├─ Comments (discussion threads for any entity, nested replies)
 ├─ StateHistory (workflow tracking for any entity, audit trail)
 ├─ PreferenceDefinitions (System/Tenant/User config, flexible types)
-└─ SeoMeta ← MOVED FROM MASTER (polymorphic SEO for all entities)
-   ├─ EntityType: Product → Products
-   ├─ EntityType: Category → Categories (hierarchical with breadcrumbs)
-   ├─ EntityType: MenuItem → MenuItems
-   ├─ EntityType: BlogPost → BlogPosts (Phase 1+)
-   ├─ EntityType: GeolocationPage → Location-based listings
-   └─ EntityType: CustomPage → Terms, Privacy, etc.
+├─ SeoMeta ← MOVED FROM MASTER (polymorphic SEO for all entities)
+│  ├─ EntityType: Product → Products
+│  ├─ EntityType: Category → Categories (hierarchical with breadcrumbs)
+│  ├─ EntityType: MenuItem → MenuItems
+│  ├─ EntityType: BlogPost → BlogPosts (Phase 1+)
+│  ├─ EntityType: GeolocationPage → Location-based listings
+│  └─ EntityType: CustomPage → Terms, Privacy, etc.
+│
+└─ Tags ← MOVED FROM MASTER (polymorphic tagging for all entities)
+   ├─ EntityType: Product → 'Featured', 'Sale', 'New Arrival'
+   ├─ EntityType: Order → 'VIP', 'Rush', 'Urgent'
+   ├─ EntityType: Customer → 'Premium', 'At-Risk', 'New'
+   ├─ EntityType: BlogPost → 'Pinned', 'Trending', 'Archive'
+   └─ EntityType: Any other entity → Flexible categorization
 ```
 
-**Shared Schema Totals:** 6 tables (was 5 before moving SeoMeta)
+**Shared Schema Totals:** 7 tables (was 6 before moving Tags)
 
 ---
 
@@ -142,12 +147,12 @@ Auth (Complete authentication, authorization, session management)
 
 | Schema | Tables | Purpose |
 |--------|--------|---------|
-| **Master** | 18 | Global reference data + Navigation + Config (option C geo, HierarchyId trees) |
-| **Shared** | 6 | Polymorphic infrastructure (Addresses, Comments, Attachments, StateHistory, Prefs, **SeoMeta**) |
+| **Master** | 17 | Global reference data + Navigation + Config (option C geo, HierarchyId trees) |
+| **Shared** | 7 | Polymorphic infrastructure (Addresses, Comments, Attachments, StateHistory, Prefs, **SeoMeta, Tags**) |
 | **Transaction** | 1 | Extensible transactional pattern (Orders dummy) |
 | **Report** | 4 | Production-ready reporting (SQL, Dashboards, Scheduling, Execution history) |
 | **Auth** | 13 | Complete identity + RBAC + sessions + logging |
-| **TOTAL** | **42** | Single database, 5 schemas, LEAN design, maximum flexibility |
+| **TOTAL** | **41** | Single database, 5 schemas, LEAN design, maximum flexibility |
 
 ---
 
@@ -168,7 +173,7 @@ Auth (Complete authentication, authorization, session management)
 - **GeoHierarchy:** Country → State → City → District (geo hierarchy)
 
 ### 3. Polymorphic Infrastructure (EntityType + EntityId)
-Applies to: **Addresses, Attachments, Comments, StateHistory, Translations, SeoMeta**
+Applies to: **Addresses, Attachments, Comments, StateHistory, Translations, SeoMeta, Tags**
 
 ```
 Example: Shared.Addresses for any entity type
@@ -229,7 +234,7 @@ No schema changes needed as business domains grow!
 ```
 
 ### Step 2: Domain Entities (5-7 hours)
-- 42 domain entity classes (Master: 18, Shared: 6, Transaction: 1, Report: 4, Auth: 13)
+- 41 domain entity classes (Master: 17, Shared: 7, Transaction: 1, Report: 4, Auth: 13)
 - Relationships (FK, HierarchyId, polymorphic EntityType+EntityId)
 - Audit columns (CreatedAt, UpdatedAt, CreatedBy, UpdatedBy)
 - Soft delete (IsDeleted)
@@ -390,13 +395,14 @@ database/v4/
 ## Ready for Phase 1
 
 ✅ All architectural decisions made
-✅ 42 tables designed and documented
+✅ 41 tables designed and documented
 ✅ SQL scripts prepared
 ✅ Entity relationships mapped
-✅ Polymorphic infrastructure patterns established
+✅ Polymorphic infrastructure patterns established (7 shared tables: Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions, SeoMeta, Tags)
 ✅ Multi-tenant strategy confirmed
 ✅ Dynamic navigation system designed
 ✅ SEO approach finalized (polymorphic Shared.SeoMeta)
+✅ Tagging approach finalized (polymorphic Shared.Tags)
 ✅ Reporting framework designed
 ✅ Effort estimate: 34-45 hours Phase 1
 
