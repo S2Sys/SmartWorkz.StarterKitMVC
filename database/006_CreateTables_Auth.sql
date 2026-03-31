@@ -69,6 +69,7 @@ CREATE INDEX IX_Roles_TenantId ON Auth.Roles(TenantId);
 -- ============================================
 CREATE TABLE Auth.Permissions (
     PermissionId INT PRIMARY KEY IDENTITY(1,1),
+    Code NVARCHAR(256) NOT NULL UNIQUE,
     Name NVARCHAR(256) NOT NULL,
     Description NVARCHAR(500),
     PermissionType NVARCHAR(100), -- 'Create', 'Read', 'Update', 'Delete'
