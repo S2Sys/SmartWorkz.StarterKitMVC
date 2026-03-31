@@ -28,8 +28,8 @@
 **What it does:**
 - Validates parameters (ServerName, credentials)
 - Executes all 9 migration scripts in correct sequence:
-  1. 000_DeleteAllSchemas.sql - Drops existing Boilerplate database (clean slate)
-  2. 001_InitializeDatabase.sql - Create fresh database and schemas
+  1. 000_DeleteAllSchemas.sql - Drops all existing tables, stored procedures, and indexes (preserves database)
+  2. 001_InitializeDatabase.sql - Recreate all schemas in clean database
   3. 002_CreateTables_Master.sql - Create 15 core boilerplate tables
   4. 003_CreateTables_Shared.sql - Create 7 polymorphic tables
   5. 004_CreateTables_Transaction.sql - Initialize Transaction schema
@@ -115,16 +115,16 @@ Password for all users: `TestPassword123!`
 
 ## Manual Deployment (Without Script)
 
-If you prefer to run scripts manually, execute in this exact order:
+If you prefer to run scripts manually, execute in this exact order on Boilerplate database:
 
 ```powershell
-# Step 1: Delete existing database (runs on master database)
-sqlcmd -S ".\SQLEXPRESS" -i "database/v1/000_DeleteAllSchemas.sql"
+# Step 1: Delete all existing objects (tables, SPs, indexes) - preserves database
+sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/000_DeleteAllSchemas.sql"
 
-# Step 2: Create database and schemas
-sqlcmd -S ".\SQLEXPRESS" -i "database/v1/001_InitializeDatabase.sql"
+# Step 2: Create all schemas
+sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/001_InitializeDatabase.sql"
 
-# Step 3: Create all tables (in order on Boilerplate database)
+# Step 3: Create all tables (in order)
 sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/002_CreateTables_Master.sql"
 sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/003_CreateTables_Shared.sql"
 sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/004_CreateTables_Transaction.sql"
@@ -136,7 +136,7 @@ sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/007_SeedData.sql"
 sqlcmd -S ".\SQLEXPRESS" -d "Boilerplate" -i "database/v1/008_SeedTestUsers.sql"
 ```
 
-**Important:** Script 000 must run first against master database. Scripts 001-008 run against Boilerplate database.
+**Important:** All 9 scripts run against Boilerplate database. Script 000 cleans existing objects but preserves the database.
 
 ---
 
