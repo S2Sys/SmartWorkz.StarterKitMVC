@@ -1,0 +1,143 @@
+===============================================
+SMARTWORKZ API - QUICK TEST REFERENCE
+===============================================
+
+TEST USERS (All password: TestPassword123!)
+===============================================
+
+1. ADMIN USER
+   Email: admin@smartworkz.test
+   Role: Admin (All permissions)
+   Use for: Full CRUD testing
+
+2. MANAGER USER
+   Email: manager@smartworkz.test
+   Role: Manager (Read/Update/Report)
+   Use for: Business operations testing
+
+3. STAFF USER
+   Email: staff@smartworkz.test
+   Role: Staff (Read-only)
+   Use for: Read-only access testing
+
+4. CUSTOMER USER
+   Email: customer@smartworkz.test
+   Role: Customer
+   Use for: Customer portal testing
+
+SETUP STEPS
+===============================================
+1. Run: database/008_SeedTestUsers.sql
+2. Start app: dotnet run
+3. Open: http://localhost:5000/swagger
+
+LOGIN CURL
+===============================================
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@smartworkz.test",
+    "password": "TestPassword123!",
+    "tenantId": "DEFAULT"
+  }'
+
+SWAGGER FLOW
+===============================================
+1. Click POST /api/auth/login
+2. Click "Try it out"
+3. Paste JSON above
+4. Click "Execute"
+5. Copy accessToken from response
+6. Click "Authorize" button
+7. Enter: Bearer {accessToken}
+8. Test other endpoints
+
+KEY ENDPOINTS FOR TESTING
+===============================================
+POST   /api/auth/login           → Get access token
+GET    /api/auth/profile         → Get user profile
+POST   /api/DEFAULT/products     → Create product
+GET    /api/DEFAULT/products     → List products
+GET    /api/DEFAULT/products/{id}  → Get product
+PUT    /api/DEFAULT/products/{id}  → Update product
+DELETE /api/DEFAULT/products/{id}  → Delete product
+
+PERMISSION MATRIX
+===============================================
+Admin    → Full CRUD access (all resources)
+Manager  → Read/Update products & orders + reports
+Staff    → Read-only access
+Customer → Role-based access
+
+TROUBLESHOOTING
+===============================================
+401 Unauthorized → Re-login, copy new token
+403 Forbidden    → User lacks permissions
+400 Bad Request  → Check request format
+
+HTTP STATUS CODES
+===============================================
+200 OK              → Success
+201 Created         → Resource created
+204 No Content      → Success (no response body)
+400 Bad Request     → Validation error
+401 Unauthorized    → Invalid/expired token
+403 Forbidden       → Insufficient permissions
+404 Not Found       → Resource not found
+500 Internal Server → Server error
+
+JWT TOKEN EXAMPLE
+===============================================
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+PASSWORD INFO
+===============================================
+Algorithm: PBKDF2-SHA256
+Iterations: 10,000
+Format: PBKDF2$HMACSHA256$iterations$salt$hash
+
+COMMON REQUESTS
+===============================================
+
+Login:
+  POST /api/auth/login
+  Body: {"email":"admin@smartworkz.test","password":"TestPassword123!","tenantId":"DEFAULT"}
+
+List Products (with pagination):
+  GET /api/DEFAULT/products?page=1&pageSize=10
+  Header: Authorization: Bearer {token}
+
+Search Products:
+  GET /api/DEFAULT/products/search?q=electronics&page=1&pageSize=10
+  Header: Authorization: Bearer {token}
+
+Create Product (Admin only):
+  POST /api/DEFAULT/products
+  Body: {"name":"Product Name","sku":"SKU123","price":99.99,"categoryId":1}
+  Header: Authorization: Bearer {token}
+
+Change Password (Authenticated):
+  POST /api/auth/change-password
+  Body: {"currentPassword":"TestPassword123!","newPassword":"NewPassword123!"}
+  Header: Authorization: Bearer {token}
+
+Refresh Token:
+  POST /api/auth/refresh
+  Body: {"accessToken":"{token}","refreshToken":"{refresh_token}"}
+
+SWAGGER UI
+===============================================
+URL: http://localhost:5000/swagger
+- View all API endpoints
+- See request/response schemas
+- Test endpoints directly
+- Authorize with Bearer token
+
+DATABASE CLEANUP (if needed)
+===============================================
+DELETE FROM Auth.UserPermissions WHERE UserId IN (SELECT UserId FROM Auth.Users WHERE Email LIKE '%.test');
+DELETE FROM Auth.UserRoles WHERE UserId IN (SELECT UserId FROM Auth.Users WHERE Email LIKE '%.test');
+DELETE FROM Master.TenantUsers WHERE UserId IN (SELECT UserId FROM Auth.Users WHERE Email LIKE '%.test');
+DELETE FROM Auth.Users WHERE Email LIKE '%.test';
+
+===== For detailed guide, see TEST_USERS_GUIDE.md =====
