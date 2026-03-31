@@ -4,21 +4,20 @@
 
 ## Quick Links
 
-- **📋 Schema Design:** [`docs/srs/SCHEMA-REVIEW-v2.md`](docs/srs/SCHEMA-REVIEW-v2.md) — 40 LEAN tables across 6 schemas
+- **📋 Schema Design:** [`docs/srs/SCHEMA-REVIEW-v2.md`](docs/srs/SCHEMA-REVIEW-v2.md) — 42 LEAN tables across 5 schemas
 - **📊 Schema Summary:** [`SCHEMA-SUMMARY-LEAN.md`](SCHEMA-SUMMARY-LEAN.md) — Overview and extensibility patterns
-- **✅ Implementation Plan:** [`docs/srs/IMPLEMENTATION-PLAN.md`](docs/srs/IMPLEMENTATION-PLAN.md) — 4-phase roadmap (72-99 hours)
+- **✅ Implementation Plan:** [`docs/srs/IMPLEMENTATION-PLAN.md`](docs/srs/IMPLEMENTATION-PLAN.md) — 4-phase roadmap (34-45 hours)
 - **🔍 Geo Design Analysis:** [`docs/srs/GEO-HIERARCHY-ANALYSIS.md`](docs/srs/GEO-HIERARCHY-ANALYSIS.md) — Option C (Hybrid) approach
 - **📋 Review Checklist:** [`REVIEW-CHECKLIST.md`](REVIEW-CHECKLIST.md) — Pre-implementation validation
 
 ## Architecture Overview
 
-### Schemas (6 total, 40 LEAN tables)
+### Schemas (5 total, 42 LEAN tables)
 
 | Schema | Tables | Purpose |
 |--------|--------|---------|
-| **Master** | 14 | Global reference data (Geo, i18n, Hierarchies, Tenants, SEO) |
+| **Master** | 19 | Global reference data (Geo, i18n, Hierarchies, Tenants, SEO, Config, Navigation) |
 | **Shared** | 5 | Polymorphic infrastructure (Addresses, Attachments, Comments, StateHistory, Preferences) |
-| **Core** | 3 | Tenant configuration (Subscriptions, Settings, FeatureFlags) |
 | **Transaction** | 1 | Orders (extensible pattern for transactions) |
 | **Report** | 4 | Production-ready reporting (Definitions, Schedules, Executions, Metadata) |
 | **Auth** | 13 | Complete identity + RBAC + logging |
@@ -28,7 +27,8 @@
 ✅ **Option C Hybrid Geo:** Countries + GeoHierarchy (flexible hierarchy with HierarchyId)
 ✅ **Polymorphic Infrastructure:** Addresses, Attachments, Comments, StateHistory (any entity)
 ✅ **Multi-Tenancy:** Row-level TenantId isolation
-✅ **HierarchyId Trees:** Unlimited nesting for Tenants, Lookups, Categories, EntityStates, GeoHierarchy
+✅ **HierarchyId Trees:** Unlimited nesting for Tenants, Lookups, Categories, EntityStates, GeoHierarchy, MenuItems
+✅ **Dynamic Navigation:** Menus + MenuItems with role-based visibility, breadcrumbs, auto-sitemap
 ✅ **Production-Ready Reports:** SQL + Dashboards + Scheduling + Caching + Audit Trail
 ✅ **Soft Delete & Audit:** IsDeleted, CreatedAt, UpdatedAt, CreatedBy, UpdatedBy on all entities
 
@@ -56,24 +56,23 @@ SmartWorkz.StarterKitMVC/
 │   ├── 001_CreateSchemas.sql
 │   ├── 002_CreateTables_Master.sql
 │   ├── 003_CreateTables_Shared.sql
-│   ├── 004_CreateTables_Core.sql
-│   ├── 005_CreateTables_Transaction.sql
-│   ├── 006_CreateTables_Report.sql
-│   ├── 007_CreateTables_Auth.sql
-│   ├── 008_SeedData.sql
-│   └── 009_CreateIndexes.sql
+│   ├── 004_CreateTables_Transaction.sql
+│   ├── 005_CreateTables_Report.sql
+│   ├── 006_CreateTables_Auth.sql
+│   ├── 007_SeedData.sql
+│   └── 008_CreateIndexes.sql
 ├── SCHEMA-SUMMARY-LEAN.md                        # Quick reference guide
 └── REVIEW-CHECKLIST.md                           # Pre-implementation validation
 ```
 
 ## Getting Started
 
-### Phase 1: Foundation (35-46 hours)
-1. Create database scripts (001-009)
-2. Generate domain entities (40 entities)
-3. Create EF Core DbContexts (6 contexts)
-4. Create application services
-5. Create REST API endpoints (20+)
+### Phase 1: Foundation (34-45 hours)
+1. Create database scripts (001-008)
+2. Generate domain entities (42 entities)
+3. Create EF Core DbContexts (3-4 contexts)
+4. Create application services (including MenuService)
+5. Create REST API endpoints (25+)
 
 **Result:** v4 API operational with real database
 

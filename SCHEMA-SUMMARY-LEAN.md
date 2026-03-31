@@ -1,9 +1,10 @@
-# SmartWorkz v4 - LEAN Schema Summary (38 Tables)
+# SmartWorkz v4 - LEAN Schema Summary (42 Tables)
 
 **Date:** 2026-03-31
 **Status:** Optimized & Ready for Phase 1 Implementation
-**Total Tables:** 40 (down from original 62) - Option C Hybrid geo + Production-ready Reports
-**Total Effort:** 72-99 hours (includes comprehensive reporting framework)
+**Total Tables:** 42 (down from original 62) - Option C Hybrid geo + Production-ready Reports + Dynamic Navigation
+**Total Effort:** 34-45 hours (Phase 1 - includes comprehensive reporting + navigation framework)
+**Schemas:** 5 (Master, Shared, Transaction, Report, Auth) — Core schema merged into Master
 
 ---
 
@@ -12,6 +13,8 @@
 ### ✅ Consolidation Moves
 - **Tags** → Moved from Core to Master (global reusable tagging)
 - **Tenants** → Moved from Core to Master (reference data, hierarchical)
+- **TenantSubscriptions, TenantSettings, FeatureFlags** → Moved from Core to Master (configuration reference)
+- **Menus, MenuItems** → New tables in Master (dynamic navigation, sitemap generation)
 - **Geo** → Option C Hybrid: Countries (reference) + GeoHierarchy (HierarchyId tree) replaces 3 separate tables
 
 ### ✅ Transaction Schema - Minimized to 1 Table
@@ -44,14 +47,16 @@
 ## Final Schema Structure
 
 ```
-MASTER (14 tables) - Reference Data
+MASTER (19 tables) - Global + Tenant Reference Data
 ├─ Geo: Countries, GeoHierarchy (Option C Hybrid - 2 tables instead of 3)
 ├─ i18n: Languages, Translations
 ├─ Hierarchies: Lookups, Categories, EntityStates, EntityStateTransitions
 ├─ Notifications: NotificationChannels, TemplateGroups, Templates
-├─ Global Reference: Tags ← MOVED
-├─ Tenants: Tenants ← MOVED (HierarchyId tree)
-└─ SEO: SeoMeta, UrlRedirects
+├─ Global Reference: Tags
+├─ Tenants: Tenants (HierarchyId tree)
+├─ SEO: SeoMeta, UrlRedirects
+├─ Config: TenantSubscriptions, TenantSettings, FeatureFlags ← MOVED FROM CORE
+└─ Navigation: Menus, MenuItems (hierarchical, role-based, auto-sitemap) ← NEW
 
 SHARED (5 tables) - Polymorphic Infrastructure (reusable across ALL schemas)
 ├─ Addresses (links to any entity: Customer, Order, Employee, etc.)
@@ -59,11 +64,6 @@ SHARED (5 tables) - Polymorphic Infrastructure (reusable across ALL schemas)
 ├─ Comments (discussion threads for any entity)
 ├─ StateHistory (workflow tracking for any entity)
 └─ PreferenceDefinitions (configuration for system/tenant/user)
-
-CORE (3 tables) - Tenant Configuration
-├─ TenantSubscriptions (subscription plans)
-├─ TenantSettings (key-value config)
-└─ FeatureFlags (feature toggles)
 
 TRANSACTION (1 table - LEAN)
 └─ Orders (dummy - represents transactional pattern)
@@ -80,7 +80,7 @@ AUTH (13 tables - COMPLETE)
 ├─ Sessions: RefreshTokens, VerificationCodes, ExternalLogins
 └─ Logging: AuditLogs, ActivityLogs, NotificationLogs
 
-TOTAL: 40 TABLES (6 schemas: cleaner separation + production-ready reporting)
+TOTAL: 42 TABLES (5 schemas: cleaner separation + production-ready reporting + dynamic navigation)
 ```
 
 ---
@@ -128,15 +128,17 @@ Automatically available:
 
 | Component | Effort | Deliverables |
 |-----------|--------|--------------|
-| Database Scripts | 8-10h | 9 scripts (001-009) with Report schema |
-| Domain Entities | 5-7h | 40 entities (Master 14, Shared 5, Core 3, Trans 1, Report 4, Auth 13) |
-| EF Core DbContexts | 7-9h | 6 DbContexts (Master, Shared, Core, Trans, Report, Auth) + repositories |
-| Services | 5-7h | 6 main services + ~50 DTOs (incl. Report/Dashboard services) |
-| REST API | 8-10h | 20+ endpoints (auth, users, tenants, lookups, orders, **reports, dashboards**) |
+| Database Scripts | 8-10h | 8 scripts (001-008) with Report + Navigation schemas |
+| Domain Entities | 5-7h | 42 entities (Master 19, Shared 5, Trans 1, Report 4, Auth 13) |
+| EF Core DbContexts | 6-8h | 3-4 DbContexts (Reference, Transaction, Report, Auth) + repositories |
+| Services | 5-7h | 5 main services + MenuService + ~50 DTOs (incl. Report/Menu services) |
+| REST API | 6-8h | 25+ endpoints (auth, users, tenants, lookups, orders, **reports, menus, sitemap**) |
 | Configuration | 2-3h | Connection string, DI wiring, Startup |
-| **TOTAL** | **35-46h** | **Production-ready API with Reports & Dashboards** |
+| **TOTAL** | **34-45h** | **Production-ready API with Reports, Navigation & Dynamic Sitemap** |
 
 **Added production-ready reporting** with 4-table schema supporting SQL reports, dashboards, scheduling, execution history, and caching.
+
+**Added dynamic navigation** with Menus + MenuItems (HierarchyId trees, role-based visibility, auto-sitemap generation).
 
 ---
 
@@ -220,27 +222,28 @@ All use the same:
 ```sql
 001_CreateSchemas.sql
 ├─ CREATE SCHEMA Master;
-├─ CREATE SCHEMA Core;
+├─ CREATE SCHEMA Shared;
 ├─ CREATE SCHEMA [Transaction];
 ├─ CREATE SCHEMA Report;
 └─ CREATE SCHEMA Auth;
 
-002_CreateTables_Master.sql (15 tables)
-├─ Countries, States, Cities
-├─ Languages, Translations
-├─ Lookups, Categories, EntityStates, EntityStateTransitions
-├─ NotificationChannels, TemplateGroups, Templates
-├─ Tags, Tenants, SeoMeta, UrlRedirects
+002_CreateTables_Master.sql (20 tables)
+├─ Geo: Countries, GeoHierarchy
+├─ i18n: Languages, Translations
+├─ Hierarchies: Lookups, Categories, EntityStates, EntityStateTransitions
+├─ Notifications: NotificationChannels, TemplateGroups, Templates
+├─ Reference: Tags, Tenants, SeoMeta, UrlRedirects
+├─ Config: TenantSubscriptions, TenantSettings, FeatureFlags ← FROM CORE
+└─ Navigation: Menus, MenuItems ← NEW
 
-003_CreateTables_Core.sql (8 tables)
-├─ TenantSubscriptions, TenantSettings, FeatureFlags
+003_CreateTables_Shared.sql (5 tables)
 ├─ Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions
 
 004_CreateTables_Transaction.sql (1 table)
 └─ Orders
 
-005_CreateTables_Report.sql (1 table)
-└─ ReportDefinitions
+005_CreateTables_Report.sql (4 tables)
+├─ ReportDefinitions, ReportSchedules, ReportExecutions, ReportMetadata
 
 006_CreateTables_Auth.sql (13 tables)
 ├─ Users, UserProfiles, UserPreferences
@@ -249,8 +252,8 @@ All use the same:
 ├─ AuditLogs, ActivityLogs, NotificationLogs
 
 007_SeedData.sql
-├─ Seed: Countries, States, Cities, Languages, Lookups, Categories, EntityStates
-├─ Seed: Roles, Permissions, Templates
+├─ Seed: Countries, Languages, Lookups, Categories, EntityStates
+├─ Seed: Roles, Permissions, Templates, Menus
 
 008_CreateIndexes.sql
 └─ Indexes on: TenantId, EntityType+EntityId, HierarchyId paths, FKs, CreatedAt
@@ -258,18 +261,18 @@ All use the same:
 
 ---
 
-## Domain Entities (38 total)
+## Domain Entities (42 total)
 
 | Schema | Entities | Count |
 |--------|----------|-------|
-| **Master** | Country, GeoHierarchy, Language, Translation, Lookup, Category, EntityState, EntityStateTransition, NotificationChannel, TemplateGroup, Template, Tag, Tenant, SeoMeta, UrlRedirect | 15 |
-| **Core** | TenantSubscription, TenantSetting, FeatureFlag, Address, Attachment, Comment, StateHistory, PreferenceDefinition | 8 |
+| **Master** | Country, GeoHierarchy, Language, Translation, Lookup, Category, EntityState, EntityStateTransition, NotificationChannel, TemplateGroup, Template, Tag, Tenant, SeoMeta, UrlRedirect, TenantSubscription, TenantSetting, FeatureFlag, Menu, MenuItem | 20 |
+| **Shared** | Address, Attachment, Comment, StateHistory, PreferenceDefinition | 5 |
 | **Transaction** | Order | 1 |
-| **Report** | ReportDefinition | 1 |
+| **Report** | ReportDefinition, ReportSchedule, ReportExecution, ReportMetadata | 4 |
 | **Auth** | User, UserProfile, UserPreference, Role, Permission, RolePermission, UserRole, RefreshToken, VerificationCode, ExternalLogin, AuditLog, ActivityLog, NotificationLog | 13 |
-| **TOTAL** | | **38** |
+| **TOTAL** | | **42** |
 
-Note: 38 entities = 37 tables (Option C Hybrid geo consolidates 3→2 tables)
+Note: 42 entities = 42 tables total (Master 20, Shared 5, Trans 1, Report 4, Auth 13)
 
 ---
 
@@ -282,13 +285,19 @@ Note: 38 entities = 37 tables (Option C Hybrid geo consolidates 3→2 tables)
 Server=localhost;Database=StarterKitMVC;Trusted_Connection=True;TrustServerCertificate=True
 ```
 
-**DbContexts (5):**
+**DbContexts (3-4) - Optimized:**
 ```csharp
-public class MasterDbContext : DbContext { }    // 15 tables
-public class CoreDbContext : DbContext { }      // 8 tables
-public class TransactionDbContext : DbContext { } // 1 table
-public class ReportDbContext : DbContext { }    // 1 table
-public class AuthDbContext : DbContext { }      // 13 tables
+public class ReferenceDbContext : DbContext { }      // Master (20) + Shared (5) = 25 tables
+public class TransactionDbContext : DbContext { }    // Transaction (1) table
+public class ReportDbContext : DbContext { }         // Report (4) tables
+public class AuthDbContext : DbContext { }           // Auth (13) tables
+```
+
+OR simpler (3 contexts):
+```csharp
+public class ReferenceDbContext : DbContext { }      // Master (20) + Shared (5) = 25 tables
+public class TransactionDbContext : DbContext { }    // Transaction (1) + Report (4) = 5 tables
+public class AuthDbContext : DbContext { }           // Auth (13) tables
 ```
 
 ---
@@ -296,12 +305,14 @@ public class AuthDbContext : DbContext { }      // 13 tables
 ## Ready for Implementation ✅
 
 **All decisions made:**
-✓ Single database with 6 schemas (Master, Shared, Core, Transaction, Report, Auth)
-✓ 40 tables with Option C Hybrid geo approach (Countries + GeoHierarchy instead of 3 separate)
+✓ Single database with 5 schemas (Master, Shared, Transaction, Report, Auth)
+✓ 42 tables with Option C Hybrid geo approach (Countries + GeoHierarchy instead of 3 separate)
+✓ Master schema now includes: Config (TenantSubscriptions, TenantSettings, FeatureFlags) + Navigation (Menus, MenuItems)
 ✓ Production-ready Report schema (SQL reports, Dashboards, Scheduling, Audit trail)
+✓ Dynamic Navigation system (role-based menus, auto-sitemap, hierarchical MenuItems with HierarchyId)
 ✓ Polymorphic linking (Shared infrastructure) for future extensibility
-✓ Tags and Tenants moved to Master
-✓ 72-99 hours effort (3-4 weeks with comprehensive reporting)
+✓ 3-4 DbContexts instead of 6 (cleaner, lighter)
+✓ 34-45 hours Phase 1 effort (much faster!)
 
 **Next:** Start Phase 1 → Create database scripts
 
