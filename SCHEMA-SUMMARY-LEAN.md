@@ -1,10 +1,10 @@
-# SmartWorkz v4 - LEAN Schema Summary (41 Tables)
+# SmartWorkz v4 - LEAN Schema Summary (43 Tables)
 
 **Date:** 2026-03-31
 **Status:** Optimized & Ready for Phase 1 Implementation
-**Total Tables:** 41 (down from original 62) - Option C Hybrid geo + Production-ready Reports + Dynamic Navigation + Polymorphic Infrastructure
+**Total Tables:** 43 (down from original 62) - Option C Hybrid geo + Business-domain Core + Production-ready Reports + Dynamic Navigation + Polymorphic Infrastructure
 **Total Effort:** 34-45 hours (Phase 1 - includes comprehensive reporting + navigation framework)
-**Schemas:** 5 (Master, Shared, Transaction, Report, Auth) — Core schema merged into Master
+**Schemas:** 6 (Master, Core, Shared, Transaction, Report, Auth)
 
 ---
 
@@ -14,8 +14,9 @@
 - **Tags** → Moved from Core to Shared (polymorphic tagging for any entity)
 - **SeoMeta** → Moved from Master to Shared (polymorphic SEO for Products, Categories, MenuItems, etc.)
 - **Tenants** → Moved from Core to Master (reference data, hierarchical)
-- **TenantSubscriptions, TenantSettings, FeatureFlags** → Moved from Core to Master (configuration reference)
-- **Menus, MenuItems** → New tables in Master (dynamic navigation, sitemap generation)
+- **TenantSubscriptions, TenantSettings** → Moved from Core to Master (global configuration reference)
+- **FeatureFlags** → Moved to Core schema (per-tenant operational feature decisions)
+- **Menus, MenuItems** → Moved to Core schema (per-tenant navigation configuration, not global)
 - **Geo** → Option C Hybrid: Countries (reference) + GeoHierarchy (HierarchyId tree) replaces 3 separate tables
 
 ### ✅ Transaction Schema - Minimized to 1 Table
@@ -50,15 +51,18 @@
 ## Final Schema Structure
 
 ```
-MASTER (17 tables) - Global + Tenant Reference Data
+MASTER (15 tables) - Global Reference Data
 ├─ Geo: Countries, GeoHierarchy (Option C Hybrid - 2 tables instead of 3)
 ├─ i18n: Languages, Translations
 ├─ Hierarchies: Lookups, Categories, EntityStates, EntityStateTransitions
 ├─ Notifications: NotificationChannels, TemplateGroups, Templates
 ├─ Tenants: Tenants (HierarchyId tree, reference data)
 ├─ SEO: UrlRedirects (301/302 redirects)
-├─ Config: TenantSubscriptions, TenantSettings, FeatureFlags ← MOVED FROM CORE
-└─ Navigation: Menus, MenuItems (hierarchical, role-based, auto-sitemap) ← NEW
+└─ Config: TenantSubscriptions, TenantSettings ← SeoMeta, Tags moved to Shared
+
+CORE (3 tables) - Business-Domain Configuration (per-tenant)
+├─ Navigation: Menus, MenuItems (hierarchical, role-based, auto-sitemap)
+└─ Features: TenantFeatures (which features enabled per tenant)
 
 SHARED (7 tables) - Polymorphic Infrastructure (reusable across ALL schemas)
 ├─ Addresses (links to any entity: Customer, Order, Employee, Product, etc.)
@@ -84,7 +88,7 @@ AUTH (13 tables - COMPLETE)
 ├─ Sessions: RefreshTokens, VerificationCodes, ExternalLogins
 └─ Logging: AuditLogs, ActivityLogs, NotificationLogs
 
-TOTAL: 42 TABLES (5 schemas: cleaner separation + production-ready reporting + dynamic navigation)
+TOTAL: 43 TABLES (6 schemas: Master reference, Core business-domain, Shared polymorphic, Transaction, Report, Auth)
 ```
 
 ---

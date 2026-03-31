@@ -10,16 +10,17 @@
 
 | Schema | Tables | Purpose | Change from v1 |
 |--------|--------|---------|-----------------|
-| **Master** | 17 | Global reference data + Tenants, Config, Navigation | GEO: Countries + GeoHierarchy (Option C Hybrid); Config moved from Core; Menus + MenuItems NEW; SeoMeta, Tags moved to Shared |
+| **Master** | 15 | Global reference data + Tenants, Config | GEO: Countries + GeoHierarchy (Option C Hybrid); Config moved from Core; SeoMeta, Tags moved to Shared |
 | **Shared** | 7 | Polymorphic infrastructure (reusable across all schemas) | Addresses, Attachments, Comments, StateHistory, PreferenceDefinitions, SeoMeta, Tags |
 | **Transaction** | 1 | ONE dummy transactional table | LEAN: removed all but Orders |
 | **Report** | 4 | SQL reports + Dashboard APIs + Scheduling + Execution history | ReportDefinitions, ReportSchedules, ReportExecutions, ReportMetadata |
 | **Auth** | 13 | Identity + RBAC + logs | UNCHANGED |
-| **TOTAL** | **41** | Single database, clean minimal structure with production-ready reporting + dynamic navigation | 5 schemas (Core merged into Master; SeoMeta, Tags polymorphic to Shared) |
+| **Core** | 3 | Business-domain configuration + navigation | Menus, MenuItems (HierarchyId, role-based), TenantFeatures |
+| **TOTAL** | **43** | Single database, clean minimal structure with production-ready reporting + dynamic navigation | 6 schemas (Master reference, Core business domain, Shared polymorphic, Transaction, Report, Auth) |
 
 ---
 
-## 1. Master Schema (14 tables)
+## 1. Master Schema (15 tables)
 
 ### Purpose
 Global reference data used across all tenants. TenantId NULLABLE for global + tenant-specific overrides.
@@ -268,23 +269,45 @@ FeatureFlags (tenant-scoped feature toggles)
 
 ---
 
-### 1.9 Navigation (NEW - Dynamic Menus + Sitemap)
+### **Master Schema Summary: 15 tables** (Option C Hybrid Geo + Config)
+- Geo (2): Countries, GeoHierarchy ← OPTION C (hybrid: reference + hierarchical)
+- i18n (2): Languages, Translations
+- Hierarchies (4): Lookups, Categories, EntityStates, EntityStateTransitions
+- Notifications (3): NotificationChannels, TemplateGroups, Templates
+- Tenants (1): Tenants ← MOVED FROM CORE (reference data)
+- SEO (1): UrlRedirects ← SeoMeta MOVED TO SHARED for polymorphic linking
+- Config (2): TenantSubscriptions, TenantSettings ← FeatureFlags MOVED TO CORE
+
+**Note:** Navigation (Menus, MenuItems) moved to Core schema—business-domain configuration, not global reference data.
+
+---
+
+## 2. Core Schema (3 tables)
+
+### Purpose
+Business-domain configuration managed per-tenant. Defines how each tenant's application behaves: navigation structure, feature access, operational settings.
+
+**Key Principle:** Core ≠ Master. Master has static reference data (countries, languages). Core has operational decisions that change frequently and differ per tenant.
+
+---
+
+### 2.1 Navigation (2 tables - HierarchyId trees, role-based, per-tenant)
 
 ```sql
 Menus (menu definitions - groups of menu items)
 ├─ MenuId (GUID)
-├─ Code (VARCHAR 50, unique) -- 'Main', 'Admin', 'Footer', 'Sidebar'
+├─ Code (VARCHAR 50) -- 'Main', 'Admin', 'Footer', 'Sidebar'
 ├─ Name (NVARCHAR 200) -- 'Main Navigation', 'Admin Menu'
 ├─ Description (NVARCHAR 500, nullable)
-├─ TenantId (GUID, nullable) -- NULL=global menu, GUID=tenant-specific override
+├─ FK → Master.Tenants (TenantId) -- Each tenant has their own menus
 ├─ IsActive (BIT)
 ├─ DisplayOrder (INT)
 ├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
-└─ Indexes: (Code), (TenantId, Code), (DisplayOrder)
+└─ Indexes: (TenantId, Code), (TenantId, DisplayOrder)
 
 MenuItems (hierarchical menu items with HierarchyId)
 ├─ MenuItemId (GUID)
-├─ FK → Master.Menus (MenuId)
+├─ FK → Core.Menus (MenuId)
 ├─ NodePath (HierarchyId) -- Tree: /1/ → /1/1/ → /1/1/1/ (unlimited depth)
 ├─ Code (VARCHAR 100) -- 'dashboard', 'products', 'reports'
 ├─ Name (NVARCHAR 200) -- 'Dashboard', 'Products', 'Reports'
@@ -299,9 +322,9 @@ MenuItems (hierarchical menu items with HierarchyId)
 ├─ CssClass (VARCHAR 200, nullable) -- 'active', 'disabled', custom styling
 ├─ BadgeText (VARCHAR 50, nullable) -- '3', 'NEW', 'Beta'
 ├─ BadgeColor (VARCHAR 50, nullable) -- 'red', 'green', 'blue', 'orange'
-├─ TenantId (GUID, nullable) -- NULL=global item, GUID=tenant-specific override
+├─ FK → Master.Tenants (TenantId) -- Each tenant's items, no global items
 ├─ Audit: CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, IsDeleted
-└─ Indexes: (MenuId, NodePath), (MenuId, DisplayOrder), (TenantId, MenuId), (RequiredRole)
+└─ Indexes: (TenantId, MenuId, NodePath), (TenantId, DisplayOrder), (RequiredRole)
 
 **Example Menu Hierarchy:**
 Main Menu (/1/)
@@ -321,26 +344,30 @@ Main Menu (/1/)
 - Dynamic navigation without code changes
 - HierarchyId supports unlimited depth (breadcrumbs, tree views)
 - Role-based visibility (show/hide by RequiredRole or RequiredPermission)
-- Multi-tenant menus (global defaults + tenant overrides)
+- Each tenant manages their own menu structure
 - Badges for notifications (unread counts, status)
 - Auto-generates sitemap.xml from menu items
 - Efficient queries: Get all items in menu, get children of item, get breadcrumb path
 
 ---
 
-### **Master Schema Summary: 17 tables** (Option C Hybrid Geo + Config + Navigation)
-- Geo (2): Countries, GeoHierarchy ← OPTION C (hybrid: reference + hierarchical)
-- i18n (2): Languages, Translations
-- Hierarchies (4): Lookups, Categories, EntityStates, EntityStateTransitions
-- Notifications (3): NotificationChannels, TemplateGroups, Templates
-- Tenants (1): Tenants ← MOVED FROM CORE (reference data)
-- SEO (1): UrlRedirects ← SeoMeta MOVED TO SHARED for polymorphic linking
-- Config (3): TenantSubscriptions, TenantSettings, FeatureFlags ← MOVED FROM CORE
-- Navigation (2): Menus, MenuItems ← NEW (HierarchyId trees, role-based, auto-sitemap)
+### 2.2 Feature Access (1 table)
+
+```sql
+TenantFeatures (which features are enabled per tenant)
+├─ TenantFeatureId (GUID)
+├─ FK → Master.Tenants (TenantId)
+├─ FeatureCode (VARCHAR 100) -- 'products', 'orders', 'reports', 'analytics'
+├─ IsEnabled (BIT) -- Feature toggle per tenant
+├─ CreatedAt (DATETIME2)
+└─ Indexes: (TenantId, FeatureCode)
+```
+
+**Why Core:** Feature flags are operational decisions—which tenant gets which capabilities. Changes frequently as the business scales.
 
 ---
 
-## 2. Shared Schema (7 tables)
+## 3. Shared Schema (7 tables)
 
 ### Purpose
 Polymorphic infrastructure used across ALL schemas. Enables flexible entity linking without schema changes. SeoMeta and Tags moved here for consistency with polymorphic pattern.
@@ -476,17 +503,6 @@ Tags (polymorphic tagging - MOVED FROM MASTER)
 
 ---
 
-## 3. Core Schema (MERGED INTO MASTER)
-
-**NOTE:** Core schema tables (TenantSubscriptions, TenantSettings, FeatureFlags) have been moved to Master schema (section 1.8) for cleaner organization. Master now contains all global reference data + tenant configuration.
-
----
-
-## 3. Transaction Schema (1 table - LEAN)
-- Tenant Config (3): TenantSubscriptions, TenantSettings, FeatureFlags
-
----
-
 ## 4. Transaction Schema (1 table - LEAN)
 
 ### Purpose
@@ -516,7 +532,7 @@ Purpose: Minimal table showing transactional pattern
 
 ---
 
-## 5. Report Schema (4 tables - Common Patterns)
+## 5. Report Schema (4 tables)
 
 ### Purpose
 Flexible reporting framework supporting:
@@ -840,7 +856,13 @@ Auth Schema (13 tables - UNCHANGED)
 ├─ Sessions (3): RefreshTokens, VerificationCodes, ExternalLogins
 └─ Logging (3): AuditLogs, ActivityLogs, NotificationLogs
 
-TOTAL: 41 tables (LEAN design with maximum flexibility)
+TOTAL: 43 tables (LEAN design with maximum flexibility)
+- Master: 15 tables (global reference data, geo, i18n, hierarchies, notifications, config)
+- Core: 3 tables (business-domain configuration, navigation, feature access)
+- Shared: 7 tables (polymorphic infrastructure)
+- Transaction: 1 table (Orders dummy)
+- Report: 4 tables (ReportDefinitions, ReportSchedules, ReportExecutions, ReportMetadata)
+- Auth: 13 tables (identity, RBAC, logs)
 Single Database: StarterKitMVC
 All tables with audit columns, soft delete, TenantId for row-level isolation
 ```
