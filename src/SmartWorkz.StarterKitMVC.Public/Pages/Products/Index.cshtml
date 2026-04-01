@@ -1,14 +1,126 @@
 @page
-@model Products.IndexModel
+@model SmartWorkz.StarterKitMVC.Public.Pages.Products.IndexModel
 
 @{
     ViewData["Title"] = "Products";
-    Layout = "_Layout";
 }
 
-<section class="py-5">
+<section class="py-5 bg-light">
     <div class="container">
         <h1 class="mb-4">Our Products</h1>
         <p class="lead">Browse our comprehensive catalog of products.</p>
+
+        <!-- Search -->
+        <form method="get" class="mb-4">
+            <div class="row g-2">
+                <div class="col-md-8">
+                    <input type="text"
+                           name="Search"
+                           value="@Model.Search"
+                           class="form-control"
+                           placeholder="Search products..."
+                           aria-label="Search products">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        @if (Model.Products.Any())
+        {
+            <div class="row g-4">
+                @foreach (var product in Model.Products)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="@Url.Page("./Details", new { slug = product.Slug })" class="text-decoration-none">
+                                        @product.Name
+                                    </a>
+                                </h5>
+                                <p class="card-text text-muted small">@product.Category?.Name</p>
+                                <p class="card-text">@product.Description?.Substring(0, Math.Min(100, product.Description?.Length ?? 0))...</p>
+
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="h5 mb-0">${{ product.Price:0.00 }}</span>
+                                    @if (product.Stock > 0)
+                                    {
+                                        <span class="badge bg-success">In Stock</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Out of Stock</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white border-top">
+                                <a href="@Url.Page("./Details", new { slug = product.Slug })" class="btn btn-sm btn-outline-primary w-100">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Pagination -->
+            @if (Model.Pagination.TotalPages > 1)
+            {
+                <nav class="d-flex justify-content-center mt-5">
+                    <ul class="pagination">
+                        @if (Model.Pagination.HasPrev)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Page("./Index", new { page = Model.Pagination.CurrentPage - 1, search = Model.Search })">
+                                    Previous
+                                </a>
+                            </li>
+                        }
+
+                        @foreach (var pageNum in Model.Pagination.PageWindow())
+                        {
+                            @if (pageNum == -1)
+                            {
+                                <li class="page-item disabled"><span class="page-link">…</span></li>
+                            }
+                            else if (pageNum == Model.Pagination.CurrentPage)
+                            {
+                                <li class="page-item active"><span class="page-link">@pageNum</span></li>
+                            }
+                            else
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Page("./Index", new { page = pageNum, search = Model.Search })">@pageNum</a>
+                                </li>
+                            }
+                        }
+
+                        @if (Model.Pagination.HasNext)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Page("./Index", new { page = Model.Pagination.CurrentPage + 1, search = Model.Search })">
+                                    Next
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="alert alert-info text-center">
+                <p>No products found.</p>
+                <a href="@Url.Page("./Index")" class="btn btn-primary">Clear Search</a>
+            </div>
+        }
     </div>
 </section>
