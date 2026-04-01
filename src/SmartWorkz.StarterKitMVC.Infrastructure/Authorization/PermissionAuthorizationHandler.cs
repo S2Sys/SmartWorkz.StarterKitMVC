@@ -15,7 +15,7 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
         AuthorizationHandlerContext context,
         PermissionRequirement requirement)
     {
-        var permissions = context.User.FindAll(c => c.Type == "permissions")
+        var permissions = context.User.FindAll(c => c.Type == "permission")
             .Select(c => c.Value)
             .ToList();
 

@@ -1,0 +1,12 @@
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\bin\Release\net9.0\SmartWorkz.StarterKitMVC.Shared.deps.json
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\bin\Release\net9.0\SmartWorkz.StarterKitMVC.Shared.dll
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\bin\Release\net9.0\SmartWorkz.StarterKitMVC.Shared.pdb
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Release\net9.0\SmartWorkz.StarterKitMVC.Shared.GeneratedMSBuildEditorConfig.editorconfig
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Release\net9.0\SmartWorkz.StarterKitMVC.Shared.AssemblyInfoInputs.cache
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Release\net9.0\SmartWorkz.StarterKitMVC.Shared.AssemblyInfo.cs
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Release\net9.0\SmartWorkz.StarterKitMVC.Shared.csproj.CoreCompileInputs.cache
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Release\net9.0\SmartWorkz.StarterKitMVC.Shared.sourcelink.json
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Release\net9.0\SmartWorkz.StarterKitMVC.Shared.dll
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Release\net9.0\refint\SmartWorkz.StarterKitMVC.Shared.dll
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Release\net9.0\SmartWorkz.StarterKitMVC.Shared.pdb
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Release\net9.0\ref\SmartWorkz.StarterKitMVC.Shared.dll

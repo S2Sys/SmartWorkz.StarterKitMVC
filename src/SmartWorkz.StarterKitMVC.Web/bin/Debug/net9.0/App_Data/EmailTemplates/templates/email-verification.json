@@ -1,0 +1,56 @@
+{
+  "id": "email-verification",
+  "name": "Email Verification",
+  "description": "Sent to verify user email address",
+  "subject": "Verify Your Email Address - {{AppName}}",
+  "headerId": "header-default",
+  "footerId": "footer-default",
+  "bodyContent": "\u003Cdiv style=\u0022padding: 40px 20px; font-family: \u0027Segoe UI\u0027, Tahoma, Geneva, Verdana, sans-serif; background-color: #ffffff;\u0022\u003E\r\n    \u003Ch2 style=\u0022color: #333; margin: 0 0 20px 0;\u0022\u003EVerify Your Email Address\u003C/h2\u003E\r\n    \u003Cp style=\u0022color: #555; font-size: 16px; line-height: 1.6;\u0022\u003E\r\n        Hi {{UserName}},\r\n    \u003C/p\u003E\r\n    \u003Cp style=\u0022color: #555; font-size: 16px; line-height: 1.6;\u0022\u003E\r\n        Please verify your email address to complete your {{AppName}} account setup.\r\n    \u003C/p\u003E\r\n    \u003Cdiv style=\u0022text-align: center; margin: 30px 0;\u0022\u003E\r\n        \u003Ca href=\u0022{{VerificationUrl}}\u0022 style=\u0022display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; padding: 14px 40px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;\u0022\u003E\r\n            Verify Email\r\n        \u003C/a\u003E\r\n    \u003C/div\u003E\r\n    \u003Cp style=\u0022color: #555; font-size: 16px; line-height: 1.6;\u0022\u003E\r\n        Or use this verification code: \u003Cstrong style=\u0022font-size: 24px; color: #667eea;\u0022\u003E{{VerificationCode}}\u003C/strong\u003E\r\n    \u003C/p\u003E\r\n    \u003Cp style=\u0022color: #555; font-size: 16px; line-height: 1.6; margin-top: 30px;\u0022\u003E\r\n        Best regards,\u003Cbr\u003E\r\n        \u003Cstrong\u003EThe {{AppName}} Team\u003C/strong\u003E\r\n    \u003C/p\u003E\r\n\u003C/div\u003E",
+  "plainTextContent": null,
+  "placeholders": [
+    {
+      "key": "{{UserName}}",
+      "displayName": "User Name",
+      "description": null,
+      "defaultValue": null,
+      "type": 0,
+      "isRequired": true,
+      "order": 0,
+      "sampleValue": "John Doe"
+    },
+    {
+      "key": "{{VerificationUrl}}",
+      "displayName": "Verification URL",
+      "description": null,
+      "defaultValue": null,
+      "type": 3,
+      "isRequired": true,
+      "order": 0,
+      "sampleValue": "https://example.com/verify?token=abc123"
+    },
+    {
+      "key": "{{VerificationCode}}",
+      "displayName": "Verification Code",
+      "description": null,
+      "defaultValue": null,
+      "type": 0,
+      "isRequired": false,
+      "order": 0,
+      "sampleValue": "123456"
+    }
+  ],
+  "isActive": true,
+  "isSystem": true,
+  "category": "Security",
+  "tags": [
+    "security",
+    "verification",
+    "email"
+  ],
+  "tenantId": null,
+  "createdAt": "2026-03-31T07:12:58.3760934Z",
+  "updatedAt": "2026-03-31T07:12:58.3969836Z",
+  "createdBy": null,
+  "updatedBy": null,
+  "version": 1
+}

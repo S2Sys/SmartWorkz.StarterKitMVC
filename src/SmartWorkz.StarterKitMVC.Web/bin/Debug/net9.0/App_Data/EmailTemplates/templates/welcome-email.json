@@ -1,0 +1,46 @@
+{
+  "id": "welcome-email",
+  "name": "Welcome Email",
+  "description": "Sent to new users after registration",
+  "subject": "Welcome to {{AppName}}, {{UserName}}!",
+  "headerId": "header-default",
+  "footerId": "footer-default",
+  "bodyContent": "\u003Cdiv style=\u0022padding: 40px 20px; font-family: \u0027Segoe UI\u0027, Tahoma, Geneva, Verdana, sans-serif; background-color: #ffffff;\u0022\u003E\r\n    \u003Ch2 style=\u0022color: #333; margin: 0 0 20px 0;\u0022\u003EWelcome aboard, {{UserName}}! \uD83C\uDF89\u003C/h2\u003E\r\n    \u003Cp style=\u0022color: #555; font-size: 16px; line-height: 1.6;\u0022\u003E\r\n        Thank you for joining {{AppName}}. We\u0027re excited to have you as part of our community!\r\n    \u003C/p\u003E\r\n    \u003Cp style=\u0022color: #555; font-size: 16px; line-height: 1.6;\u0022\u003E\r\n        Your account has been created successfully. You can now access all the features and start exploring.\r\n    \u003C/p\u003E\r\n    \u003Cdiv style=\u0022text-align: center; margin: 30px 0;\u0022\u003E\r\n        \u003Ca href=\u0022{{LoginUrl}}\u0022 style=\u0022display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; padding: 14px 40px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;\u0022\u003E\r\n            Get Started\r\n        \u003C/a\u003E\r\n    \u003C/div\u003E\r\n    \u003Cp style=\u0022color: #555; font-size: 16px; line-height: 1.6;\u0022\u003E\r\n        If you have any questions, feel free to reach out to our support team at \r\n        \u003Ca href=\u0022mailto:{{SupportEmail}}\u0022 style=\u0022color: #667eea;\u0022\u003E{{SupportEmail}}\u003C/a\u003E.\r\n    \u003C/p\u003E\r\n    \u003Cp style=\u0022color: #555; font-size: 16px; line-height: 1.6; margin-top: 30px;\u0022\u003E\r\n        Best regards,\u003Cbr\u003E\r\n        \u003Cstrong\u003EThe {{AppName}} Team\u003C/strong\u003E\r\n    \u003C/p\u003E\r\n\u003C/div\u003E",
+  "plainTextContent": "Welcome aboard, {{UserName}}!\r\n\r\nThank you for joining {{AppName}}. We\u0027re excited to have you as part of our community!\r\n\r\nYour account has been created successfully. You can now access all the features and start exploring.\r\n\r\nGet Started: {{LoginUrl}}\r\n\r\nIf you have any questions, feel free to reach out to our support team at {{SupportEmail}}.\r\n\r\nBest regards,\r\nThe {{AppName}} Team",
+  "placeholders": [
+    {
+      "key": "{{UserName}}",
+      "displayName": "User Name",
+      "description": null,
+      "defaultValue": null,
+      "type": 0,
+      "isRequired": true,
+      "order": 0,
+      "sampleValue": "John Doe"
+    },
+    {
+      "key": "{{LoginUrl}}",
+      "displayName": "Login URL",
+      "description": null,
+      "defaultValue": null,
+      "type": 3,
+      "isRequired": false,
+      "order": 0,
+      "sampleValue": "https://example.com/login"
+    }
+  ],
+  "isActive": true,
+  "isSystem": true,
+  "category": "Onboarding",
+  "tags": [
+    "onboarding",
+    "welcome",
+    "registration"
+  ],
+  "tenantId": null,
+  "createdAt": "2026-03-31T07:12:58.3749393Z",
+  "updatedAt": "2026-03-31T07:12:58.3781919Z",
+  "createdBy": null,
+  "updatedBy": null,
+  "version": 1
+}
