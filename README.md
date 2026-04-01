@@ -1,9 +1,24 @@
-# SmartWorkz StarterKitMVC v4
+# SmartWorkz StarterKitMVC v4.1.0
 
 **Multi-tenant Enterprise Platform with .NET 9 Clean Architecture**
 
+Latest: **v4.1.0** (2026-04-02) — Demo pages & comprehensive wiki documentation | [Changelog](CHANGELOG.md)
+
 ## Quick Links
 
+### 📚 Getting Started
+- **🎯 Demo Pages** (New v4.1.0)
+  - [Translation System Demo](/Public/Pages/Demo/Translations.cshtml) — View all translation keys and values
+  - [Validation Demo](/Public/Pages/Demo/Validation.cshtml) — See validation attributes in action
+
+- **📖 Wiki Documentation** (New v4.1.0)
+  - [01 — Translation System](docs/wiki/01-translation-system.md) — DB-backed translations, T() helper, multi-locale
+  - [02 — Localized Validation](docs/wiki/02-localized-validation.md) — MessageKey validation attributes
+  - [03 — Base Page Pattern](docs/wiki/03-base-page-pattern.md) — BasePage, TenantId, T() method, toast helpers
+  - [04 — Result Pattern](docs/wiki/04-result-pattern.md) — Result/Result<T> for explicit success/failure
+  - [05 — HTMX List Pattern](docs/wiki/05-htmx-list-pattern.md) — Dynamic search/filter/pagination with HTMX
+
+### 🏗️ Architecture & Design
 - **📋 Schema Design:** [`docs/srs/SCHEMA-REVIEW-v2.md`](docs/srs/SCHEMA-REVIEW-v2.md) — 42 LEAN tables across 5 schemas
 - **📊 Schema Summary:** [`SCHEMA-SUMMARY-LEAN.md`](SCHEMA-SUMMARY-LEAN.md) — Overview and extensibility patterns
 - **✅ Implementation Plan:** [`docs/srs/IMPLEMENTATION-PLAN.md`](docs/srs/IMPLEMENTATION-PLAN.md) — 4-phase roadmap (34-45 hours)
@@ -138,22 +153,56 @@ Supports agencies → clients → sub-clients hierarchy via HierarchyId.
 - ✅ Blazor WASM (REST API)
 - ✅ .NET MAUI (REST API)
 
+## Component Versions (v4.1.0)
+
+| Component | Version | Status | Reference |
+|-----------|---------|--------|-----------|
+| **Translation System** | v1.1.0 | ✅ Complete | [Wiki 01](docs/wiki/01-translation-system.md) \| [Demo](/Demo/Translations) |
+| **Localized Validation** | v1.1.0 | ✅ Complete | [Wiki 02](docs/wiki/02-localized-validation.md) \| [Demo](/Demo/Validation) |
+| **Base Page Pattern** | v1.1.0 | ✅ Complete | [Wiki 03](docs/wiki/03-base-page-pattern.md) |
+| **Result Pattern** | v1.1.0 | ✅ Complete | [Wiki 04](docs/wiki/04-result-pattern.md) |
+| **HTMX List Pattern** | v1.1.0 | ✅ Complete | [Wiki 05](docs/wiki/05-htmx-list-pattern.md) |
+| **Public Demo Pages** | v1.0.0 | ✅ Complete | [Translations](/Demo/Translations) \| [Validation](/Demo/Validation) |
+| **Wiki Documentation** | v1.0.0 | ✅ Complete | [docs/wiki/](docs/wiki/) |
+| **Admin Products CRUD** | v1.0.0 | ✅ Complete | [Admin Pages](src/SmartWorkz.StarterKitMVC.Admin/Pages/Products/) |
+| **Public Product Catalog** | v1.0.0 | ✅ Complete | [Public Pages](src/SmartWorkz.StarterKitMVC.Public/Pages/Products/) |
+
 ## Key Features
 
-### Geo Hierarchy (Option C Hybrid)
+### v4.1.0 Additions
+
+#### Demo Pages
+- **Translation System Demo:** Interactive showcase of all MessageKeys with current translations
+- **Validation Demo:** Form demonstrating all validation attribute types with translated error messages
+
+#### Comprehensive Documentation
+- **5 Wiki Files (1951 lines):** Complete guides for Translation System, Validation, Base Page, Result Pattern, HTMX Lists
+- **Real Code Examples:** Every wiki page includes working examples from actual codebase
+- **Developer-Focused:** Purpose → Quick Start → How It Works → Patterns → Common Mistakes → See Also
+
+#### Pattern Implementations
+- **Simple Validation:** MessageKey constants in error messages (no custom attributes needed)
+- **Translation System:** Database-backed with 60-minute cache, per-tenant overrides, multi-locale support
+- **Result Pattern:** Explicit success/failure outcomes (Result/Result<T> classes)
+- **HTMX Integration:** Progressive enhancement for search/filter/pagination
+- **Base Page Pattern:** TenantId, T() translation helper, toast messages, error handling
+
+### v4.0.0 Foundation
+
+#### Geo Hierarchy (Option C Hybrid)
 - Countries table for fast lookups (indexed)
 - GeoHierarchy table with HierarchyId for flexible State/City/District nesting
 - No schema changes to add new geo levels (neighborhoods, regions, etc.)
 - Handles varying depths per country (USA States, UK Districts)
 
-### Polymorphic Infrastructure
+#### Polymorphic Infrastructure
 - **Addresses:** Link to any entity (Customer, Order, Employee, etc.)
 - **Attachments:** File references for any entity
 - **Comments:** Discussion threads for any entity
 - **StateHistory:** Workflow tracking for any entity
 - **PreferenceDefinitions:** System/tenant/user configuration
 
-### Production-Ready Reporting
+#### Production-Ready Reporting
 - **ReportDefinitions:** SQL, Dashboard, Stored Procedure, API report types
 - **ReportSchedules:** Cron-based background execution with email delivery
 - **ReportExecutions:** Audit trail, performance metrics, result caching
@@ -178,11 +227,24 @@ v1 documentation archived in [`docs/old/`](docs/old/):
 - architecture.md (v1 architecture)
 - etc.
 
-## Status
+## Current Status
 
-✅ **Phase 0 Complete:** Design finalized, documented, and committed
-⏳ **Phase 1 Ready:** Database scripts and implementation plan prepared
-🚀 **Ready to begin Phase 1 implementation**
+**v4.1.0 Features Complete:**
+- ✅ Translation System (v1.1.0) — Production-ready, fully documented
+- ✅ Localized Validation (v1.1.0) — Simple MessageKey approach, working examples
+- ✅ Base Page Pattern (v1.1.0) — TenantId, T(), toast helpers, form handling
+- ✅ Result Pattern (v1.1.0) — Explicit success/failure for all services
+- ✅ HTMX List Pattern (v1.1.0) — Dynamic search/filter/pagination
+- ✅ Demo Pages (v1.0.0) — Translations and Validation showcases
+- ✅ Wiki Documentation (v1.0.0) — 5 comprehensive guides with examples
+- ✅ Admin Products CRUD (v1.0.0) — Sample pages for admin area
+- ✅ Public Product Catalog (v1.0.0) — Index and details pages
+
+**Next Phase:**
+- ⏳ Connect mock implementations to real repositories
+- ⏳ Build additional admin feature areas
+- ⏳ Implement frontend-specific features (cart, checkout)
+- ⏳ Phase 1+ Extensions: Custom business entities, transaction types, advanced workflows
 
 ## Effort Estimate
 
