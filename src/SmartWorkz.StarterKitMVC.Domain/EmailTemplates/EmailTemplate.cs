@@ -1,8 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
+
 namespace SmartWorkz.StarterKitMVC.Domain.EmailTemplates;
+
+[Table("ContentTemplates", Schema = "Master")]
 
 /// <summary>
 /// Represents an email template with placeholders, header, footer, and body content.
 /// Templates can be rendered with dynamic data to produce personalized emails.
+/// Persisted to Master.ContentTemplates table via Dapper.
 /// </summary>
 /// <example>
 /// <code>
@@ -26,6 +33,7 @@ public sealed class EmailTemplate
     /// <summary>
     /// Unique identifier for the template (slug format recommended).
     /// </summary>
+    [Key]
     public string Id { get; set; } = string.Empty;
     
     /// <summary>
@@ -62,12 +70,7 @@ public sealed class EmailTemplate
     /// Plain text version of the email body (for email clients that don't support HTML).
     /// </summary>
     public string? PlainTextContent { get; set; }
-    
-    /// <summary>
-    /// List of placeholders used in this template.
-    /// </summary>
-    public List<TemplatePlaceholder> Placeholders { get; set; } = new();
-    
+
     /// <summary>
     /// Whether the template is active and available for use.
     /// </summary>
@@ -84,10 +87,31 @@ public sealed class EmailTemplate
     public string? Category { get; set; }
     
     /// <summary>
-    /// Tags for filtering and searching templates.
+    /// Tags stored as JSON in the database column.
+    /// Backing storage for the Tags property.
     /// </summary>
-    public List<string> Tags { get; set; } = new();
-    
+    public string? TagsJson { get; set; }
+
+    /// <summary>
+    /// Tags for filtering and searching templates.
+    /// Computed property that serializes/deserializes TagsJson.
+    /// </summary>
+    [NotMapped]
+    public List<string> Tags
+    {
+        get => string.IsNullOrEmpty(TagsJson)
+            ? new()
+            : JsonSerializer.Deserialize<List<string>>(TagsJson) ?? new();
+        set => TagsJson = value.Count == 0 ? null : JsonSerializer.Serialize(value);
+    }
+
+    /// <summary>
+    /// Placeholders used in this template.
+    /// Loaded separately from Master.TemplatePlaceholders via sp_GetContentTemplatePlaceholders.
+    /// </summary>
+    [NotMapped]
+    public List<TemplatePlaceholder> Placeholders { get; set; } = new();
+
     /// <summary>
     /// Tenant identifier for multi-tenant isolation.
     /// Null means system-wide (available to all tenants).
