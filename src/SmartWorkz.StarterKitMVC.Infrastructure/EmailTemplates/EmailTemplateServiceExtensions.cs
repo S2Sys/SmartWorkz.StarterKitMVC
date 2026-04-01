@@ -10,18 +10,32 @@ public static class EmailTemplateServiceExtensions
 {
     /// <summary>
     /// Adds email template services to the service collection.
+    /// Supports both SQL Server (database-backed) and JSON file storage.
     /// </summary>
     /// <param name="services">The service collection.</param>
-    /// <param name="storagePath">Optional custom storage path for templates.</param>
+    /// <param name="useSqlRepository">If true, uses SQL Server repository; otherwise uses JSON file storage.</param>
+    /// <param name="storagePath">Optional custom storage path for JSON templates (ignored if useSqlRepository=true).</param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddEmailTemplates(this IServiceCollection services, string? storagePath = null)
+    public static IServiceCollection AddEmailTemplates(
+        this IServiceCollection services,
+        bool useSqlRepository = true,
+        string? storagePath = null)
     {
-        services.AddSingleton<IEmailTemplateRepository>(sp => 
-            new JsonEmailTemplateRepository(storagePath));
-        
+        if (useSqlRepository)
+        {
+            // Use SQL Server repository (Dapper-based, reads from Master.ContentTemplates)
+            services.AddScoped<IEmailTemplateRepository, DapperContentTemplateRepository>();
+        }
+        else
+        {
+            // Use JSON file repository (legacy fallback for development)
+            services.AddSingleton<IEmailTemplateRepository>(sp =>
+                new JsonEmailTemplateRepository(storagePath));
+        }
+
         services.AddScoped<IEmailTemplateService, EmailTemplateService>();
         services.AddScoped<ITemplatedEmailSender, TemplatedEmailSender>();
-        
+
         return services;
     }
 

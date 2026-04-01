@@ -1,8 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace SmartWorkz.StarterKitMVC.Domain.EmailTemplates;
+
+[Table("ContentTemplateSections", Schema = "Master")]
 
 /// <summary>
 /// Represents a reusable email template section (header or footer).
 /// Sections can be shared across multiple email templates.
+/// Persisted to Master.ContentTemplateSections table via Dapper.
 /// </summary>
 /// <example>
 /// <code>
@@ -21,17 +27,31 @@ public sealed class EmailTemplateSection
     /// <summary>
     /// Unique identifier for the section.
     /// </summary>
+    [Key]
     public string Id { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Display name for the section.
     /// </summary>
     public string Name { get; set; } = string.Empty;
-    
+
     /// <summary>
-    /// Type of section (Header or Footer).
+    /// Type of section (Header or Footer) — stored as string in DB, mapped to enum.
     /// </summary>
-    public SectionType Type { get; set; }
+    public string SectionType { get; set; } = "Header";
+
+    /// <summary>
+    /// Enum representation of the section type.
+    /// Maps to/from the SectionType string column.
+    /// </summary>
+    [NotMapped]
+    public SectionType Type
+    {
+        get => System.Enum.TryParse<SectionType>(SectionType, out var t)
+            ? t
+            : EmailTemplates.SectionType.Header;
+        set => SectionType = value.ToString();
+    }
     
     /// <summary>
     /// HTML content of the section.

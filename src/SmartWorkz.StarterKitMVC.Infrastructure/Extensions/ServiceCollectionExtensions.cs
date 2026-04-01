@@ -1,12 +1,21 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.SqlServer;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
+using SmartWorkz.StarterKitMVC.Application.Abstractions;
+using SmartWorkz.StarterKitMVC.Application.Authorization;
+using SmartWorkz.StarterKitMVC.Application.Localization;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Application.Services;
+using SmartWorkz.StarterKitMVC.Infrastructure.Authorization;
 using SmartWorkz.StarterKitMVC.Infrastructure.Data;
+using SmartWorkz.StarterKitMVC.Infrastructure.EmailTemplates;
 using SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
 using SmartWorkz.StarterKitMVC.Infrastructure.Services;
 
@@ -50,6 +59,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IUserRepository, DapperUserRepository>();
+        services.AddScoped<IEmailQueueRepository, DapperEmailQueueRepository>();
 
         return services;
     }
@@ -64,8 +74,60 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IPermissionService, PermissionService>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
+        // Translation service (DB-backed, memory cached)
+        services.AddMemoryCache();
+        services.AddScoped<ITranslationRepository, DapperTranslationRepository>();
+        services.AddSingleton<ITranslationService, TranslationService>();
+
+        // Email templates (DB-backed, replacing JSON file storage)
+        services.AddEmailTemplates(useSqlRepository: true);
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds distributed cache services.
+    /// L1: IMemoryCache (in-process, 2 min TTL).
+    /// L2: IDistributedCache (Redis if configured, else SQL Server fallback).
+    /// </summary>
+    private static IServiceCollection AddCacheServices(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        // L1: IMemoryCache already registered by AddMemoryCache() above
+        // L2: Configure distributed cache (Redis primary, SQL Server fallback)
+        var redisConn = configuration.GetConnectionString("Redis");
+
+        if (!string.IsNullOrEmpty(redisConn))
+        {
+            // Redis as L2 distributed cache
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConn;
+                options.InstanceName = "StarterKit_";
+            });
+        }
+        else
+        {
+            // SQL Server fallback for L2 distributed cache
+            // NOTE: AddSqlServerCache requires Microsoft.Extensions.Caching.SqlServer package
+            // and uses the Master.CacheEntries table managed by the SQL migration
+            // TODO: Enable when package dependencies are fully resolved
+            // services.AddSqlServerCache(options =>
+            // {
+            //     options.ConnectionString = configuration.GetConnectionString("DefaultConnection");
+            //     options.SchemaName = "Master";
+            //     options.TableName = "CacheEntries";
+            // });
+
+            // Fallback: use memory cache as L2 (same as L1 for now)
+            services.AddDistributedMemoryCache();
+        }
+
+        services.AddSingleton<ICacheService, HybridCacheService>();
         return services;
     }
 
@@ -113,6 +175,7 @@ public static class ServiceCollectionExtensions
         services.AddInfrastructureServices(configuration);
         services.AddRepositories();
         services.AddApplicationServices();
+        services.AddCacheServices(configuration);
         services.AddJwtAuthentication(configuration);
 
         return services;
