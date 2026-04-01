@@ -1,31 +1,26 @@
 using Microsoft.Extensions.Logging;
 using SmartWorkz.StarterKitMVC.Application.EmailTemplates;
-using SmartWorkz.StarterKitMVC.Application.Notifications;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Domain.Entities.Shared;
-using SmartWorkz.StarterKitMVC.Shared.Models;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.EmailTemplates;
 
 /// <summary>
 /// Default implementation of templated email sender.
-/// Integrates email templates with the notification queue and persists emails to the database.
+/// Renders templates and persists emails to the database queue for reliable async delivery.
 /// </summary>
 public sealed class TemplatedEmailSender : ITemplatedEmailSender
 {
     private readonly IEmailTemplateService _templateService;
-    private readonly INotificationQueue _notificationQueue;
     private readonly IEmailQueueRepository _emailQueueRepository;
     private readonly ILogger<TemplatedEmailSender> _logger;
 
     public TemplatedEmailSender(
         IEmailTemplateService templateService,
-        INotificationQueue notificationQueue,
         IEmailQueueRepository emailQueueRepository,
         ILogger<TemplatedEmailSender> logger)
     {
         _templateService = templateService;
-        _notificationQueue = notificationQueue;
         _emailQueueRepository = emailQueueRepository;
         _logger = logger;
     }
@@ -48,23 +43,7 @@ public sealed class TemplatedEmailSender : ITemplatedEmailSender
                 return false;
             }
 
-            // Create notification message for in-memory queue (real-time notifications)
-            var message = new NotificationMessage(
-                Channel: NotificationChannel.Email,
-                Recipient: recipient,
-                Subject: result.Subject,
-                Body: result.HtmlBody,
-                Metadata: new Dictionary<string, string>
-                {
-                    ["TemplateId"] = templateId,
-                    ["PlainText"] = result.PlainTextBody ?? string.Empty
-                }
-            );
-
-            // Queue the notification (in-memory)
-            await _notificationQueue.EnqueueAsync(message, cancellationToken);
-
-            // Also persist to database queue for reliable delivery & audit trail
+            // Persist to database queue for reliable delivery & audit trail
             var emailQueue = new EmailQueue
             {
                 ToEmail = recipient,
