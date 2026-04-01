@@ -90,7 +90,10 @@
         },
         "runtime": {
           "bin/placeholder/SmartWorkz.StarterKitMVC.Shared.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       }
     }
   },
@@ -279,11 +282,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "s:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj",
+      "projectUniqueName": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj",
       "projectName": "SmartWorkz.StarterKitMVC.Application",
-      "projectPath": "s:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj",
+      "projectPath": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj",
       "packagesPath": "C:\\Users\\tsent\\.nuget\\packages\\",
-      "outputPath": "s:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\obj\\",
+      "outputPath": "S:\\02_Projects\\Starter\\03_Development\\MVC\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

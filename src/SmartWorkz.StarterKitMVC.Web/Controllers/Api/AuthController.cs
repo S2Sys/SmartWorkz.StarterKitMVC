@@ -152,8 +152,8 @@ public class AuthController : ControllerBase
             if (errors.Any()) throw new ValidationException(errors);
         }
 
-        var success = await _authService.ResetPasswordAsync(request);
-        if (!success)
+        var result = await _authService.ResetPasswordAsync(request);
+        if (!result.Succeeded)
             return BadRequest(new { message = "Invalid or expired reset token" });
 
         return Ok(new { message = "Password reset successfully" });
@@ -180,8 +180,8 @@ public class AuthController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
                   ?? User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
 
-        var success = await _authService.ChangePasswordAsync(userId, request);
-        if (!success)
+        var changeResult = await _authService.ChangePasswordAsync(userId!, request);
+        if (!changeResult.Succeeded)
             return BadRequest(new { message = "Current password is incorrect" });
 
         return Ok(new { message = "Password changed successfully" });
@@ -204,8 +204,8 @@ public class AuthController : ControllerBase
             throw new ValidationException(errors);
         }
 
-        var success = await _authService.VerifyEmailAsync(request);
-        if (!success)
+        var verifyResult = await _authService.VerifyEmailAsync(request);
+        if (!verifyResult.Succeeded)
             return BadRequest(new { message = "Invalid or expired verification token" });
 
         return Ok(new { message = "Email verified successfully" });

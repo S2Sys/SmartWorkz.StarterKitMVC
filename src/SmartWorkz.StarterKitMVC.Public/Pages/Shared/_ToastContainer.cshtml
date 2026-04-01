@@ -1,0 +1,42 @@
+@* Toast container — reads ToastSuccess, ToastError, ToastInfo from TempData.
+   All page models write via BasePage.ToastSuccess/ToastError/ToastInfo(messageKey). *@
+
+<div id="toast-container" aria-live="polite" aria-atomic="true"
+     style="position:fixed;top:1.25rem;right:1.25rem;z-index:9999;min-width:280px;">
+
+    @if (TempData["ToastSuccess"] is string successMsg)
+    {
+        <div class="toast align-items-center text-bg-success border-0 show mb-2"
+             role="alert" data-bs-autohide="true" data-bs-delay="4000">
+            <div class="d-flex">
+                <div class="toast-body"><i class="bi bi-check-circle me-2"></i>@successMsg</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+
+    @if (TempData["ToastError"] is string errorMsg)
+    {
+        <div class="toast align-items-center text-bg-danger border-0 show mb-2"
+             role="alert" data-bs-autohide="true" data-bs-delay="6000">
+            <div class="d-flex">
+                <div class="toast-body"><i class="bi bi-exclamation-circle me-2"></i>@errorMsg</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+
+    @if (TempData["ToastInfo"] is string infoMsg)
+    {
+        <div class="toast align-items-center text-bg-info border-0 show mb-2"
+             role="alert" data-bs-autohide="true" data-bs-delay="4000">
+            <div class="d-flex">
+                <div class="toast-body"><i class="bi bi-info-circle me-2"></i>@infoMsg</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+</div>

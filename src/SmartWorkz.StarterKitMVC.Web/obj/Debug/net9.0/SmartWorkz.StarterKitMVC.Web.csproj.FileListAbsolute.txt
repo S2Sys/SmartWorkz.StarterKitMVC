@@ -10,6 +10,7 @@ S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWork
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Web.pdb
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Azure.Core.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Azure.Identity.dll
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Dapper.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.Bcl.AsyncInterfaces.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.Data.SqlClient.dll
@@ -17,6 +18,8 @@ S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWork
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.Abstractions.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.Relational.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.SqlServer.dll
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.Extensions.Caching.SqlServer.dll
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.Extensions.Caching.StackExchangeRedis.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.Identity.Client.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.Identity.Client.Extensions.Msal.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.IdentityModel.Abstractions.dll
@@ -28,6 +31,8 @@ S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWork
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.OpenApi.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.SqlServer.Server.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Microsoft.Win32.SystemEvents.dll
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Pipelines.Sockets.Unofficial.dll
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\StackExchange.Redis.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
@@ -77,7 +82,7 @@ S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWork
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\scopedcss\bundle\SmartWorkz.StarterKitMVC.Web.styles.css
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\pq2r8a0ty9-{0}-gsac151f1b-gsac151f1b.gz
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\tq01be7255-{0}-4yjf95k106-4yjf95k106.gz
-S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\98ydeo1j5o-{0}-m5izznyi0h-m5izznyi0h.gz
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\98ydeo1j5o-{0}-t8nin06p4i-t8nin06p4i.gz
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\5qiw8wqzlp-{0}-61n19gt1b8-61n19gt1b8.gz
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\l6vkkq9e5d-{0}-rcj25z0fow-rcj25z0fow.gz
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Web\obj\Debug\net9.0\compressed\cpc2jlqpws-{0}-vctx1dbcou-vctx1dbcou.gz

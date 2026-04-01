@@ -1,0 +1,87 @@
+@page
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1 class="h3" style="color: #1f2937;">
+            <i class="bi bi-speedometer2 me-2" style="color: #6366f1;"></i>Dashboard
+        </h1>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Users Card -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm" style="border-top: 3px solid #6366f1;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-muted mb-2">Total Users</h6>
+                        <h2 class="mb-0" style="color: #1f2937;">@Model.TotalUsers</h2>
+                    </div>
+                    <i class="bi bi-people" style="font-size: 40px; color: #6366f1; opacity: 0.1;"></i>
+                </div>
+                <a href="/Users" class="btn btn-sm btn-link mt-3" style="padding: 0;">View all users →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tenants Card -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm" style="border-top: 3px solid #f59e0b;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-muted mb-2">Total Tenants</h6>
+                        <h2 class="mb-0" style="color: #1f2937;">@Model.TotalTenants</h2>
+                    </div>
+                    <i class="bi bi-building" style="font-size: 40px; color: #f59e0b; opacity: 0.1;"></i>
+                </div>
+                <a href="/Tenants" class="btn btn-sm btn-link mt-3" style="padding: 0;">View all tenants →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permissions Card -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm" style="border-top: 3px solid #10b981;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-muted mb-2">Total Permissions</h6>
+                        <h2 class="mb-0" style="color: #1f2937;">@Model.TotalPermissions</h2>
+                    </div>
+                    <i class="bi bi-shield-lock" style="font-size: 40px; color: #10b981; opacity: 0.1;"></i>
+                </div>
+                <a href="/Permissions" class="btn btn-sm btn-link mt-3" style="padding: 0;">View all permissions →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-4">
+    <div class="col-md-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light border-bottom">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex gap-2 flex-wrap">
+                    <a asp-page="/Users/Index" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-plus-circle me-1"></i>Add User
+                    </a>
+                    <a asp-page="/Tenants/Index" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-plus-circle me-1"></i>Add Tenant
+                    </a>
+                    <a asp-page="/Permissions/Index" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-plus-circle me-1"></i>Add Permission
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

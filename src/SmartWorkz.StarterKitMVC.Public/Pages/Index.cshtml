@@ -1,0 +1,70 @@
+@page
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h1 class="display-4 fw-bold mb-4" style="color: #1f2937;">
+                    Welcome to <span style="color: #6366f1;">SmartWorkz</span>
+                </h1>
+                <p class="lead mb-4" style="color: #6b7280;">
+                    Enterprise-grade ASP.NET Core MVC boilerplate built for modern development with clean architecture, multi-tenancy, and professional design.
+                </p>
+                <div class="d-flex gap-3">
+                    <a asp-page="/Products/Index" class="btn btn-primary btn-lg">
+                        <i class="bi bi-shop me-2"></i>Explore Products
+                    </a>
+                    <a asp-page="/Account/Login" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="bg-light p-5 rounded-3 text-center" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border: 1px solid #667eea30;">
+                    <i class="bi bi-rocket-takeoff" style="font-size: 100px; color: #6366f1; opacity: 0.3;"></i>
+                    <p class="text-muted mt-3">Enterprise Solutions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5" style="color: #1f2937;">Features</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <i class="bi bi-shield-check" style="font-size: 40px; color: #6366f1;"></i>
+                        <h5 class="card-title mt-3">Secure</h5>
+                        <p class="card-text text-muted">Built with security best practices and modern authentication.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <i class="bi bi-lightning-charge" style="font-size: 40px; color: #f59e0b;"></i>
+                        <h5 class="card-title mt-3">Fast</h5>
+                        <p class="card-text text-muted">Optimized for performance with modern web technologies.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <i class="bi bi-gear" style="font-size: 40px; color: #10b981;"></i>
+                        <h5 class="card-title mt-3">Flexible</h5>
+                        <p class="card-text text-muted">Easily customizable to suit your specific needs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

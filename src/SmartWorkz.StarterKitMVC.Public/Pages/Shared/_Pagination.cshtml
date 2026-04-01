@@ -1,0 +1,124 @@
+@using SmartWorkz.StarterKitMVC.Shared.Models
+@model PaginationModel
+
+@if (Model.TotalPages <= 1 && Model.TotalItems <= 10) { return; }
+
+@{
+    string PageUrl(int p, int? size = null)
+    {
+        var rv = new Dictionary<string, string?>(Model.RouteValues)
+        {
+            ["page"]     = p.ToString(),
+            ["pageSize"] = (size ?? Model.PageSize).ToString()
+        };
+        return Url.Page(null, null, rv)!;
+    }
+
+    bool isHtmx  = Model.HtmxTarget is not null;
+    string target = Model.HtmxTarget ?? "";
+}
+
+<nav aria-label="Page navigation"
+     class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3">
+
+    <small class="text-muted">
+        Showing @Model.FirstItem–@Model.LastItem of @Model.TotalItems
+    </small>
+
+    @if (Model.TotalPages > 1)
+    {
+        <ul class="pagination pagination-sm mb-0">
+
+            <li class="page-item @(!Model.HasPrev ? "disabled" : "")">
+                <a class="page-link"
+                   href="@PageUrl(1)"
+                   @(isHtmx ? $"hx-get=\"{PageUrl(1)}\" hx-target=\"{target}\" hx-swap=\"outerHTML\" hx-push-url=\"true\"" : "")
+                   aria-label="First">&laquo;&laquo;</a>
+            </li>
+
+            <li class="page-item @(!Model.HasPrev ? "disabled" : "")">
+                <a class="page-link"
+                   href="@PageUrl(Model.CurrentPage - 1)"
+                   @(isHtmx ? $"hx-get=\"{PageUrl(Model.CurrentPage - 1)}\" hx-target=\"{target}\" hx-swap=\"outerHTML\" hx-push-url=\"true\"" : "")
+                   aria-label="Previous">&laquo;</a>
+            </li>
+
+            @foreach (var p in Model.PageWindow())
+            {
+                if (p == -1)
+                {
+                    <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                }
+                else
+                {
+                    <li class="page-item @(p == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link"
+                           href="@PageUrl(p)"
+                           @(isHtmx ? $"hx-get=\"{PageUrl(p)}\" hx-target=\"{target}\" hx-swap=\"outerHTML\" hx-push-url=\"true\"" : "")
+                           @(p == Model.CurrentPage ? Html.Raw("aria-current=\"page\"") : Html.Raw(""))>@p</a>
+                    </li>
+                }
+            }
+
+            <li class="page-item @(!Model.HasNext ? "disabled" : "")">
+                <a class="page-link"
+                   href="@PageUrl(Model.CurrentPage + 1)"
+                   @(isHtmx ? $"hx-get=\"{PageUrl(Model.CurrentPage + 1)}\" hx-target=\"{target}\" hx-swap=\"outerHTML\" hx-push-url=\"true\"" : "")
+                   aria-label="Next">&raquo;</a>
+            </li>
+
+            <li class="page-item @(!Model.HasNext ? "disabled" : "")">
+                <a class="page-link"
+                   href="@PageUrl(Model.TotalPages)"
+                   @(isHtmx ? $"hx-get=\"{PageUrl(Model.TotalPages)}\" hx-target=\"{target}\" hx-swap=\"outerHTML\" hx-push-url=\"true\"" : "")
+                   aria-label="Last">&raquo;&raquo;</a>
+            </li>
+
+        </ul>
+    }
+
+    <div class="d-flex align-items-center gap-1">
+        <small class="text-muted">Per page:</small>
+        <select class="form-select form-select-sm" style="width:auto"
+                data-pagination-sizes
+                data-base-url="@Url.Page(null)"
+                data-route-values="@System.Text.Json.JsonSerializer.Serialize(Model.RouteValues)">
+            @foreach (var sz in new[] { 10, 20, 50, 100 })
+            {
+                if (sz == Model.PageSize)
+                {
+                    <option value="@sz" selected="selected">@sz</option>
+                }
+                else
+                {
+                    <option value="@sz">@sz</option>
+                }
+            }
+        </select>
+    </div>
+
+</nav>
+
+<script>
+(function () {
+    document.querySelectorAll('[data-pagination-sizes]').forEach(function (sel) {
+        sel.addEventListener('change', function () {
+            var rv = JSON.parse(sel.dataset.routeValues || '{}');
+            rv.page = '1';
+            rv.pageSize = sel.value;
+            var qs = Object.entries(rv).map(function (e) {
+                return encodeURIComponent(e[0]) + '=' + encodeURIComponent(e[1] ?? '');
+            }).join('&');
+            var url = sel.dataset.baseUrl + (qs ? '?' + qs : '');
+            @if (isHtmx)
+            {
+                <text>htmx.ajax('GET', url, { target: '@target', swap: 'outerHTML', pushUrl: true });</text>
+            }
+            else
+            {
+                <text>window.location.href = url;</text>
+            }
+        });
+    });
+}());
+</script>

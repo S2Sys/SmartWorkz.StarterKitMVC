@@ -1,0 +1,13 @@
+{
+  "id": "footer-default",
+  "name": "Default Footer",
+  "type": 1,
+  "htmlContent": "\u003Cdiv style=\u0022background-color: #f8f9fa; padding: 30px 20px; text-align: center; font-family: \u0027Segoe UI\u0027, Tahoma, Geneva, Verdana, sans-serif;\u0022\u003E\r\n    \u003Cp style=\u0022margin: 0 0 10px 0; color: #6c757d; font-size: 14px;\u0022\u003E\r\n        \u003Ca href=\u0022{{PrivacyUrl}}\u0022 style=\u0022color: #667eea; text-decoration: none;\u0022\u003EPrivacy Policy\u003C/a\u003E |\r\n        \u003Ca href=\u0022{{TermsUrl}}\u0022 style=\u0022color: #667eea; text-decoration: none;\u0022\u003ETerms of Service\u003C/a\u003E |\r\n        \u003Ca href=\u0022{{UnsubscribeUrl}}\u0022 style=\u0022color: #667eea; text-decoration: none;\u0022\u003EUnsubscribe\u003C/a\u003E\r\n    \u003C/p\u003E\r\n    \u003Cp style=\u0022margin: 0 0 10px 0; color: #6c757d; font-size: 14px;\u0022\u003E\r\n        {{CompanyName}} | \u003Ca href=\u0022mailto:{{SupportEmail}}\u0022 style=\u0022color: #667eea;\u0022\u003E{{SupportEmail}}\u003C/a\u003E\r\n    \u003C/p\u003E\r\n    \u003Cp style=\u0022margin: 0; color: #adb5bd; font-size: 12px;\u0022\u003E\r\n        \u00A9 {{CurrentYear}} {{CompanyName}}. All rights reserved.\r\n    \u003C/p\u003E\r\n\u003C/div\u003E",
+  "isDefault": true,
+  "tenantId": null,
+  "isActive": true,
+  "createdAt": "2026-03-31T07:12:58.2531442Z",
+  "updatedAt": "2026-03-31T07:12:58.3585426Z",
+  "createdBy": null,
+  "updatedBy": null
+}

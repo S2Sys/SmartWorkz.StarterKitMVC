@@ -1,0 +1,139 @@
+@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Admin Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SmartWorkz Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+        }
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-header h1 {
+            color: #6366f1;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+        }
+        .login-header p {
+            color: #6b7280;
+            margin: 5px 0 0 0;
+            font-size: 14px;
+        }
+        .admin-badge {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .form-control {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 14px;
+        }
+        .form-control:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.1);
+        }
+        .btn-login {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
+            color: white;
+        }
+        .btn-login:hover {
+            opacity: 0.9;
+            color: white;
+        }
+        .error-message {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1><i class="bi bi-speedometer2" style="color: #f59e0b;"></i> SmartWorkz</h1>
+            <p>Admin Portal</p>
+            <div class="admin-badge"><i class="bi bi-shield-lock me-1"></i>Admin Access Only</div>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger" role="alert">
+                @foreach (var modelState in ViewData.ModelState.Values)
+                {
+                    @foreach (var error in modelState.Errors)
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                }
+            </div>
+        }
+
+        <form method="post">
+            <div class="mb-3">
+                <label for="Input_Email" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="Input_Email" name="Input.Email" asp-for="Input.Email" placeholder="admin@smartworkz.com" required />
+                <span class="error-message" asp-validation-for="Input.Email"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="Input_Password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="Input_Password" name="Input.Password" asp-for="Input.Password" placeholder="••••••••" required />
+                <span class="error-message" asp-validation-for="Input.Password"></span>
+            </div>
+
+            <button type="submit" class="btn btn-login">
+                <i class="bi bi-lock me-2"></i>Sign In
+            </button>
+        </form>
+
+        <hr style="margin: 20px 0;">
+
+        <p class="text-center mb-0" style="font-size: 12px; color: #9ca3af;">
+            <i class="bi bi-info-circle me-1"></i>Admin credentials required to access this portal
+        </p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

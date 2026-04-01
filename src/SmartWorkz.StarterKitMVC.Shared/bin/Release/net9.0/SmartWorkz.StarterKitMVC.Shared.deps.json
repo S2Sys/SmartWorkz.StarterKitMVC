@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "SmartWorkz.StarterKitMVC.Shared/1.0.0": {
+        "runtime": {
+          "SmartWorkz.StarterKitMVC.Shared.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "SmartWorkz.StarterKitMVC.Shared/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

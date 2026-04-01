@@ -1,0 +1,21 @@
+@page "/Products/Details/{id?}"
+@model Products.DetailsModel
+
+@{
+    ViewData["Title"] = "Product Details";
+    Layout = "_Layout";
+}
+
+<section class="py-5">
+    <div class="container">
+        <h1 class="mb-4">Product Details</h1>
+        @if (!string.IsNullOrEmpty(Model.ProductId))
+        {
+            <p>Product ID: @Model.ProductId</p>
+        }
+        else
+        {
+            <p class="text-muted">Product not found.</p>
+        }
+    </div>
+</section>

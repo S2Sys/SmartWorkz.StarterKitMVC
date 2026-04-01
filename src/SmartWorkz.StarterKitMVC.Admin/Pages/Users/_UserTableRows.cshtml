@@ -1,0 +1,85 @@
+@using SmartWorkz.StarterKitMVC.Admin.Pages.Users
+@model IndexModel
+
+<div id="users-table-container">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Display Name</th>
+                    <th>Email</th>
+                    <th>Username</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Users.Any())
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">No users found.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr id="user-row-@user.UserId">
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    @if (!string.IsNullOrEmpty(user.AvatarUrl))
+                                    {
+                                        <img src="@user.AvatarUrl" class="rounded-circle" width="32" height="32" alt="" />
+                                    }
+                                    else
+                                    {
+                                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                                             style="width:32px;height:32px;font-size:0.75rem;">
+                                            @((user.DisplayName ?? user.Username ?? "?")[..1].ToUpper())
+                                        </div>
+                                    }
+                                    @(user.DisplayName ?? user.Username)
+                                </div>
+                            </td>
+                            <td>@user.Email</td>
+                            <td><code>@user.Username</code></td>
+                            <td>
+                                @if (user.IsActive)
+                                {
+                                    <span class="badge bg-success-subtle text-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary-subtle text-secondary">Inactive</span>
+                                }
+                            </td>
+                            <td><small class="text-muted">@user.CreatedAt.ToString("dd MMM yyyy")</small></td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-secondary"
+                                        hx-get="/Users?handler=EditForm&id=@user.UserId"
+                                        hx-target="#modal-body"
+                                        hx-swap="innerHTML"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger"
+                                        hx-delete="/Users?handler=Delete&id=@user.UserId"
+                                        hx-target="#user-row-@user.UserId"
+                                        hx-swap="outerHTML"
+                                        hx-confirm="Delete @(user.DisplayName ?? user.Username)?">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-footer bg-transparent">
+        <partial name="_Pagination" model="Model.Pagination" />
+    </div>
+</div>
