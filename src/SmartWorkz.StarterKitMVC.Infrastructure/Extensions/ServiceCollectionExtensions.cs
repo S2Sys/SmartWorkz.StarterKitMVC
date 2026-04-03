@@ -17,6 +17,7 @@ using SmartWorkz.StarterKitMVC.Infrastructure.Authorization;
 using SmartWorkz.StarterKitMVC.Infrastructure.Data;
 using SmartWorkz.StarterKitMVC.Infrastructure.EmailTemplates;
 using SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
+using SmartWorkz.StarterKitMVC.Infrastructure.BackgroundJobs;
 using SmartWorkz.StarterKitMVC.Infrastructure.Services;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Extensions;
@@ -177,6 +178,9 @@ public static class ServiceCollectionExtensions
         services.AddApplicationServices();
         services.AddCacheServices(configuration);
         services.AddJwtAuthentication(configuration);
+
+        // Translation cache warm-up at startup
+        services.AddHostedService<TranslationCacheWarmupService>();
 
         return services;
     }
