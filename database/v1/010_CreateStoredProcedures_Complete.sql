@@ -1846,36 +1846,42 @@ PRINT '  ✓ sp_UpsertTranslation'
 GO
 
 -- sp_GetTranslations
+-- Returns translations mapped to TranslationEntry (Key, Value, TenantId, Locale)
+-- Key format: EntityType.EntityId.FieldName
 IF OBJECT_ID('[Shared].[sp_GetTranslations]', 'P') IS NOT NULL
   DROP PROCEDURE [Shared].[sp_GetTranslations];
 GO
 
 CREATE PROCEDURE [Shared].[sp_GetTranslations]
     @TenantId NVARCHAR(450),
-    @EntityType NVARCHAR(100),
-    @EntityId INT,
-    @LanguageId INT
+    @Locale NVARCHAR(10)
 AS
 BEGIN
     SET NOCOUNT ON;
 
+    -- Get language ID from locale/code
+    DECLARE @LanguageId INT;
+    SELECT TOP 1 @LanguageId = LanguageId
+    FROM [Master].[Languages]
+    WHERE [Code] = @Locale
+      AND (TenantId = @TenantId OR TenantId IS NULL)
+      AND IsDeleted = 0;
+
+    IF @LanguageId IS NULL
+        RETURN; -- No language found, return empty
+
+    -- Return all translations for this tenant and language
+    -- Project as Key, Value, TenantId, Locale to match TranslationEntry record
     SELECT
-        TranslationId,
+        CONCAT(EntityType, '.', EntityId, '.', FieldName) AS Key,
+        TranslatedValue AS Value,
         TenantId,
-        EntityType,
-        EntityId,
-        LanguageId,
-        FieldName,
-        TranslatedValue,
-        CreatedAt,
-        UpdatedAt
+        @Locale AS Locale
     FROM [Shared].[Translations]
     WHERE TenantId = @TenantId
-      AND EntityType = @EntityType
-      AND EntityId = @EntityId
       AND LanguageId = @LanguageId
       AND IsDeleted = 0
-    ORDER BY FieldName;
+    ORDER BY EntityType, EntityId, FieldName;
 END;
 GO
 PRINT '  ✓ sp_GetTranslations'
