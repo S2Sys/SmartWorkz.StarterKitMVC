@@ -563,7 +563,7 @@ BEGIN
     SELECT
         ConfigurationId,
         TenantId,
-        Key,
+        [Key],
         Value,
         Description,
         IsActive,
@@ -573,7 +573,7 @@ BEGIN
     WHERE TenantId = @TenantId
       AND IsDeleted = 0
       AND IsActive = 1
-    ORDER BY Key;
+    ORDER BY [Key];
 END;
 GO
 PRINT '  ✓ sp_GetConfigurationByTenant'
@@ -594,12 +594,12 @@ BEGIN
     SELECT TOP 1
         ConfigurationId,
         TenantId,
-        Key,
+        [Key],
         Value,
         Description,
         IsActive
     FROM [Master].[Configuration]
-    WHERE Key = @Key
+    WHERE [Key] = @Key
       AND TenantId = @TenantId
       AND IsDeleted = 0;
 END;
@@ -631,7 +631,7 @@ BEGIN
         BEGIN
             UPDATE [Master].[Configuration]
             SET
-                Key = @Key,
+                [Key] = @Key,
                 Value = @Value,
                 Description = @Description,
                 IsActive = @IsActive,
@@ -641,7 +641,7 @@ BEGIN
         END
         ELSE
         BEGIN
-            INSERT INTO [Master].[Configuration] (TenantId, Key, Value, Description, IsActive, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)
+            INSERT INTO [Master].[Configuration] (TenantId, [Key], Value, Description, IsActive, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)
             VALUES (@TenantId, @Key, @Value, @Description, @IsActive, GETUTCDATE(), @UpdatedBy, GETUTCDATE(), @UpdatedBy);
         END
 
