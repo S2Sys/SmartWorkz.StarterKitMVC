@@ -1838,6 +1838,42 @@ GO
 PRINT '  ✓ sp_UpsertTranslation'
 GO
 
+-- sp_GetTranslations
+IF OBJECT_ID('[Shared].[sp_GetTranslations]', 'P') IS NOT NULL
+  DROP PROCEDURE [Shared].[sp_GetTranslations];
+GO
+
+CREATE PROCEDURE [Shared].[sp_GetTranslations]
+    @TenantId NVARCHAR(450),
+    @EntityType NVARCHAR(100),
+    @EntityId INT,
+    @LanguageId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        TranslationId,
+        TenantId,
+        EntityType,
+        EntityId,
+        LanguageId,
+        FieldName,
+        TranslatedValue,
+        CreatedAt,
+        UpdatedAt
+    FROM [Shared].[Translations]
+    WHERE TenantId = @TenantId
+      AND EntityType = @EntityType
+      AND EntityId = @EntityId
+      AND LanguageId = @LanguageId
+      AND IsDeleted = 0
+    ORDER BY FieldName;
+END;
+GO
+PRINT '  ✓ sp_GetTranslations'
+GO
+
 -- ============================================
 -- AUTH SCHEMA - Roles & Permissions
 -- ============================================
