@@ -561,10 +561,11 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT
-        ConfigurationId,
+        ConfigId,
         TenantId,
         [Key],
         Value,
+        ConfigType,
         Description,
         IsActive,
         CreatedAt,
@@ -592,10 +593,11 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT TOP 1
-        ConfigurationId,
+        ConfigId,
         TenantId,
         [Key],
         Value,
+        ConfigType,
         Description,
         IsActive
     FROM [Master].[Configuration]
@@ -613,10 +615,11 @@ IF OBJECT_ID('[Master].[sp_UpsertConfiguration]', 'P') IS NOT NULL
 GO
 
 CREATE PROCEDURE [Master].[sp_UpsertConfiguration]
-    @ConfigurationId INT,
+    @ConfigId INT,
     @TenantId NVARCHAR(450),
     @Key NVARCHAR(255),
     @Value NVARCHAR(MAX),
+    @ConfigType NVARCHAR(100),
     @Description NVARCHAR(MAX),
     @IsActive BIT,
     @UpdatedBy NVARCHAR(255)
@@ -627,22 +630,23 @@ BEGIN
     BEGIN TRY
         BEGIN TRANSACTION;
 
-        IF EXISTS (SELECT 1 FROM [Master].[Configuration] WHERE ConfigurationId = @ConfigurationId AND IsDeleted = 0)
+        IF EXISTS (SELECT 1 FROM [Master].[Configuration] WHERE ConfigId = @ConfigId AND IsDeleted = 0)
         BEGIN
             UPDATE [Master].[Configuration]
             SET
                 [Key] = @Key,
                 Value = @Value,
+                ConfigType = @ConfigType,
                 Description = @Description,
                 IsActive = @IsActive,
                 UpdatedAt = GETUTCDATE(),
                 UpdatedBy = @UpdatedBy
-            WHERE ConfigurationId = @ConfigurationId;
+            WHERE ConfigId = @ConfigId;
         END
         ELSE
         BEGIN
-            INSERT INTO [Master].[Configuration] (TenantId, [Key], Value, Description, IsActive, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)
-            VALUES (@TenantId, @Key, @Value, @Description, @IsActive, GETUTCDATE(), @UpdatedBy, GETUTCDATE(), @UpdatedBy);
+            INSERT INTO [Master].[Configuration] (TenantId, [Key], Value, ConfigType, Description, IsActive, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)
+            VALUES (@TenantId, @Key, @Value, @ConfigType, @Description, @IsActive, GETUTCDATE(), @UpdatedBy, GETUTCDATE(), @UpdatedBy);
         END
 
         COMMIT TRANSACTION;
