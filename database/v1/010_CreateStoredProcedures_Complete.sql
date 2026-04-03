@@ -476,10 +476,11 @@ BEGIN
 
     SELECT
         TimeZoneId,
-        Code,
-        Name,
+        Identifier,
         DisplayName,
-        UtcOffsetMinutes,
+        StandardName,
+        DaylightName,
+        OffsetHours,
         IsActive,
         CreatedAt,
         UpdatedAt
@@ -499,10 +500,11 @@ GO
 
 CREATE PROCEDURE [Master].[sp_UpsertTimeZone]
     @TimeZoneId INT,
-    @Code NVARCHAR(50),
-    @Name NVARCHAR(255),
+    @Identifier NVARCHAR(100),
     @DisplayName NVARCHAR(255),
-    @UtcOffsetMinutes INT,
+    @StandardName NVARCHAR(255),
+    @DaylightName NVARCHAR(255),
+    @OffsetHours DECIMAL(5,2),
     @IsActive BIT,
     @UpdatedBy NVARCHAR(255)
 AS
@@ -516,10 +518,11 @@ BEGIN
         BEGIN
             UPDATE [Master].[TimeZones]
             SET
-                Code = @Code,
-                Name = @Name,
+                Identifier = @Identifier,
                 DisplayName = @DisplayName,
-                UtcOffsetMinutes = @UtcOffsetMinutes,
+                StandardName = @StandardName,
+                DaylightName = @DaylightName,
+                OffsetHours = @OffsetHours,
                 IsActive = @IsActive,
                 UpdatedAt = GETUTCDATE(),
                 UpdatedBy = @UpdatedBy
@@ -527,8 +530,8 @@ BEGIN
         END
         ELSE
         BEGIN
-            INSERT INTO [Master].[TimeZones] (TimeZoneId, Code, Name, DisplayName, UtcOffsetMinutes, IsActive, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)
-            VALUES (@TimeZoneId, @Code, @Name, @DisplayName, @UtcOffsetMinutes, @IsActive, GETUTCDATE(), @UpdatedBy, GETUTCDATE(), @UpdatedBy);
+            INSERT INTO [Master].[TimeZones] (Identifier, DisplayName, StandardName, DaylightName, OffsetHours, TenantId, IsActive, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)
+            VALUES (@Identifier, @DisplayName, @StandardName, @DaylightName, @OffsetHours, 'DEFAULT', @IsActive, GETUTCDATE(), @UpdatedBy, GETUTCDATE(), @UpdatedBy);
         END
 
         COMMIT TRANSACTION;
