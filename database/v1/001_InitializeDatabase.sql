@@ -31,6 +31,31 @@ BEGIN
     END CATCH
 END
 
+-- Drop all user-defined table types (before dropping schemas)
+SET @sql = N''
+SELECT @sql = @sql + 'DROP TYPE [' + TABLE_SCHEMA + '].[' + TABLE_NAME + '];' + CHAR(10)
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA IN ('Master', 'Shared', 'Transaction', 'Report', 'Auth')
+
+-- Actually, we need to query sys.types for table types
+SET @sql = N''
+SELECT @sql = @sql + 'DROP TYPE [' + s.name + '].[' + t.name + '];' + CHAR(10)
+FROM sys.types t
+INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
+WHERE t.is_table_type = 1
+  AND s.name IN ('Master', 'Shared', 'Transaction', 'Report', 'Auth')
+
+IF LEN(@sql) > 0
+BEGIN
+    BEGIN TRY
+        EXEC sp_executesql @sql
+        PRINT '✓ Dropped all user-defined table types'
+    END TRY
+    BEGIN CATCH
+        PRINT '⚠️ Warning: Could not drop some table types'
+    END CATCH
+END
+
 -- Disable foreign key constraints
 BEGIN TRY
     EXEC sp_MSForEachTable 'ALTER TABLE ? NOCHECK CONSTRAINT ALL'
