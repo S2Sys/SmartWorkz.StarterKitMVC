@@ -3077,7 +3077,7 @@ IF OBJECT_ID('[Shared].[sp_MarkEmailSent]', 'P') IS NOT NULL
 GO
 
 CREATE PROCEDURE [Shared].[sp_MarkEmailSent]
-    @EmailId INT
+    @EmailQueueId INT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -3087,7 +3087,7 @@ BEGIN
         Status = 'Sent',
         SentAt = GETUTCDATE(),
         UpdatedAt = GETUTCDATE()
-    WHERE EmailId = @EmailId;
+    WHERE EmailQueueId = @EmailQueueId;
 END;
 GO
 PRINT '  ✓ sp_MarkEmailSent'
@@ -3099,7 +3099,7 @@ IF OBJECT_ID('[Shared].[sp_MarkEmailFailed]', 'P') IS NOT NULL
 GO
 
 CREATE PROCEDURE [Shared].[sp_MarkEmailFailed]
-    @EmailId INT,
+    @EmailQueueId INT,
     @ErrorMessage NVARCHAR(MAX) = NULL,
     @MaxRetries INT = 3
 AS
@@ -3112,7 +3112,7 @@ BEGIN
         RetryCount = RetryCount + 1,
         LastError = @ErrorMessage,
         UpdatedAt = GETUTCDATE()
-    WHERE EmailId = @EmailId;
+    WHERE EmailQueueId = @EmailQueueId;
 END;
 GO
 PRINT '  ✓ sp_MarkEmailFailed'
