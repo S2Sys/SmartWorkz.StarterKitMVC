@@ -2743,6 +2743,376 @@ PRINT '  ✓ sp_GetAnalyticsByEntity'
 GO
 
 -- ============================================
+-- SHARED SCHEMA - Content Templates & Email Queue
+-- ============================================
+
+-- sp_GetContentTemplatesByTenant
+IF OBJECT_ID('[Shared].[sp_GetContentTemplatesByTenant]', 'P') IS NOT NULL
+  DROP PROCEDURE [Shared].[sp_GetContentTemplatesByTenant];
+GO
+
+CREATE PROCEDURE [Shared].[sp_GetContentTemplatesByTenant]
+    @TenantId NVARCHAR(450)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        TemplateId,
+        TenantId,
+        Name,
+        Category,
+        Description,
+        IsActive,
+        CreatedAt,
+        UpdatedAt
+    FROM [Shared].[ContentTemplates]
+    WHERE TenantId = @TenantId
+      AND IsDeleted = 0
+      AND IsActive = 1
+    ORDER BY Name;
+END;
+GO
+PRINT '  ✓ sp_GetContentTemplatesByTenant'
+GO
+
+-- sp_GetContentTemplateById
+IF OBJECT_ID('[Shared].[sp_GetContentTemplateById]', 'P') IS NOT NULL
+  DROP PROCEDURE [Shared].[sp_GetContentTemplateById];
+GO
+
+CREATE PROCEDURE [Shared].[sp_GetContentTemplateById]
+    @TemplateId INT,
+    @TenantId NVARCHAR(450)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT TOP 1
+        TemplateId,
+        TenantId,
+        Name,
+        Category,
+        Description,
+        IsActive,
+        CreatedAt,
+        UpdatedAt
+    FROM [Shared].[ContentTemplates]
+    WHERE TemplateId = @TemplateId
+      AND TenantId = @TenantId
+      AND IsDeleted = 0;
+END;
+GO
+PRINT '  ✓ sp_GetContentTemplateById'
+GO
+
+-- sp_UpsertContentTemplate
+IF OBJECT_ID('[Shared].[sp_UpsertContentTemplate]', 'P') IS NOT NULL
+  DROP PROCEDURE [Shared].[sp_UpsertContentTemplate];
+GO
+
+CREATE PROCEDURE [Shared].[sp_UpsertContentTemplate]
+    @TemplateId INT,
+    @TenantId NVARCHAR(450),
+    @Name NVARCHAR(255),
+    @Category NVARCHAR(100),
+    @Description NVARCHAR(MAX),
+    @IsActive BIT,
+    @UpdatedBy NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        IF EXISTS (SELECT 1 FROM [Shared].[ContentTemplates] WHERE TemplateId = @TemplateId AND IsDeleted = 0)
+        BEGIN
+            UPDATE [Shared].[ContentTemplates]
+            SET
+                Name = @Name,
+                Category = @Category,
+                Description = @Description,
+                IsActive = @IsActive,
+                UpdatedAt = GETUTCDATE(),
+                UpdatedBy = @UpdatedBy
+            WHERE TemplateId = @TemplateId;
+        END
+        ELSE
+        BEGIN
+            INSERT INTO [Shared].[ContentTemplates] (TenantId, Name, Category, Description, IsActive, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)
+            VALUES (@TenantId, @Name, @Category, @Description, @IsActive, GETUTCDATE(), @UpdatedBy, GETUTCDATE(), @UpdatedBy);
+        END
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+PRINT '  ✓ sp_UpsertContentTemplate'
+GO
+
+-- sp_DeleteContentTemplate
+IF OBJECT_ID('[Shared].[sp_DeleteContentTemplate]', 'P') IS NOT NULL
+  DROP PROCEDURE [Shared].[sp_DeleteContentTemplate];
+GO
+
+CREATE PROCEDURE [Shared].[sp_DeleteContentTemplate]
+    @TemplateId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE [Shared].[ContentTemplates]
+    SET IsDeleted = 1, UpdatedAt = GETUTCDATE()
+    WHERE TemplateId = @TemplateId;
+END;
+GO
+PRINT '  ✓ sp_DeleteContentTemplate'
+GO
+
+-- sp_GetContentTemplateSectionsByTenant
+IF OBJECT_ID('[Shared].[sp_GetContentTemplateSectionsByTenant]', 'P') IS NOT NULL
+  DROP PROCEDURE [Shared].[sp_GetContentTemplateSectionsByTenant];
+GO
+
+CREATE PROCEDURE [Shared].[sp_GetContentTemplateSectionsByTenant]
+    @TenantId NVARCHAR(450),
+    @TemplateId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        SectionId,
+        TemplateId,
+        TenantId,
+        SectionName,
+        SectionContent,
+        SortOrder,
+        CreatedAt,
+        UpdatedAt
+    FROM [Shared].[ContentTemplateSections]
+    WHERE TemplateId = @TemplateId
+      AND TenantId = @TenantId
+      AND IsDeleted = 0
+    ORDER BY SortOrder;
+END;
+GO
+PRINT '  ✓ sp_GetContentTemplateSectionsByTenant'
+GO
+
+-- sp_UpsertContentTemplateSection
+IF OBJECT_ID('[Shared].[sp_UpsertContentTemplateSection]', 'P') IS NOT NULL
+  DROP PROCEDURE [Shared].[sp_UpsertContentTemplateSection];
+GO
+
+CREATE PROCEDURE [Shared].[sp_UpsertContentTemplateSection]
+    @SectionId INT,
+    @TemplateId INT,
+    @TenantId NVARCHAR(450),
+    @SectionName NVARCHAR(255),
+    @SectionContent NVARCHAR(MAX),
+    @SortOrder INT,
+    @UpdatedBy NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        IF EXISTS (SELECT 1 FROM [Shared].[ContentTemplateSections] WHERE SectionId = @SectionId AND IsDeleted = 0)
+        BEGIN
+            UPDATE [Shared].[ContentTemplateSections]
+            SET
+                SectionName = @SectionName,
+                SectionContent = @SectionContent,
+                SortOrder = @SortOrder,
+                UpdatedAt = GETUTCDATE(),
+                UpdatedBy = @UpdatedBy
+            WHERE SectionId = @SectionId;
+        END
+        ELSE
+        BEGIN
+            INSERT INTO [Shared].[ContentTemplateSections] (TemplateId, TenantId, SectionName, SectionContent, SortOrder, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)
+            VALUES (@TemplateId, @TenantId, @SectionName, @SectionContent, @SortOrder, GETUTCDATE(), @UpdatedBy, GETUTCDATE(), @UpdatedBy);
+        END
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+PRINT '  ✓ sp_UpsertContentTemplateSection'
+GO
+
+-- sp_GetContentTemplatePlaceholders
+IF OBJECT_ID('[Shared].[sp_GetContentTemplatePlaceholders]', 'P') IS NOT NULL
+  DROP PROCEDURE [Shared].[sp_GetContentTemplatePlaceholders];
+GO
+
+CREATE PROCEDURE [Shared].[sp_GetContentTemplatePlaceholders]
+    @TemplateId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        PlaceholderId,
+        TemplateId,
+        PlaceholderName,
+        DisplayName,
+        Description,
+        DefaultValue,
+        IsRequired,
+        CreatedAt
+    FROM [Shared].[ContentTemplatePlaceholders]
+    WHERE TemplateId = @TemplateId
+      AND IsDeleted = 0
+    ORDER BY PlaceholderName;
+END;
+GO
+PRINT '  ✓ sp_GetContentTemplatePlaceholders'
+GO
+
+-- sp_ReplaceContentTemplatePlaceholders
+IF OBJECT_ID('[Shared].[sp_ReplaceContentTemplatePlaceholders]', 'P') IS NOT NULL
+  DROP PROCEDURE [Shared].[sp_ReplaceContentTemplatePlaceholders];
+GO
+
+CREATE PROCEDURE [Shared].[sp_ReplaceContentTemplatePlaceholders]
+    @TemplateId INT,
+    @PlaceholderValues NVARCHAR(MAX)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- This SP receives JSON or delimited placeholder values and replaces them in the template
+    -- @PlaceholderValues format: JSON like {"placeholder1": "value1", "placeholder2": "value2"}
+    -- Returns updated content with placeholders replaced
+
+    SELECT
+        TemplateId,
+        CAST(@PlaceholderValues AS NVARCHAR(MAX)) AS ReplacedContent,
+        GETUTCDATE() AS ProcessedAt
+    FROM [Shared].[ContentTemplates]
+    WHERE TemplateId = @TemplateId
+      AND IsDeleted = 0;
+END;
+GO
+PRINT '  ✓ sp_ReplaceContentTemplatePlaceholders'
+GO
+
+-- sp_EnqueueEmail
+IF OBJECT_ID('[Shared].[sp_EnqueueEmail]', 'P') IS NOT NULL
+  DROP PROCEDURE [Shared].[sp_EnqueueEmail];
+GO
+
+CREATE PROCEDURE [Shared].[sp_EnqueueEmail]
+    @TenantId NVARCHAR(450),
+    @ToEmail NVARCHAR(255),
+    @Subject NVARCHAR(255),
+    @Body NVARCHAR(MAX),
+    @TemplateId INT = NULL,
+    @Priority INT = 0,
+    @QueuedBy NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO [Shared].[EmailQueue] (TenantId, ToEmail, Subject, Body, TemplateId, Priority, Status, CreatedAt, CreatedBy)
+    VALUES (@TenantId, @ToEmail, @Subject, @Body, @TemplateId, @Priority, 'Pending', GETUTCDATE(), @QueuedBy);
+END;
+GO
+PRINT '  ✓ sp_EnqueueEmail'
+GO
+
+-- sp_GetPendingEmails
+IF OBJECT_ID('[Shared].[sp_GetPendingEmails]', 'P') IS NOT NULL
+  DROP PROCEDURE [Shared].[sp_GetPendingEmails];
+GO
+
+CREATE PROCEDURE [Shared].[sp_GetPendingEmails]
+    @Limit INT = 100
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT TOP (@Limit)
+        EmailId,
+        TenantId,
+        ToEmail,
+        Subject,
+        Body,
+        TemplateId,
+        Priority,
+        Status,
+        RetryCount,
+        CreatedAt
+    FROM [Shared].[EmailQueue]
+    WHERE Status = 'Pending'
+      AND IsDeleted = 0
+    ORDER BY Priority DESC, CreatedAt ASC;
+END;
+GO
+PRINT '  ✓ sp_GetPendingEmails'
+GO
+
+-- sp_MarkEmailSent
+IF OBJECT_ID('[Shared].[sp_MarkEmailSent]', 'P') IS NOT NULL
+  DROP PROCEDURE [Shared].[sp_MarkEmailSent];
+GO
+
+CREATE PROCEDURE [Shared].[sp_MarkEmailSent]
+    @EmailId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE [Shared].[EmailQueue]
+    SET
+        Status = 'Sent',
+        SentAt = GETUTCDATE(),
+        UpdatedAt = GETUTCDATE()
+    WHERE EmailId = @EmailId;
+END;
+GO
+PRINT '  ✓ sp_MarkEmailSent'
+GO
+
+-- sp_MarkEmailFailed
+IF OBJECT_ID('[Shared].[sp_MarkEmailFailed]', 'P') IS NOT NULL
+  DROP PROCEDURE [Shared].[sp_MarkEmailFailed];
+GO
+
+CREATE PROCEDURE [Shared].[sp_MarkEmailFailed]
+    @EmailId INT,
+    @ErrorMessage NVARCHAR(MAX) = NULL,
+    @MaxRetries INT = 3
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE [Shared].[EmailQueue]
+    SET
+        Status = CASE WHEN RetryCount < @MaxRetries THEN 'RetryPending' ELSE 'Failed' END,
+        RetryCount = RetryCount + 1,
+        LastError = @ErrorMessage,
+        UpdatedAt = GETUTCDATE()
+    WHERE EmailId = @EmailId;
+END;
+GO
+PRINT '  ✓ sp_MarkEmailFailed'
+GO
+
+-- ============================================
 -- Completion Summary
 -- ============================================
 

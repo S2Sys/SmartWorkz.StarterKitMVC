@@ -1,0 +1,2 @@
+- [Missing Stored Procedures](missing_stored_procedures.md) — 10 SPs called by code but not in migrations - CRITICAL FINDING
+- [Release Workflow & Versioning](release_workflow.md) — Semantic versioning, changelog, git tags
