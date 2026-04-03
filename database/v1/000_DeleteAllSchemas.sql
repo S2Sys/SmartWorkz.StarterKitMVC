@@ -80,7 +80,7 @@ FETCH NEXT FROM indexCursor INTO @schemaName, @tableName, @indexName;
 WHILE @@FETCH_STATUS = 0
 BEGIN
     BEGIN TRY
-        EXEC('DROP INDEX ' + QUOTENAME(@indexName) + ' ON ' + QUOTENAME(@schemaName) + '.' + QUOTENAME(@tableName));
+        EXEC('DROP INDEX ' + QUOTENAME(@indexName) + ' ON ' + QUOTENAME(@schemaName) + '.' + QUOTENAME(@tableName) + ';');
         PRINT '  ✓ Dropped index ' + @indexName + ' on ' + @tableName;
     END TRY
     BEGIN CATCH
@@ -113,7 +113,7 @@ FETCH NEXT FROM tableDropCursor INTO @schemaName2, @tableName2;
 WHILE @@FETCH_STATUS = 0
 BEGIN
     BEGIN TRY
-        EXEC('DROP TABLE ' + QUOTENAME(@schemaName2) + '.' + QUOTENAME(@tableName2));
+        EXEC('DROP TABLE ' + QUOTENAME(@schemaName2) + '.' + QUOTENAME(@tableName2) + ';');
         PRINT '  ✓ Dropped ' + @schemaName2 + '.' + @tableName2;
     END TRY
     BEGIN CATCH
