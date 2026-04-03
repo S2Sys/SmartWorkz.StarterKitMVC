@@ -31,10 +31,10 @@
     -- Note: These are placeholder values - UPDATE WITH ACTUAL HASHES
     INSERT INTO Auth.Users (UserId, Email, NormalizedEmail, Username, NormalizedUsername, DisplayName, PasswordHash, SecurityStamp, ConcurrencyStamp, TenantId, EmailConfirmed, TwoFactorEnabled, LockoutEnabled, AccessFailedCount, IsActive, IsDeleted, CreatedAt)
     VALUES
-        (NEWID(), 'admin@smartworkz.test', 'ADMIN@SMARTWORKZ.TEST', 'admin', 'ADMIN', 'Admin User', 'PLACEHOLDER_HASH', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE()),
-        (NEWID(), 'manager@smartworkz.test', 'MANAGER@SMARTWORKZ.TEST', 'manager', 'MANAGER', 'Manager User', 'PLACEHOLDER_HASH', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE()),
-        (NEWID(), 'staff@smartworkz.test', 'STAFF@SMARTWORKZ.TEST', 'staff', 'STAFF', 'Staff User', 'PLACEHOLDER_HASH', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE()),
-        (NEWID(), 'customer@smartworkz.test', 'CUSTOMER@SMARTWORKZ.TEST', 'customer', 'CUSTOMER', 'Customer User', 'PLACEHOLDER_HASH', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE());
+        (NEWID(), 'admin@smartworkz.test', 'ADMIN@SMARTWORKZ.TEST', 'admin', 'ADMIN', 'Admin User', 'k23Gu+N1T4pqRO1hJHpuzw==.iiB/92EnS507sbn/96mQi6ZDMobfcsU6SVFN2sdLc2w=', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE()),
+        (NEWID(), 'manager@smartworkz.test', 'MANAGER@SMARTWORKZ.TEST', 'manager', 'MANAGER', 'Manager User', 'k23Gu+N1T4pqRO1hJHpuzw==.iiB/92EnS507sbn/96mQi6ZDMobfcsU6SVFN2sdLc2w=', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE()),
+        (NEWID(), 'staff@smartworkz.test', 'STAFF@SMARTWORKZ.TEST', 'staff', 'STAFF', 'Staff User', 'k23Gu+N1T4pqRO1hJHpuzw==.iiB/92EnS507sbn/96mQi6ZDMobfcsU6SVFN2sdLc2w=', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE()),
+        (NEWID(), 'customer@smartworkz.test', 'CUSTOMER@SMARTWORKZ.TEST', 'customer', 'CUSTOMER', 'Customer User', 'k23Gu+N1T4pqRO1hJHpuzw==.iiB/92EnS507sbn/96mQi6ZDMobfcsU6SVFN2sdLc2w=', NEWID(), NEWID(), 'DEFAULT', 1, 0, 1, 0, 1, 0, GETUTCDATE());
 
     -- ============================================
     -- 3. Assign Roles to Test Users
