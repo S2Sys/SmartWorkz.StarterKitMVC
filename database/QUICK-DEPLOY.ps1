@@ -239,18 +239,73 @@ if (-not $SkipBuild) {
     }
 }
 
-# Step 5: Summary
-Write-Header "Deployment Summary"
+# Step 5: Query Database Stats
+Write-Header "Deployment Summary - Actual Database Statistics"
+
+# Query database for actual counts
+$sqlQuery = @"
+SET NOCOUNT ON;
+
+-- Count tables by schema
+SELECT 'Tables' AS ObjectType, SCHEMA_NAME(schema_id) AS SchemaName, COUNT(*) AS Count
+FROM sys.tables
+WHERE is_ms_shipped = 0
+GROUP BY schema_id
+ORDER BY SchemaName;
+
+-- Count stored procedures by schema
+SELECT 'Stored Procedures' AS ObjectType, SCHEMA_NAME(schema_id) AS SchemaName, COUNT(*) AS Count
+FROM sys.procedures
+WHERE is_ms_shipped = 0
+GROUP BY schema_id
+ORDER BY SchemaName;
+
+-- Count indexes by schema
+SELECT 'Indexes' AS ObjectType, SCHEMA_NAME(t.schema_id) AS SchemaName, COUNT(*) AS Count
+FROM sys.indexes i
+INNER JOIN sys.tables t ON i.object_id = t.object_id
+WHERE t.is_ms_shipped = 0 AND i.name IS NOT NULL
+GROUP BY t.schema_id
+ORDER BY SchemaName;
+
+-- Count schemas
+SELECT 'Schemas' AS ObjectType, name AS SchemaName, COUNT(*) AS Count
+FROM sys.schemas
+WHERE name NOT IN ('dbo', 'sys', 'information_schema')
+GROUP BY name
+ORDER BY name;
+"@
+
+try {
+    if ($IntegratedAuth) {
+        $result = & sqlcmd -S $ServerName -d $DatabaseName -Q $sqlQuery -h -1 2>&1
+    }
+    else {
+        $result = & sqlcmd -S $ServerName -d $DatabaseName -U $Username -P $Password -Q $sqlQuery -h -1 2>&1
+    }
+
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host ""
+        Write-Host $result
+        Write-Success "Database statistics retrieved successfully"
+    }
+    else {
+        Write-Warning "Could not retrieve database statistics"
+    }
+}
+catch {
+    Write-Warning "Error querying database: $($_.Exception.Message)"
+}
+
+Write-Host ""
 Write-Success "All old objects removed (tables, stored procedures, indexes)"
 Write-Success "Database: $DatabaseName preserved and cleaned"
 Write-Success "All 11 migration scripts executed in order"
 Write-Success "All schemas initialized (Master, Shared, Auth, Transaction, Report)"
-Write-Success "All 43 tables created with proper relationships and constraints"
+Write-Success "All tables created with proper relationships and constraints"
 Write-Success "Reference data seeded (Tenants, Languages, Countries, Currencies, Roles, Permissions)"
 Write-Success "Test users created (admin, manager, staff, customer)"
-Write-Success "Core stored procedures created (009_CreateStoredProcedures.sql - 42 SPs)"
-Write-Success "Complete stored procedure library created (010_CreateStoredProcedures_Complete.sql - 76 new SPs)"
-Write-Success "Total: ~118 stored procedures across 5 schemas for complete data access"
+Write-Success "All stored procedures created and configured for data access"
 
 # Step 6: Next steps
 Write-Header "Next Steps"
