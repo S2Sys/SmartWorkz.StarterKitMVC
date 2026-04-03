@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartWorkz.StarterKitMVC.Application.Localization;
 
@@ -12,13 +13,16 @@ public class TranslationService : ITranslationService
 {
     private readonly IServiceProvider _services;
     private readonly IMemoryCache     _cache;
+    private readonly IConfiguration   _configuration;
+    private string[]? _supportedLocales;
 
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(60);
 
-    public TranslationService(IServiceProvider services, IMemoryCache cache)
+    public TranslationService(IServiceProvider services, IMemoryCache cache, IConfiguration configuration)
     {
         _services = services;
         _cache    = cache;
+        _configuration = configuration;
     }
 
     public string Get(string key, string tenantId, string locale = "en-US")
@@ -50,12 +54,25 @@ public class TranslationService : ITranslationService
         _cache.Set(cacheKey, dict, CacheDuration);
     }
 
+    public async Task RefreshCacheAsync(string tenantId, string locale)
+    {
+        _cache.Remove(BucketKey(tenantId, locale));
+        await WarmCacheAsync(tenantId, locale);
+    }
+
     public void InvalidateCache(string tenantId)
     {
-        // IMemoryCache has no prefix scan — use a version token approach
-        // For now evict known locales; in production use IMemoryCache with tagged keys
-        foreach (var locale in new[] { "en-US", "en-GB", "fr-FR", "de-DE", "ar-SA" })
-            _cache.Remove(BucketKey(tenantId, locale));
+        // IMemoryCache has no prefix scan — evict all known locale+tenant pairs
+        // Read supported locales from config, fallback to default if not configured
+        _supportedLocales ??= _configuration
+            .GetSection("Features:Localization:SupportedCultures")
+            .Get<string[]>() ?? new[] { "en-US" };
+
+        var tenants = new[] { "DEFAULT", "DEMO" }; // Known seeded tenants
+
+        foreach (var locale in _supportedLocales)
+            foreach (var tenant in tenants)
+                _cache.Remove(BucketKey(tenant, locale));
     }
 
     // ── Internals ─────────────────────────────────────────────────────────────

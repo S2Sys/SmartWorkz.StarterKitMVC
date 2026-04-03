@@ -16,6 +16,9 @@ public interface ITranslationService
     /// <summary>Preload all translations for a tenant+locale into cache.</summary>
     Task WarmCacheAsync(string tenantId, string locale);
 
+    /// <summary>Refresh cache for a specific tenant+locale (evict then re-warm).</summary>
+    Task RefreshCacheAsync(string tenantId, string locale);
+
     /// <summary>Evict cache for a tenant (call after admin edits translations).</summary>
     void InvalidateCache(string tenantId);
 }
