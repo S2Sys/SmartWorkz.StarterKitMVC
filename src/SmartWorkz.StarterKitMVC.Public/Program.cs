@@ -39,7 +39,7 @@ builder.Services.AddAuthentication(options =>
     options.Cookie.Name = ".Public.Auth";
     options.Cookie.HttpOnly = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SameSite = SameSiteMode.Lax; // Lax allows cookies on POST redirects; Strict would block the redirect
 });
 
 // Permission-based authorization
