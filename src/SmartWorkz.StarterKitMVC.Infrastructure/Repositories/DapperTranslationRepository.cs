@@ -1,25 +1,21 @@
 using System.Data;
 using Dapper;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using SmartWorkz.StarterKitMVC.Application.Localization;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
 
 public class DapperTranslationRepository : ITranslationRepository
 {
-    private readonly string _connectionString;
+    private readonly IDbConnection _connection;
 
-    public DapperTranslationRepository(IConfiguration configuration)
+    public DapperTranslationRepository(IDbConnection connection)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("Connection string not configured.");
+        _connection = connection ?? throw new ArgumentNullException(nameof(connection));
     }
 
     public async Task<IEnumerable<TranslationEntry>> GetAllAsync(string tenantId, string locale)
     {
-        using var connection = new SqlConnection(_connectionString);
-        return await connection.QueryAsync<TranslationEntry>(
+        return await _connection.QueryAsync<TranslationEntry>(
             "Shared.sp_GetTranslations",
             new { TenantId = tenantId, Locale = locale },
             commandType: CommandType.StoredProcedure);
