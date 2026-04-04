@@ -66,23 +66,47 @@ public class LoginModel : BasePage
             new(ClaimTypes.Name,           user.DisplayName ?? user.Username ?? ""),
             new("TenantId",                user.TenantId),
         };
-        foreach (var role in user.Roles ?? [])
-            claims.Add(new(ClaimTypes.Role, role));
-        foreach (var perm in user.Permissions ?? [])
-            claims.Add(new("permission", perm));
+
+        // Add roles (both ClaimTypes.Role and lowercase for compatibility)
+        if (user.Roles != null)
+        {
+            foreach (var role in user.Roles)
+            {
+                claims.Add(new(ClaimTypes.Role, role));
+                claims.Add(new("role", role)); // Add lowercase for compatibility
+            }
+        }
+
+        // Add permissions
+        if (user.Permissions != null)
+        {
+            foreach (var perm in user.Permissions)
+                claims.Add(new("permission", perm));
+        }
 
         var principal = new ClaimsPrincipal(
             new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
 
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            principal,
-            new AuthenticationProperties { IsPersistent = false, ExpiresUtc = DateTimeOffset.UtcNow.AddHours(4) });
+        try
+        {
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal,
+                new AuthenticationProperties { IsPersistent = false, ExpiresUtc = DateTimeOffset.UtcNow.AddHours(4) });
 
-        _logger.LogInformation("Admin {Email} logged in successfully", Input.Email);
+            _logger.LogInformation("Admin {Email} logged in successfully. UserId={UserId}, TenantId={TenantId}, Roles={Roles}",
+                Input.Email, user.UserId, user.TenantId, string.Join(",", user.Roles ?? []));
 
-        var redirectUrl = returnUrl ?? "/Dashboard";
-        _logger.LogInformation("Redirecting to {Url}", redirectUrl);
-        return LocalRedirect(redirectUrl);
+            var redirectUrl = returnUrl ?? "/Dashboard";
+            _logger.LogInformation("Redirecting to {Url}. Authentication complete", redirectUrl);
+
+            return LocalRedirect(redirectUrl);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during sign-in for {Email}", Input.Email);
+            ModelState.AddModelError(string.Empty, "An error occurred during login. Please try again.");
+            return Page();
+        }
     }
 }
