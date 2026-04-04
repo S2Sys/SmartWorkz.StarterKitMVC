@@ -64,6 +64,7 @@ public class LoginModel : BasePage
             new(ClaimTypes.NameIdentifier, user.UserId),
             new(ClaimTypes.Email,          user.Email),
             new(ClaimTypes.Name,           user.DisplayName ?? user.Username ?? ""),
+            new("TenantId",                user.TenantId),
         };
         foreach (var role in user.Roles ?? [])
             claims.Add(new(ClaimTypes.Role, role));
@@ -78,7 +79,10 @@ public class LoginModel : BasePage
             principal,
             new AuthenticationProperties { IsPersistent = false, ExpiresUtc = DateTimeOffset.UtcNow.AddHours(4) });
 
-        _logger.LogInformation("Admin {Email} logged in", Input.Email);
-        return LocalRedirect(returnUrl ?? Url.Content("~/Dashboard"));
+        _logger.LogInformation("Admin {Email} logged in successfully", Input.Email);
+
+        var redirectUrl = returnUrl ?? "/Dashboard";
+        _logger.LogInformation("Redirecting to {Url}", redirectUrl);
+        return LocalRedirect(redirectUrl);
     }
 }
