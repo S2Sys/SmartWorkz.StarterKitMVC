@@ -20,9 +20,12 @@ GO
 
 CREATE PROCEDURE Shared.sp_GetTranslations
     @TenantId NVARCHAR(128),
-    @LanguageId INT
+    @Locale NVARCHAR(10)
 AS
 BEGIN
+    -- Note: This SP is a placeholder. The actual Translations table uses LanguageId (FK to Languages table)
+    -- The application uses TranslationService with in-memory caching instead of direct DB queries for translations
+    -- This SP can be used for bulk operations if needed
     SELECT
         TranslationId,
         EntityType,
@@ -35,7 +38,6 @@ BEGIN
         CreatedAt
     FROM Shared.Translations
     WHERE TenantId = @TenantId
-      AND LanguageId = @LanguageId
       AND IsDeleted = 0
     ORDER BY EntityType, EntityId, FieldName
 END
