@@ -39,10 +39,13 @@ DECLARE @CustomerRoleId NVARCHAR(36) = (SELECT TOP 1 RoleId FROM Auth.Roles WHER
 -- GENERATED HASHES - Replace placeholder with actual output from PasswordHasher.Hash("TestPassword123!")
 -- Format: {base64_salt}.{base64_hash}
 
-DECLARE @PasswordHashAdmin NVARCHAR(MAX) = 'REPLACE_WITH_REAL_HASH_1'
-DECLARE @PasswordHashManager NVARCHAR(MAX) = 'REPLACE_WITH_REAL_HASH_2'
-DECLARE @PasswordHashStaff NVARCHAR(MAX) = 'REPLACE_WITH_REAL_HASH_3'
-DECLARE @PasswordHashCustomer NVARCHAR(MAX) = 'REPLACE_WITH_REAL_HASH_4'
+-- PBKDF2-SHA256 Hash for: TestPassword123!
+-- Salt (Base64): k23Gu+N1T4pqRO1hJHpuzw==
+-- Hash (Base64): iiB/92EnS507sbn/96mQi6ZDMobfcsU6SVFN2sdLc2w=
+DECLARE @PasswordHashAdmin NVARCHAR(MAX) = 'k23Gu+N1T4pqRO1hJHpuzw==.iiB/92EnS507sbn/96mQi6ZDMobfcsU6SVFN2sdLc2w='
+DECLARE @PasswordHashManager NVARCHAR(MAX) = 'k23Gu+N1T4pqRO1hJHpuzw==.iiB/92EnS507sbn/96mQi6ZDMobfcsU6SVFN2sdLc2w='
+DECLARE @PasswordHashStaff NVARCHAR(MAX) = 'k23Gu+N1T4pqRO1hJHpuzw==.iiB/92EnS507sbn/96mQi6ZDMobfcsU6SVFN2sdLc2w='
+DECLARE @PasswordHashCustomer NVARCHAR(MAX) = 'k23Gu+N1T4pqRO1hJHpuzw==.iiB/92EnS507sbn/96mQi6ZDMobfcsU6SVFN2sdLc2w='
 
 INSERT INTO Auth.Users (UserId, Email, NormalizedEmail, Username, NormalizedUsername, DisplayName, PasswordHash, SecurityStamp, ConcurrencyStamp, TenantId, EmailConfirmed, TwoFactorEnabled, LockoutEnabled, AccessFailedCount, IsActive, IsDeleted, CreatedAt)
 VALUES
