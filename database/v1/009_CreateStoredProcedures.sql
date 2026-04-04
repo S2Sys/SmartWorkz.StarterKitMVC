@@ -66,17 +66,7 @@ CREATE PROCEDURE Auth.sp_GetUserRoles
 AS
 BEGIN
     SELECT
-        r.RoleId,
-        r.Name,
-        r.NormalizedName,
-        r.Description,
-        r.TenantId,
-        r.IsSystemRole,
-        r.CreatedAt,
-        r.CreatedBy,
-        r.UpdatedAt,
-        r.UpdatedBy,
-        r.IsDeleted
+        r.Name
     FROM Auth.Roles r
     INNER JOIN Auth.UserRoles ur ON r.RoleId = ur.RoleId
     WHERE ur.UserId = @UserId
@@ -98,18 +88,7 @@ CREATE PROCEDURE Auth.sp_GetUserPermissions
 AS
 BEGIN
     SELECT DISTINCT
-        p.PermissionId,
-        p.Name,
-        p.Description,
-        p.PermissionType,
-        p.ResourceType,
-        p.TenantId,
-        p.IsActive,
-        p.CreatedAt,
-        p.CreatedBy,
-        p.UpdatedAt,
-        p.UpdatedBy,
-        p.IsDeleted
+        p.Name
     FROM Auth.Permissions p
     LEFT JOIN Auth.UserPermissions up ON p.PermissionId = up.PermissionId
     LEFT JOIN Auth.RolePermissions rp ON p.PermissionId = rp.PermissionId
@@ -158,56 +137,7 @@ GO
 
 PRINT '  ✓ sp_GetRoleWithPermissions'
 
--- 5. CreateRefreshToken
-IF OBJECT_ID('Auth.sp_CreateRefreshToken', 'P') IS NOT NULL
-    DROP PROCEDURE Auth.sp_CreateRefreshToken;
-GO
-
-CREATE PROCEDURE Auth.sp_CreateRefreshToken
-    @RefreshTokenId NVARCHAR(36),
-    @UserId NVARCHAR(36),
-    @Token NVARCHAR(MAX),
-    @TokenHash NVARCHAR(MAX),
-    @ExpiresAt DATETIME2,
-    @TenantId NVARCHAR(128)
-AS
-BEGIN
-    INSERT INTO Auth.RefreshTokens (RefreshTokenId, UserId, Token, TokenHash, ExpiresAt, TenantId, CreatedAt)
-    VALUES (@RefreshTokenId, @UserId, @Token, @TokenHash, @ExpiresAt, @TenantId, GETUTCDATE())
-END
-GO
-
-PRINT '  ✓ sp_CreateRefreshToken'
-
--- 6. GetRefreshToken
-IF OBJECT_ID('Auth.sp_GetRefreshToken', 'P') IS NOT NULL
-    DROP PROCEDURE Auth.sp_GetRefreshToken;
-GO
-
-CREATE PROCEDURE Auth.sp_GetRefreshToken
-    @Token NVARCHAR(MAX),
-    @TenantId NVARCHAR(128)
-AS
-BEGIN
-    SELECT
-        RefreshTokenId,
-        UserId,
-        Token,
-        TokenHash,
-        ExpiresAt,
-        IsRevoked,
-        RevokedAt,
-        TenantId,
-        CreatedAt
-    FROM Auth.RefreshTokens
-    WHERE TokenHash = @Token
-      AND TenantId = @TenantId
-      AND ExpiresAt > GETUTCDATE()
-      AND IsRevoked = 0
-END
-GO
-
-PRINT '  ✓ sp_GetRefreshToken'
+-- RefreshToken SPs moved to 011_CreateMissingAuthStoredProcedures.sql
 
 -- ============================================
 -- MASTER PROCEDURES
