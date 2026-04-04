@@ -1,5 +1,7 @@
+using System.Data;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.SqlServer;
@@ -46,6 +48,14 @@ public static class ServiceCollectionExtensions
 
         services.AddDbContext<AuthDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+        // Register IDbConnection for Dapper repositories
+        services.AddScoped<IDbConnection>(sp =>
+        {
+            var connectionString = configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not configured.");
+            return new SqlConnection(connectionString);
+        });
 
         return services;
     }

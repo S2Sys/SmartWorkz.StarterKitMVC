@@ -1,7 +1,5 @@
 using System.Data;
 using Dapper;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Domain.Entities.Shared;
 
@@ -13,20 +11,16 @@ namespace SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
 /// </summary>
 public sealed class DapperEmailQueueRepository : IEmailQueueRepository
 {
-    private readonly string _connectionString;
+    private readonly IDbConnection _connection;
 
-    public DapperEmailQueueRepository(IConfiguration configuration)
+    public DapperEmailQueueRepository(IDbConnection connection)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("Connection string not configured");
+        _connection = connection ?? throw new ArgumentNullException(nameof(connection));
     }
-
-    private IDbConnection GetConnection() => new SqlConnection(_connectionString);
 
     public async Task<int> EnqueueAsync(EmailQueue email, CancellationToken ct = default)
     {
-        using var connection = GetConnection();
-        var emailQueueId = await connection.QueryFirstOrDefaultAsync<int>(
+        var emailQueueId = await _connection.QueryFirstOrDefaultAsync<int>(
             "Shared.sp_EnqueueEmail",
             new
             {
@@ -47,8 +41,7 @@ public sealed class DapperEmailQueueRepository : IEmailQueueRepository
 
     public async Task<IEnumerable<EmailQueue>> GetPendingAsync(int batchSize = 50, int maxAttempts = 3, CancellationToken ct = default)
     {
-        using var connection = GetConnection();
-        var emails = await connection.QueryAsync<EmailQueue>(
+        var emails = await _connection.QueryAsync<EmailQueue>(
             "Shared.sp_GetPendingEmails",
             new { BatchSize = batchSize, MaxAttempts = maxAttempts },
             commandType: CommandType.StoredProcedure,
@@ -59,8 +52,7 @@ public sealed class DapperEmailQueueRepository : IEmailQueueRepository
 
     public async Task MarkSentAsync(int emailQueueId, CancellationToken ct = default)
     {
-        using var connection = GetConnection();
-        await connection.ExecuteAsync(
+        await _connection.ExecuteAsync(
             "Shared.sp_MarkEmailSent",
             new { EmailQueueId = emailQueueId },
             commandType: CommandType.StoredProcedure,
@@ -69,8 +61,7 @@ public sealed class DapperEmailQueueRepository : IEmailQueueRepository
 
     public async Task MarkFailedAsync(int emailQueueId, string? failureReason, CancellationToken ct = default)
     {
-        using var connection = GetConnection();
-        await connection.ExecuteAsync(
+        await _connection.ExecuteAsync(
             "Shared.sp_MarkEmailFailed",
             new { EmailQueueId = emailQueueId, FailureReason = failureReason },
             commandType: CommandType.StoredProcedure,
