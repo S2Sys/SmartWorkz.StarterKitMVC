@@ -37,17 +37,28 @@ public class LoginModel : BasePage
     {
         ReturnUrl = returnUrl;
 
-        if (!ModelState.IsValid) return Page();
+        if (!ModelState.IsValid)
+        {
+            // Debug: log what's invalid
+            var errors = ModelState.Values.SelectMany(v => v.Errors);
+            if (errors.Any())
+                _logger.LogWarning("ModelState invalid: {Errors}", string.Join("; ", errors.Select(e => e.ErrorMessage)));
+            return Page();
+        }
 
         var result = await _authService.LoginAsync(
             new LoginRequest(Input.Email, Input.Password, TenantId));
 
         if (!result.Succeeded)
         {
+            _logger.LogWarning("Login failed for {Email}. MessageKey={MessageKey}, TenantId={TenantId}",
+                Input.Email, result.MessageKey, TenantId);
             AddErrors(result);
-            _logger.LogWarning("Failed admin login for {Email}", Input.Email);
             return Page();
         }
+
+        // Log successful authentication
+        _logger.LogInformation("Login succeeded for {Email}, proceeding to SignInAsync", Input.Email);
 
         var user = result.Data!.User;
 
@@ -97,9 +108,20 @@ public class LoginModel : BasePage
             _logger.LogInformation("Admin {Email} logged in successfully. UserId={UserId}, TenantId={TenantId}, Roles={Roles}",
                 Input.Email, user.UserId, user.TenantId, string.Join(",", user.Roles ?? []));
 
+            // Verify claims were set
+            var claimsDebug = string.Join("; ", principal.Claims.Select(c => $"{c.Type}={c.Value}"));
+            _logger.LogInformation("Claims added to principal: {Claims}", claimsDebug);
+
             var redirectUrl = returnUrl ?? "/Dashboard";
             _logger.LogInformation("Redirecting to {Url}. Authentication complete", redirectUrl);
+            _logger.LogInformation("=== IMPORTANT: Check browser DevTools Network tab for Location header ===");
 
+            // ALSO write to file log for debugging
+            var logPath = Path.Combine(AppContext.BaseDirectory, "Logs", "login-redirect.log");
+            var logMessage = $"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}] LOGIN REDIRECT: {redirectUrl}\nCLAIMS: {claimsDebug}\n";
+            await System.IO.File.AppendAllTextAsync(logPath, logMessage);
+
+            _logger.LogInformation("LocalRedirect response headers about to be set with Location: {Url}", redirectUrl);
             return LocalRedirect(redirectUrl);
         }
         catch (Exception ex)
