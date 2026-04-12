@@ -69,7 +69,7 @@ public class LoginModel : BasePage
             new(ClaimTypes.Name,           user.DisplayName ?? user.Username ?? ""),
         };
         foreach (var role in user.Roles ?? [])
-            claims.Add(new(ClaimTypes.Role, role));
+            claims.Add(new(ClaimTypes.Role, role.ToLowerInvariant())); // Normalize to lowercase for policy matching
         foreach (var perm in user.Permissions ?? [])
             claims.Add(new("permission", perm));
 

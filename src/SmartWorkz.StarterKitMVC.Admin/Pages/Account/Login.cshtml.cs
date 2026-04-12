@@ -62,11 +62,13 @@ public class LoginModel : BasePage
 
         var user = result.Data!.User;
 
-        // Admin portal requires admin role
-        if (!user.Roles.Contains("admin", StringComparer.OrdinalIgnoreCase))
+        // Admin portal requires admin role (case-insensitive check)
+        var hasAdminRole = user.Roles?.Any(r => r.Equals("admin", StringComparison.OrdinalIgnoreCase)) ?? false;
+        if (!hasAdminRole)
         {
             ModelState.AddModelError(string.Empty, T(MessageKeys.Auth.AccessDenied));
-            _logger.LogWarning("Non-admin login attempt for {Email}", Input.Email);
+            _logger.LogWarning("Non-admin login attempt for {Email}. Available roles: {Roles}",
+                Input.Email, string.Join(",", user.Roles ?? []));
             return Page();
         }
 
@@ -78,13 +80,15 @@ public class LoginModel : BasePage
             new("TenantId",                user.TenantId),
         };
 
-        // Add roles (both ClaimTypes.Role and lowercase for compatibility)
+        // Add roles (normalized to lowercase for policy matching)
         if (user.Roles != null)
         {
             foreach (var role in user.Roles)
             {
-                claims.Add(new(ClaimTypes.Role, role));
-                claims.Add(new("role", role)); // Add lowercase for compatibility
+                // Normalize to lowercase for policy matching (RequireRole("admin") is case-sensitive)
+                var normalizedRole = role.ToLowerInvariant();
+                claims.Add(new(ClaimTypes.Role, normalizedRole));
+                claims.Add(new("role", normalizedRole));
             }
         }
 
