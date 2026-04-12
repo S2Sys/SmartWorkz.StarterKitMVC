@@ -89,9 +89,24 @@ if ($AddMobile) {
     $mobilePath = Join-Path $root "src/SmartWorkz.Starter.Mobile"
     
     $dirs = @(
-        "Resources", "Resources\Images", "Resources\Fonts", "Resources\Raw",
-        "Models", "Views", "ViewModels", "Services", "Pages",
-        "Platforms\Android", "Platforms\iOS", "Platforms\MacCatalyst", "Platforms\Windows"
+        # UI & Pages
+        "Pages/Auth", "Pages/Dashboard", "Pages/Products", "Pages/Users", "Pages/Settings",
+
+        # MVVM Pattern
+        "ViewModels", "ViewModels/Auth", "ViewModels/Dashboard", "ViewModels/Products",
+        "Models", "Models/Requests", "Models/Responses",
+
+        # Services
+        "Services/Auth", "Services/API", "Services/Cache", "Services/Navigation", "Services/Logging",
+
+        # Infrastructure
+        "Infrastructure/DI", "Infrastructure/Configuration", "Infrastructure/Converters", "Infrastructure/Behaviors",
+
+        # Resources
+        "Resources", "Resources\Images", "Resources\Fonts", "Resources\Raw", "Resources\Styles",
+
+        # Platform-specific
+        "Platforms/Android", "Platforms/iOS", "Platforms/MacCatalyst", "Platforms/Windows"
     )
     
     foreach ($dir in $dirs) {
