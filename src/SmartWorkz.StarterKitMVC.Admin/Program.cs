@@ -6,6 +6,11 @@ using SmartWorkz.StarterKitMVC.Admin.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure logging to console (will be written to file via EventLog in appsettings)
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+
 // ─── Services ─────────────────────────────────────────────────────────────
 builder.Services.AddRazorPages(options =>
 {
@@ -46,7 +51,7 @@ builder.Services.AddAuthentication(options =>
     options.Cookie.Name       = ".Admin.Auth";
     options.Cookie.HttpOnly   = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-    options.Cookie.SameSite   = SameSiteMode.Strict;
+    options.Cookie.SameSite   = SameSiteMode.Lax; // Lax allows cookies on POST redirects; Strict would block the redirect
 });
 
 // RBAC policies
@@ -87,6 +92,10 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Add file logging middleware (logs all requests/responses to ~/Logs/)
+app.UseFileLogging();
+
 app.UseRouting();
 app.UseAuthentication();
 app.UseTenantResolution();
