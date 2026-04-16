@@ -50,6 +50,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29udGFjdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[S:/02_Projects/Starter/03_Development/MVC/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Demo/Translations.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVtb1xUcmFuc2xhdGlvbnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[S:/02_Projects/Starter/03_Development/MVC/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Demo/Validation.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVtb1xWYWxpZGF0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [S:/02_Projects/Starter/03_Development/MVC/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 

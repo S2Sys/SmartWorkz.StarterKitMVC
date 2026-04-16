@@ -1,40 +1,20 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using SmartWorkz.StarterKitMVC.Application.Localization;
 using SmartWorkz.StarterKitMVC.Shared.Models;
+using SharedPages = SmartWorkz.StarterKitMVC.Shared.Pages;
 
 namespace SmartWorkz.StarterKitMVC.Admin.Pages;
 
 /// <summary>
-/// Base PageModel for all Admin portal pages.
-/// Provides: TenantId, CurrentUser helpers, Toast (TempData), T() translation.
+/// Admin portal base PageModel extending Shared.BasePage.
+/// Adds translation and service access specific to Admin.
 /// </summary>
-public abstract class BasePage : PageModel
+public abstract class BasePage : SharedPages.BasePage
 {
     private ITranslationService? _translationService;
 
     protected ITranslationService TranslationService =>
         _translationService ??= (ITranslationService)HttpContext.RequestServices
             .GetService(typeof(ITranslationService))!;
-
-    // ── Tenant ────────────────────────────────────────────────────────────────
-
-    protected string TenantId =>
-        HttpContext.Items.TryGetValue("TenantId", out var t) && t is string s ? s : "DEFAULT";
-
-    // ── Current user ──────────────────────────────────────────────────────────
-
-    protected string? CurrentUserId =>
-        User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-    protected string? CurrentUserEmail =>
-        User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-
-    protected string? CurrentUserDisplayName =>
-        User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
-
-    protected IEnumerable<string> CurrentUserRoles =>
-        User.FindAll(System.Security.Claims.ClaimTypes.Role).Select(c => c.Value);
 
     // ── Translation ───────────────────────────────────────────────────────────
 
@@ -58,7 +38,7 @@ public abstract class BasePage : PageModel
 
     // ── ModelState helpers ────────────────────────────────────────────────────
 
-    protected void AddErrors(Result result)
+    protected new void AddErrors(Result result)
     {
         if (result.MessageKey != null)
             ModelState.AddModelError(string.Empty, T(result.MessageKey));

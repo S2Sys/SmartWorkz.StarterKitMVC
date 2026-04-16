@@ -6,7 +6,7 @@ using SmartWorkz.StarterKitMVC.Shared.Models;
 namespace SmartWorkz.StarterKitMVC.Public.Pages;
 
 /// <summary>
-/// Base for Public list pages backed by IDapperRepository&lt;T&gt;.
+/// Base for all Public list pages backed by IDapperRepository&lt;T&gt;.
 /// Wires search, sort, pagination, and HTMX partial response automatically.
 /// </summary>
 public abstract class BaseListPage<T> : BasePage where T : class, new()

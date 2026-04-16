@@ -1,11 +1,3 @@
-S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.csproj.AssemblyReference.cache
-S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.Localization.Resources.DefaultResources.resources
-S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.csproj.GenerateResource.cache
-S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
-S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.AssemblyInfoInputs.cache
-S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.AssemblyInfo.cs
-S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.csproj.CoreCompileInputs.cache
-S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.sourcelink.json
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\bin\Debug\net9.0\Localization\Resources\DefaultResources.resx
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.deps.json
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.dll
@@ -16,6 +8,14 @@ S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWork
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Application.pdb
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Domain.pdb
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Shared.pdb
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.csproj.AssemblyReference.cache
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.Localization.Resources.DefaultResources.resources
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.csproj.GenerateResource.cache
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.AssemblyInfoInputs.cache
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.AssemblyInfo.cs
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.csproj.CoreCompileInputs.cache
+S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.sourcelink.json
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWor.D0BDCC5C.Up2Date
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Infrastructure.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Infrastructure\obj\Debug\net9.0\refint\SmartWorkz.StarterKitMVC.Infrastructure.dll

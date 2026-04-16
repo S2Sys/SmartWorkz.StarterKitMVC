@@ -1,0 +1,55 @@
+@page
+@model TranslationsModel
+
+@{
+    ViewData["Title"] = "Translations Demo";
+}
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <h1>Translation System Demo</h1>
+        <p class="lead">All available translation keys and their current values</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">Translation Keys (Total: @Model.Entries.Count)</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Category</th>
+                            <th>Key</th>
+                            <th>Translated Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var entry in Model.Entries)
+                        {
+                            <tr>
+                                <td><span class="badge bg-secondary">@entry.Category</span></td>
+                                <td><code>@entry.Key</code></td>
+                                <td>@entry.Value</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="alert alert-info mt-4">
+            <h6 class="alert-heading">How to Use</h6>
+            <ul class="mb-0">
+                <li>Access the translation service via <code>T(key)</code> method in Razor pages</li>
+                <li>All keys come from <code>MessageKeys</code> constants in Shared project</li>
+                <li>Translations are fetched from database with 60-minute cache TTL</li>
+                <li>Fall back to key name if translation not found</li>
+                <li>Support for locale via user claim <code>"locale"</code></li>
+            </ul>
+        </div>
+    </div>
+</section>
