@@ -1,24 +1,24 @@
 using System.Data;
 using Dapper;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Domain.Entities.Auth;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
 
-public class DapperUserRepository : IUserRepository
+public class DapperUserRepository : CachedDapperRepository, IUserRepository
 {
-    private readonly IDbConnection _connection;
-
-    public DapperUserRepository(IDbConnection connection)
+    public DapperUserRepository(IDbConnection connection, IMemoryCache cache, ILogger<DapperUserRepository> logger)
+        : base(connection, cache, logger)
     {
-        _connection = connection ?? throw new ArgumentNullException(nameof(connection));
     }
 
     // ── Queries ──────────────────────────────────────────────────────────────
 
     public async Task<User?> GetByEmailAsync(string email, string tenantId)
     {
-        return await _connection.QueryFirstOrDefaultAsync<User>(
+        return await Connection.QueryFirstOrDefaultAsync<User>(
             "Auth.sp_GetUserByEmail",
             new { Email = email, TenantId = tenantId },
             commandType: CommandType.StoredProcedure);
@@ -26,7 +26,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task<User?> GetByIdAsync(string userId)
     {
-        return await _connection.QueryFirstOrDefaultAsync<User>(
+        return await Connection.QueryFirstOrDefaultAsync<User>(
             "Auth.sp_GetUserById",
             new { UserId = userId },
             commandType: CommandType.StoredProcedure);
@@ -34,7 +34,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task<List<string>> GetUserRolesAsync(string userId, string tenantId)
     {
-        var roles = await _connection.QueryAsync<string>(
+        var roles = await Connection.QueryAsync<string>(
             "Auth.sp_GetUserRoles",
             new { UserId = userId, TenantId = tenantId },
             commandType: CommandType.StoredProcedure);
@@ -43,7 +43,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task<List<string>> GetUserPermissionsAsync(string userId, string tenantId)
     {
-        var permissions = await _connection.QueryAsync<string>(
+        var permissions = await Connection.QueryAsync<string>(
             "Auth.sp_GetUserPermissions",
             new { UserId = userId, TenantId = tenantId },
             commandType: CommandType.StoredProcedure);
@@ -52,7 +52,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task<bool> UserExistsAsync(string email, string tenantId)
     {
-        var count = await _connection.QueryFirstOrDefaultAsync<int>(
+        var count = await Connection.QueryFirstOrDefaultAsync<int>(
             "Auth.sp_UserExists",
             new { Email = email, TenantId = tenantId },
             commandType: CommandType.StoredProcedure);
@@ -63,7 +63,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task UpsertUserAsync(User user)
     {
-        await _connection.ExecuteAsync(
+        await Connection.ExecuteAsync(
             "Auth.sp_UpsertUser",
             new
             {
@@ -116,9 +116,7 @@ public class DapperUserRepository : IUserRepository
         p.Add("Roles",        rolesTvp, DbType.Object);
         p.Add("Permissions",  permsTvp, DbType.Object);
 
-        await _connection.ExecuteAsync(
-            "Auth.sp_UpsertUser", p,
-            commandType: CommandType.StoredProcedure);
+        await Connection.ExecuteAsync("Auth.sp_UpsertUser", p, commandType: CommandType.StoredProcedure);
     }
 
     // ── Paged search ─────────────────────────────────────────────────────────
@@ -167,8 +165,8 @@ public class DapperUserRepository : IUserRepository
             OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY
             """;
 
-        var total = await _connection.ExecuteScalarAsync<int>(countSql, param);
-        var items = await _connection.QueryAsync<User>(dataSql, param);
+        var total = await Connection.ExecuteScalarAsync<int>(countSql, param);
+        var items = await Connection.QueryAsync<User>(dataSql, param);
         return (items, total);
     }
 
@@ -194,7 +192,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task<RefreshToken?> GetRefreshTokenAsync(string token, string tenantId)
     {
-        return await _connection.QueryFirstOrDefaultAsync<RefreshToken>(
+        return await Connection.QueryFirstOrDefaultAsync<RefreshToken>(
             "Auth.sp_GetRefreshToken",
             new { Token = token, TenantId = tenantId },
             commandType: CommandType.StoredProcedure);
@@ -202,7 +200,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task CreateRefreshTokenAsync(RefreshToken refreshToken)
     {
-        await _connection.ExecuteAsync(
+        await Connection.ExecuteAsync(
             "Auth.sp_CreateRefreshToken",
             new
             {
@@ -217,7 +215,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task RevokeRefreshTokenAsync(string userId, string refreshToken)
     {
-        await _connection.ExecuteAsync(
+        await Connection.ExecuteAsync(
             "Auth.sp_RevokeRefreshToken",
             new { UserId = userId, Token = refreshToken },
             commandType: CommandType.StoredProcedure);
@@ -227,7 +225,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task<PasswordResetToken?> GetPasswordResetTokenAsync(string userId, string token, string tenantId)
     {
-        return await _connection.QueryFirstOrDefaultAsync<PasswordResetToken>(
+        return await Connection.QueryFirstOrDefaultAsync<PasswordResetToken>(
             "Auth.sp_GetPasswordResetToken",
             new { UserId = userId, Token = token, TenantId = tenantId },
             commandType: CommandType.StoredProcedure);
@@ -235,7 +233,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task CreatePasswordResetTokenAsync(PasswordResetToken resetToken)
     {
-        await _connection.ExecuteAsync(
+        await Connection.ExecuteAsync(
             "Auth.sp_CreatePasswordResetToken",
             new
             {
@@ -250,7 +248,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task UsePasswordResetTokenAsync(int passwordResetTokenId)
     {
-        await _connection.ExecuteAsync(
+        await Connection.ExecuteAsync(
             "Auth.sp_UpdatePasswordResetToken",
             new { PasswordResetTokenId = passwordResetTokenId, UsedAt = DateTime.UtcNow },
             commandType: CommandType.StoredProcedure);
@@ -258,7 +256,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task InvalidatePreviousPasswordResetTokensAsync(string userId)
     {
-        await _connection.ExecuteAsync(
+        await Connection.ExecuteAsync(
             "Auth.sp_InvalidatePreviousPasswordResetTokens",
             new { UserId = userId },
             commandType: CommandType.StoredProcedure);
@@ -268,7 +266,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task<EmailVerificationToken?> GetEmailVerificationTokenAsync(string userId, string token, string tenantId)
     {
-        return await _connection.QueryFirstOrDefaultAsync<EmailVerificationToken>(
+        return await Connection.QueryFirstOrDefaultAsync<EmailVerificationToken>(
             "Auth.sp_GetEmailVerificationToken",
             new { UserId = userId, Token = token, TenantId = tenantId },
             commandType: CommandType.StoredProcedure);
@@ -276,7 +274,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task CreateEmailVerificationTokenAsync(EmailVerificationToken verificationToken)
     {
-        await _connection.ExecuteAsync(
+        await Connection.ExecuteAsync(
             "Auth.sp_CreateEmailVerificationToken",
             new
             {
@@ -292,7 +290,7 @@ public class DapperUserRepository : IUserRepository
 
     public async Task UseEmailVerificationTokenAsync(int emailVerificationTokenId)
     {
-        await _connection.ExecuteAsync(
+        await Connection.ExecuteAsync(
             "Auth.sp_UpdateEmailVerificationToken",
             new { EmailVerificationTokenId = emailVerificationTokenId, VerifiedAt = DateTime.UtcNow },
             commandType: CommandType.StoredProcedure);

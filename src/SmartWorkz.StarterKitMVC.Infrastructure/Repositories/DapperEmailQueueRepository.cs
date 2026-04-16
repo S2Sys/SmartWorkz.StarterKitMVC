@@ -1,5 +1,6 @@
 using System.Data;
-using Dapper;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Domain.Entities.Shared;
 
@@ -9,18 +10,16 @@ namespace SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
 /// Dapper repository for EmailQueue persistence.
 /// Implements IEmailQueueRepository using Shared.sp_* stored procedures.
 /// </summary>
-public sealed class DapperEmailQueueRepository : IEmailQueueRepository
+public sealed class DapperEmailQueueRepository : CachedDapperRepository, IEmailQueueRepository
 {
-    private readonly IDbConnection _connection;
-
-    public DapperEmailQueueRepository(IDbConnection connection)
+    public DapperEmailQueueRepository(IDbConnection connection, IMemoryCache cache, ILogger<DapperEmailQueueRepository> logger)
+        : base(connection, cache, logger)
     {
-        _connection = connection ?? throw new ArgumentNullException(nameof(connection));
     }
 
     public async Task<int> EnqueueAsync(EmailQueue email, CancellationToken ct = default)
     {
-        var emailQueueId = await _connection.QueryFirstOrDefaultAsync<int>(
+        var emailQueueId = await QuerySingleSpAsync<int?>(
             "Shared.sp_EnqueueEmail",
             new
             {
@@ -33,38 +32,34 @@ public sealed class DapperEmailQueueRepository : IEmailQueueRepository
                 email.TenantId,
                 email.CreatedBy
             },
-            commandType: CommandType.StoredProcedure,
-            commandTimeout: 10);
+            timeoutSeconds: 10);
 
-        return emailQueueId;
+        return emailQueueId ?? 0;
     }
 
     public async Task<IEnumerable<EmailQueue>> GetPendingAsync(int batchSize = 50, int maxAttempts = 3, CancellationToken ct = default)
     {
-        var emails = await _connection.QueryAsync<EmailQueue>(
+        var emails = await QuerySpAsync<EmailQueue>(
             "Shared.sp_GetPendingEmails",
             new { BatchSize = batchSize, MaxAttempts = maxAttempts },
-            commandType: CommandType.StoredProcedure,
-            commandTimeout: 10);
+            timeoutSeconds: 10);
 
         return emails;
     }
 
     public async Task MarkSentAsync(int emailQueueId, CancellationToken ct = default)
     {
-        await _connection.ExecuteAsync(
+        await ExecuteSpAsync(
             "Shared.sp_MarkEmailSent",
             new { EmailQueueId = emailQueueId },
-            commandType: CommandType.StoredProcedure,
-            commandTimeout: 10);
+            timeoutSeconds: 10);
     }
 
     public async Task MarkFailedAsync(int emailQueueId, string? failureReason, CancellationToken ct = default)
     {
-        await _connection.ExecuteAsync(
+        await ExecuteSpAsync(
             "Shared.sp_MarkEmailFailed",
             new { EmailQueueId = emailQueueId, FailureReason = failureReason },
-            commandType: CommandType.StoredProcedure,
-            commandTimeout: 10);
+            timeoutSeconds: 10);
     }
 }
