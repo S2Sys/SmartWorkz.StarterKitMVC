@@ -69,8 +69,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
-        services.AddScoped<IUserRepository, DapperUserRepository>();
-        services.AddScoped<IEmailQueueRepository, DapperEmailQueueRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IEmailQueueRepository, EmailQueueRepository>();
 
         return services;
     }
@@ -90,7 +90,7 @@ public static class ServiceCollectionExtensions
 
         // Translation service (DB-backed, memory cached)
         services.AddMemoryCache();
-        services.AddScoped<ITranslationRepository, DapperTranslationRepository>();
+        services.AddScoped<ITranslationRepository, TranslationRepository>();
         services.AddSingleton<ITranslationService, TranslationService>();
 
         // Email templates (DB-backed, replacing JSON file storage)
