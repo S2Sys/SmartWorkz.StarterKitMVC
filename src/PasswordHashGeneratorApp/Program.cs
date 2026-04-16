@@ -11,7 +11,7 @@ class Program
         const int Iterations = 100000;
         var Algorithm = HashAlgorithmName.SHA256;
 
-        string password = "TestPassword123!";
+        string password = "Enter321";
 
         // Generate random salt
         byte[] salt = RandomNumberGenerator.GetBytes(SaltSize);

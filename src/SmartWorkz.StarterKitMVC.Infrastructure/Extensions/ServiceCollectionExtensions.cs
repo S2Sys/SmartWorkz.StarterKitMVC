@@ -86,6 +86,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPermissionService, PermissionService>();
+        services.AddScoped<IClaimService, ClaimService>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
         // Translation service (DB-backed, memory cached)
