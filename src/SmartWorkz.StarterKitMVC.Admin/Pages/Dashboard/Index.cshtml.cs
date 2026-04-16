@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using SmartWorkz.StarterKitMVC.Admin.Pages;
 
 namespace SmartWorkz.StarterKitMVC.Admin.Pages.Dashboard
 {
     [Authorize(Policy = "RequireAdmin")]
-    public class IndexModel : PageModel
+    public class IndexModel : BasePage
     {
         private readonly ILogger<IndexModel> _logger;
 
@@ -19,13 +19,13 @@ namespace SmartWorkz.StarterKitMVC.Admin.Pages.Dashboard
 
         public void OnGet()
         {
-            _logger.LogInformation("Dashboard.OnGet called. User authenticated: {IsAuthenticated}, User: {User}",
-                User?.Identity?.IsAuthenticated ?? false, User?.Identity?.Name ?? "N/A");
+            _logger.LogInformation("Dashboard.OnGet called. User authenticated: {IsAuthenticated}, User: {User}, TenantId: {TenantId}",
+                User?.Identity?.IsAuthenticated ?? false, User?.Identity?.Name ?? "N/A", TenantId);
 
             if (User?.Identity?.IsAuthenticated == true)
             {
                 var claimsDebug = string.Join("; ", User.Claims.Select(c => $"{c.Type}={c.Value}"));
-                _logger.LogInformation("User claims: {Claims}", claimsDebug);
+                _logger.LogInformation("User claims: {Claims}, Roles: {Roles}", claimsDebug, string.Join(",", CurrentUserRoles));
             }
 
             // Placeholder statistics

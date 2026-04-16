@@ -1,1 +1,37 @@
 [2026-04-16 01:05:21.876] REQUEST: GET / | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 01:32:00.936] REQUEST: GET / | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 01:32:00.936] RESPONSE: GET / | Status: 302
+[2026-04-16 01:32:01.170] REQUEST: GET /Account/Login?ReturnUrl=%2F | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 01:32:01.170] RESPONSE: GET /Account/Login?ReturnUrl=%2F | Status: 200
+[2026-04-16 01:32:01.404] REQUEST: GET /css/site.css | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 01:32:01.404] RESPONSE: GET /css/site.css | Status: 404
+[2026-04-16 01:32:01.420] REQUEST: GET /Error?statusCode=404 | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 01:32:01.420] RESPONSE: GET /Error?statusCode=404 | Status: 404
+[2026-04-16 01:32:02.500] REQUEST: GET /favicon.ico | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 01:32:02.500] RESPONSE: GET /favicon.ico | Status: 404
+[2026-04-16 01:32:02.504] REQUEST: GET /Error?statusCode=404 | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 01:32:02.504] RESPONSE: GET /Error?statusCode=404 | Status: 404
+[2026-04-16 01:32:52.951] REQUEST: POST /Account/Login?ReturnUrl=%2F | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 01:32:52.951] RESPONSE: POST /Account/Login?ReturnUrl=%2F | Status: 200
+[2026-04-16 01:33:32.277] REQUEST: GET /css/site.css | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 01:33:32.277] RESPONSE: GET /css/site.css | Status: 404
+[2026-04-16 01:33:32.280] REQUEST: GET /Error?statusCode=404 | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 01:33:32.280] RESPONSE: GET /Error?statusCode=404 | Status: 404
+[2026-04-16 06:21:19.869] REQUEST: GET / | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 06:21:19.869] RESPONSE: GET / | Status: 302
+[2026-04-16 06:21:20.104] REQUEST: GET /Account/Login?ReturnUrl=%2F | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 06:21:20.104] RESPONSE: GET /Account/Login?ReturnUrl=%2F | Status: 200
+[2026-04-16 06:21:20.384] REQUEST: GET /css/site.css | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 06:21:20.384] RESPONSE: GET /css/site.css | Status: 404
+[2026-04-16 06:21:20.403] REQUEST: GET /Error?statusCode=404 | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 06:21:20.403] RESPONSE: GET /Error?statusCode=404 | Status: 404
+[2026-04-16 06:22:59.450] REQUEST: POST /Account/Login?ReturnUrl=%2F | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 06:22:59.450] RESPONSE: POST /Account/Login?ReturnUrl=%2F | Status: 302
+[2026-04-16 06:25:01.383] REQUEST: GET / | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 06:25:01.383] RESPONSE: GET / | Status: 302
+[2026-04-16 06:25:01.392] REQUEST: GET /Account/Login?ReturnUrl=%2F | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 06:25:01.392] RESPONSE: GET /Account/Login?ReturnUrl=%2F | Status: 200
+[2026-04-16 06:25:01.454] REQUEST: GET /css/site.css | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 06:25:01.454] RESPONSE: GET /css/site.css | Status: 404
+[2026-04-16 06:25:01.462] REQUEST: GET /Error?statusCode=404 | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 06:25:01.462] RESPONSE: GET /Error?statusCode=404 | Status: 404
