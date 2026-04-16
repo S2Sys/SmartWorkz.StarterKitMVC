@@ -1,1 +1,3 @@
 [2026-04-04 12:16:29.483] LOGIN REDIRECT: /
+[2026-04-16 06:24:49.109] LOGIN REDIRECT: /
+CLAIMS: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier=E63B044B-753A-4551-9E8E-6791CC703ACF; http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress=admin@smartworkz.test; http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name=Admin User; TenantId=DEFAULT; http://schemas.microsoft.com/ws/2008/06/identity/claims/role=admin; role=admin; permission=Create Order; permission=Create Product; permission=Delete Order; permission=Delete Product; permission=Manage Users; permission=Read Order; permission=Read Product; permission=Update Order; permission=Update Product; permission=View Report

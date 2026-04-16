@@ -85,10 +85,10 @@ public class LoginModel : BasePage
         {
             foreach (var role in user.Roles)
             {
-                // Normalize to lowercase for policy matching (RequireRole("admin") is case-sensitive)
+                // Normalize to lowercase for policy matching
+                // RequireRole uses ClaimTypes.Role which is case-sensitive for values
                 var normalizedRole = role.ToLowerInvariant();
                 claims.Add(new(ClaimTypes.Role, normalizedRole));
-                claims.Add(new("role", normalizedRole));
             }
         }
 
