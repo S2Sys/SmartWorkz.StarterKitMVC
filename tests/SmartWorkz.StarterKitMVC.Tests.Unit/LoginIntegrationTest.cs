@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SmartWorkz.StarterKitMVC.Application.Services;
 using SmartWorkz.StarterKitMVC.Infrastructure.Extensions;
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
@@ -26,6 +27,7 @@ public class LoginIntegrationTest
         // Build service collection with infrastructure services
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configuration);
+        services.AddLogging(builder => builder.AddConsole()); // Add logging for DI
         services.AddInfrastructureServices(configuration);
         services.AddRepositories();
         services.AddApplicationServices();
@@ -48,7 +50,8 @@ public class LoginIntegrationTest
         var result = await _authService.LoginAsync(loginRequest);
 
         // Assert
-        Assert.True(result.Succeeded, "Login should succeed");
+        Assert.True(result.Succeeded,
+            $"Login should succeed. Succeeded={result.Succeeded}, MessageKey={result.MessageKey}, Errors={string.Join(";", result.Errors ?? [])}");
         Assert.NotNull(result.Data);
         Assert.Equal("admin@smartworkz.test", result.Data.User.Email);
         Assert.Contains("Admin", result.Data.User.Roles, StringComparer.OrdinalIgnoreCase);

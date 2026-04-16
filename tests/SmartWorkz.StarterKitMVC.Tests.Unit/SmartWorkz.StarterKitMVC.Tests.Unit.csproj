@@ -18,4 +18,9 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SmartWorkz.StarterKitMVC.Infrastructure\SmartWorkz.StarterKitMVC.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\SmartWorkz.StarterKitMVC.Application\SmartWorkz.StarterKitMVC.Application.csproj" />
+  </ItemGroup>
+
 </Project>
