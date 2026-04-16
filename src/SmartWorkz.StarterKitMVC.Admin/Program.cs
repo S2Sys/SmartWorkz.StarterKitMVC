@@ -56,22 +56,41 @@ builder.Services.AddAuthentication(options =>
 
 // RBAC policies
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, TenantAdminRequirementHandler>();
 builder.Services.AddAuthorization(options =>
 {
-    // Admin role: full access to all admin sections
+    // ─── Role-Based Policies ──────────────────────────────────────────────────
+
+    // Admin role: full access to all admin sections (tenant-scoped or super admin)
     options.AddPolicy("RequireAdmin", policy =>
         policy.RequireAuthenticatedUser()
-              .RequireRole("admin"));
+              .RequireRole("admin", "super_admin"));
 
-    // Permission-based policies matching DB permission names
+    // Super admin only: access to system-wide operations
+    options.AddPolicy("RequireSuperAdmin", policy =>
+        policy.RequireAuthenticatedUser()
+              .RequireRole("super_admin"));
+
+    // ─── Tenant-Scoped Policies ───────────────────────────────────────────────
+
+    // Tenant admin (admin for current tenant OR super admin)
+    options.AddPolicy("RequireTenantAdmin", policy =>
+        policy.RequireAuthenticatedUser()
+              .AddRequirements(new TenantAdminRequirement()));
+
+    // ─── Permission-Based Policies ─────────────────────────────────────────────
+
+    // Manage users within tenant
     options.AddPolicy("CanManageUsers", policy =>
         policy.RequireAuthenticatedUser()
               .AddRequirements(new PermissionRequirement("Manage Users")));
 
+    // Manage menus within tenant
     options.AddPolicy("CanManageMenus", policy =>
         policy.RequireAuthenticatedUser()
               .AddRequirements(new PermissionRequirement("Manage Menu")));
 
+    // View reports within tenant
     options.AddPolicy("CanViewReports", policy =>
         policy.RequireAuthenticatedUser()
               .AddRequirements(new PermissionRequirement("View Report")));
@@ -99,6 +118,9 @@ app.UseFileLogging();
 app.UseRouting();
 app.UseAuthentication();
 app.UseTenantResolution();
+
+// Validate and enrich authorization (roles, claims, permissions)
+app.UseAuthorizationValidation();
 
 // Inject permission claims from DB into the cookie identity BEFORE authorization runs
 app.UseMiddleware<PermissionMiddleware>();

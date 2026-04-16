@@ -35,3 +35,8 @@
 [2026-04-16 06:25:01.454] RESPONSE: GET /css/site.css | Status: 404
 [2026-04-16 06:25:01.462] REQUEST: GET /Error?statusCode=404 | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
 [2026-04-16 06:25:01.462] RESPONSE: GET /Error?statusCode=404 | Status: 404
+[2026-04-16 07:09:30.630] REQUEST: GET / | User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+[2026-04-16 07:09:30.630] ERROR: GET / | Exception: Unable to resolve service for type 'SmartWorkz.StarterKitMVC.Application.Authorization.IClaimService' while attempting to Invoke middleware 'SmartWorkz.StarterKitMVC.Admin.Middleware.AuthorizationMiddleware'. | StackTrace:    at lambda_method2(Closure, Object, HttpContext, IServiceProvider)
+   at SmartWorkz.StarterKitMVC.Admin.Middleware.TenantMiddleware.InvokeAsync(HttpContext context) in S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Admin\Middleware\TenantMiddleware.cs:line 20
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at SmartWorkz.StarterKitMVC.Admin.Middleware.FileLoggingMiddleware.InvokeAsync(HttpContext context) in S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Admin\Middleware\FileLoggingMiddleware.cs:line 42

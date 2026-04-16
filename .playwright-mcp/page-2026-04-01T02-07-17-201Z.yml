@@ -1,0 +1,16 @@
+- generic [ref=e2]:
+  - heading "500" [level=1] [ref=e3]
+  - heading "Oops! Something went wrong" [level=2] [ref=e4]
+  - paragraph [ref=e5]: We encountered an unexpected error. Please try again later.
+  - paragraph [ref=e6]:
+    - strong [ref=e7]: "Request ID:"
+    - code [ref=e8]: 00-368bbf70cea9a8c7155e37cf23c9d6b2-20e9ad8009f50add-00
+  - generic [ref=e9]:
+    - link " Dashboard" [ref=e10] [cursor=pointer]:
+      - /url: /Dashboard
+      - generic [ref=e11]: 
+      - text: Dashboard
+    - link " Go Back" [ref=e12] [cursor=pointer]:
+      - /url: javascript:history.back()
+      - generic [ref=e13]: 
+      - text: Go Back
