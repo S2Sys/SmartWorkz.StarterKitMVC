@@ -24,7 +24,7 @@ public static class EmailTemplateServiceExtensions
         if (useSqlRepository)
         {
             // Use SQL Server repository (Dapper-based, reads from Master.ContentTemplates)
-            services.AddScoped<IEmailTemplateRepository, DapperContentTemplateRepository>();
+            services.AddScoped<IEmailTemplateRepository, ContentTemplateRepository>();
         }
         else
         {
