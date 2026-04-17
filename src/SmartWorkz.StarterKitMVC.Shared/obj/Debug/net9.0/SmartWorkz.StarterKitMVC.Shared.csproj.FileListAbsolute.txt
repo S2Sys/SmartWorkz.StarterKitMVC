@@ -10,3 +10,15 @@ S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWork
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Debug\net9.0\refint\SmartWorkz.StarterKitMVC.Shared.dll
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Shared.pdb
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Debug\net9.0\ref\SmartWorkz.StarterKitMVC.Shared.dll
+C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Shared.deps.json
+C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Shared.dll
+C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Shared.pdb
+C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Shared.AssemblyInfoInputs.cache
+C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Shared.AssemblyInfo.cs
+C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Shared.csproj.CoreCompileInputs.cache
+C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Shared.sourcelink.json
+C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Shared.dll
+C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Debug\net9.0\refint\SmartWorkz.StarterKitMVC.Shared.dll
+C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Shared.pdb
+C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Shared\obj\Debug\net9.0\ref\SmartWorkz.StarterKitMVC.Shared.dll

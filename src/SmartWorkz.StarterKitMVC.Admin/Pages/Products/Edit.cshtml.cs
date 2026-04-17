@@ -6,7 +6,7 @@ using SmartWorkz.StarterKitMVC.Domain.Entities.Master;
 
 namespace SmartWorkz.StarterKitMVC.Admin.Pages.Products;
 
-[Authorize(Policy = "RequireAdmin")]
+// [Authorize(Policy = "RequireAdmin")]
 public class EditModel : BasePage
 {
     private readonly IProductRepository _productRepository;
