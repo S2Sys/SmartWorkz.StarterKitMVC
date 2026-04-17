@@ -1,0 +1,19 @@
+# Admin project - internal only, not published to GitHub
+/src/SmartWorkz.StarterKitMVC.Admin/
+
+# Visual Studio
+.vs/
+*.sln.DotSettings.user
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
