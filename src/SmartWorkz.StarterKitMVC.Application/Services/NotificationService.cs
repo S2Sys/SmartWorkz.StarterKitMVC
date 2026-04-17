@@ -47,13 +47,25 @@ public class NotificationService : INotificationService
                 Data = request.Data
             };
 
-            var created = await _repository.CreateAsync(notification);
+            var repoNotification = new Repositories.NotificationDto
+            {
+                NotificationId = notification.NotificationId,
+                UserId = notification.UserId,
+                Title = notification.Title,
+                Message = notification.Message,
+                Type = notification.Type,
+                IsRead = notification.IsRead,
+                CreatedAt = notification.CreatedAt,
+                TenantId = notification.TenantId
+            };
+
+            await _repository.UpsertAsync(repoNotification);
 
             _logger.LogInformation(
                 "Notification sent to user {UserId}: {Title}",
                 request.UserId, request.Title);
 
-            return created != null;
+            return true;
         }
         catch (Exception ex)
         {

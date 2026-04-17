@@ -126,16 +126,24 @@ public class RoleService : IRoleService
             role.RoleId = Guid.NewGuid().ToString();
             role.CreatedAt = DateTime.UtcNow;
 
-            var created = await _roleRepository.CreateAsync(role);
+            await _roleRepository.UpsertAsync(new Repositories.RoleDto
+            {
+                RoleId = role.RoleId,
+                Name = role.Name,
+                DisplayName = role.DisplayName,
+                Description = role.Description,
+                TenantId = role.TenantId,
+                CreatedAt = role.CreatedAt
+            });
 
             // Invalidate cache
             await InvalidateRoleCache(role.TenantId);
 
             _logger.LogInformation(
                 "Role created: {RoleId} ({Name}) for tenant {TenantId}",
-                created.RoleId, created.Name, created.TenantId);
+                role.RoleId, role.Name, role.TenantId);
 
-            return created;
+            return role;
         }
         catch (Exception ex)
         {
@@ -158,14 +166,22 @@ public class RoleService : IRoleService
         {
             role.UpdatedAt = DateTime.UtcNow;
 
-            var updated = await _roleRepository.UpdateAsync(role);
+            await _roleRepository.UpsertAsync(new Repositories.RoleDto
+            {
+                RoleId = role.RoleId,
+                Name = role.Name,
+                DisplayName = role.DisplayName,
+                Description = role.Description,
+                TenantId = role.TenantId,
+                UpdatedAt = role.UpdatedAt
+            });
 
             // Invalidate cache
             await InvalidateRoleCache(role.TenantId);
 
             _logger.LogInformation(
                 "Role updated: {RoleId} ({Name})",
-                updated.RoleId, updated.Name);
+                role.RoleId, role.Name);
 
             return updated;
         }
