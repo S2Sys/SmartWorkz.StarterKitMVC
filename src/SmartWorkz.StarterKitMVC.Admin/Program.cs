@@ -15,7 +15,7 @@ builder.Logging.SetMinimumLevel(LogLevel.Information);
 builder.Services.AddRazorPages(options =>
 {
     // Require authentication for everything by default
-    options.Conventions.AuthorizeFolder("/");
+    // options.Conventions.AuthorizeFolder("/");
 
     // Public exceptions — no auth required
     options.Conventions.AllowAnonymousToPage("/Account/Login");
