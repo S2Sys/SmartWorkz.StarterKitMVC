@@ -326,14 +326,28 @@ Other common lookups can be seeded with IsActive = false or IsDeleted = true:
 
 ---
 
-## Database Changes
+## Database Changes (V2 Schema)
 
-### New Table Structure
+### V2 Migration Strategy
+
+**Keep v1 intact for backward compatibility:**
+- Existing tables remain: `Master.Currencies`, `Master.Languages`, `Master.TimeZones`, `Master.Countries`
+- Existing stored procedures and functions unchanged
+- Applications can still reference v1 tables during transition
+
+**New v2 schema:**
+- Create new `LoV` schema for consolidated lookups
+- Create new v2 stored procedures (prefixed with v2_)
+- Run data migration from v1 tables → LoV.LovItems
+- Applications gradually migrate to v2 APIs
+
+### New LoV.LovItems Table (V2)
 
 ```sql
+-- V2: Create new LoV schema with consolidated lookups
 CREATE TABLE LoV.LovItems (
     IntId INT,
-    Id GUID PRIMARY KEY,
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
     CategoryKey NVARCHAR(100) NOT NULL,
     SubCategoryKey NVARCHAR(100),
     Key NVARCHAR(100) NOT NULL,
@@ -357,12 +371,100 @@ CREATE TABLE LoV.LovItems (
     INDEX IX_LovItems_Tenant (TenantId, IsGlobalScope, IsActive),
     INDEX IX_LovItems_Global (IsGlobalScope, IsActive, IsDeleted)
 );
+```
 
--- Drop old master tables (after migration)
--- DROP TABLE Master.Currencies
--- DROP TABLE Master.Languages
--- DROP TABLE Master.TimeZones
--- DROP TABLE Master.Countries
+### V2 Migration Script
+
+```sql
+-- V2: Migrate data from v1 Master tables to LoV schema
+-- Run ONCE, then old tables remain for backward compatibility
+
+-- Migrate Currencies
+INSERT INTO LoV.LovItems (IntId, Id, CategoryKey, Key, DisplayName, TenantId, IsGlobalScope, IsActive, IsDeleted, CreatedAt, CreatedBy, SortOrder, Metadata)
+SELECT 
+    CAST(CurrencyId AS INT) AS IntId,
+    NEWID() AS Id,
+    'currencies' AS CategoryKey,
+    Code AS Key,
+    Name AS DisplayName,
+    TenantId,
+    CASE WHEN TenantId IS NULL THEN 1 ELSE 0 END AS IsGlobalScope,
+    IsActive,
+    0 AS IsDeleted,
+    CreatedAt,
+    CreatedBy,
+    0 AS SortOrder,
+    JSON_OBJECT('symbol', Symbol, 'decimalPlaces', DecimalPlaces) AS Metadata
+FROM Master.Currencies
+WHERE IsDeleted = 0;
+
+-- Migrate Languages
+INSERT INTO LoV.LovItems (IntId, Id, CategoryKey, Key, DisplayName, TenantId, IsGlobalScope, IsActive, IsDeleted, CreatedAt, CreatedBy, SortOrder, Metadata)
+SELECT 
+    CAST(LanguageId AS INT) + 100 AS IntId,  -- Offset to 101-200 range
+    NEWID() AS Id,
+    'languages' AS CategoryKey,
+    Code AS Key,
+    DisplayName,
+    TenantId,
+    CASE WHEN TenantId IS NULL THEN 1 ELSE 0 END AS IsGlobalScope,
+    IsActive,
+    0 AS IsDeleted,
+    CreatedAt,
+    CreatedBy,
+    0 AS SortOrder,
+    JSON_OBJECT('nativeName', NativeName, 'isDefault', IsDefault) AS Metadata
+FROM Master.Languages
+WHERE IsDeleted = 0;
+
+-- Migrate TimeZones
+INSERT INTO LoV.LovItems (IntId, Id, CategoryKey, Key, DisplayName, IsGlobalScope, IsActive, IsDeleted, CreatedAt, CreatedBy, SortOrder, Metadata)
+SELECT 
+    TimeZoneId AS IntId,
+    NEWID() AS Id,
+    'timezones' AS CategoryKey,
+    Identifier AS Key,
+    DisplayName,
+    1 AS IsGlobalScope,  -- TimeZones are always global
+    IsActive,
+    0 AS IsDeleted,
+    CreatedAt,
+    CreatedBy,
+    0 AS SortOrder,
+    JSON_OBJECT('standardName', StandardName, 'offsetHours', OffsetHours) AS Metadata
+FROM Master.TimeZones
+WHERE IsDeleted = 0;
+
+-- Migrate Countries
+INSERT INTO LoV.LovItems (IntId, Id, CategoryKey, Key, DisplayName, IsGlobalScope, IsActive, IsDeleted, CreatedAt, CreatedBy, SortOrder)
+SELECT 
+    CAST(CountryId AS INT) + 50 AS IntId,  -- Offset to 51-100 range
+    NEWID() AS Id,
+    'countries' AS CategoryKey,
+    Code AS Key,
+    Name AS DisplayName,
+    1 AS IsGlobalScope,  -- Countries are always global
+    1 AS IsActive,
+    0 AS IsDeleted,
+    GETUTCDATE() AS CreatedAt,
+    'system' AS CreatedBy,
+    0 AS SortOrder
+FROM Master.Countries
+WHERE IsDeleted = 0;
+```
+
+### V1 Tables (Keep for Backward Compatibility)
+
+```sql
+-- V1: Existing tables remain unchanged
+-- Applications can still use these tables during transition period
+-- Master.Currencies
+-- Master.Languages
+-- Master.TimeZones
+-- Master.Countries
+
+-- These are read-only during v2 migration period
+-- All new entries should go to LoV.LovItems (v2)
 ```
 
 ---
@@ -759,19 +861,90 @@ Soft delete (set IsDeleted = true)
 
 ---
 
-## Migration Path
+## Migration Path (V1 → V2)
 
-1. **Phase 1:** Create new LoV structure, seed system lookups (1-999)
-2. **Phase 2:** Migrate existing Currencies, Languages, TimeZones, Countries to LoV
-3. **Phase 3:** Update services/repositories to query from LoV
-4. **Phase 4:** Decommission old Master tables (Currencies, Languages, TimeZones, Countries)
-5. **Phase 5:** Keep Category as separate domain entity (not moving to LoV)
+**Goal:** Gradual migration without breaking existing applications
+
+1. **Phase 1:** Create LoV schema (v2)
+   - Create `LoV.LovItems` table
+   - Create v2 stored procedures (`LoV.sp_LovItem_Upsert`, etc.)
+   - All v1 tables remain unchanged and functional
+
+2. **Phase 2:** Data migration (v1 → v2)
+   - Run migration scripts to copy data from Master.Currencies, Master.Languages, Master.TimeZones, Master.Countries → LoV.LovItems
+   - Seed system lookups (IntIds 1-999)
+   - v1 tables become read-only (no new inserts/updates)
+
+3. **Phase 3:** Application layer migration
+   - Update services/repositories to query from LoV (v2 APIs)
+   - Old v1 API endpoints remain functional but delegated to v2
+   - Gradual rollout per module
+
+4. **Phase 4:** Deprecation period
+   - v1 tables remain but marked as deprecated (documentation updated)
+   - Monitoring: Ensure no applications still directly accessing v1 tables
+   - Run for 1-2 quarters for safety
+
+5. **Phase 5:** Decommission v1 (Optional cleanup)
+   - Only after all applications confirmed migrated to v2
+   - Keep Category as separate domain entity (not moving to LoV)
+
+---
+
+## Backward Compatibility Views (Optional)
+
+To help v1 applications transition without code changes, create compatibility views:
+
+```sql
+-- V2: Backward compatibility views (map v2 LoV back to v1 table structure)
+
+CREATE VIEW Master.Currencies_v2 AS
+SELECT 
+    IntId AS CurrencyId,
+    Key AS Code,
+    DisplayName AS Name,
+    JSON_VALUE(Metadata, '$.symbol') AS Symbol,
+    CAST(JSON_VALUE(Metadata, '$.decimalPlaces') AS INT) AS DecimalPlaces,
+    TenantId,
+    IsActive,
+    CreatedAt,
+    CreatedBy,
+    UpdatedAt,
+    UpdatedBy,
+    0 AS IsDeleted
+FROM LoV.LovItems
+WHERE CategoryKey = 'currencies';
+
+CREATE VIEW Master.Languages_v2 AS
+SELECT 
+    IntId - 100 AS LanguageId,  -- Reverse the offset
+    Key AS Code,
+    DisplayName,
+    DisplayName AS DisplayName,
+    JSON_VALUE(Metadata, '$.nativeName') AS NativeName,
+    CAST(JSON_VALUE(Metadata, '$.isDefault') AS BIT) AS IsDefault,
+    TenantId,
+    IsActive,
+    CreatedAt,
+    CreatedBy,
+    UpdatedAt,
+    UpdatedBy,
+    0 AS IsDeleted
+FROM LoV.LovItems
+WHERE CategoryKey = 'languages';
+
+-- Similar views for TimeZones and Countries
+```
+
+**Usage:** Applications can query `Master.Currencies_v2` instead of `Master.Currencies` during transition.
 
 ---
 
 ## Notes
 
 - **Category.cs** remains separate (domain entity with Products relationships)
-- Integer IDs are optional (IntId can be null for custom tenant lookups)
-- Metadata field is JSON to avoid schema changes for new lookup-specific data
-- Indexes optimized for: category lookups, tenant-scoped queries, global scope queries
+- **V1 tables unchanged:** Keep Master.Currencies, Master.Languages, Master.TimeZones, Master.Countries as-is
+- **V2 is additive:** New LoV schema coexists with v1
+- **Integer IDs:** Optional for custom tenant lookups (system lookups always have IntIds 1-999)
+- **Metadata field:** JSON to avoid schema changes for new lookup-specific data
+- **Indexes optimized for:** Category lookups, tenant-scoped queries, global scope queries
