@@ -83,7 +83,7 @@ public class RoleRepository : DapperRepository<RoleDto>, IRoleRepository
         foreach (var permissionId in permissionIds)
         {
             await Connection.ExecuteAsync(
-                "spUpsertRolePermission",
+                "[Auth].[spUpsertRolePermission]",
                 new
                 {
                     RolePermissionId = 0,
