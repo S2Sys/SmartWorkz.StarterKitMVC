@@ -143,4 +143,31 @@ public class PermissionRepository : DapperRepository<PermissionDto>, IPermission
             TenantId = tenantId
         });
     }
+
+    /// <summary>Assign a permission to a role</summary>
+    public async Task AssignToRoleAsync(object roleId, object permissionId)
+    {
+        await Connection.ExecuteAsync(
+            "[Auth].[spUpsertRolePermission]",
+            new
+            {
+                RolePermissionId = 0,
+                RoleId = roleId,
+                PermissionId = permissionId,
+                TenantId = (string?)null,
+                CreatedAt = DateTime.UtcNow
+            },
+            commandType: System.Data.CommandType.StoredProcedure);
+    }
+
+    /// <summary>Remove a permission from a role</summary>
+    public async Task RemoveRolePermissionAsync(object roleId, object permissionId)
+    {
+        const string sql = """
+            DELETE FROM [Auth].[RolePermissions]
+            WHERE RoleId = @RoleId AND PermissionId = @PermissionId
+            """;
+
+        await Connection.ExecuteAsync(sql, new { RoleId = roleId, PermissionId = permissionId });
+    }
 }

@@ -1655,7 +1655,8 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "9.0.0",
           "SmartWorkz.StarterKitMVC.Domain": "1.0.0",
-          "SmartWorkz.StarterKitMVC.Shared": "1.0.0"
+          "SmartWorkz.StarterKitMVC.Shared": "1.0.0",
+          "System.IdentityModel.Tokens.Jwt": "8.3.3"
         },
         "compile": {
           "bin/placeholder/SmartWorkz.StarterKitMVC.Application.dll": {}

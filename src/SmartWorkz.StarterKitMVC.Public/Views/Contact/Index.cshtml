@@ -1,0 +1,141 @@
+@model SmartWorkz.StarterKitMVC.Public.Controllers.ContactViewModel
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<div class="py-5 bg-light">
+    <div class="container">
+        <h1 class="mb-2">Contact Us</h1>
+        <p class="lead text-muted">We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+    </div>
+</div>
+
+<div class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body p-5">
+                        <form method="post" class="needs-validation" novalidate>
+                            @Html.AntiForgeryToken()
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="Name" class="form-label">Full Name</label>
+                                    <input type="text" id="Name" name="Name" class="form-control" placeholder="Your name" required />
+                                    <div class="invalid-feedback">Name is required.</div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="Email" class="form-label">Email Address</label>
+                                    <input type="email" id="Email" name="Email" class="form-control" placeholder="you@example.com" required />
+                                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="PhoneNumber" class="form-label">Phone Number (Optional)</label>
+                                <input type="tel" id="PhoneNumber" name="PhoneNumber" class="form-control" placeholder="+1 (555) 123-4567" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Subject" class="form-label">Subject</label>
+                                <input type="text" id="Subject" name="Subject" class="form-control" placeholder="How can we help?" required />
+                                <div class="invalid-feedback">Subject is required.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Message" class="form-label">Message</label>
+                                <textarea id="Message" name="Message" class="form-control" rows="6" placeholder="Your message here..." required></textarea>
+                                <div class="invalid-feedback">Message is required.</div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-paper-plane"></i> Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Contact Information -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Contact Information</h5>
+
+                        <div class="mb-4">
+                            <p class="text-muted small">EMAIL</p>
+                            <p>
+                                <a href="mailto:support@smartworkz.com">support@smartworkz.com</a>
+                            </p>
+                        </div>
+
+                        <div class="mb-4">
+                            <p class="text-muted small">PHONE</p>
+                            <p>
+                                <a href="tel:+1234567890">+1 (234) 567-890</a>
+                            </p>
+                        </div>
+
+                        <div class="mb-4">
+                            <p class="text-muted small">ADDRESS</p>
+                            <p>
+                                123 Main Street<br>
+                                San Francisco, CA 94105<br>
+                                United States
+                            </p>
+                        </div>
+
+                        <div>
+                            <p class="text-muted small">BUSINESS HOURS</p>
+                            <p>
+                                Monday - Friday: 9:00 AM - 6:00 PM (PST)<br>
+                                Saturday & Sunday: Closed
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Links -->
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Follow Us</h5>
+                        <div class="d-flex gap-3">
+                            <a href="https://github.com" class="btn btn-outline-secondary btn-lg" title="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="https://twitter.com" class="btn btn-outline-secondary btn-lg" title="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="https://linkedin.com" class="btn btn-outline-secondary btn-lg" title="LinkedIn">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="https://facebook.com" class="btn btn-outline-secondary btn-lg" title="Facebook">
+                                <i class="fab fa-facebook"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    }());
+</script>

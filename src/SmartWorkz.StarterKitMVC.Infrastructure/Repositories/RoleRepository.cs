@@ -20,6 +20,21 @@ public class RoleRepository : DapperRepository<RoleDto>, IRoleRepository
         IdColumn = "RoleId";
     }
 
+    /// <summary>Get role by ID with tenant context</summary>
+    public async Task<RoleDto?> GetByIdAsync(object id, string tenantId)
+    {
+        const string sql = """
+            SELECT * FROM [Auth].[Roles]
+            WHERE RoleId = @Id
+              AND TenantId = @TenantId
+              AND IsDeleted = 0
+            """;
+
+        return await Connection.QueryFirstOrDefaultAsync<RoleDto>(
+            sql,
+            new { Id = id, TenantId = tenantId });
+    }
+
     /// <summary>Get role by name</summary>
     public async Task<RoleDto?> GetByNameAsync(string name, string tenantId)
     {

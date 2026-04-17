@@ -109,3 +109,27 @@ build_metadata.AdditionalFiles.CssScope =
 [C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Pages/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Views/Dashboard/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFzaGJvYXJkXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Views/Lookups/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9va3Vwc1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Views/Lookups/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9va3Vwc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Views/Users/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlcnNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
