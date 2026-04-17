@@ -3,10 +3,6 @@
     "Name": "New Profile",
     "Projects": [
       {
-        "Path": "src\\SmartWorkz.StarterKitMVC.Web\\SmartWorkz.StarterKitMVC.Web.csproj",
-        "Action": "Start"
-      },
-      {
         "Path": "src\\SmartWorkz.StarterKitMVC.Public\\SmartWorkz.StarterKitMVC.Public.csproj",
         "Action": "Start"
       },

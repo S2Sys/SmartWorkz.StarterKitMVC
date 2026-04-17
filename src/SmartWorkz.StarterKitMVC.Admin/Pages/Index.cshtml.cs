@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace SmartWorkz.StarterKitMVC.Admin.Pages
 {
-    [Authorize]
+    // [Authorize]
     public class IndexModel : PageModel
     {
         public IActionResult OnGet()
