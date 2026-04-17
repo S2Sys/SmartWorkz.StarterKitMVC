@@ -19,21 +19,21 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task<User?> GetByEmailAsync(string email, string tenantId)
     {
         return await QuerySingleSpAsync<User>(
-            "spGetUser",
+            "[Auth].[spGetUser]",
             new { Email = email, TenantId = tenantId });
     }
 
     public async Task<User?> GetByIdAsync(string userId)
     {
         return await QuerySingleSpAsync<User>(
-            "spGetUser",
+            "[Auth].[spGetUser]",
             new { UserId = userId });
     }
 
     public async Task<List<string>> GetUserRolesAsync(string userId, string tenantId)
     {
         var roles = await QuerySpAsync<string>(
-            "spGetUserRole",
+            "[Auth].[spGetUserRole]",
             new { UserId = userId, TenantId = tenantId });
         return roles.ToList();
     }
@@ -41,7 +41,7 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task<List<string>> GetUserPermissionsAsync(string userId, string tenantId)
     {
         var permissions = await QuerySpAsync<string>(
-            "spGetUserPermission",
+            "[Auth].[spGetUserPermission]",
             new { UserId = userId, TenantId = tenantId });
         return permissions.ToList();
     }
@@ -49,7 +49,7 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task<bool> UserExistsAsync(string email, string tenantId)
     {
         var count = await QuerySingleSpAsync<int?>(
-            "spUserExists",
+            "[Auth].[spUserExists]",
             new { Email = email, TenantId = tenantId });
         return (count ?? 0) > 0;
     }
@@ -59,7 +59,7 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task UpsertUserAsync(User user)
     {
         await ExecuteSpAsync(
-            "spUpsertUser",
+            "[Auth].[spUpsertUser]",
             new
             {
                 user.UserId,
@@ -120,7 +120,7 @@ public class UserRepository : CachedDapperRepository, IUserRepository
         p.Add("Roles",        rolesTvp, DbType.Object);
         p.Add("Permissions",  permsTvp, DbType.Object);
 
-        await ExecuteSpAsync("spUpsertUser", p);
+        await ExecuteSpAsync("[Auth].[spUpsertUser]", p);
     }
 
     // ── Paged search ─────────────────────────────────────────────────────────
@@ -197,14 +197,14 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task<RefreshToken?> GetRefreshTokenAsync(string token, string tenantId)
     {
         return await QuerySingleSpAsync<RefreshToken>(
-            "spGetAuthToken",
+            "[Auth].[spGetAuthToken]",
             new { Token = token, TokenType = "RefreshToken", TenantId = tenantId });
     }
 
     public async Task CreateRefreshTokenAsync(RefreshToken refreshToken)
     {
         await ExecuteSpAsync(
-            "spUpsertAuthToken",
+            "[Auth].[spUpsertAuthToken]",
             new
             {
                 AuthTokenId = 0,
@@ -224,7 +224,7 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task RevokeRefreshTokenAsync(string userId, string refreshToken)
     {
         await ExecuteSpAsync(
-            "spUpsertAuthToken",
+            "[Auth].[spUpsertAuthToken]",
             new
             {
                 AuthTokenId = 0,
@@ -246,14 +246,14 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task<PasswordResetToken?> GetPasswordResetTokenAsync(string userId, string token, string tenantId)
     {
         return await QuerySingleSpAsync<PasswordResetToken>(
-            "spGetAuthToken",
+            "[Auth].[spGetAuthToken]",
             new { UserId = userId, Token = token, TokenType = "PasswordReset", TenantId = tenantId });
     }
 
     public async Task CreatePasswordResetTokenAsync(PasswordResetToken resetToken)
     {
         await ExecuteSpAsync(
-            "spUpsertAuthToken",
+            "[Auth].[spUpsertAuthToken]",
             new
             {
                 AuthTokenId = 0,
@@ -273,7 +273,7 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task UsePasswordResetTokenAsync(int passwordResetTokenId)
     {
         await ExecuteSpAsync(
-            "spUpsertAuthToken",
+            "[Auth].[spUpsertAuthToken]",
             new
             {
                 AuthTokenId = passwordResetTokenId,
@@ -309,14 +309,14 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task<EmailVerificationToken?> GetEmailVerificationTokenAsync(string userId, string token, string tenantId)
     {
         return await QuerySingleSpAsync<EmailVerificationToken>(
-            "spGetAuthToken",
+            "[Auth].[spGetAuthToken]",
             new { UserId = userId, Token = token, TokenType = "EmailVerification", TenantId = tenantId });
     }
 
     public async Task CreateEmailVerificationTokenAsync(EmailVerificationToken verificationToken)
     {
         await ExecuteSpAsync(
-            "spUpsertAuthToken",
+            "[Auth].[spUpsertAuthToken]",
             new
             {
                 AuthTokenId = 0,
@@ -336,7 +336,7 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task UseEmailVerificationTokenAsync(int emailVerificationTokenId)
     {
         await ExecuteSpAsync(
-            "spUpsertAuthToken",
+            "[Auth].[spUpsertAuthToken]",
             new
             {
                 AuthTokenId = emailVerificationTokenId,
