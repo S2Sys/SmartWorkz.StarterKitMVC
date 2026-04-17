@@ -18,7 +18,40 @@
 
 # PHASE 1: DATABASE SETUP
 
-Execute scripts in `/database/v2/scripts/` in order (01 → 99).
+## Quick Start
+
+**Run single master script for complete v2 setup:**
+```bash
+-- Execute: /database/v2/scripts/00-master-migration.sql
+-- This creates everything in one script:
+--   ✓ LoV schema
+--   ✓ LovItems table with indexes
+--   ✓ UPSERT procedures
+--   ✓ 30 parent lookups (IDs 1-999)
+```
+
+**OR run individual scripts:**
+Execute scripts in `/database/v2/scripts/` in order (01 → 07)
+
+---
+
+## ID Allocation Strategy
+
+| Range | Type | Scope | IsGlobalScope | TenantId | Examples |
+|-------|------|-------|---------------|----------|----------|
+| 1-50 | Parent | TimeZones | 1 | NULL | 1-10 |
+| 51-100 | Parent | Countries | 1 | NULL | 51-60 |
+| 101-200 | Parent | Languages | 1 | NULL | 101-110 |
+| 201-300 | Parent | Currencies | 1 | NULL | 201-210 |
+| 301-999 | Parent | Reserved | 1 | NULL | Future |
+| 1000+ | Child | Tenant-specific | 0 | "ABC" | Auto-generated |
+
+**Parent Lookups (1-999):** System defaults, inherited by all tenants  
+**Child Lookups (1000+):** Tenant customizations, added when tenant creates own lookups
+
+---
+
+## Database Setup Tasks
 
 ## Task 1.1: Create LoV Schema
 **File:** `01-create-lov-schema.sql`

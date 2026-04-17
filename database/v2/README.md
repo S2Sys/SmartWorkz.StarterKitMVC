@@ -47,15 +47,24 @@ Instead of separate tables for each lookup type, LoV uses a single table with:
 
 ### Integer ID Allocation
 
-| Range | Type | Examples |
-|-------|------|----------|
-| 1-50 | System | TimeZones |
-| 51-100 | System | Countries |
-| 101-200 | System | Languages |
-| 201-300 | System | Currencies |
-| 301-999 | Reserved | Future system lookups |
+| Range | Type | Scope | IsGlobalScope |
+|-------|------|-------|---------------|
+| 1-50 | Parent/System | TimeZones (global) | 1 |
+| 51-100 | Parent/System | Countries (global) | 1 |
+| 101-200 | Parent/System | Languages (global) | 1 |
+| 201-300 | Parent/System | Currencies (global) | 1 |
+| 301-999 | Parent/System | Reserved for future | 1 |
+| 1000+ | Child/Tenant-specific | Tenant customizations | 0 |
 
-System lookups (1-999) are read-only global defaults. Tenant-specific lookups get auto-generated IntIds >= 1000.
+**Parent Lookups (1-999):**
+- Read-only system defaults
+- IsGlobalScope = 1, TenantId = NULL
+- Inherited automatically by all tenants
+
+**Child Lookups (1000+):**
+- Tenant-specific customizations
+- IsGlobalScope = 0, TenantId = "ABC" or "ABC-US"
+- Auto-generated IntIds when tenant adds custom lookups
 
 ### Key Fields
 
