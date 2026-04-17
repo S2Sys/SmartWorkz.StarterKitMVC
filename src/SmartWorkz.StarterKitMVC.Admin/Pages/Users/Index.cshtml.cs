@@ -7,7 +7,7 @@ using SmartWorkz.StarterKitMVC.Shared.Models;
 
 namespace SmartWorkz.StarterKitMVC.Admin.Pages.Users;
 
-[Authorize(Policy = "RequireAdmin")]
+// [Authorize(Policy = "RequireAdmin")]
 public class IndexModel : BasePage
 {
     private readonly IUserRepository _userRepository;
