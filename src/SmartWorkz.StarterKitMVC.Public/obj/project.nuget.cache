@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "bUYyW75of0o=",
+  "dgSpecHash": "5ziqdwHbDFo=",
   "success": true,
   "projectFilePath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Public\\SmartWorkz.StarterKitMVC.Public.csproj",
   "expectedPackageFiles": [
@@ -78,7 +78,7 @@
     {
       "code": "NU1603",
       "level": "Warning",
-      "message": "SmartWorkz.StarterKitMVC.Infrastructure depends on System.IdentityModel.Tokens.Jwt (>= 8.3.3) but System.IdentityModel.Tokens.Jwt 8.3.3 was not found. System.IdentityModel.Tokens.Jwt 8.4.0 was resolved instead.",
+      "message": "SmartWorkz.StarterKitMVC.Application depends on System.IdentityModel.Tokens.Jwt (>= 8.3.3) but System.IdentityModel.Tokens.Jwt 8.3.3 was not found. System.IdentityModel.Tokens.Jwt 8.4.0 was resolved instead.",
       "projectPath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Public\\SmartWorkz.StarterKitMVC.Public.csproj",
       "warningLevel": 1,
       "filePath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Public\\SmartWorkz.StarterKitMVC.Public.csproj",

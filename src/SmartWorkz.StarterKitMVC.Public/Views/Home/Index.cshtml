@@ -1,0 +1,89 @@
+@model SmartWorkz.StarterKitMVC.Public.Controllers.HomeViewModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- Hero Section -->
+<section class="py-5 text-center bg-light">
+    <div class="container py-5">
+        <h1 class="display-4 fw-bold mb-4">@Model.HeroTitle</h1>
+        <p class="lead mb-4">@Model.HeroSubtitle</p>
+        <a href="@Model.CallToActionUrl" class="btn btn-primary btn-lg">
+            @Model.CallToActionText
+        </a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Key Features</h2>
+        <div class="row">
+            @foreach (var feature in Model.Features)
+            {
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <i class="@feature.Icon fa-2x text-primary"></i>
+                        </div>
+                        <h5>@feature.Title</h5>
+                        <p class="text-muted">@feature.Description</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Get Started?</h2>
+        <p class="lead mb-4">Join thousands of developers using SmartWorkz</p>
+        <a href="@Model.CallToActionUrl" class="btn btn-light btn-lg">
+            Start Now
+        </a>
+    </div>
+</section>
+
+<!-- Recent Blog Posts -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Latest Blog Posts</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Getting Started with ASP.NET Core</h5>
+                        <p class="card-text text-muted small">By John Doe • 5 days ago</p>
+                        <p class="card-text">Learn the basics of ASP.NET Core development...</p>
+                        <a href="/blog/post/getting-started-aspnetcore" class="btn btn-sm btn-outline-primary">Read More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Best Practices for Database Design</h5>
+                        <p class="card-text text-muted small">By Jane Smith • 10 days ago</p>
+                        <p class="card-text">Essential tips for designing scalable databases...</p>
+                        <a href="/blog/post/db-design-best-practices" class="btn btn-sm btn-outline-primary">Read More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Advanced LINQ Patterns</h5>
+                        <p class="card-text text-muted small">By John Doe • 15 days ago</p>
+                        <p class="card-text">Master complex LINQ queries and patterns...</p>
+                        <a href="/blog/post/advanced-linq-patterns" class="btn btn-sm btn-outline-primary">Read More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="/blog" class="btn btn-outline-primary">View All Posts</a>
+        </div>
+    </div>
+</section>

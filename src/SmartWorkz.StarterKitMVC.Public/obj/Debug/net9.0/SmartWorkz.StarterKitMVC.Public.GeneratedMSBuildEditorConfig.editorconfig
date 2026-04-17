@@ -121,3 +121,35 @@ build_metadata.AdditionalFiles.CssScope =
 [C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Authentication/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aGVudGljYXRpb25cTG9naW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Authentication/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aGVudGljYXRpb25cUmVnaXN0ZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Blog/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmxvZ1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Contact/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGFjdFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Profile/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
