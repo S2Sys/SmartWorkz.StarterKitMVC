@@ -1,7 +1,8 @@
 -- ============================================
--- SmartWorkz v2 Complete Schema Setup
+-- SmartWorkz v2 Complete Schema - Hierarchical LoV with HierarchyID
 -- Purpose: Complete new database setup with Master schema, all tables, all SPs, and all seed data
--- Strategy: LovItems consolidated in Master schema with UPSERT procedures
+-- Strategy: HierarchyID (NodePath) for unlimited nesting + persisted Level column
+-- Nesting: /1/, /1/1/, /1/1/1/, ... for unlimited depth
 -- ID Allocation: 1-1000 = Master lookups (global), 1001+ = Tenant-specific lookups
 -- Date: 2026-04-17
 -- ============================================
@@ -179,8 +180,10 @@ IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'LovItems' AND schema_id = 
 CREATE TABLE Master.LovItems (
     IntId INT UNIQUE,
     Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    CategoryKey NVARCHAR(100) NOT NULL,
-    Key NVARCHAR(100) NOT NULL,
+    NodePath HIERARCHYID NOT NULL UNIQUE,
+    Level AS (NodePath.GetLevel()) PERSISTED,
+    CategoryKey NVARCHAR(100),
+    Key NVARCHAR(100),
     DisplayName NVARCHAR(500) NOT NULL,
     TenantId NVARCHAR(128),
     IsGlobalScope BIT NOT NULL DEFAULT 0,
@@ -197,11 +200,13 @@ CREATE TABLE Master.LovItems (
     FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
 );
 
+CREATE CLUSTERED INDEX IX_LovItems_NodePath ON Master.LovItems(NodePath);
 CREATE INDEX IX_LovItems_Category ON Master.LovItems(CategoryKey, IsActive, IsDeleted);
 CREATE INDEX IX_LovItems_Tenant ON Master.LovItems(TenantId, IsGlobalScope, IsActive);
 CREATE INDEX IX_LovItems_Global ON Master.LovItems(IsGlobalScope, IsActive, IsDeleted);
 CREATE INDEX IX_LovItems_Key ON Master.LovItems(CategoryKey, Key, TenantId);
 CREATE INDEX IX_LovItems_IntId ON Master.LovItems(IntId) WHERE IntId IS NOT NULL;
+CREATE INDEX IX_LovItems_Level ON Master.LovItems(Level);
 
 -- ============================================
 -- STEP 4: Create UPSERT Stored Procedures
@@ -218,8 +223,9 @@ GO
 CREATE PROCEDURE Master.sp_LovItem_Upsert
     @IntId INT = NULL,
     @Id UNIQUEIDENTIFIER,
-    @CategoryKey NVARCHAR(100),
-    @Key NVARCHAR(100),
+    @NodePath HIERARCHYID,
+    @CategoryKey NVARCHAR(100) = NULL,
+    @Key NVARCHAR(100) = NULL,
     @DisplayName NVARCHAR(500),
     @TenantId NVARCHAR(128) = NULL,
     @IsGlobalScope BIT,
@@ -236,17 +242,37 @@ AS
 BEGIN
     SET NOCOUNT ON;
     MERGE Master.LovItems AS target
-    USING (SELECT @IntId, @Id, @CategoryKey, @Key, @DisplayName, @TenantId, @IsGlobalScope, @IsActive, @IsDeleted, @CreatedAt, @CreatedBy, @UpdatedAt, @UpdatedBy, @SortOrder, @Metadata, @LocalizedNames)
-    AS source(IntId, Id, CategoryKey, Key, DisplayName, TenantId, IsGlobalScope, IsActive, IsDeleted, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, SortOrder, Metadata, LocalizedNames)
+    USING (SELECT @IntId, @Id, @NodePath, @CategoryKey, @Key, @DisplayName, @TenantId, @IsGlobalScope, @IsActive, @IsDeleted, @CreatedAt, @CreatedBy, @UpdatedAt, @UpdatedBy, @SortOrder, @Metadata, @LocalizedNames)
+    AS source(IntId, Id, NodePath, CategoryKey, Key, DisplayName, TenantId, IsGlobalScope, IsActive, IsDeleted, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, SortOrder, Metadata, LocalizedNames)
     ON target.Id = source.Id
     WHEN MATCHED THEN
         UPDATE SET DisplayName = source.DisplayName, IsActive = source.IsActive, IsDeleted = source.IsDeleted, UpdatedAt = COALESCE(source.UpdatedAt, GETUTCDATE()), UpdatedBy = source.UpdatedBy, SortOrder = source.SortOrder, Metadata = source.Metadata, LocalizedNames = source.LocalizedNames
     WHEN NOT MATCHED THEN
-        INSERT (IntId, Id, CategoryKey, Key, DisplayName, TenantId, IsGlobalScope, IsActive, IsDeleted, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, SortOrder, Metadata, LocalizedNames)
-        VALUES (source.IntId, source.Id, source.CategoryKey, source.Key, source.DisplayName, source.TenantId, source.IsGlobalScope, source.IsActive, source.IsDeleted, source.CreatedAt, source.CreatedBy, source.UpdatedAt, source.UpdatedBy, source.SortOrder, source.Metadata, source.LocalizedNames);
+        INSERT (IntId, Id, NodePath, CategoryKey, Key, DisplayName, TenantId, IsGlobalScope, IsActive, IsDeleted, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, SortOrder, Metadata, LocalizedNames)
+        VALUES (source.IntId, source.Id, source.NodePath, source.CategoryKey, source.Key, source.DisplayName, source.TenantId, source.IsGlobalScope, source.IsActive, source.IsDeleted, source.CreatedAt, source.CreatedBy, source.UpdatedAt, source.UpdatedBy, source.SortOrder, source.Metadata, source.LocalizedNames);
 END
 GO
 
+-- Get children/descendants of a node
+CREATE PROCEDURE Master.sp_LovItem_GetChildren
+    @ParentNodePath HIERARCHYID,
+    @TenantId NVARCHAR(128) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @ParentTenantId NVARCHAR(128) = NULL
+    IF @TenantId LIKE '%-'
+        SET @ParentTenantId = LEFT(@TenantId, CHARINDEX('-', @TenantId) - 1)
+
+    SELECT * FROM Master.LovItems
+    WHERE IsActive = 1 AND IsDeleted = 0
+      AND NodePath.IsDescendantOf(@ParentNodePath) = 1
+      AND (IsGlobalScope = 1 OR TenantId IS NULL OR TenantId = @ParentTenantId OR TenantId = @TenantId)
+    ORDER BY NodePath;
+END
+GO
+
+-- Get by tenant hierarchy
 CREATE PROCEDURE Master.sp_LovItem_GetByTenantHierarchy
     @CategoryKey NVARCHAR(100),
     @TenantId NVARCHAR(128) = NULL
@@ -259,7 +285,31 @@ BEGIN
     SELECT * FROM Master.LovItems
     WHERE CategoryKey = @CategoryKey AND IsActive = 1 AND IsDeleted = 0
       AND (IsGlobalScope = 1 OR TenantId IS NULL OR TenantId = @ParentTenantId OR TenantId = @TenantId)
-    ORDER BY SortOrder, DisplayName
+    ORDER BY NodePath;
+END
+GO
+
+-- Get all descendants of a category root
+CREATE PROCEDURE Master.sp_LovItem_GetCategoryHierarchy
+    @CategoryKey NVARCHAR(100),
+    @TenantId NVARCHAR(128) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @ParentTenantId NVARCHAR(128) = NULL
+    DECLARE @RootPath HIERARCHYID
+
+    IF @TenantId LIKE '%-'
+        SET @ParentTenantId = LEFT(@TenantId, CHARINDEX('-', @TenantId) - 1)
+
+    SELECT @RootPath = NodePath FROM Master.LovItems
+    WHERE CategoryKey = @CategoryKey AND Key IS NULL AND Level = 0
+
+    SELECT * FROM Master.LovItems
+    WHERE IsActive = 1 AND IsDeleted = 0
+      AND (NodePath = @RootPath OR NodePath.IsDescendantOf(@RootPath) = 1)
+      AND (IsGlobalScope = 1 OR TenantId IS NULL OR TenantId = @ParentTenantId OR TenantId = @TenantId)
+    ORDER BY NodePath;
 END
 GO
 
