@@ -43,7 +43,6 @@ public sealed class LovItemV2
     public int? IntId { get; set; }
     public Guid Id { get; set; }
     public string CategoryKey { get; set; } = string.Empty;
-    public string? SubCategoryKey { get; set; }
     public string Key { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public string? TenantId { get; set; }
@@ -56,7 +55,6 @@ public sealed class LovItemV2
     public string? UpdatedBy { get; set; }
     public int SortOrder { get; set; }
     public Dictionary<string, object>? Metadata { get; set; }
-    public List<string>? Tags { get; set; }
     public Dictionary<string, string>? LocalizedNames { get; set; }
 }
 ```
@@ -150,7 +148,7 @@ public class LovRepositoryV2 : ILovRepositoryV2
             IF @TenantId LIKE '%-'
                 SET @ParentTenantId = LEFT(@TenantId, CHARINDEX('-', @TenantId) - 1)
             
-            SELECT * FROM LoV.LovItems
+            SELECT * FROM Master.LovItems
             WHERE CategoryKey = @CategoryKey
               AND IsActive = 1
               AND IsDeleted = 0
@@ -164,7 +162,7 @@ public class LovRepositoryV2 : ILovRepositoryV2
     public async Task<IEnumerable<LovItemV2>> GetByCategory(string categoryKey, string? tenantId = null)
     {
         const string sql = @"
-            SELECT * FROM LoV.LovItems
+            SELECT * FROM Master.LovItems
             WHERE CategoryKey = @CategoryKey
               AND IsActive = 1
               AND IsDeleted = 0
@@ -184,7 +182,7 @@ public class LovRepositoryV2 : ILovRepositoryV2
     public async Task<LovItemV2?> GetByKey(string categoryKey, string key, string? tenantId = null)
     {
         const string sql = @"
-            SELECT * FROM LoV.LovItems
+            SELECT * FROM Master.LovItems
             WHERE CategoryKey = @CategoryKey
               AND Key = @Key
               AND (TenantId = @TenantId OR (IsGlobalScope = 1 AND @TenantId IS NULL))
@@ -198,7 +196,7 @@ public class LovRepositoryV2 : ILovRepositoryV2
     public async Task<IEnumerable<LovItemV2>> GetAll(string categoryKey, string? tenantId = null)
     {
         const string sql = @"
-            SELECT * FROM LoV.LovItems
+            SELECT * FROM Master.LovItems
             WHERE CategoryKey = @CategoryKey
               AND IsDeleted = 0
               AND (IsGlobalScope = 1 OR TenantId = @TenantId)
@@ -211,13 +209,12 @@ public class LovRepositoryV2 : ILovRepositoryV2
     public async Task<int> Upsert(LovItemV2 item)
     {
         return await _db.ExecuteAsync(
-            "LoV.sp_LovItem_Upsert",
+            "Master.sp_LovItem_Upsert",
             new
             {
                 IntId = item.IntId,
                 Id = item.Id,
                 CategoryKey = item.CategoryKey,
-                SubCategoryKey = item.SubCategoryKey,
                 Key = item.Key,
                 DisplayName = item.DisplayName,
                 TenantId = item.TenantId,
@@ -230,7 +227,6 @@ public class LovRepositoryV2 : ILovRepositoryV2
                 UpdatedBy = item.UpdatedBy,
                 SortOrder = item.SortOrder,
                 Metadata = item.Metadata != null ? JsonConvert.SerializeObject(item.Metadata) : null,
-                Tags = item.Tags != null ? JsonConvert.SerializeObject(item.Tags) : null,
                 LocalizedNames = item.LocalizedNames != null ? JsonConvert.SerializeObject(item.LocalizedNames) : null
             },
             commandType: CommandType.StoredProcedure
@@ -301,7 +297,6 @@ public class LovItemDto
     public Guid Id { get; set; }
     public int? IntId { get; set; }
     public string CategoryKey { get; set; } = string.Empty;
-    public string? SubCategoryKey { get; set; }
     public string Key { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public string? TenantId { get; set; }
@@ -309,7 +304,6 @@ public class LovItemDto
     public bool IsActive { get; set; }
     public int SortOrder { get; set; }
     public Dictionary<string, object>? Metadata { get; set; }
-    public List<string>? Tags { get; set; }
     public Dictionary<string, string>? LocalizedNames { get; set; }
 }
 ```
@@ -324,13 +318,11 @@ public class SaveLookupDto
     public Guid? Id { get; set; }
     public int? IntId { get; set; }
     public string CategoryKey { get; set; } = string.Empty;
-    public string? SubCategoryKey { get; set; }
     public string Key { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
     public int SortOrder { get; set; } = 0;
     public Dictionary<string, object>? Metadata { get; set; }
-    public List<string>? Tags { get; set; }
     public Dictionary<string, string>? LocalizedNames { get; set; }
 }
 ```
@@ -511,7 +503,6 @@ public class LovServiceV2 : ILovServiceV2
             Id = item.Id,
             IntId = item.IntId,
             CategoryKey = item.CategoryKey,
-            SubCategoryKey = item.SubCategoryKey,
             Key = item.Key,
             DisplayName = item.DisplayName,
             TenantId = item.TenantId,
@@ -519,7 +510,6 @@ public class LovServiceV2 : ILovServiceV2
             IsActive = item.IsActive,
             SortOrder = item.SortOrder,
             Metadata = item.Metadata,
-            Tags = item.Tags,
             LocalizedNames = item.LocalizedNames
         };
     }
@@ -654,7 +644,7 @@ public class LovRepositoryV2Tests
         };
 
         _mockDb.Setup(db => db.ExecuteAsync(
-            "LoV.sp_LovItem_Upsert",
+            "Master.sp_LovItem_Upsert",
             It.IsAny<object>(),
             null, null, CommandType.StoredProcedure))
             .ReturnsAsync(1);
@@ -665,7 +655,7 @@ public class LovRepositoryV2Tests
         // Assert
         Assert.Equal(1, result);
         _mockDb.Verify(db => db.ExecuteAsync(
-            "LoV.sp_LovItem_Upsert",
+            "Master.sp_LovItem_Upsert",
             It.IsAny<object>(),
             null, null, CommandType.StoredProcedure),
             Times.Once);
