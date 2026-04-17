@@ -16,6 +16,65 @@ Consolidate fragmented master lookup tables (Currencies, Languages, TimeZones, C
 
 ---
 
+## How LoV Works (Wiki)
+
+### Concept
+
+**LoV (List of Values)** is a unified lookup system for managing reference data across the application. Instead of creating separate tables for each type of reference data (Currencies, Languages, TimeZones), LoV consolidates them into a single, flexible table.
+
+### Key Principles
+
+1. **Category-based Organization**
+   - Lookups are organized by `CategoryKey` (e.g., "currencies", "languages", "timezones")
+   - Each category can have sub-categories via `SubCategoryKey`
+   - Example: Category "locations" → SubCategory "north-america" → Items (US, Canada, Mexico)
+
+2. **Hierarchical Tenant Inheritance**
+   - **Global scope** (TenantId = null, IsGlobalScope = true): Available to all tenants
+   - **Parent tenant scope** (TenantId = "ABC", IsGlobalScope = false): Defined by parent, inherited by all sub-tenants
+   - **Auto-inheritance**: Sub-tenant "ABC-US" automatically inherits items from parent "ABC" and global scope
+   - No override—sub-tenants get parent's items as-is (can be disabled per sub-tenant via IsActive = false)
+
+3. **Status Management**
+   - `IsActive = true`: Lookup is available for use
+   - `IsActive = false`: Lookup is hidden (can be re-enabled without re-entering data)
+   - `IsDeleted = true`: Permanent logical deletion (soft delete)
+
+4. **Flexible Metadata Storage**
+   - Lookup-specific data stored in `Metadata` JSON field
+   - Examples:
+     - Currency: `{ "symbol": "$", "decimalPlaces": 2 }`
+     - Language: `{ "nativeName": "English", "isDefault": true }`
+     - TimeZone: `{ "standardName": "EST", "offsetHours": -5 }`
+
+### Query Example
+
+Get all active currencies for tenant "ABC-US":
+```sql
+SELECT * FROM LoV.LovItems
+WHERE CategoryKey = 'currencies'
+  AND IsActive = true
+  AND IsDeleted = false
+  AND (IsGlobalScope = true OR TenantId = 'ABC' OR TenantId = 'ABC-US')
+ORDER BY SortOrder, DisplayName
+```
+
+Returns:
+- Global currencies (USD, EUR, GBP from IsGlobalScope = true)
+- Parent tenant currencies (JPY, CNY from TenantId = 'ABC')
+- Sub-tenant currencies (INR from TenantId = 'ABC-US')
+
+### Use Cases
+
+| Scenario | Implementation |
+|----------|----------------|
+| Dropdown: Select currency | Query by CategoryKey, filter by tenant scope |
+| Admin: Manage currencies | UPSERT by IntId or (CategoryKey, Key, TenantId) |
+| Report: Currency conversion | Look up metadata for symbol/decimals |
+| Localization: Currency name | Query LocalizedNames by culture code |
+
+---
+
 ## Current State
 
 **Existing LoV System:**
@@ -306,16 +365,374 @@ CREATE TABLE LoV.LovItems (
 -- DROP TABLE Master.Countries
 ```
 
-### DbContext Changes
+---
+
+## Dapper Implementation (Backend)
+
+### UPSERT Stored Procedure
+
+Use UPSERT instead of separate INSERT/UPDATE operations for atomic operations:
+
+```sql
+CREATE PROCEDURE LoV.sp_LovItem_Upsert
+    @IntId INT = NULL,
+    @Id UNIQUEIDENTIFIER,
+    @CategoryKey NVARCHAR(100),
+    @SubCategoryKey NVARCHAR(100) = NULL,
+    @Key NVARCHAR(100),
+    @DisplayName NVARCHAR(500),
+    @TenantId NVARCHAR(128) = NULL,
+    @IsGlobalScope BIT,
+    @IsActive BIT = 1,
+    @IsDeleted BIT = 0,
+    @CreatedAt DATETIME2,
+    @CreatedBy NVARCHAR(128),
+    @UpdatedAt DATETIME2 = NULL,
+    @UpdatedBy NVARCHAR(128) = NULL,
+    @SortOrder INT = 0,
+    @Metadata NVARCHAR(MAX) = NULL,
+    @Tags NVARCHAR(MAX) = NULL,
+    @LocalizedNames NVARCHAR(MAX) = NULL
+AS
+BEGIN
+    MERGE LoV.LovItems AS target
+    USING (
+        SELECT 
+            @IntId AS IntId,
+            @Id AS Id,
+            @CategoryKey AS CategoryKey,
+            @SubCategoryKey AS SubCategoryKey,
+            @Key AS Key,
+            @DisplayName AS DisplayName,
+            @TenantId AS TenantId,
+            @IsGlobalScope AS IsGlobalScope,
+            @IsActive AS IsActive,
+            @IsDeleted AS IsDeleted,
+            @CreatedAt AS CreatedAt,
+            @CreatedBy AS CreatedBy,
+            @UpdatedAt AS UpdatedAt,
+            @UpdatedBy AS UpdatedBy,
+            @SortOrder AS SortOrder,
+            @Metadata AS Metadata,
+            @Tags AS Tags,
+            @LocalizedNames AS LocalizedNames
+    ) AS source
+    ON target.Id = source.Id
+    WHEN MATCHED THEN
+        UPDATE SET
+            DisplayName = source.DisplayName,
+            IsActive = source.IsActive,
+            IsDeleted = source.IsDeleted,
+            UpdatedAt = source.UpdatedAt,
+            UpdatedBy = source.UpdatedBy,
+            SortOrder = source.SortOrder,
+            Metadata = source.Metadata,
+            Tags = source.Tags,
+            LocalizedNames = source.LocalizedNames
+    WHEN NOT MATCHED THEN
+        INSERT (IntId, Id, CategoryKey, SubCategoryKey, Key, DisplayName, TenantId, IsGlobalScope, IsActive, IsDeleted, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, SortOrder, Metadata, Tags, LocalizedNames)
+        VALUES (source.IntId, source.Id, source.CategoryKey, source.SubCategoryKey, source.Key, source.DisplayName, source.TenantId, source.IsGlobalScope, source.IsActive, source.IsDeleted, source.CreatedAt, source.CreatedBy, source.UpdatedAt, source.UpdatedBy, source.SortOrder, source.Metadata, source.Tags, source.LocalizedNames);
+END
+```
+
+### Dapper Repository Pattern
 
 ```csharp
-public DbSet<LovItem> LovItems { get; set; }
+public interface ILovRepository
+{
+    // Query operations
+    Task<IEnumerable<LovItem>> GetByCategory(string categoryKey, string? tenantId = null);
+    Task<IEnumerable<LovItem>> GetByTenantHierarchy(string categoryKey, string tenantId);
+    Task<LovItem?> GetById(Guid id);
+    Task<LovItem?> GetByIntId(int intId);
+    Task<LovItem?> GetByKey(string categoryKey, string key, string? tenantId = null);
+    
+    // Write operations
+    Task<int> Upsert(LovItem item);
+    Task<int> UpsertBatch(IEnumerable<LovItem> items);
+    Task<int> SetActive(Guid id, bool isActive);
+    Task<int> Delete(Guid id);  // Soft delete
+}
 
-// Remove:
-// public DbSet<Currency> Currencies { get; set; }
-// public DbSet<Language> Languages { get; set; }
-// public DbSet<TimeZone> TimeZones { get; set; }
-// public DbSet<Country> Countries { get; set; }
+public class LovRepository : ILovRepository
+{
+    private readonly IDbConnection _db;
+    
+    public LovRepository(IDbConnection db) => _db = db;
+    
+    // Get all active items for a category (global + tenant scoped)
+    public async Task<IEnumerable<LovItem>> GetByTenantHierarchy(string categoryKey, string tenantId)
+    {
+        const string sql = @"
+            SELECT * FROM LoV.LovItems
+            WHERE CategoryKey = @CategoryKey
+              AND IsActive = 1
+              AND IsDeleted = 0
+              AND (IsGlobalScope = 1 OR TenantId IS NULL OR TenantId = @TenantId OR TenantId = @ParentTenantId)
+            ORDER BY SortOrder, DisplayName
+        ";
+        
+        var parentTenantId = GetParentTenantId(tenantId); // Extract parent from "ABC-US" → "ABC"
+        
+        return await _db.QueryAsync<LovItem>(sql, new { CategoryKey = categoryKey, TenantId = tenantId, ParentTenantId = parentTenantId });
+    }
+    
+    // UPSERT using stored procedure
+    public async Task<int> Upsert(LovItem item)
+    {
+        return await _db.ExecuteAsync("LoV.sp_LovItem_Upsert", new
+        {
+            item.IntId,
+            item.Id,
+            item.CategoryKey,
+            item.SubCategoryKey,
+            item.Key,
+            item.DisplayName,
+            item.TenantId,
+            item.IsGlobalScope,
+            item.IsActive,
+            item.IsDeleted,
+            item.CreatedAt,
+            item.CreatedBy,
+            item.UpdatedAt,
+            item.UpdatedBy,
+            item.SortOrder,
+            Metadata = JsonConvert.SerializeObject(item.Metadata),
+            Tags = JsonConvert.SerializeObject(item.Tags),
+            LocalizedNames = JsonConvert.SerializeObject(item.LocalizedNames)
+        }, commandType: CommandType.StoredProcedure);
+    }
+    
+    private string? GetParentTenantId(string tenantId)
+    {
+        // "ABC-US" → "ABC"
+        var parts = tenantId.Split('-');
+        return parts.Length > 1 ? string.Join("-", parts.DropLast(1)) : null;
+    }
+}
+```
+
+### Service Layer
+
+```csharp
+public interface ILovService
+{
+    Task<IEnumerable<LovItemDto>> GetCurrencies(string tenantId);
+    Task<IEnumerable<LovItemDto>> GetLanguages(string tenantId);
+    Task<IEnumerable<LovItemDto>> GetTimeZones();
+    Task<IEnumerable<LovItemDto>> GetCountries();
+    
+    Task<int> SaveCurrency(SaveCurrencyDto dto, string tenantId, string userId);
+    Task<int> DisableLookup(Guid id, string userId);
+}
+
+public class LovService : ILovService
+{
+    private readonly ILovRepository _repository;
+    
+    public LovService(ILovRepository repository) => _repository = repository;
+    
+    public async Task<IEnumerable<LovItemDto>> GetCurrencies(string tenantId)
+    {
+        var items = await _repository.GetByTenantHierarchy("currencies", tenantId);
+        return items.Select(MapToDto).ToList();
+    }
+    
+    public async Task<int> SaveCurrency(SaveCurrencyDto dto, string tenantId, string userId)
+    {
+        var item = new LovItem
+        {
+            Id = dto.Id ?? Guid.NewGuid(),
+            IntId = dto.IntId,
+            CategoryKey = "currencies",
+            Key = dto.Code,
+            DisplayName = dto.Name,
+            TenantId = tenantId,
+            IsGlobalScope = tenantId == null,
+            IsActive = dto.IsActive,
+            Metadata = new Dictionary<string, object>
+            {
+                ["symbol"] = dto.Symbol,
+                ["decimalPlaces"] = dto.DecimalPlaces
+            },
+            CreatedAt = dto.Id == null ? DateTime.UtcNow : item.CreatedAt,
+            CreatedBy = dto.Id == null ? userId : item.CreatedBy,
+            UpdatedAt = DateTime.UtcNow,
+            UpdatedBy = userId
+        };
+        
+        return await _repository.Upsert(item);
+    }
+}
+```
+
+---
+
+## UI Implementation
+
+### Admin Page: Manage Lookups
+
+**Route:** `/Admin/Lookups`
+
+#### List View
+- **Dropdown to filter by category:** Categories, Languages, TimeZones, Countries, Currencies
+- **Table columns:** IntId | Key | DisplayName | TenantId | IsActive | Actions
+- **Search:** Filter by Key or DisplayName
+- **Actions:** Edit, Disable, Delete (soft delete)
+
+#### Edit/Create Form
+```
+Category:        [Dropdown: currencies, languages, timezones, countries]
+Key:             [TextBox: USD, en-US, America/New_York]
+Display Name:    [TextBox: United States Dollar]
+Tenant:          [Dropdown: Global, ABC, ABC-US, ABC-IN] (only if not system lookup)
+Is Active:       [Checkbox]
+Sort Order:      [Number]
+Metadata:        [JSON Editor]
+  - For Currencies: { "symbol": "$", "decimalPlaces": 2 }
+  - For Languages: { "nativeName": "English", "isDefault": true }
+  - For TimeZones: { "standardName": "EST", "offsetHours": -5 }
+Localized Names: [Multi-language editor]
+  - en-US: English
+  - es-ES: Español
+  - fr-FR: Français
+```
+
+**Save Button:** Calls POST /api/lookups/upsert
+- Backend handles UPSERT (insert or update based on Id)
+- Returns saved item with generated IntId (if creating)
+
+#### Bulk Import
+- **CSV Upload:** IntId | Key | DisplayName | Symbol | DecimalPlaces | IsActive
+- **Backend:** Batch UPSERT all rows
+- **Result:** Count of inserted/updated
+
+### User Page: Select Currency/Language/TimeZone
+
+**Scenario:** User profile settings form
+
+```html
+<select id="currency" name="currency">
+    <option value="">-- Select Currency --</option>
+    <!-- Load from GET /api/lookups/currencies?tenantId=ABC-US -->
+    <option value="USD">US Dollar ($)</option>
+    <option value="EUR">Euro (€)</option>
+    <option value="INR">Indian Rupee (₹)</option>
+</select>
+
+<select id="language" name="language">
+    <option value="">-- Select Language --</option>
+    <!-- Load from GET /api/lookups/languages?tenantId=ABC-US -->
+    <option value="en-US">English</option>
+    <option value="es-ES">Español</option>
+</select>
+
+<select id="timezone" name="timezone">
+    <option value="">-- Select Time Zone --</option>
+    <!-- Load from GET /api/lookups/timezones (global) -->
+    <option value="America/New_York">Eastern Time (US & Canada)</option>
+    <option value="America/Los_Angeles">Pacific Time (US & Canada)</option>
+</select>
+```
+
+**JavaScript:**
+```javascript
+// Load currencies on page init
+fetch(`/api/lookups/currencies?tenantId=${currentTenantId}`)
+    .then(r => r.json())
+    .then(items => {
+        // items: [{ key: "USD", displayName: "US Dollar", ... }]
+        items.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.key;
+            option.textContent = `${item.displayName} (${item.metadata.symbol})`;
+            currencySelect.appendChild(option);
+        });
+    });
+```
+
+---
+
+## API Endpoints
+
+### GET /api/lookups/:category
+Get all active lookups for a category (respects tenant hierarchy)
+
+**Query Params:**
+- `tenantId` (optional): If provided, returns items for that tenant + parent + global
+- `culture` (optional): Return display names in specified culture (from LocalizedNames)
+
+**Response:**
+```json
+[
+    {
+        "id": "guid",
+        "intId": 201,
+        "key": "USD",
+        "displayName": "US Dollar",
+        "tenantId": null,
+        "isGlobalScope": true,
+        "isActive": true,
+        "sortOrder": 1,
+        "metadata": {
+            "symbol": "$",
+            "decimalPlaces": 2
+        }
+    }
+]
+```
+
+### POST /api/lookups/upsert
+Create or update a lookup item (UPSERT operation)
+
+**Body:**
+```json
+{
+    "id": "guid-or-null",
+    "intId": 201,
+    "categoryKey": "currencies",
+    "key": "USD",
+    "displayName": "US Dollar",
+    "tenantId": null,
+    "isGlobalScope": true,
+    "isActive": true,
+    "sortOrder": 1,
+    "metadata": {
+        "symbol": "$",
+        "decimalPlaces": 2
+    }
+}
+```
+
+**Response:**
+```json
+{
+    "success": true,
+    "id": "guid",
+    "intId": 201,
+    "message": "Lookup item saved successfully"
+}
+```
+
+### PUT /api/lookups/:id/toggle-active
+Toggle active status (don't delete, just deactivate)
+
+**Response:**
+```json
+{
+    "success": true,
+    "isActive": false
+}
+```
+
+### DELETE /api/lookups/:id
+Soft delete (set IsDeleted = true)
+
+**Response:**
+```json
+{
+    "success": true
+}
 ```
 
 ---
