@@ -22,11 +22,11 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AllowAnonymousToPage("/Error");
 
     // Section-level policies (role-based)
-    options.Conventions.AuthorizePage("/Dashboard/Index", "RequireAdmin");
-    options.Conventions.AuthorizeFolder("/Users",       "RequireAdmin");
-    options.Conventions.AuthorizeFolder("/Tenants",     "RequireAdmin");
-    options.Conventions.AuthorizeFolder("/Permissions", "RequireAdmin");
-    options.Conventions.AuthorizeFolder("/Settings",    "RequireAdmin");
+    // options.Conventions.AuthorizePage("/Dashboard/Index", "RequireAdmin");
+    // options.Conventions.AuthorizeFolder("/Users",       "RequireAdmin");
+    // options.Conventions.AuthorizeFolder("/Tenants",     "RequireAdmin");
+    // options.Conventions.AuthorizeFolder("/Permissions", "RequireAdmin");
+    // options.Conventions.AuthorizeFolder("/Settings",    "RequireAdmin");
 
     // Profile diagnostic page — any authenticated user
     options.Conventions.AuthorizePage("/Account/Profile");
