@@ -3,7 +3,7 @@ using SmartWorkz.StarterKitMVC.Admin.Pages;
 
 namespace SmartWorkz.StarterKitMVC.Admin.Pages.Dashboard
 {
-    [Authorize(Policy = "RequireAdmin")]
+    // [Authorize(Policy = "RequireAdmin")]
     public class IndexModel : BasePage
     {
         private readonly ILogger<IndexModel> _logger;
