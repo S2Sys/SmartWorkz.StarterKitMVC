@@ -1,0 +1,938 @@
+-- ============================================
+-- SmartWorkz v3 Complete Schema
+-- Purpose: Complete database setup with optimized multi-tenant architecture
+-- Database: SQL Server
+-- Schema: Master, Shared, Transaction, Report, Auth
+-- Tables: 41 total (consolidated and optimized)
+-- Date: 2026-04-18
+-- ============================================
+
+USE Boilerplate;
+
+-- ============================================
+-- SCHEMA CREATION
+-- ============================================
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Master')
+    EXEC sp_executesql N'CREATE SCHEMA Master';
+
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Shared')
+    EXEC sp_executesql N'CREATE SCHEMA Shared';
+
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Transaction')
+    EXEC sp_executesql N'CREATE SCHEMA [Transaction]';
+
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Report')
+    EXEC sp_executesql N'CREATE SCHEMA Report';
+
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Auth')
+    EXEC sp_executesql N'CREATE SCHEMA Auth';
+
+GO
+
+-- ============================================
+-- MASTER SCHEMA (17 tables)
+-- ============================================
+
+-- 1. Master.Tenants
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Tenants' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.Tenants (
+    TenantId NVARCHAR(128) PRIMARY KEY,
+    Code NVARCHAR(50),
+    Name NVARCHAR(256) NOT NULL,
+    DisplayName NVARCHAR(256) NOT NULL,
+    Description NVARCHAR(500),
+    LogoUrl NVARCHAR(500),
+    Email NVARCHAR(256),
+    PhoneNumber NVARCHAR(20),
+    Website NVARCHAR(256),
+    AddressLine1 NVARCHAR(256),
+    AddressLine2 NVARCHAR(256),
+    City NVARCHAR(100),
+    [State] NVARCHAR(100),
+    PostalCode NVARCHAR(20),
+    CountryCode NVARCHAR(2),
+    IsActive BIT NOT NULL DEFAULT 1,
+    SubscriptionExpiresAt DATETIME2,
+    SubscriptionTier NVARCHAR(50),
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0
+);
+CREATE INDEX IX_Tenants_IsActive ON Master.Tenants(IsActive);
+CREATE INDEX IX_Tenants_Code ON Master.Tenants(Code);
+
+-- 2. Master.Countries
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Countries' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.Countries (
+    CountryId INT PRIMARY KEY IDENTITY(1,1),
+    Code NVARCHAR(2) NOT NULL UNIQUE,
+    Name NVARCHAR(100) NOT NULL,
+    DisplayName NVARCHAR(100) NOT NULL,
+    FlagEmoji NVARCHAR(10),
+    TenantId NVARCHAR(128),
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_Countries_Code ON Master.Countries(Code);
+CREATE INDEX IX_Countries_TenantId ON Master.Countries(TenantId);
+
+-- 3. Master.Configuration
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Configuration' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.Configuration (
+    ConfigurationId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    ConfigId INT UNIQUE IDENTITY(1,1),
+    [Key] NVARCHAR(256) NOT NULL,
+    Value NVARCHAR(MAX),
+    ConfigType NVARCHAR(50),
+    Description NVARCHAR(500),
+    TenantId NVARCHAR(128),
+    IsActive BIT NOT NULL DEFAULT 1,
+    IsEncrypted BIT NOT NULL DEFAULT 0,
+    IsEditable BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    UNIQUE (TenantId, [Key])
+);
+CREATE INDEX IX_Configuration_Key ON Master.Configuration([Key]);
+CREATE INDEX IX_Configuration_TenantId ON Master.Configuration(TenantId);
+
+-- 4. Master.FeatureFlags
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'FeatureFlags' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.FeatureFlags (
+    FeatureFlagId INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(256) NOT NULL,
+    Description NVARCHAR(500),
+    IsEnabled BIT NOT NULL DEFAULT 0,
+    TenantId NVARCHAR(128),
+    ValidFrom DATETIME2,
+    ValidTo DATETIME2,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    UNIQUE (Name, TenantId)
+);
+CREATE INDEX IX_FeatureFlags_Name ON Master.FeatureFlags(Name);
+CREATE INDEX IX_FeatureFlags_TenantId ON Master.FeatureFlags(TenantId);
+
+-- 5. Master.Menus
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Menus' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.Menus (
+    MenuId INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(256) NOT NULL,
+    Description NVARCHAR(500),
+    MenuType NVARCHAR(50),
+    DisplayOrder INT NOT NULL DEFAULT 0,
+    TenantId NVARCHAR(128),
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    UNIQUE (TenantId, Name)
+);
+CREATE INDEX IX_Menus_MenuType ON Master.Menus(MenuType);
+CREATE INDEX IX_Menus_TenantId ON Master.Menus(TenantId);
+
+-- 6. Master.Categories
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Categories' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.Categories (
+    CategoryId INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(256) NOT NULL,
+    Slug NVARCHAR(256) NOT NULL,
+    Description NVARCHAR(MAX),
+    ParentCategoryId INT,
+    DisplayOrder INT NOT NULL DEFAULT 0,
+    Icon NVARCHAR(100),
+    ImageUrl NVARCHAR(500),
+    TenantId NVARCHAR(128),
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    FOREIGN KEY (ParentCategoryId) REFERENCES Master.Categories(CategoryId),
+    UNIQUE (TenantId, Slug)
+);
+CREATE INDEX IX_Categories_Slug ON Master.Categories(Slug);
+CREATE INDEX IX_Categories_ParentCategoryId ON Master.Categories(ParentCategoryId);
+CREATE INDEX IX_Categories_TenantId ON Master.Categories(TenantId);
+
+-- 7. Master.MenuItems
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'MenuItems' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.MenuItems (
+    MenuItemId INT PRIMARY KEY IDENTITY(1,1),
+    MenuId INT NOT NULL,
+    Title NVARCHAR(256) NOT NULL,
+    URL NVARCHAR(500),
+    Icon NVARCHAR(100),
+    DisplayOrder INT NOT NULL DEFAULT 0,
+    RequiredRole NVARCHAR(256),
+    TenantId NVARCHAR(128),
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (MenuId) REFERENCES Master.Menus(MenuId),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_MenuItems_MenuId ON Master.MenuItems(MenuId);
+CREATE INDEX IX_MenuItems_TenantId ON Master.MenuItems(TenantId);
+
+-- 8. Master.Products
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Products' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.Products (
+    ProductId INT PRIMARY KEY IDENTITY(1,1),
+    TenantId NVARCHAR(128) NOT NULL,
+    CategoryId INT,
+    Name NVARCHAR(256) NOT NULL,
+    Description NVARCHAR(MAX),
+    SKU NVARCHAR(100) UNIQUE,
+    Slug NVARCHAR(256) NOT NULL,
+    Price DECIMAL(18, 2),
+    Stock INT NOT NULL DEFAULT 0,
+    IsFeatured BIT NOT NULL DEFAULT 0,
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    FOREIGN KEY (CategoryId) REFERENCES Master.Categories(CategoryId),
+    UNIQUE (TenantId, Slug)
+);
+CREATE INDEX IX_Products_TenantId ON Master.Products(TenantId);
+CREATE INDEX IX_Products_CategoryId ON Master.Products(CategoryId);
+CREATE INDEX IX_Products_Slug ON Master.Products(Slug);
+
+-- 9. Master.CustomPages
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'CustomPages' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.CustomPages (
+    CustomPageId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    Name NVARCHAR(256) NOT NULL,
+    Slug NVARCHAR(256) NOT NULL,
+    Title NVARCHAR(256) NOT NULL,
+    Content NVARCHAR(MAX),
+    MetaDescription NVARCHAR(500),
+    MetaKeywords NVARCHAR(500),
+    TenantId NVARCHAR(128) NOT NULL,
+    IsPublished BIT NOT NULL DEFAULT 0,
+    PublishedAt DATETIME2,
+    CreatedBy NVARCHAR(256),
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    UpdatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    UNIQUE (TenantId, Slug)
+);
+CREATE INDEX IX_CustomPages_Slug ON Master.CustomPages(Slug);
+CREATE INDEX IX_CustomPages_TenantId ON Master.CustomPages(TenantId);
+
+-- 10. Master.BlogPosts
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'BlogPosts' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.BlogPosts (
+    BlogPostId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    Title NVARCHAR(256) NOT NULL,
+    Slug NVARCHAR(256) NOT NULL,
+    Content NVARCHAR(MAX),
+    Summary NVARCHAR(500),
+    AuthorId NVARCHAR(256),
+    Tags NVARCHAR(MAX),
+    FeaturedImageUrl NVARCHAR(500),
+    TenantId NVARCHAR(128) NOT NULL,
+    IsPublished BIT NOT NULL DEFAULT 0,
+    PublishedAt DATETIME2,
+    ViewCount INT NOT NULL DEFAULT 0,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    UNIQUE (TenantId, Slug)
+);
+CREATE INDEX IX_BlogPosts_Slug ON Master.BlogPosts(Slug);
+CREATE INDEX IX_BlogPosts_PublishedAt ON Master.BlogPosts(PublishedAt);
+CREATE INDEX IX_BlogPosts_TenantId ON Master.BlogPosts(TenantId);
+
+-- 11. Master.CacheEntries
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'CacheEntries' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.CacheEntries (
+    Id NVARCHAR(449) PRIMARY KEY,
+    Value VARBINARY(MAX) NOT NULL,
+    ExpiresAtTime DATETIMEOFFSET NOT NULL,
+    SlidingExpirationInSeconds BIGINT,
+    AbsoluteExpiration DATETIMEOFFSET
+);
+CREATE INDEX IX_CacheEntries_ExpiresAtTime ON Master.CacheEntries(ExpiresAtTime);
+
+-- 12. Master.ContentTemplates
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ContentTemplates' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.ContentTemplates (
+    Id NVARCHAR(256) PRIMARY KEY,
+    Name NVARCHAR(256) NOT NULL,
+    Description NVARCHAR(500),
+    TemplateType NVARCHAR(50) NOT NULL DEFAULT 'Email',
+    Subject NVARCHAR(500) NOT NULL DEFAULT '',
+    HeaderId NVARCHAR(256),
+    FooterId NVARCHAR(256),
+    BodyContent NVARCHAR(MAX) NOT NULL DEFAULT '',
+    PlainTextContent NVARCHAR(MAX),
+    Tags NVARCHAR(MAX),
+    Category NVARCHAR(100),
+    IsActive BIT NOT NULL DEFAULT 1,
+    IsSystem BIT NOT NULL DEFAULT 0,
+    TenantId NVARCHAR(128),
+    Version INT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_ContentTemplates_TenantId ON Master.ContentTemplates(TenantId);
+CREATE INDEX IX_ContentTemplates_TemplateType ON Master.ContentTemplates(TemplateType);
+CREATE INDEX IX_ContentTemplates_Category ON Master.ContentTemplates(Category);
+
+-- 13. Master.ContentTemplateSections
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ContentTemplateSections' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.ContentTemplateSections (
+    Id NVARCHAR(256) PRIMARY KEY,
+    Name NVARCHAR(256) NOT NULL,
+    SectionType NVARCHAR(50) NOT NULL DEFAULT 'Header',
+    HtmlContent NVARCHAR(MAX) NOT NULL DEFAULT '',
+    IsDefault BIT NOT NULL DEFAULT 0,
+    IsActive BIT NOT NULL DEFAULT 1,
+    TenantId NVARCHAR(128),
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_ContentTemplateSections_TenantId ON Master.ContentTemplateSections(TenantId);
+
+-- 14. Master.TemplatePlaceholders
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'TemplatePlaceholders' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.TemplatePlaceholders (
+    PlaceholderId INT PRIMARY KEY IDENTITY(1,1),
+    TemplateId NVARCHAR(256) NOT NULL,
+    PlaceholderKey NVARCHAR(256) NOT NULL,
+    DisplayName NVARCHAR(256) NOT NULL,
+    Description NVARCHAR(500),
+    DefaultValue NVARCHAR(500),
+    SampleValue NVARCHAR(500),
+    PlaceholderType NVARCHAR(50) NOT NULL DEFAULT 'Text',
+    IsRequired BIT NOT NULL DEFAULT 0,
+    DisplayOrder INT NOT NULL DEFAULT 0,
+    TenantId NVARCHAR(128),
+    UNIQUE (TemplateId, PlaceholderKey),
+    FOREIGN KEY (TemplateId) REFERENCES Master.ContentTemplates(Id) ON DELETE CASCADE,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_TemplatePlaceholders_TemplateId ON Master.TemplatePlaceholders(TemplateId);
+
+-- 15. Master.Lookup (Hierarchical Lookups - Currencies, Languages, TimeZones, etc.)
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Lookup' AND schema_id = SCHEMA_ID('Master'))
+CREATE TABLE Master.Lookup (
+    IntId INT UNIQUE,
+    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    NodePath HIERARCHYID NOT NULL UNIQUE,
+    Level AS (NodePath.GetLevel()) PERSISTED,
+    CategoryKey NVARCHAR(100),
+    SubCategoryKey NVARCHAR(100),
+    [Key] NVARCHAR(100),
+    DisplayName NVARCHAR(500) NOT NULL,
+    TenantId NVARCHAR(128),
+    IsGlobalScope BIT NOT NULL DEFAULT 0,
+    IsActive BIT NOT NULL DEFAULT 1,
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(128),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(128),
+    SortOrder INT NOT NULL DEFAULT 0,
+    Metadata NVARCHAR(MAX),
+    LocalizedNames NVARCHAR(MAX),
+    CONSTRAINT UQ_Lookup_Key UNIQUE (CategoryKey, SubCategoryKey, [Key], TenantId),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE CLUSTERED INDEX IX_Lookup_NodePath ON Master.Lookup(NodePath);
+CREATE INDEX IX_Lookup_Category ON Master.Lookup(CategoryKey, IsActive, IsDeleted);
+CREATE INDEX IX_Lookup_Tenant ON Master.Lookup(TenantId, IsGlobalScope, IsActive);
+CREATE INDEX IX_Lookup_Global ON Master.Lookup(IsGlobalScope, IsActive, IsDeleted);
+CREATE INDEX IX_Lookup_Key ON Master.Lookup(CategoryKey, [Key], TenantId);
+CREATE INDEX IX_Lookup_Level ON Master.Lookup(Level);
+CREATE INDEX IX_Lookup_IntId ON Master.Lookup(IntId) WHERE IntId IS NOT NULL;
+
+-- ============================================
+-- SHARED SCHEMA (7 tables)
+-- ============================================
+
+-- 16. Shared.SeoMeta
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'SeoMeta' AND schema_id = SCHEMA_ID('Shared'))
+CREATE TABLE Shared.SeoMeta (
+    SeoMetaId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    TenantId NVARCHAR(128) NOT NULL,
+    EntityType NVARCHAR(100) NOT NULL,
+    EntityId NVARCHAR(256) NOT NULL,
+    Slug NVARCHAR(256) NOT NULL,
+    Title NVARCHAR(256) NOT NULL,
+    Description NVARCHAR(500),
+    Keywords NVARCHAR(500),
+    StructuredData NVARCHAR(MAX),
+    MetaRobots NVARCHAR(100),
+    CanonicalUrl NVARCHAR(500),
+    OgTitle NVARCHAR(256),
+    OgDescription NVARCHAR(500),
+    OgImageUrl NVARCHAR(500),
+    TwitterCard NVARCHAR(50),
+    TwitterTitle NVARCHAR(256),
+    TwitterDescription NVARCHAR(500),
+    TwitterImage NVARCHAR(500),
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    UNIQUE (TenantId, Slug)
+);
+CREATE INDEX IX_SeoMeta_EntityType_EntityId ON Shared.SeoMeta(EntityType, EntityId);
+CREATE INDEX IX_SeoMeta_Slug ON Shared.SeoMeta(Slug);
+CREATE INDEX IX_SeoMeta_TenantId ON Shared.SeoMeta(TenantId);
+
+-- 17. Shared.Tags
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Tags' AND schema_id = SCHEMA_ID('Shared'))
+CREATE TABLE Shared.Tags (
+    TagId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    TenantId NVARCHAR(128) NOT NULL,
+    EntityType NVARCHAR(100) NOT NULL,
+    EntityId NVARCHAR(256) NOT NULL,
+    TagName NVARCHAR(256) NOT NULL,
+    TagCategory NVARCHAR(100),
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_Tags_EntityType_EntityId ON Shared.Tags(EntityType, EntityId);
+CREATE INDEX IX_Tags_TagName ON Shared.Tags(TagName);
+CREATE INDEX IX_Tags_TenantId ON Shared.Tags(TenantId);
+
+-- 18. Shared.Translations
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Translations' AND schema_id = SCHEMA_ID('Shared'))
+CREATE TABLE Shared.Translations (
+    TranslationId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    TenantId NVARCHAR(128) NOT NULL,
+    EntityType NVARCHAR(100) NOT NULL,
+    EntityId NVARCHAR(256) NOT NULL,
+    LanguageLookupId UNIQUEIDENTIFIER NOT NULL,
+    FieldName NVARCHAR(256) NOT NULL,
+    TranslatedValue NVARCHAR(MAX) NOT NULL,
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (LanguageLookupId) REFERENCES Master.Lookup(Id),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    UNIQUE (TenantId, EntityType, EntityId, LanguageLookupId, FieldName)
+);
+CREATE INDEX IX_Translations_EntityType_EntityId ON Shared.Translations(EntityType, EntityId);
+CREATE INDEX IX_Translations_LanguageLookupId ON Shared.Translations(LanguageLookupId);
+CREATE INDEX IX_Translations_TenantId ON Shared.Translations(TenantId);
+
+-- 19. Shared.Notifications
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Notifications' AND schema_id = SCHEMA_ID('Shared'))
+CREATE TABLE Shared.Notifications (
+    NotificationId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    UserId NVARCHAR(256) NOT NULL,
+    Title NVARCHAR(256) NOT NULL,
+    Message NVARCHAR(MAX) NOT NULL,
+    NotificationType NVARCHAR(100),
+    ActionUrl NVARCHAR(500),
+    IsRead BIT NOT NULL DEFAULT 0,
+    ReadAt DATETIME2,
+    Priority INT NOT NULL DEFAULT 0,
+    Data NVARCHAR(MAX),
+    TenantId NVARCHAR(128) NOT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    UpdatedAt DATETIME2,
+    ExpiresAt DATETIME2,
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_Notifications_UserId_IsRead ON Shared.Notifications(UserId, IsRead);
+CREATE INDEX IX_Notifications_IsRead ON Shared.Notifications(IsRead);
+CREATE INDEX IX_Notifications_TenantId ON Shared.Notifications(TenantId);
+CREATE INDEX IX_Notifications_CreatedAt ON Shared.Notifications(CreatedAt);
+
+-- 20. Shared.AuditLogs
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'AuditLogs' AND schema_id = SCHEMA_ID('Shared'))
+CREATE TABLE Shared.AuditLogs (
+    AuditLogId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    TenantId NVARCHAR(128) NOT NULL,
+    UserId NVARCHAR(256),
+    EntityType NVARCHAR(100) NOT NULL,
+    EntityId NVARCHAR(256) NOT NULL,
+    Action NVARCHAR(50) NOT NULL,
+    OldValues NVARCHAR(MAX),
+    NewValues NVARCHAR(MAX),
+    IPAddress NVARCHAR(45),
+    UserAgent NVARCHAR(500),
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_AuditLogs_EntityType_EntityId ON Shared.AuditLogs(EntityType, EntityId);
+CREATE INDEX IX_AuditLogs_CreatedAt ON Shared.AuditLogs(CreatedAt);
+CREATE INDEX IX_AuditLogs_TenantId ON Shared.AuditLogs(TenantId);
+
+-- 21. Shared.FileStorage
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'FileStorage' AND schema_id = SCHEMA_ID('Shared'))
+CREATE TABLE Shared.FileStorage (
+    FileId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    TenantId NVARCHAR(128) NOT NULL,
+    FileName NVARCHAR(256) NOT NULL,
+    FileSize BIGINT NOT NULL,
+    MimeType NVARCHAR(100),
+    FilePath NVARCHAR(500) NOT NULL,
+    EntityType NVARCHAR(100),
+    EntityId NVARCHAR(256),
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_FileStorage_EntityType_EntityId ON Shared.FileStorage(EntityType, EntityId);
+CREATE INDEX IX_FileStorage_TenantId ON Shared.FileStorage(TenantId);
+
+-- 22. Shared.EmailQueue
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'EmailQueue' AND schema_id = SCHEMA_ID('Shared'))
+CREATE TABLE Shared.EmailQueue (
+    EmailQueueId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    TenantId NVARCHAR(128) NOT NULL,
+    ToEmail NVARCHAR(256) NOT NULL,
+    CcEmail NVARCHAR(500),
+    BccEmail NVARCHAR(500),
+    Subject NVARCHAR(256) NOT NULL,
+    Body NVARCHAR(MAX) NOT NULL,
+    IsHtml BIT NOT NULL DEFAULT 1,
+    Status NVARCHAR(50) NOT NULL DEFAULT 'Pending',
+    SendAttempts INT NOT NULL DEFAULT 0,
+    LastAttemptAt DATETIME2,
+    SentAt DATETIME2,
+    FailureReason NVARCHAR(500),
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_EmailQueue_Status ON Shared.EmailQueue(Status);
+CREATE INDEX IX_EmailQueue_CreatedAt ON Shared.EmailQueue(CreatedAt);
+CREATE INDEX IX_EmailQueue_TenantId ON Shared.EmailQueue(TenantId);
+
+-- ============================================
+-- TRANSACTION SCHEMA (1 table)
+-- ============================================
+
+-- 23. Transaction.TransactionLog
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'TransactionLog' AND schema_id = SCHEMA_ID('Transaction'))
+CREATE TABLE [Transaction].TransactionLog (
+    TransactionLogId BIGINT PRIMARY KEY IDENTITY(1,1),
+    TenantId NVARCHAR(128) NOT NULL,
+    TransactionType NVARCHAR(50) NOT NULL,
+    EntityType NVARCHAR(100),
+    EntityId NVARCHAR(256),
+    Amount DECIMAL(18, 2) NOT NULL,
+    CurrencyLookupId UNIQUEIDENTIFIER,
+    Description NVARCHAR(500),
+    Status NVARCHAR(50) NOT NULL DEFAULT 'Pending',
+    PaymentMethod NVARCHAR(100),
+    ReferenceNumber NVARCHAR(256),
+    ProcessedAt DATETIME2,
+    CompletedAt DATETIME2,
+    FailureReason NVARCHAR(500),
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (CurrencyLookupId) REFERENCES Master.Lookup(Id),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_TransactionLog_TransactionType ON [Transaction].TransactionLog(TransactionType);
+CREATE INDEX IX_TransactionLog_Status ON [Transaction].TransactionLog(Status);
+CREATE INDEX IX_TransactionLog_EntityType_EntityId ON [Transaction].TransactionLog(EntityType, EntityId);
+CREATE INDEX IX_TransactionLog_CreatedAt ON [Transaction].TransactionLog(CreatedAt);
+CREATE INDEX IX_TransactionLog_TenantId ON [Transaction].TransactionLog(TenantId);
+
+-- ============================================
+-- REPORT SCHEMA (4 tables)
+-- ============================================
+
+-- 24. Report.Reports
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Reports' AND schema_id = SCHEMA_ID('Report'))
+CREATE TABLE Report.Reports (
+    ReportId INT PRIMARY KEY IDENTITY(1,1),
+    TenantId NVARCHAR(128) NOT NULL,
+    Name NVARCHAR(256) NOT NULL,
+    Description NVARCHAR(500),
+    ReportType NVARCHAR(100) NOT NULL,
+    QueryDefinition NVARCHAR(MAX),
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_Reports_ReportType ON Report.Reports(ReportType);
+CREATE INDEX IX_Reports_TenantId ON Report.Reports(TenantId);
+
+-- 25. Report.ReportSchedules
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ReportSchedules' AND schema_id = SCHEMA_ID('Report'))
+CREATE TABLE Report.ReportSchedules (
+    ReportScheduleId INT PRIMARY KEY IDENTITY(1,1),
+    TenantId NVARCHAR(128) NOT NULL,
+    ReportId INT NOT NULL,
+    ScheduleName NVARCHAR(256) NOT NULL,
+    Frequency NVARCHAR(50),
+    NextRun DATETIME2,
+    LastRun DATETIME2,
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (ReportId) REFERENCES Report.Reports(ReportId),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_ReportSchedules_ReportId ON Report.ReportSchedules(ReportId);
+CREATE INDEX IX_ReportSchedules_NextRun ON Report.ReportSchedules(NextRun);
+CREATE INDEX IX_ReportSchedules_TenantId ON Report.ReportSchedules(TenantId);
+
+-- 26. Report.ReportData
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ReportData' AND schema_id = SCHEMA_ID('Report'))
+CREATE TABLE Report.ReportData (
+    ReportDataId BIGINT PRIMARY KEY IDENTITY(1,1),
+    TenantId NVARCHAR(128) NOT NULL,
+    ReportId INT NOT NULL,
+    GeneratedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    DataJson NVARCHAR(MAX),
+    Summary NVARCHAR(MAX),
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (ReportId) REFERENCES Report.Reports(ReportId),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_ReportData_ReportId ON Report.ReportData(ReportId);
+CREATE INDEX IX_ReportData_GeneratedAt ON Report.ReportData(GeneratedAt);
+CREATE INDEX IX_ReportData_TenantId ON Report.ReportData(TenantId);
+
+-- 27. Report.Analytics
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Analytics' AND schema_id = SCHEMA_ID('Report'))
+CREATE TABLE Report.Analytics (
+    AnalyticsId BIGINT PRIMARY KEY IDENTITY(1,1),
+    TenantId NVARCHAR(128) NOT NULL,
+    EventName NVARCHAR(256) NOT NULL,
+    EntityType NVARCHAR(100),
+    EntityId NVARCHAR(256),
+    UserId NVARCHAR(256),
+    EventData NVARCHAR(MAX),
+    EventDate DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_Analytics_EventName ON Report.Analytics(EventName);
+CREATE INDEX IX_Analytics_EntityType_EntityId ON Report.Analytics(EntityType, EntityId);
+CREATE INDEX IX_Analytics_UserId ON Report.Analytics(UserId);
+CREATE INDEX IX_Analytics_EventDate ON Report.Analytics(EventDate);
+CREATE INDEX IX_Analytics_TenantId ON Report.Analytics(TenantId);
+
+-- ============================================
+-- AUTH SCHEMA (10 tables)
+-- ============================================
+
+-- 28. Auth.Users
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Users' AND schema_id = SCHEMA_ID('Auth'))
+CREATE TABLE Auth.Users (
+    UserId NVARCHAR(128) PRIMARY KEY,
+    TenantId NVARCHAR(128) NOT NULL,
+    UserName NVARCHAR(256) NOT NULL UNIQUE,
+    NormalizedUserName NVARCHAR(256) NOT NULL UNIQUE,
+    Email NVARCHAR(256) NOT NULL,
+    NormalizedEmail NVARCHAR(256) NOT NULL,
+    EmailConfirmed BIT NOT NULL DEFAULT 0,
+    PasswordHash NVARCHAR(MAX),
+    SecurityStamp NVARCHAR(MAX),
+    ConcurrencyStamp NVARCHAR(MAX),
+    PhoneNumber NVARCHAR(20),
+    PhoneNumberConfirmed BIT NOT NULL DEFAULT 0,
+    TwoFactorEnabled BIT NOT NULL DEFAULT 0,
+    LockoutEnd DATETIMEOFFSET,
+    LockoutEnabled BIT NOT NULL DEFAULT 1,
+    AccessFailedCount INT NOT NULL DEFAULT 0,
+    DisplayName NVARCHAR(256),
+    AvatarUrl NVARCHAR(500),
+    Locale NVARCHAR(10) DEFAULT 'en-US',
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_Users_Email ON Auth.Users(Email);
+CREATE INDEX IX_Users_NormalizedEmail ON Auth.Users(NormalizedEmail);
+CREATE INDEX IX_Users_TenantId ON Auth.Users(TenantId);
+
+-- 29. Auth.Roles
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Roles' AND schema_id = SCHEMA_ID('Auth'))
+CREATE TABLE Auth.Roles (
+    RoleId NVARCHAR(128) PRIMARY KEY,
+    TenantId NVARCHAR(128) NOT NULL,
+    Name NVARCHAR(256) NOT NULL,
+    NormalizedName NVARCHAR(256) NOT NULL UNIQUE,
+    DisplayName NVARCHAR(256),
+    Description NVARCHAR(500),
+    IsSystemRole BIT NOT NULL DEFAULT 0,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_Roles_Name ON Auth.Roles(Name);
+CREATE INDEX IX_Roles_NormalizedName ON Auth.Roles(NormalizedName);
+CREATE INDEX IX_Roles_TenantId ON Auth.Roles(TenantId);
+
+-- 30. Auth.Permissions
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Permissions' AND schema_id = SCHEMA_ID('Auth'))
+CREATE TABLE Auth.Permissions (
+    PermissionId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    TenantId NVARCHAR(128) NOT NULL,
+    Name NVARCHAR(256) NOT NULL,
+    DisplayName NVARCHAR(256),
+    Description NVARCHAR(500),
+    Category NVARCHAR(100),
+    PermissionType NVARCHAR(100),
+    ResourceType NVARCHAR(100),
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    UNIQUE (TenantId, PermissionType, ResourceType)
+);
+CREATE INDEX IX_Permissions_PermissionType ON Auth.Permissions(PermissionType);
+CREATE INDEX IX_Permissions_ResourceType ON Auth.Permissions(ResourceType);
+CREATE INDEX IX_Permissions_TenantId ON Auth.Permissions(TenantId);
+
+-- 31. Auth.UserRoles
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'UserRoles' AND schema_id = SCHEMA_ID('Auth'))
+CREATE TABLE Auth.UserRoles (
+    UserRoleId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    TenantId NVARCHAR(128) NOT NULL,
+    UserId NVARCHAR(128) NOT NULL,
+    RoleId NVARCHAR(128) NOT NULL,
+    AssignedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (UserId) REFERENCES Auth.Users(UserId),
+    FOREIGN KEY (RoleId) REFERENCES Auth.Roles(RoleId),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    UNIQUE (TenantId, UserId, RoleId)
+);
+CREATE INDEX IX_UserRoles_UserId ON Auth.UserRoles(UserId);
+CREATE INDEX IX_UserRoles_RoleId ON Auth.UserRoles(RoleId);
+CREATE INDEX IX_UserRoles_TenantId ON Auth.UserRoles(TenantId);
+
+-- 32. Auth.RolePermissions
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'RolePermissions' AND schema_id = SCHEMA_ID('Auth'))
+CREATE TABLE Auth.RolePermissions (
+    RolePermissionId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    TenantId NVARCHAR(128) NOT NULL,
+    RoleId NVARCHAR(128) NOT NULL,
+    PermissionId UNIQUEIDENTIFIER NOT NULL,
+    GrantedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (RoleId) REFERENCES Auth.Roles(RoleId),
+    FOREIGN KEY (PermissionId) REFERENCES Auth.Permissions(PermissionId),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    UNIQUE (TenantId, RoleId, PermissionId)
+);
+CREATE INDEX IX_RolePermissions_RoleId ON Auth.RolePermissions(RoleId);
+CREATE INDEX IX_RolePermissions_PermissionId ON Auth.RolePermissions(PermissionId);
+CREATE INDEX IX_RolePermissions_TenantId ON Auth.RolePermissions(TenantId);
+
+-- 33. Auth.UserPermissions
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'UserPermissions' AND schema_id = SCHEMA_ID('Auth'))
+CREATE TABLE Auth.UserPermissions (
+    UserPermissionId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    TenantId NVARCHAR(128) NOT NULL,
+    UserId NVARCHAR(128) NOT NULL,
+    PermissionId UNIQUEIDENTIFIER NOT NULL,
+    GrantedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    ExpiresAt DATETIME2,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (UserId) REFERENCES Auth.Users(UserId),
+    FOREIGN KEY (PermissionId) REFERENCES Auth.Permissions(PermissionId),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    UNIQUE (TenantId, UserId, PermissionId)
+);
+CREATE INDEX IX_UserPermissions_UserId ON Auth.UserPermissions(UserId);
+CREATE INDEX IX_UserPermissions_PermissionId ON Auth.UserPermissions(PermissionId);
+CREATE INDEX IX_UserPermissions_TenantId ON Auth.UserPermissions(TenantId);
+
+-- 34. Auth.AuthTokens (Merged Token Types)
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'AuthTokens' AND schema_id = SCHEMA_ID('Auth'))
+CREATE TABLE Auth.AuthTokens (
+    AuthTokenId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    TenantId NVARCHAR(128) NOT NULL,
+    UserId NVARCHAR(128) NOT NULL,
+    Token NVARCHAR(500) NOT NULL UNIQUE,
+    TokenType NVARCHAR(50) NOT NULL,
+    TokenSubType NVARCHAR(50),
+    ExpiresAt DATETIME2 NOT NULL,
+    UsedAt DATETIME2,
+    VerifiedAt DATETIME2,
+    RevokedAt DATETIME2,
+    Attempts INT NOT NULL DEFAULT 0,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    UpdatedAt DATETIME2,
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (UserId) REFERENCES Auth.Users(UserId),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_AuthTokens_Token ON Auth.AuthTokens(Token);
+CREATE INDEX IX_AuthTokens_UserId ON Auth.AuthTokens(UserId);
+CREATE INDEX IX_AuthTokens_ExpiresAt ON Auth.AuthTokens(ExpiresAt);
+CREATE INDEX IX_AuthTokens_TokenType ON Auth.AuthTokens(TokenType);
+CREATE INDEX IX_AuthTokens_TenantId ON Auth.AuthTokens(TenantId);
+
+-- 35. Auth.LoginAttempts
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'LoginAttempts' AND schema_id = SCHEMA_ID('Auth'))
+CREATE TABLE Auth.LoginAttempts (
+    LoginAttemptId BIGINT PRIMARY KEY IDENTITY(1,1),
+    TenantId NVARCHAR(128) NOT NULL,
+    UserId NVARCHAR(128),
+    Email NVARCHAR(256),
+    IPAddress NVARCHAR(45),
+    UserAgent NVARCHAR(500),
+    IsSuccessful BIT NOT NULL DEFAULT 0,
+    FailureReason NVARCHAR(256),
+    AttemptedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_LoginAttempts_UserId ON Auth.LoginAttempts(UserId);
+CREATE INDEX IX_LoginAttempts_Email ON Auth.LoginAttempts(Email);
+CREATE INDEX IX_LoginAttempts_IPAddress ON Auth.LoginAttempts(IPAddress);
+CREATE INDEX IX_LoginAttempts_AttemptedAt ON Auth.LoginAttempts(AttemptedAt);
+CREATE INDEX IX_LoginAttempts_TenantId ON Auth.LoginAttempts(TenantId);
+
+-- 36. Auth.AuditTrail
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'AuditTrail' AND schema_id = SCHEMA_ID('Auth'))
+CREATE TABLE Auth.AuditTrail (
+    AuditTrailId BIGINT PRIMARY KEY IDENTITY(1,1),
+    TenantId NVARCHAR(128) NOT NULL,
+    UserId NVARCHAR(128),
+    Action NVARCHAR(256) NOT NULL,
+    EntityType NVARCHAR(100),
+    EntityId NVARCHAR(256),
+    Changes NVARCHAR(MAX),
+    IPAddress NVARCHAR(45),
+    UserAgent NVARCHAR(500),
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    FOREIGN KEY (UserId) REFERENCES Auth.Users(UserId),
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId)
+);
+CREATE INDEX IX_AuditTrail_UserId ON Auth.AuditTrail(UserId);
+CREATE INDEX IX_AuditTrail_Action ON Auth.AuditTrail(Action);
+CREATE INDEX IX_AuditTrail_CreatedAt ON Auth.AuditTrail(CreatedAt);
+CREATE INDEX IX_AuditTrail_TenantId ON Auth.AuditTrail(TenantId);
+
+-- 37. Auth.TenantUsers
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'TenantUsers' AND schema_id = SCHEMA_ID('Auth'))
+CREATE TABLE Auth.TenantUsers (
+    TenantUserId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    TenantId NVARCHAR(128) NOT NULL,
+    UserId NVARCHAR(128) NOT NULL,
+    InvitedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    AcceptedAt DATETIME2,
+    Status NVARCHAR(50) NOT NULL DEFAULT 'Active',
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    CreatedBy NVARCHAR(256),
+    UpdatedAt DATETIME2,
+    UpdatedBy NVARCHAR(256),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (TenantId) REFERENCES Master.Tenants(TenantId),
+    FOREIGN KEY (UserId) REFERENCES Auth.Users(UserId),
+    UNIQUE (TenantId, UserId)
+);
+CREATE INDEX IX_TenantUsers_TenantId ON Auth.TenantUsers(TenantId);
+CREATE INDEX IX_TenantUsers_UserId ON Auth.TenantUsers(UserId);
+
+-- ============================================
+-- COMPLETION
+-- ============================================
+PRINT '✓ v3 Complete Schema Created Successfully';
+PRINT '✓ 5 Schemas: Master, Shared, Transaction, Report, Auth';
+PRINT '✓ 37 Tables Total';
+PRINT '✓ All Primary Indexes Created';
+PRINT '✓ Foreign Key Constraints Applied';
+PRINT '✓ Multi-Tenant Support Enabled';
+PRINT '✓ Ready for v3 Stored Procedures and Seed Data';
+GO

@@ -1,0 +1,255 @@
+================================================================================
+SmartWorkz v3 - SYSTEM STORED PROCEDURES QUICK REFERENCE
+================================================================================
+
+FILE: 00_System_SPs.sql (692 lines, 10 procedures)
+PURPOSE: Database administration, monitoring, and maintenance utilities
+STATUS: ✅ READY FOR DEPLOYMENT
+
+================================================================================
+PROCEDURE QUICK LAUNCH COMMANDS
+================================================================================
+
+1. CHECK TABLE EXISTS
+   ─────────────────────────────────────────────────────────────
+   DECLARE @Exists BIT;
+   EXEC spTableExists @SchemaName='Master', @TableName='Tenants', @Exists=@Exists OUTPUT;
+
+2. CHECK VIEW EXISTS
+   ─────────────────────────────────────────────────────────────
+   DECLARE @Exists BIT;
+   EXEC spViewExists @SchemaName='dbo', @ViewName='vw_LookupHierarchy', @Exists=@Exists OUTPUT;
+
+3. CHECK STORED PROCEDURE EXISTS
+   ─────────────────────────────────────────────────────────────
+   DECLARE @Exists BIT;
+   EXEC spStoredProcedureExists @SchemaName='Master', @ProcedureName='spUpsertTenant', @Exists=@Exists OUTPUT;
+
+4. FIND TABLE DEPENDENCIES (Shows FK, SPs, Views, Indexes, Constraints)
+   ─────────────────────────────────────────────────────────────
+   EXEC spFindTableDependencies @SchemaName='Master', @TableName='Lookup';
+
+5. CLEAN TABLE WITH DEPENDENCIES (DRY RUN FIRST!)
+   ─────────────────────────────────────────────────────────────
+   -- Preview what would happen:
+   EXEC spCleanTableWithDependencies
+       @SchemaName='Master',
+       @TableName='BlogPosts',
+       @DeleteData=1,
+       @DropForeignKeys=0,
+       @DropIndexes=0,
+       @DryRun=1;
+
+   -- Execute (change @DryRun=0):
+   EXEC spCleanTableWithDependencies
+       @SchemaName='Master',
+       @TableName='BlogPosts',
+       @DeleteData=1,
+       @DropForeignKeys=1,
+       @DropIndexes=1,
+       @DryRun=0;
+
+6. INDEX STATISTICS REPORT
+   ─────────────────────────────────────────────────────────────
+   EXEC spIndexStatisticsReport @SchemaName='Master', @OrderBy='Fragmentation';
+   -- @OrderBy: 'Fragmentation', 'Seeks', 'Scans', 'Size'
+
+7. INDEX RECOMMENDATIONS (What to rebuild/reorganize/create/drop)
+   ─────────────────────────────────────────────────────────────
+   EXEC spIndexRecommendationReport @MinFragmentation=10, @MinSeeks=100;
+
+8. DATABASE OBJECT REPORT (Complete inventory)
+   ─────────────────────────────────────────────────────────────
+   EXEC spDatabaseObjectReport;
+
+9. STORED PROCEDURE EXECUTION STATISTICS
+   ─────────────────────────────────────────────────────────────
+   EXEC spProcedureExecutionStats @SchemaName='Master', @OrderBy='ExecutionCount';
+   -- @OrderBy: 'ExecutionCount', 'TotalTime', 'AvgTime'
+
+10. SYSTEM HEALTH CHECK (Overall health & recommendations)
+    ─────────────────────────────────────────────────────────────
+    EXEC spSystemHealthCheck;
+
+================================================================================
+COMMON USE CASES & COMMANDS
+================================================================================
+
+SCENARIO: Pre-Deployment Validation
+────────────────────────────────────────────────────────────────────────────
+-- Verify all required tables exist
+DECLARE @Result BIT;
+EXEC spTableExists @SchemaName='Master', @TableName='Tenants', @Exists=@Result OUTPUT;
+IF @Result=0 PRINT 'MISSING: Master.Tenants' ELSE PRINT 'OK: Master.Tenants';
+
+-- Run health check
+EXEC spSystemHealthCheck;
+
+SCENARIO: Fix High Fragmentation
+────────────────────────────────────────────────────────────────────────────
+-- Get fragmented indexes
+EXEC spIndexStatisticsReport @OrderBy='Fragmentation';
+
+-- Get rebuild/reorganize commands
+EXEC spIndexRecommendationReport;
+
+-- Copy and paste the REBUILD/REORGANIZE commands from output
+
+SCENARIO: Clean Test Data Safely
+────────────────────────────────────────────────────────────────────────────
+-- First: See what would happen
+EXEC spFindTableDependencies @SchemaName='Master', @TableName='BlogPosts';
+
+EXEC spCleanTableWithDependencies
+    @SchemaName='Master',
+    @TableName='BlogPosts',
+    @DeleteData=1,
+    @DryRun=1;  -- Always DryRun first!
+
+-- Then: Execute for real
+EXEC spCleanTableWithDependencies
+    @SchemaName='Master',
+    @TableName='BlogPosts',
+    @DeleteData=1,
+    @DryRun=0;
+
+SCENARIO: Find Performance Issues
+────────────────────────────────────────────────────────────────────────────
+-- Show slow procedures
+EXEC spProcedureExecutionStats @OrderBy='AvgTime';
+
+-- Show frequently called procedures
+EXEC spProcedureExecutionStats @OrderBy='ExecutionCount';
+
+-- Show high-impact missing indexes
+EXEC spIndexRecommendationReport @MinFragmentation=10;
+
+================================================================================
+PROCEDURE BEHAVIOR GUIDE
+================================================================================
+
+TABLE/VIEW/PROCEDURE CHECKS (@Exists OUTPUT):
+  Returns: 1 = Exists, 0 = Does not exist
+  Use: IF statements, DECLARE @Result BIT
+
+FIND DEPENDENCIES:
+  Read-only: Shows all references
+  No modifications made
+  Output: FK, SPs, Views, Indexes, Constraints
+
+CLEAN WITH DEPENDENCIES:
+  @DeleteData=1        → DELETE FROM table
+  @DropForeignKeys=1   → DROP FK constraints
+  @DropIndexes=1       → DROP non-PK indexes
+  @DryRun=1 (default)  → Preview without executing
+  @DryRun=0            → Actually execute changes
+
+  ⚠️  ALWAYS USE @DryRun=1 FIRST!
+
+INDEX REPORTS:
+  SEEK patterns = Good (targeted access)
+  SCAN patterns = Full index scan
+  LOOKUP patterns = Missing index opportunity
+
+  Fragmentation < 10%   = Good (no action)
+  Fragmentation 10-30%  = Moderate (REORGANIZE)
+  Fragmentation > 30%   = High (REBUILD)
+
+MISSING INDEXES:
+  Improvement score = impact to performance
+  Sorted by highest potential gain
+  Copy-paste CREATE INDEX commands
+
+HEALTH CHECK:
+  Green status = All OK
+  Yellow = Review soon
+  Red = Address immediately
+
+================================================================================
+MAINTENANCE SCHEDULE RECOMMENDATION
+================================================================================
+
+DAILY (Off-peak):
+  → EXEC spSystemHealthCheck;
+
+WEEKLY:
+  → EXEC spIndexStatisticsReport;
+  → Review output for fragmentation > 30%
+
+MONTHLY:
+  → EXEC spDatabaseObjectReport;
+  → EXEC spProcedureExecutionStats;
+  → Archive reports for trending
+
+BEFORE MAJOR CHANGES:
+  → EXEC spFindTableDependencies;
+  → EXEC spCleanTableWithDependencies (@DryRun=1);
+
+================================================================================
+TIPS & BEST PRACTICES
+================================================================================
+
+✓ Always preview with @DryRun=1 before executing changes
+✓ Run health check during low-traffic windows
+✓ Archive reports for month-over-month comparisons
+✓ Address fragmentation > 30% within 2 weeks
+✓ Monitor procedure execution stats for regressions
+✓ Keep dependency reports before schema changes
+✓ Schedule automated health checks as SQL Agent jobs
+
+⚠️  Never use @DryRun=0 without understanding @DeleteData impact
+⚠️  Backup database before destructive operations
+⚠️  Test index changes in dev environment first
+⚠️  Review blocking processes immediately
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+"Procedure not found" error:
+  → Ensure 00_System_SPs.sql has been executed
+  → Check if you're connecting to correct database
+  → Verify schema is 'dbo'
+
+Dependencies not found:
+  → Some objects may not be cataloged in DMVs
+  → Rebuild table dependencies manually if needed
+  → Check sys.dm_sql_referenced_entities for more
+
+Missing index recommendations seem wrong:
+  → DMVs are cumulative (restart instance to clear)
+  → Run procedure during representative workload
+  → Verify the cost calculation makes business sense
+
+Blocked processes not showing:
+  → No processes are currently blocked (good!)
+  → If blocking occurs, output will show details
+  → Check sp_who2 for more real-time info
+
+================================================================================
+ADDITIONAL RESOURCES
+================================================================================
+
+File: 00_System_SPs_README.md
+  → Detailed documentation for each procedure
+  → Full parameter descriptions
+  → Usage scenarios with examples
+  → Best practices guide
+
+File: 00_System_SPs.sql
+  → Source code for all procedures
+  → Inline documentation and comments
+  → Ready to deploy to production
+
+Database: Boilerplate
+  → DMVs: sys.dm_db_index_usage_stats
+  → DMVs: sys.dm_db_index_physical_stats
+  → DMVs: sys.dm_db_missing_index_details
+  → Catalog: sys.tables, sys.views, sys.procedures
+
+================================================================================
+Created: 2026-04-18
+Database: SQL Server (2016+)
+Version: SmartWorkz v3
+Status: ✅ PRODUCTION READY
+================================================================================
