@@ -51,7 +51,7 @@ public class AuthService : IAuthService
         var refreshToken = _tokenService.GenerateRefreshToken();
 
         var expiryDays = int.Parse(_configuration["Features:Authentication:Jwt:RefreshTokenExpiryDays"] ?? "7");
-        await _userRepository.CreateRefreshTokenAsync(new RefreshToken
+        await _userRepository.CreateRefreshTokenAsync(new Domain.Entities.Auth.RefreshToken
         {
             UserId    = user.UserId,
             Token     = refreshToken,
@@ -125,7 +125,7 @@ public class AuthService : IAuthService
         await _userRepository.RevokeRefreshTokenAsync(user.UserId, request.RefreshToken);
 
         var expiryDays = int.Parse(_configuration["Features:Authentication:Jwt:RefreshTokenExpiryDays"] ?? "7");
-        await _userRepository.CreateRefreshTokenAsync(new RefreshToken
+        await _userRepository.CreateRefreshTokenAsync(new Domain.Entities.Auth.RefreshToken
         {
             UserId    = user.UserId,
             Token     = newRefreshToken,
@@ -158,7 +158,7 @@ public class AuthService : IAuthService
 
         await _userRepository.InvalidatePreviousPasswordResetTokensAsync(user.UserId);
 
-        var token = new PasswordResetToken
+        var token = new Domain.Entities.Auth.PasswordResetToken
         {
             UserId    = user.UserId,
             Token     = _tokenService.GenerateRefreshToken(),

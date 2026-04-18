@@ -162,13 +162,14 @@ public class PermissionRepository : DapperRepository<PermissionDto>, IPermission
     }
 
     /// <summary>Remove a permission from a role</summary>
-    public async Task RemoveRolePermissionAsync(object roleId, object permissionId)
+    public async Task<bool> RemoveRolePermissionAsync(object roleId, object permissionId)
     {
         const string sql = """
             DELETE FROM [Auth].[RolePermissions]
             WHERE RoleId = @RoleId AND PermissionId = @PermissionId
             """;
 
-        await Connection.ExecuteAsync(sql, new { RoleId = roleId, PermissionId = permissionId });
+        var result = await Connection.ExecuteAsync(sql, new { RoleId = roleId, PermissionId = permissionId });
+        return result > 0;
     }
 }

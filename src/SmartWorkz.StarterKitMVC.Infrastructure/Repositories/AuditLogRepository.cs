@@ -57,6 +57,23 @@ public class AuditLogRepository : DapperRepository<AuditLogDto>, IAuditLogReposi
         });
     }
 
+    /// <summary>Get audit logs by action type</summary>
+    public async Task<IEnumerable<AuditLogDto>> GetByActionAsync(string action, string tenantId)
+    {
+        const string sql = """
+            SELECT * FROM [Auth].[AuditTrail]
+            WHERE Action = @Action
+              AND TenantId = @TenantId
+            ORDER BY CreatedAt DESC
+            """;
+
+        return await ExecuteQueryAsync(sql, new
+        {
+            Action = action,
+            TenantId = tenantId
+        });
+    }
+
     /// <summary>Get audit logs within a date range</summary>
     public async Task<IEnumerable<AuditLogDto>> GetByDateRangeAsync(DateTime from, DateTime to, string tenantId)
     {

@@ -61,7 +61,7 @@ builder.Services.AddSingleton<INotificationQueue, InMemoryNotificationQueue>();
 builder.Services.AddEmailTemplates();
 
 // Authorization & Permissions
-builder.Services.AddSingleton<IPermissionService, PermissionService>();
+builder.Services.AddSingleton<SmartWorkz.StarterKitMVC.Application.Authorization.IPermissionService, SmartWorkz.StarterKitMVC.Infrastructure.Authorization.PermissionService>();
 builder.Services.AddSingleton<IClaimService, ClaimService>();
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 builder.Services.AddAuthorization(options =>
