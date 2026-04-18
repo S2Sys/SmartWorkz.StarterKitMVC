@@ -124,10 +124,10 @@ public class RoleService : IRoleService
 
         try
         {
-            role.RoleId = Guid.NewGuid().ToString();
+            role.RoleId = Guid.NewGuid();
             role.CreatedAt = DateTime.UtcNow;
 
-            await _roleRepository.UpsertAsync(new Repositories.RoleDto
+            await _roleRepository.UpsertAsync(new RoleDto
             {
                 RoleId = role.RoleId,
                 Name = role.Name,
@@ -158,7 +158,7 @@ public class RoleService : IRoleService
     {
         if (role == null)
             throw new ArgumentNullException(nameof(role));
-        if (string.IsNullOrWhiteSpace(role.RoleId))
+        if (role.RoleId == Guid.Empty)
             throw new ArgumentException("Role ID is required", nameof(role.RoleId));
         if (string.IsNullOrWhiteSpace(role.Name))
             throw new ArgumentException("Role name is required", nameof(role.Name));
@@ -167,7 +167,7 @@ public class RoleService : IRoleService
         {
             role.UpdatedAt = DateTime.UtcNow;
 
-            await _roleRepository.UpsertAsync(new Repositories.RoleDto
+            await _roleRepository.UpsertAsync(new RoleDto
             {
                 RoleId = role.RoleId,
                 Name = role.Name,
@@ -184,7 +184,7 @@ public class RoleService : IRoleService
                 "Role updated: {RoleId} ({Name})",
                 role.RoleId, role.Name);
 
-            return updated;
+            return role;
         }
         catch (Exception ex)
         {
