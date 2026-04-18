@@ -33,7 +33,7 @@ public class BlogService : IBlogService
 
         try
         {
-            var (posts, total) = await _repository.GetPublishedAsync(tenantId, page, pageSize);
+            var (posts, total) = await _repository.GetPagedAsync(tenantId, published: true, pageNumber: page, pageSize: pageSize);
             _logger.LogDebug("Retrieved {Count} published posts for tenant {TenantId}", posts.Count(), tenantId);
             return (posts.OrderByDescending(p => p.PublishedAt), total);
         }
@@ -80,7 +80,7 @@ public class BlogService : IBlogService
             if (post != null && post.IsPublished)
             {
                 // Increment view count asynchronously
-                _ = IncrementViewCountAsync(post.PostId);
+                _ = IncrementViewCountAsync(post.BlogPostId);
             }
 
             return post;
@@ -131,7 +131,7 @@ public class BlogService : IBlogService
                 post.Slug = GenerateSlug(post.Title);
             }
 
-            post.PostId = Guid.NewGuid();
+            post.BlogPostId = Guid.NewGuid();
             post.CreatedAt = DateTime.UtcNow;
             post.IsPublished = false; // Default to draft
 
@@ -139,7 +139,7 @@ public class BlogService : IBlogService
 
             _logger.LogInformation(
                 "Blog post created: {PostId} ({Title}) by {AuthorId}",
-                created.PostId, created.Title, created.AuthorId);
+                created.BlogPostId, created.Title, created.AuthorId);
 
             return created;
         }
@@ -155,8 +155,8 @@ public class BlogService : IBlogService
     {
         if (post == null)
             throw new ArgumentNullException(nameof(post));
-        if (post.PostId == Guid.Empty)
-            throw new ArgumentException("Post ID is required", nameof(post.PostId));
+        if (post.BlogPostId == Guid.Empty)
+            throw new ArgumentException("Post ID is required", nameof(post.BlogPostId));
         if (string.IsNullOrWhiteSpace(post.Title))
             throw new ArgumentException("Post title is required", nameof(post.Title));
 
@@ -168,13 +168,13 @@ public class BlogService : IBlogService
 
             _logger.LogInformation(
                 "Blog post updated: {PostId} ({Title})",
-                updated.PostId, updated.Title);
+                updated.BlogPostId, updated.Title);
 
             return updated;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating blog post: {PostId}", post.PostId);
+            _logger.LogError(ex, "Error updating blog post: {PostId}", post.BlogPostId);
             throw;
         }
     }
