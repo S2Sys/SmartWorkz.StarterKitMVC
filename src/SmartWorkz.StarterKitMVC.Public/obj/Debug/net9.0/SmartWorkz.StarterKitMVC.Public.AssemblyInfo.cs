@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartWorkz.StarterKitMVC.Public")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+15fea711ccc5d0d1d9715661682380a39226d109")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+62d67b2157c11d2c73077b0c828b10fd07ec2a26")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartWorkz.StarterKitMVC.Public")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartWorkz.StarterKitMVC.Public")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

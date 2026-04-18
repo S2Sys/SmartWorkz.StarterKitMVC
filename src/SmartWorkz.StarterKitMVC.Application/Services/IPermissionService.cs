@@ -1,3 +1,5 @@
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
+
 namespace SmartWorkz.StarterKitMVC.Application.Services;
 
 /// <summary>
@@ -46,15 +48,3 @@ public interface IPermissionService
     Task<IEnumerable<PermissionDto>> GetAllAsync(string tenantId);
 }
 
-/// <summary>DTO for Permission entity</summary>
-public class PermissionDto
-{
-    public string PermissionId { get; set; }
-    public string Name { get; set; }
-    public string? Description { get; set; }
-    public string? Category { get; set; }
-    public string TenantId { get; set; }
-    public bool IsActive { get; set; } = true;
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-}

@@ -3,28 +3,72 @@
   "WorkspaceRootPath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\services\\auditservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\services\\auditservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\services\\ilookupservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\services\\ilookupservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\repositories\\iauditlogrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\repositories\\iauditlogrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\repositories\\ipermissionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\repositories\\ipermissionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.shared\\dtos\\lookupdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|solutionrelative:src\\smartworkz.starterkitmvc.shared\\dtos\\lookupdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.shared\\dtos\\notificationdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|solutionrelative:src\\smartworkz.starterkitmvc.shared\\dtos\\notificationdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\services\\blogservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\services\\blogservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0C12C656-CED5-4732-8756-31C978619309}|src\\SmartWorkz.StarterKitMVC.Web\\SmartWorkz.StarterKitMVC.Web.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.web\\controllers\\api\\rolescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0C12C656-CED5-4732-8756-31C978619309}|src\\SmartWorkz.StarterKitMVC.Web\\SmartWorkz.StarterKitMVC.Web.csproj|solutionrelative:src\\smartworkz.starterkitmvc.web\\controllers\\api\\rolescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\services\\iroleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\services\\iroleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\repositories\\iblogpostrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\repositories\\iblogpostrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\repositories\\irolerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\repositories\\irolerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\services\\authenticationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\services\\authenticationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\repositories\\inotificationrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\repositories\\inotificationrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\services\\auditservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\services\\auditservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.shared\\dtos\\tenantdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4F0F7861-45E3-4B59-9041-E48E58C3FF74}|src\\SmartWorkz.StarterKitMVC.Shared\\SmartWorkz.StarterKitMVC.Shared.csproj|solutionrelative:src\\smartworkz.starterkitmvc.shared\\dtos\\tenantdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C12C656-CED5-4732-8756-31C978619309}|src\\SmartWorkz.StarterKitMVC.Web\\SmartWorkz.StarterKitMVC.Web.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.web\\controllers\\api\\rolescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C12C656-CED5-4732-8756-31C978619309}|src\\SmartWorkz.StarterKitMVC.Web\\SmartWorkz.StarterKitMVC.Web.csproj|solutionrelative:src\\smartworkz.starterkitmvc.web\\controllers\\api\\rolescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\repositories\\ilookuprepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\repositories\\ilookuprepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\services\\notificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\services\\notificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\services\\configurationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\services\\configurationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\services\\iroleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\services\\iroleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\services\\authenticationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|solutionrelative:src\\smartworkz.starterkitmvc.application\\services\\authenticationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C6381FAD-5149-42A7-8863-F6ED2457F0F3}|src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj|c:\\users\\tsent\\source\\repos\\s2sys\\smartworkz.starterkitmvc\\src\\smartworkz.starterkitmvc.application\\services\\emailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -138,11 +182,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 15,
               "Title": "IRoleService.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\IRoleService.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\IRoleService.cs",
@@ -151,18 +195,17 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAuwAYAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-17T17:00:04.586Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 11,
               "Title": "RolesController.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Web\\Controllers\\Api\\RolesController.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Web\\Controllers\\Api\\RolesController.cs",
               "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Web\\Controllers\\Api\\RolesController.cs",
               "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Web\\Controllers\\Api\\RolesController.cs",
-              "ViewState": "AgIAAC8AAAAAAAAAAAD4vz8AAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-17T16:44:55.076Z",
               "IsPinned": true,
@@ -170,15 +213,67 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "BlogService.cs",
-              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\BlogService.cs",
-              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\BlogService.cs",
-              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\BlogService.cs",
-              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\BlogService.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAAYwDkAAAATAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "ILookupService.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\ILookupService.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\ILookupService.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\ILookupService.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\ILookupService.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAkwBMAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-17T17:25:43.666Z",
+              "WhenOpened": "2026-04-18T05:35:35.44Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IAuditLogRepository.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IAuditLogRepository.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IAuditLogRepository.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IAuditLogRepository.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IAuditLogRepository.cs",
+              "ViewState": "AgIAAB0AAAAAAAAAAAAEwCIAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T05:19:14.487Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "IPermissionRepository.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IPermissionRepository.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IPermissionRepository.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IPermissionRepository.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IPermissionRepository.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAA7wBEAAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T05:15:38.236Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "NotificationDto.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\DTOs\\NotificationDto.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Shared\\DTOs\\NotificationDto.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\DTOs\\NotificationDto.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Shared\\DTOs\\NotificationDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T05:12:47.33Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "LookupDto.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\DTOs\\LookupDto.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Shared\\DTOs\\LookupDto.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\DTOs\\LookupDto.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Shared\\DTOs\\LookupDto.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAowBIAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T05:02:52.89Z",
               "EditorCaption": ""
             },
             {
@@ -187,52 +282,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "IRoleRepository.cs",
-              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IRoleRepository.cs",
-              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IRoleRepository.cs",
-              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IRoleRepository.cs",
-              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IRoleRepository.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAAwA0AAABFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-17T17:01:38.241Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "AuthenticationService.cs",
-              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\AuthenticationService.cs",
-              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\AuthenticationService.cs",
-              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\AuthenticationService.cs",
-              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\AuthenticationService.cs",
-              "ViewState": "AgIAABgAAAAAAAAAAAAlwD8AAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-17T16:54:51.312Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "EmailService.cs",
-              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\EmailService.cs",
-              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\EmailService.cs",
-              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\EmailService.cs",
-              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\EmailService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHoAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-17T16:38:31.157Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
               "Title": "AuditService.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\AuditService.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\AuditService.cs",
               "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\AuditService.cs",
               "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\AuditService.cs",
-              "ViewState": "AgIAAG4AAAAAAAAAAAAQwH8AAAATAAAAAAAAAA==",
+              "ViewState": "AgIAAHYAAAAAAAAAAAAmwIIAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-17T15:38:38.803Z",
               "EditorCaption": ""
@@ -240,6 +296,132 @@
             {
               "$type": "Document",
               "DocumentIndex": 7,
+              "Title": "IBlogPostRepository.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IBlogPostRepository.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IBlogPostRepository.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IBlogPostRepository.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IBlogPostRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T05:23:32.587Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "BlogService.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\BlogService.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\BlogService.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\BlogService.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\BlogService.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAmwCIAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-17T17:25:43.666Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "INotificationRepository.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\INotificationRepository.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\INotificationRepository.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\INotificationRepository.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\INotificationRepository.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAASwCEAAAA4AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T05:12:16.95Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ILookupRepository.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\ILookupRepository.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\ILookupRepository.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\ILookupRepository.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\ILookupRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T04:26:27.629Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "TenantDto.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\DTOs\\TenantDto.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Shared\\DTOs\\TenantDto.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\DTOs\\TenantDto.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Shared\\DTOs\\TenantDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T03:52:56.91Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "IRoleRepository.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IRoleRepository.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IRoleRepository.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IRoleRepository.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Repositories\\IRoleRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-17T17:01:38.241Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "NotificationService.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\NotificationService.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\NotificationService.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\NotificationService.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\NotificationService.cs",
+              "ViewState": "AgIAAGEAAAAAAAAAAAAYwHAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-17T17:28:03.8Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ConfigurationService.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\ConfigurationService.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\ConfigurationService.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\ConfigurationService.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\ConfigurationService.cs",
+              "ViewState": "AgIAANQAAAAAAAAAAAAYwOYAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-17T17:27:01.908Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "AuthenticationService.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\AuthenticationService.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\AuthenticationService.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\AuthenticationService.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\AuthenticationService.cs",
+              "ViewState": "AgIAABgAAAAAAAAAAAAlwD8AAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-17T16:54:51.312Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "EmailService.cs",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\EmailService.cs",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\EmailService.cs",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Services\\EmailService.cs",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\EmailService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHoAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-17T16:38:31.157Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Admin\\Program.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Admin\\Program.cs",
@@ -251,7 +433,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 21,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Admin\\appsettings.json",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Admin\\appsettings.json",
@@ -263,7 +445,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 20,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\PasswordHashGeneratorApp\\Program.cs",
               "RelativeDocumentMoniker": "src\\PasswordHashGeneratorApp\\Program.cs",
@@ -275,7 +457,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 19,
               "Title": "PermissionMiddleware.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Admin\\Middleware\\PermissionMiddleware.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Admin\\Middleware\\PermissionMiddleware.cs",
@@ -287,7 +469,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 24,
               "Title": "PasswordHasher.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Infrastructure\\Services\\PasswordHasher.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Infrastructure\\Services\\PasswordHasher.cs",
@@ -299,7 +481,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 23,
               "Title": "AuthService.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Infrastructure\\Services\\AuthService.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Infrastructure\\Services\\AuthService.cs",
@@ -311,7 +493,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 22,
               "Title": "Login.cshtml.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Admin\\Pages\\Account\\Login.cshtml.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Admin\\Pages\\Account\\Login.cshtml.cs",
@@ -323,7 +505,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 25,
               "Title": "AuthorizationMiddleware.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Admin\\Middleware\\AuthorizationMiddleware.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Admin\\Middleware\\AuthorizationMiddleware.cs",
@@ -335,7 +517,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 27,
               "Title": "SmartWorkz.StarterKitMVC.Tests.Unit.csproj",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Unit\\SmartWorkz.StarterKitMVC.Tests.Unit.csproj",
               "RelativeDocumentMoniker": "tests\\SmartWorkz.StarterKitMVC.Tests.Unit\\SmartWorkz.StarterKitMVC.Tests.Unit.csproj",
@@ -347,7 +529,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 32,
               "Title": "HealthController.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Web\\Controllers\\HealthController.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Web\\Controllers\\HealthController.cs",
@@ -359,7 +541,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 26,
               "Title": "PermissionAttribute.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Web\\Authorization\\PermissionAttribute.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Web\\Authorization\\PermissionAttribute.cs",
@@ -371,7 +553,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 31,
               "Title": "AuthController.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Web\\Controllers\\Api\\AuthController.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Web\\Controllers\\Api\\AuthController.cs",
@@ -383,7 +565,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 28,
               "Title": "TranslationService.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Infrastructure\\Services\\TranslationService.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Infrastructure\\Services\\TranslationService.cs",
@@ -395,7 +577,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 29,
               "Title": "LoginIntegrationTest.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Unit\\LoginIntegrationTest.cs",
               "RelativeDocumentMoniker": "tests\\SmartWorkz.StarterKitMVC.Tests.Unit\\LoginIntegrationTest.cs",
@@ -407,7 +589,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 33,
               "Title": "AccountController.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Web\\Controllers\\AccountController.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Web\\Controllers\\AccountController.cs",
@@ -419,7 +601,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 30,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Web\\Program.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Web\\Program.cs",
@@ -431,7 +613,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 42,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Public\\appsettings.json",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Public\\appsettings.json",
@@ -443,7 +625,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 34,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Web\\appsettings.json",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Web\\appsettings.json",
@@ -455,7 +637,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 36,
               "Title": "FileHelper.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\FileHelper.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\FileHelper.cs",
@@ -467,7 +649,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 35,
               "Title": "EnumExtensions.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\EnumExtensions.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\EnumExtensions.cs",
@@ -479,7 +661,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 37,
               "Title": "DateTimeExtensions.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\DateTimeExtensions.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\DateTimeExtensions.cs",
@@ -491,7 +673,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 38,
               "Title": "CollectionExtensions.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\CollectionExtensions.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Shared\\Extensions\\CollectionExtensions.cs",
@@ -503,7 +685,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 39,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Web\\Areas\\Admin\\Views\\Dashboard\\Index.cshtml",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Web\\Areas\\Admin\\Views\\Dashboard\\Index.cshtml",
@@ -515,7 +697,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 40,
               "Title": "NoOpAiClient.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Infrastructure\\AI\\NoOpAiClient.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Infrastructure\\AI\\NoOpAiClient.cs",
@@ -527,7 +709,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 41,
               "Title": "IHttpService.cs",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\Abstractions\\IHttpService.cs",
               "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Application\\Abstractions\\IHttpService.cs",

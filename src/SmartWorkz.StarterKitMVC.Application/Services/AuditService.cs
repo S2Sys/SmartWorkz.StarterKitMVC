@@ -1,3 +1,4 @@
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 
@@ -40,8 +41,8 @@ public class AuditService : IAuditService
                 EntityType = log.EntityType,
                 EntityId = log.EntityId,
                 Action = log.Action,
-                OldValues = log.OldValue,
-                NewValues = log.NewValue,
+                OldValue = log.OldValue,
+                NewValue = log.NewValue,
                 UserId = log.UserId,
                 TenantId = log.TenantId,
                 CreatedAt = DateTime.UtcNow,
@@ -90,8 +91,8 @@ public class AuditService : IAuditService
                 EntityType = l.EntityType,
                 EntityId = l.EntityId,
                 Action = l.Action,
-                OldValue = l.OldValues,
-                NewValue = l.NewValues,
+                OldValue = l.OldValue,
+                NewValue = l.NewValue,
                 UserId = l.UserId,
                 TenantId = l.TenantId,
                 CreatedAt = l.CreatedAt,
