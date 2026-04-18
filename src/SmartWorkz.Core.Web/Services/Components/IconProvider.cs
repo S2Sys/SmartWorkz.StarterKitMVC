@@ -1,5 +1,7 @@
 namespace SmartWorkz.Core.Web.Services.Components;
 
+using System.Net;
+
 /// <summary>
 /// Implementation of IIconProvider that provides Bootstrap icon CSS classes and HTML markup.
 /// </summary>
@@ -13,7 +15,7 @@ public class IconProvider : IIconProvider
         { IconType.Warning, "bi-exclamation-triangle" },
         { IconType.Info, "bi-info-circle" },
         { IconType.CheckCircle, "bi-check-circle" },
-        { IconType.ExclamationTriangle, "bi-exclamation-triangle-fill" },
+        { IconType.ExclamationTriangle, "bi-exclamation-triangle" },
         { IconType.ExclamationCircle, "bi-exclamation-circle" },
         { IconType.InformationCircle, "bi-info-circle-fill" },
 
@@ -91,6 +93,7 @@ public class IconProvider : IIconProvider
             return $"<i class=\"{iconClass}\"></i>";
         }
 
-        return $"<i class=\"{iconClass} {cssClass}\"></i>";
+        var encodedCssClass = WebUtility.HtmlEncode(cssClass);
+        return $"<i class=\"{iconClass} {encodedCssClass}\"></i>";
     }
 }
