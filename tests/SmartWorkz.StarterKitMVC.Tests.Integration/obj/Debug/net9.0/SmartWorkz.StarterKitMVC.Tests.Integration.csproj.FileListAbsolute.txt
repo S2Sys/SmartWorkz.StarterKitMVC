@@ -192,9 +192,9 @@ S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\tests\SmartWo
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\tests\SmartWorkz.StarterKitMVC.Tests.Integration\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Tests.Integration.pdb
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\tests\SmartWorkz.StarterKitMVC.Tests.Integration\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Tests.Integration.genruntimeconfig.cache
 S:\02_Projects\Starter\03_Development\MVC\SmartWorkz.StarterKitMVC\tests\SmartWorkz.StarterKitMVC.Tests.Integration\obj\Debug\net9.0\ref\SmartWorkz.StarterKitMVC.Tests.Integration.dll
-C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\tests\SmartWorkz.StarterKitMVC.Tests.Integration\bin\Debug\net9.0\testhost.exe
 C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\tests\SmartWorkz.StarterKitMVC.Tests.Integration\bin\Debug\net9.0\testhost.dll
 C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\tests\SmartWorkz.StarterKitMVC.Tests.Integration\bin\Debug\net9.0\xunit.abstractions.dll
+C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\tests\SmartWorkz.StarterKitMVC.Tests.Integration\bin\Debug\net9.0\testhost.exe
 C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\tests\SmartWorkz.StarterKitMVC.Tests.Integration\bin\Debug\net9.0\xunit.runner.visualstudio.testadapter.dll
 C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\tests\SmartWorkz.StarterKitMVC.Tests.Integration\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Tests.Integration.deps.json
 C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\tests\SmartWorkz.StarterKitMVC.Tests.Integration\bin\Debug\net9.0\SmartWorkz.StarterKitMVC.Tests.Integration.runtimeconfig.json

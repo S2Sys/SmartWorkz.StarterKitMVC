@@ -1,3 +1,5 @@
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
+
 namespace SmartWorkz.StarterKitMVC.Application.Repositories;
 
 /// <summary>
@@ -16,24 +18,4 @@ public interface ICustomPageRepository : IDapperRepository<CustomPageDto>
 
     /// <summary>Search custom pages</summary>
     Task<IEnumerable<CustomPageDto>> SearchAsync(string searchTerm, string tenantId);
-}
-
-/// <summary>DTO for CustomPage entity</summary>
-public class CustomPageDto
-{
-    public Guid CustomPageId { get; set; }
-    public string Name { get; set; }
-    public string Slug { get; set; }
-    public string Title { get; set; }
-    public string Content { get; set; }
-    public string MetaDescription { get; set; }
-    public string MetaKeywords { get; set; }
-    public string TenantId { get; set; }
-    public bool IsPublished { get; set; }
-    public DateTime? PublishedAt { get; set; }
-    public string CreatedBy { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public string UpdatedBy { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public bool IsDeleted { get; set; }
 }

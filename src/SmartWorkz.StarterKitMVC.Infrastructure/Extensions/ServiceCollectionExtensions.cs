@@ -85,7 +85,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IPermissionService, PermissionService>();
+        services.AddScoped<SmartWorkz.StarterKitMVC.Application.Authorization.IPermissionService, SmartWorkz.StarterKitMVC.Infrastructure.Authorization.PermissionService>();
         services.AddScoped<IClaimService, ClaimService>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
