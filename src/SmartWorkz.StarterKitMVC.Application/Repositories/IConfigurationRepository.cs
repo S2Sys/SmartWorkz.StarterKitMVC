@@ -1,3 +1,5 @@
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
+
 namespace SmartWorkz.StarterKitMVC.Application.Repositories;
 
 /// <summary>
@@ -18,20 +20,3 @@ public interface IConfigurationRepository : IDapperRepository<ConfigurationDto>
     Task<IEnumerable<ConfigurationDto>> GetAllForTenantAsync(string tenantId);
 }
 
-/// <summary>DTO for Configuration entity</summary>
-public class ConfigurationDto
-{
-    public Guid ConfigurationId { get; set; }
-    public string Key { get; set; }
-    public string Value { get; set; }
-    public string Description { get; set; }
-    public string ConfigType { get; set; } // String, Integer, Boolean, DateTime, Json
-    public string TenantId { get; set; }
-    public bool IsEncrypted { get; set; }
-    public bool IsEditable { get; set; } = true;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public string CreatedBy { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public string UpdatedBy { get; set; }
-    public bool IsDeleted { get; set; }
-}

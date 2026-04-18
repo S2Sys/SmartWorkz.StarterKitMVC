@@ -4,19 +4,19 @@ namespace SmartWorkz.StarterKitMVC.Application.Repositories;
 /// <summary>
 /// Repository interface for permissions (Auth.Permission table)
 /// </summary>
-public interface IPermissionRepository : IDapperRepository<Shared.DTOs.Shared.DTOs.PermissionDto>
+public interface IPermissionRepository : IDapperRepository<PermissionDto>
 {
     /// <summary>Get permission by name</summary>
-    Task<Shared.DTOs.PermissionDto?> GetByNameAsync(string name, string tenantId);
+    Task<PermissionDto?> GetByNameAsync(string name, string tenantId);
 
     /// <summary>Get all permissions for a tenant</summary>
-    Task<IEnumerable<Shared.DTOs.PermissionDto>> GetAllForTenantAsync(string tenantId);
+    Task<IEnumerable<PermissionDto>> GetAllForTenantAsync(string tenantId);
 
     /// <summary>Get permissions for a role</summary>
-    Task<IEnumerable<Shared.DTOs.PermissionDto>> GetByRoleAsync(Guid roleId, string tenantId);
+    Task<IEnumerable<PermissionDto>> GetByRoleAsync(Guid roleId, string tenantId);
 
     /// <summary>Get permissions for a user (direct + via roles)</summary>
-    Task<IEnumerable<Shared.DTOs.PermissionDto>> GetByUserAsync(Guid userId, string tenantId);
+    Task<IEnumerable<PermissionDto>> GetByUserAsync(Guid userId, string tenantId);
 
     /// <summary>Check if user has a specific permission</summary>
     Task<bool> UserHasPermissionAsync(Guid userId, string permissionName, string tenantId);
@@ -31,19 +31,3 @@ public interface IPermissionRepository : IDapperRepository<Shared.DTOs.Shared.DT
     Task RemoveRolePermissionAsync(object roleId, object permissionId);
 }
 
-/// <summary>DTO for Permission entity</summary>
-public class Shared.DTOs.PermissionDto
-{
-    public Guid PermissionId { get; set; }
-    public string Name { get; set; }
-    public string DisplayName { get; set; }
-    public string Description { get; set; }
-    public string Category { get; set; } // e.g., "Users", "Reports", "Settings"
-    public string TenantId { get; set; }
-    public bool IsActive { get; set; } = true;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public string CreatedBy { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public string UpdatedBy { get; set; }
-    public bool IsDeleted { get; set; }
-}

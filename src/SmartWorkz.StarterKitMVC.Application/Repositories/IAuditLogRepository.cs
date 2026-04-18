@@ -5,16 +5,16 @@ using SmartWorkz.StarterKitMVC.Shared.DTOs;
 /// <summary>
 /// Repository interface for audit logs (Auth.AuditTrail table)
 /// </summary>
-public interface IAuditLogRepository : IDapperRepository<Shared.DTOs.AuditLogDto>
+public interface IAuditLogRepository : IDapperRepository<AuditLogDto>
 {
     /// <summary>Get audit logs for a specific entity</summary>
-    Task<IEnumerable<Shared.DTOs.AuditLogDto>> GetByEntityAsync(string entityType, object entityId, string tenantId);
+    Task<IEnumerable<AuditLogDto>> GetByEntityAsync(string entityType, object entityId, string tenantId);
 
     /// <summary>Get audit logs for a specific user</summary>
-    Task<IEnumerable<Shared.DTOs.AuditLogDto>> GetByUserAsync(string userId, string tenantId);
+    Task<IEnumerable<AuditLogDto>> GetByUserAsync(string userId, string tenantId);
 
     /// <summary>Get audit logs within a date range</summary>
-    Task<IEnumerable<Shared.DTOs.AuditLogDto>> GetByDateRangeAsync(DateTime from, DateTime to, string tenantId);
+    Task<IEnumerable<AuditLogDto>> GetByDateRangeAsync(DateTime from, DateTime to, string tenantId);
 
     /// <summary>Get paged audit logs</summary>
     Task<(IEnumerable<AuditLogDto> Items, int Total)> GetPagedAsync(

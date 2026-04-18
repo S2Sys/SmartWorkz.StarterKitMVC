@@ -1,3 +1,5 @@
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
+
 namespace SmartWorkz.StarterKitMVC.Application.Services;
 
 /// <summary>
@@ -32,19 +34,3 @@ public interface IAuditService
     Task<IEnumerable<AuditLogDto>> GetByActionAsync(string action, string tenantId);
 }
 
-/// <summary>DTO for Audit Log entity</summary>
-public class AuditLogDto
-{
-    public Guid AuditLogId { get; set; }
-    public string EntityType { get; set; }
-    public string EntityId { get; set; }
-    public string Action { get; set; } // Create, Update, Delete, Login, etc.
-    public string? OldValue { get; set; }
-    public string? NewValue { get; set; }
-    public string UserId { get; set; }
-    public string TenantId { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public string? IPAddress { get; set; }
-    public string? UserAgent { get; set; }
-    public string? Details { get; set; }
-}

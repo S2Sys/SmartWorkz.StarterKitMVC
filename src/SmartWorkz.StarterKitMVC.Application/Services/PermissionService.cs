@@ -1,3 +1,4 @@
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
