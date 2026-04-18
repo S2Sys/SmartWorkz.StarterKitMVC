@@ -1,18 +1,19 @@
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
 namespace SmartWorkz.StarterKitMVC.Application.Repositories;
 
 /// <summary>
 /// Repository interface for roles (Auth.Role table)
 /// </summary>
-public interface IRoleRepository : IDapperRepository<RoleDto>
+public interface IRoleRepository : IDapperRepository<Shared.DTOs.Shared.DTOs.RoleDto>
 {
     /// <summary>Get role by ID with tenant context</summary>
-    Task<RoleDto?> GetByIdAsync(object id, string tenantId);
+    Task<Shared.DTOs.RoleDto?> GetByIdAsync(object id, string tenantId);
 
     /// <summary>Get role by name</summary>
-    Task<RoleDto?> GetByNameAsync(string name, string tenantId);
+    Task<Shared.DTOs.RoleDto?> GetByNameAsync(string name, string tenantId);
 
     /// <summary>Get all roles for a tenant with pagination</summary>
-    Task<(IEnumerable<RoleDto> Items, int Total)> GetPagedAsync(string tenantId, int pageNumber, int pageSize);
+    Task<(IEnumerable<Shared.DTOs.RoleDto> Items, int Total)> GetPagedAsync(string tenantId, int pageNumber, int pageSize);
 
     /// <summary>Get permissions assigned to a role</summary>
     Task<IEnumerable<PermissionDto>> GetPermissionsAsync(Guid roleId, string tenantId);
@@ -25,7 +26,7 @@ public interface IRoleRepository : IDapperRepository<RoleDto>
 }
 
 /// <summary>DTO for Role entity</summary>
-public class RoleDto
+public class Shared.DTOs.RoleDto
 {
     public Guid RoleId { get; set; }
     public string Name { get; set; }

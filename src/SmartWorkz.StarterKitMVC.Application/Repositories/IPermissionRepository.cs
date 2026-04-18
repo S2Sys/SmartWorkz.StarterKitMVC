@@ -1,21 +1,22 @@
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
 namespace SmartWorkz.StarterKitMVC.Application.Repositories;
 
 /// <summary>
 /// Repository interface for permissions (Auth.Permission table)
 /// </summary>
-public interface IPermissionRepository : IDapperRepository<PermissionDto>
+public interface IPermissionRepository : IDapperRepository<Shared.DTOs.Shared.DTOs.PermissionDto>
 {
     /// <summary>Get permission by name</summary>
-    Task<PermissionDto?> GetByNameAsync(string name, string tenantId);
+    Task<Shared.DTOs.PermissionDto?> GetByNameAsync(string name, string tenantId);
 
     /// <summary>Get all permissions for a tenant</summary>
-    Task<IEnumerable<PermissionDto>> GetAllForTenantAsync(string tenantId);
+    Task<IEnumerable<Shared.DTOs.PermissionDto>> GetAllForTenantAsync(string tenantId);
 
     /// <summary>Get permissions for a role</summary>
-    Task<IEnumerable<PermissionDto>> GetByRoleAsync(Guid roleId, string tenantId);
+    Task<IEnumerable<Shared.DTOs.PermissionDto>> GetByRoleAsync(Guid roleId, string tenantId);
 
     /// <summary>Get permissions for a user (direct + via roles)</summary>
-    Task<IEnumerable<PermissionDto>> GetByUserAsync(Guid userId, string tenantId);
+    Task<IEnumerable<Shared.DTOs.PermissionDto>> GetByUserAsync(Guid userId, string tenantId);
 
     /// <summary>Check if user has a specific permission</summary>
     Task<bool> UserHasPermissionAsync(Guid userId, string permissionName, string tenantId);
@@ -31,7 +32,7 @@ public interface IPermissionRepository : IDapperRepository<PermissionDto>
 }
 
 /// <summary>DTO for Permission entity</summary>
-public class PermissionDto
+public class Shared.DTOs.PermissionDto
 {
     public Guid PermissionId { get; set; }
     public string Name { get; set; }
