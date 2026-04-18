@@ -201,15 +201,14 @@ public class AuthenticationService : IAuthenticationService
 
             // Generate reset token
             var resetToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-            var passwordResetToken = new PasswordResetToken
+            var passwordResetToken = new Shared.DTOs.PasswordResetToken
             {
-                Id = 0,
+                Id = Guid.NewGuid(),
                 UserId = user.UserId,
                 Token = resetToken,
                 ExpiresAt = DateTime.UtcNow.AddHours(1),
                 IsUsed = false,
-                TenantId = tenantId,
-                CreatedAt = DateTime.UtcNow
+                TenantId = tenantId
             };
 
             await _userRepository.CreatePasswordResetTokenAsync(passwordResetToken);
@@ -297,8 +296,9 @@ public class AuthenticationService : IAuthenticationService
     {
         try
         {
-            var refreshToken = new RefreshToken
+            var refreshToken = new Shared.DTOs.RefreshToken
             {
+                Id = Guid.NewGuid(),
                 UserId = userId,
                 Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray()),
                 ExpiresAt = DateTime.UtcNow.AddDays(_refreshTokenExpirationDays),
