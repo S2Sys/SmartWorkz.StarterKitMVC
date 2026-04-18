@@ -40,27 +40,13 @@ public class NotificationService : INotificationService
                 Title = request.Title,
                 Message = request.Message,
                 ActionUrl = request.ActionUrl,
-                Type = request.Type,
-                Priority = request.Priority,
+                NotificationType = request.Type.ToString(),
                 IsRead = false,
                 CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddDays(30),
-                Data = request.Data
+                ExpiresAt = DateTime.UtcNow.AddDays(30)
             };
 
-            var repoNotification = new NotificationDto
-            {
-                NotificationId = notification.NotificationId,
-                UserId = notification.UserId,
-                Title = notification.Title,
-                Message = notification.Message,
-                Type = notification.Type,
-                IsRead = notification.IsRead,
-                CreatedAt = notification.CreatedAt,
-                TenantId = notification.TenantId
-            };
-
-            await _repository.UpsertAsync(repoNotification);
+            await _repository.UpsertAsync(notification);
 
             _logger.LogInformation(
                 "Notification sent to user {UserId}: {Title}",
@@ -221,14 +207,9 @@ public class NotificationService : INotificationService
 
         try
         {
-            var result = await _repository.DeleteAsync(notificationId);
-
-            if (result)
-            {
-                _logger.LogDebug("Notification deleted: {NotificationId}", notificationId);
-            }
-
-            return result;
+            await _repository.DeleteAsync(notificationId);
+            _logger.LogDebug("Notification deleted: {NotificationId}", notificationId);
+            return true;
         }
         catch (Exception ex)
         {
@@ -247,14 +228,9 @@ public class NotificationService : INotificationService
 
         try
         {
-            var result = await _repository.DeleteAllAsync(userId, tenantId);
-
-            if (result)
-            {
-                _logger.LogInformation("All notifications deleted for user {UserId}", userId);
-            }
-
-            return result;
+            await _repository.DeleteAllAsync(userId, tenantId);
+            _logger.LogInformation("All notifications deleted for user {UserId}", userId);
+            return true;
         }
         catch (Exception ex)
         {

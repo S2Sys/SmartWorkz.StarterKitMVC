@@ -35,12 +35,12 @@ public interface IPermissionService
     /// <summary>
     /// Gets all permissions for a specific role.
     /// </summary>
-    Task<IEnumerable<PermissionDto>> GetByRoleAsync(string roleId);
+    Task<IEnumerable<PermissionDto>> GetByRoleAsync(string roleId, string tenantId);
 
     /// <summary>
     /// Checks if a role has a specific permission.
     /// </summary>
-    Task<bool> RoleHasPermissionAsync(string roleId, string permissionName);
+    Task<bool> RoleHasPermissionAsync(string roleId, string permissionName, string tenantId);
 
     /// <summary>
     /// Gets all available permissions for a tenant.

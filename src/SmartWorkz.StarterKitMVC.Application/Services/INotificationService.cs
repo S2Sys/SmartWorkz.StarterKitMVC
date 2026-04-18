@@ -1,3 +1,5 @@
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
+
 namespace SmartWorkz.StarterKitMVC.Application.Services;
 
 /// <summary>
@@ -63,24 +65,6 @@ public class NotificationRequest
     public Dictionary<string, string>? Data { get; set; }
 }
 
-/// <summary>DTO for Notification entity</summary>
-public class NotificationDto
-{
-    public int NotificationId { get; set; }
-    public string UserId { get; set; }
-    public string TenantId { get; set; }
-    public string Title { get; set; }
-    public string Message { get; set; }
-    public string? ActionUrl { get; set; }
-    public NotificationType Type { get; set; }
-    public NotificationPriority Priority { get; set; }
-    public bool IsRead { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? ReadAt { get; set; }
-    public DateTime? ExpiresAt { get; set; }
-    public Dictionary<string, string>? Data { get; set; }
-}
-
 public enum NotificationType
 {
     InApp = 0,
@@ -96,3 +80,4 @@ public enum NotificationPriority
     High = 2,
     Critical = 3
 }
+

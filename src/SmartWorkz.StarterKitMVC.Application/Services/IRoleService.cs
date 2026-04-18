@@ -47,16 +47,16 @@ public interface IRoleService
     /// Assigns permissions to a role.
     /// Invalidates user permission cache for all users with this role.
     /// </summary>
-    Task<bool> AssignPermissionsAsync(string roleId, IEnumerable<string> permissionIds);
+    Task<bool> AssignPermissionsAsync(string roleId, IEnumerable<string> permissionIds, string tenantId);
 
     /// <summary>
     /// Gets all permissions assigned to a role.
     /// </summary>
-    Task<IEnumerable<PermissionDto>> GetPermissionsAsync(string roleId);
+    Task<IEnumerable<PermissionDto>> GetPermissionsAsync(string roleId, string tenantId);
 
     /// <summary>
     /// Removes a permission from a role.
     /// </summary>
-    Task<bool> RemovePermissionAsync(string roleId, string permissionId);
+    Task<bool> RemovePermissionAsync(string roleId, string permissionId, string tenantId);
 }
 

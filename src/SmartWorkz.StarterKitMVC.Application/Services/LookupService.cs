@@ -65,7 +65,7 @@ public class LookupService : ILookupService
         try
         {
             // Perform repository upsert
-            var result = await _repository.UpsertAsync(lookup);
+            await _repository.UpsertAsync(lookup);
 
             // Invalidate category cache
             await InvalidateCategoryCache(lookup.CategoryKey, lookup.TenantId);
@@ -74,7 +74,7 @@ public class LookupService : ILookupService
                 "Lookup upserted: {CategoryKey} - {Key} for tenant {TenantId}",
                 lookup.CategoryKey, lookup.Key, lookup.TenantId);
 
-            return result;
+            return lookup;
         }
         catch (Exception ex)
         {
@@ -95,19 +95,16 @@ public class LookupService : ILookupService
             if (lookup == null)
                 return false;
 
-            var result = await _repository.DeleteAsync(id);
+            await _repository.DeleteAsync(id);
 
-            if (result)
-            {
-                // Invalidate category cache
-                await InvalidateCategoryCache(lookup.CategoryKey, lookup.TenantId);
+            // Invalidate category cache
+            await InvalidateCategoryCache(lookup.CategoryKey, lookup.TenantId);
 
-                _logger.LogInformation(
-                    "Lookup deleted: {LookupId} ({CategoryKey})",
-                    id, lookup.CategoryKey);
-            }
+            _logger.LogInformation(
+                "Lookup deleted: {LookupId} ({CategoryKey})",
+                id, lookup.CategoryKey);
 
-            return result;
+            return true;
         }
         catch (Exception ex)
         {
