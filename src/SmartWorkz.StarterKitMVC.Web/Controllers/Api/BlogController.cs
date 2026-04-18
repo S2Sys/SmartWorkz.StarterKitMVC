@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartWorkz.StarterKitMVC.Application.Services;
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
+using SmartWorkz.StarterKitMVC.Shared.Extensions;
 using SmartWorkz.StarterKitMVC.Shared.Primitives;
 using SmartWorkz.StarterKitMVC.Web.Middleware;
 
@@ -55,9 +56,11 @@ public class BlogController : ControllerBase
             pageSize = 100; // Cap max page size
         }
 
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Retrieving published blog posts: page={Page}, pageSize={PageSize}", page, pageSize);
-        var result = await _blogService.GetPublishedPostsAsync(page, pageSize);
-        return Ok(result);
+        var (posts, total) = await _blogService.GetPublishedAsync(tenantId, page, pageSize);
+        var response = PaginatedResponse<BlogPostDto>.Create(posts.ToList(), page, pageSize, total);
+        return Ok(response);
     }
 
     /// <summary>
@@ -81,8 +84,9 @@ public class BlogController : ControllerBase
                 Request.Path));
         }
 
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Retrieving blog post by slug: {Slug}", slug);
-        var result = await _blogService.GetPostBySlugAsync(slug);
+        var result = await _blogService.GetBySlugAsync(slug, tenantId);
 
         if (result == null)
         {
@@ -133,9 +137,24 @@ public class BlogController : ControllerBase
                 Request.Path));
         }
 
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
+        var authorId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "SYSTEM";
         _logger.LogInformation("Creating blog post: {Title}", request.Title);
 
-        var result = await _blogService.CreatePostAsync(request);
+        var post = new BlogPostDto
+        {
+            BlogPostId = Guid.NewGuid(),
+            Title = request.Title,
+            Slug = request.Title.ToLower().Replace(" ", "-"),
+            Content = request.Content,
+            AuthorId = authorId,
+            TenantId = tenantId,
+            IsPublished = false,
+            ViewCount = 0,
+            CreatedAt = DateTime.UtcNow,
+            Tags = request.Tags ?? new List<string>()
+        };
+        var result = await _blogService.CreateAsync(post);
         return CreatedAtAction(nameof(GetBySlug), new { slug = result.Slug }, result);
     }
 
@@ -175,7 +194,15 @@ public class BlogController : ControllerBase
 
         _logger.LogInformation("Updating blog post: {Id}", id);
 
-        var result = await _blogService.UpdatePostAsync(id, request);
+        var post = new BlogPostDto
+        {
+            BlogPostId = id,
+            Title = request.Title ?? "",
+            Slug = request.Title?.ToLower().Replace(" ", "-") ?? "",
+            Content = request.Content ?? "",
+            UpdatedAt = DateTime.UtcNow
+        };
+        var result = await _blogService.UpdateAsync(post);
 
         if (result == null)
         {
@@ -214,7 +241,7 @@ public class BlogController : ControllerBase
 
         _logger.LogInformation("Deleting blog post: {Id}", id);
 
-        var result = await _blogService.DeletePostAsync(id);
+        var result = await _blogService.DeleteAsync(id);
 
         if (!result)
         {
@@ -253,9 +280,9 @@ public class BlogController : ControllerBase
 
         _logger.LogInformation("Publishing blog post: {Id}", id);
 
-        var result = await _blogService.PublishPostAsync(id);
+        var result = await _blogService.PublishAsync(id);
 
-        if (result == null)
+        if (!result)
         {
             _logger.LogWarning("Blog post not found for publishing: {Id}", id);
             return NotFound(ProblemDetailsResponse.NotFound(
@@ -263,7 +290,7 @@ public class BlogController : ControllerBase
                 Request.Path));
         }
 
-        return Ok(result);
+        return Ok(new { message = "Blog post published successfully" });
     }
 
     /// <summary>
@@ -292,9 +319,9 @@ public class BlogController : ControllerBase
 
         _logger.LogInformation("Unpublishing blog post: {Id}", id);
 
-        var result = await _blogService.UnpublishPostAsync(id);
+        var result = await _blogService.UnpublishAsync(id);
 
-        if (result == null)
+        if (!result)
         {
             _logger.LogWarning("Blog post not found for unpublishing: {Id}", id);
             return NotFound(ProblemDetailsResponse.NotFound(
@@ -302,7 +329,7 @@ public class BlogController : ControllerBase
                 Request.Path));
         }
 
-        return Ok(result);
+        return Ok(new { message = "Blog post unpublished successfully" });
     }
 }
 

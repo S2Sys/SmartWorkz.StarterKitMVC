@@ -228,8 +228,7 @@
               "ViewState": "AgIAAK0AAAAAAAAAAAAQwL4AAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-17T16:44:55.076Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -285,6 +284,10 @@
               "IsPinned": true
             },
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
               "$type": "Document",
               "DocumentIndex": 2,
               "Title": "ServiceCollectionExtensions.cs",
@@ -294,12 +297,7 @@
               "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Infrastructure\\Extensions\\ServiceCollectionExtensions.cs",
               "ViewState": "AgIAAEYAAAAAAAAAAAAQwFUAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-18T07:13:40.981Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+              "WhenOpened": "2026-04-18T07:13:40.981Z"
             },
             {
               "$type": "Document",
@@ -311,8 +309,7 @@
               "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Infrastructure\\Services\\AuthService.cs",
               "ViewState": "AgIAACYAAAAAAAAAAAAYwDUAAABGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-31T19:03:16.354Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-31T19:03:16.354Z"
             },
             {
               "$type": "Document",
@@ -324,8 +321,7 @@
               "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Infrastructure\\Repositories\\CountryRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-18T07:08:00.335Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-18T07:08:00.335Z"
             },
             {
               "$type": "Document",
@@ -337,8 +333,7 @@
               "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\LookupService.cs",
               "ViewState": "AgIAADMAAAAAAAAAAAAAwD0AAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-18T06:42:43.92Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-18T06:42:43.92Z"
             },
             {
               "$type": "Document",
@@ -362,8 +357,7 @@
               "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Application\\Services\\BlogService.cs",
               "ViewState": "AgIAAJUAAAAAAAAAAAAYwKYAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-17T17:25:43.666Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-17T17:25:43.666Z"
             },
             {
               "$type": "Document",

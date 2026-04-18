@@ -78,7 +78,7 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Adds domain services to the dependency injection container
     /// </summary>
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    public static IServiceCollection AddDomainServices(this IServiceCollection services)
     {
         services.AddScoped<IMenuService, MenuService>();
         services.AddScoped<ISeoMetaService, SeoMetaService>();
@@ -186,7 +186,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddInfrastructureServices(configuration);
         services.AddRepositories();
-        services.AddApplicationServices();
+        services.AddDomainServices();
         services.AddCacheServices(configuration);
         services.AddJwtAuthentication(configuration);
 
