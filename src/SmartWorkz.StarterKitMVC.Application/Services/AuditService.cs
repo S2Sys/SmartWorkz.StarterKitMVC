@@ -35,14 +35,14 @@ public class AuditService : IAuditService
 
         try
         {
-            var repositoryLog = new Repositories.AuditLogDto
+            var repositoryLog = new AuditLogDto
             {
                 AuditLogId = Guid.NewGuid(),
                 EntityType = log.EntityType,
                 EntityId = log.EntityId,
                 Action = log.Action,
-                OldValue = log.OldValue,
-                NewValue = log.NewValue,
+                OldValues = log.OldValues,
+                NewValues = log.NewValues,
                 UserId = log.UserId,
                 TenantId = log.TenantId,
                 CreatedAt = DateTime.UtcNow,
@@ -85,20 +85,19 @@ public class AuditService : IAuditService
                 "Retrieved {Count} audit logs for entity {EntityType} {EntityId}",
                 logs.Count(), entityType, entityId);
 
-            return logs.OrderByDescending(l => l.CreatedAt).Select(l => new Services.AuditLogDto
+            return logs.OrderByDescending(l => l.CreatedAt).Select(l => new AuditLogDto
             {
                 AuditLogId = l.AuditLogId,
                 EntityType = l.EntityType,
                 EntityId = l.EntityId,
                 Action = l.Action,
-                OldValue = l.OldValue,
-                NewValue = l.NewValue,
+                OldValues = l.OldValues,
+                NewValues = l.NewValues,
                 UserId = l.UserId,
                 TenantId = l.TenantId,
                 CreatedAt = l.CreatedAt,
                 IPAddress = l.IPAddress,
-                UserAgent = l.UserAgent,
-                Details = null
+                UserAgent = l.UserAgent
             });
         }
         catch (Exception ex)
