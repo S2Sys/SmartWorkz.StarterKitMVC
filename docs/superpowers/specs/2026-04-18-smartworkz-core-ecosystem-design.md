@@ -3,8 +3,9 @@
 
 **Date:** 2026-04-18  
 **Scope:** Reusable Core framework (NuGet packages) + Reference Starter Kits  
-**Status:** Design Review  
-**Version:** 1.0
+**Status:** ✅ APPROVED (2026-04-18)
+**Version:** 1.0 FINAL
+**Approved By:** User
 
 ---
 
@@ -32,49 +33,122 @@ This design creates a **reusable Core framework** (`SmartWorkz.Core.*` NuGet pac
 
 ## 2. Architecture
 
-### 2.1 Solution Structure (Phase 1)
+### 2.1 Solution Structure (Phase 1) - APPROVED HYBRID DESIGN
 
 ```
-SmartWorkz/                              (One solution, later splits into 4+)
-├── Core Framework Packages
-│   └── src/
-│       ├── SmartWorkz.Core/            (v1.0.0)
-│       ├── SmartWorkz.Core.Shared/     (v1.0.0)
-│       ├── SmartWorkz.Core.Web/        (v1.0.0)
-│       ├── SmartWorkz.Core.MAUI/       (v1.0.0 stub)
-│       ├── SmartWorkz.Core.WPF/        (v1.0.0 stub)
-│       └── SmartWorkz.Core.WinForms/   (v1.0.0 stub)
+SmartWorkz/                              (One unified solution - no splits)
 │
-├── Reference Starter Kits
-│   ├── SmartWorkz.StarterKitMVC/       (Web - keep existing structure)
-│   ├── SmartWorkz.Starter.MAUI/        (Mobile - future)
-│   ├── SmartWorkz.Starter.WPF/         (Desktop - future)
-│   └── SmartWorkz.Starter.WinForms/    (Desktop - future)
+├── Core Framework Packages (Shared by all)
+│   ├── SmartWorkz.Core/
+│   ├── SmartWorkz.Core.Shared/
+│   ├── SmartWorkz.Core.Web/
+│   ├── SmartWorkz.Core.MAUI/           (stub - future)
+│   ├── SmartWorkz.Core.WPF/            (stub - future)
+│   └── SmartWorkz.Core.WinForms/       (stub - future)
+│
+├── Shared Business Layers (Foundation for all clients)
+│   ├── SmartWorkz.StarterKitMVC.Domain/
+│   ├── SmartWorkz.StarterKitMVC.Application/
+│   ├── SmartWorkz.StarterKitMVC.Infrastructure/
+│   └── SmartWorkz.StarterKitMVC.Shared/
+│
+├── Admin Panel (Web UI)
+│   └── SmartWorkz.StarterKitMVC.Admin/
+│       ├── Domain/                    (Admin-specific entities/models)
+│       ├── Application/               (Admin-specific use cases/services)
+│       ├── Infrastructure/            (Admin-specific repositories)
+│       ├── Shared/                    (Admin helpers/utilities)
+│       └── UI/                        (ASP.NET MVC Admin interface)
+│
+├── Product Site (Portfolio/Marketing)
+│   └── SmartWorkz.StarterKitMVC.ProductSite/
+│       ├── Domain/
+│       ├── Application/
+│       ├── Infrastructure/
+│       ├── Shared/
+│       └── UI/
+│
+├── Mobile App (MAUI) [FUTURE]
+│   └── SmartWorkz.Starter.MAUI/
+│       ├── Domain/
+│       ├── Application/
+│       ├── Infrastructure/
+│       ├── Shared/
+│       └── UI/
+│
+├── Desktop (WPF) [FUTURE]
+│   └── SmartWorkz.Starter.WPF/
+│       ├── Domain/
+│       ├── Application/
+│       ├── Infrastructure/
+│       ├── Shared/
+│       └── UI/
+│
+├── Desktop (WinForms) [FUTURE]
+│   └── SmartWorkz.Starter.WinForms/
+│       ├── Domain/
+│       ├── Application/
+│       ├── Infrastructure/
+│       ├── Shared/
+│       └── UI/
 │
 └── Tests/
     ├── SmartWorkz.Core.Tests/
     ├── SmartWorkz.Core.Web.Tests/
+    ├── SmartWorkz.StarterKitMVC.Tests/
     └── (etc)
 ```
 
-### 2.2 Package Dependency Graph
+### 2.2 Dependency Graph (Hybrid Architecture)
 
 ```
-                    SmartWorkz.Core (Base)
-                            ↑
-                            │ depends on
-                            ↓
-                SmartWorkz.Core.Shared (Utilities)
-                            ↑
-                ┌───────────┬───────────┬──────────────┐
-                │           │           │              │
-    SmartWorkz.Core.Web  Core.MAUI  Core.WPF    Core.WinForms
-                │           │           │              │
-                ↓           ↓           ↓              ↓
-           StarterKitMVC  Starter.   Starter.WPF   Starter.
-                MVC       MAUI       (future)     WinForms
-                                                   (future)
+                          SmartWorkz.Core (Base)
+                                  ↑
+                                  │
+                      SmartWorkz.Core.Shared
+                                  ↑
+                ┌─────────────────┼─────────────────┐
+                │                 │                 │
+        SmartWorkz.Core.Web  Core.MAUI          Core.WPF
+                │
+    ┌───────────┴───────────┐
+    ↓                       ↓
+Shared Layers          Shared Layers
+(StarterKitMVC.*)      (StarterKitMVC.*)
+    ↑                       ↑
+    │                       │
+    ├─────┬────────────┬────┤
+    ↓     ↓            ↓    ↓
+  Admin Product MAUI  WPF  WinForms
+         Site
+   
+Legend:
+- Shared Layers = Common Domain, Application, Infrastructure (inherited by all)
+- Each Client = Can extend/override with own Domain/Application/Infrastructure
+- Can reference shared layers or standalone
 ```
+
+### 2.2.1 Design Principle: Shared + Per-Client Layers
+
+**Shared Layers (Top-level):**
+- `SmartWorkz.StarterKitMVC.Domain/` — Common business entities
+- `SmartWorkz.StarterKitMVC.Application/` — Common use cases/services
+- `SmartWorkz.StarterKitMVC.Infrastructure/` — Database, repositories
+- `SmartWorkz.StarterKitMVC.Shared/` — Common utilities, helpers
+
+**Per-Client Layers (Inside each client project):**
+- `Domain/` — Client-specific entities (extends shared)
+- `Application/` — Client-specific use cases (can override shared)
+- `Infrastructure/` — Client-specific repositories (can customize queries)
+- `Shared/` — Client-specific helpers/utilities
+- `UI/` — Client UI implementation (Web, MAUI, WPF, WinForms)
+
+**How it works:**
+1. Admin + ProductSite inherit shared layers by default
+2. When Admin needs special logic → add to Admin/Application
+3. When ProductSite needs different entity properties → add to ProductSite/Domain
+4. Each client fully self-contained but shares common code
+5. Easy to extract client to standalone app if needed
 
 ### 2.3 Detailed Project Breakdown
 
