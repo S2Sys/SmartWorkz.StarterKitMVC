@@ -15,6 +15,7 @@ public class User
     public bool PhoneNumberConfirmed { get; set; }
     public bool TwoFactorEnabled { get; set; }
     public DateTime? LockoutEnd { get; set; }
+    public DateTime? LockoutEndAt => LockoutEnd;
     public bool LockoutEnabled { get; set; } = true;
     public int AccessFailedCount { get; set; }
     public string DisplayName { get; set; }

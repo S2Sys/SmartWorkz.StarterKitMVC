@@ -146,7 +146,7 @@ public class PermissionService : IPermissionService
             {
                 foreach (var roleId in userRoles)
                 {
-                    var rolePerms = await _permissionRepository.GetByRoleAsync(roleId);
+                    var rolePerms = await _permissionRepository.GetByRoleAsync(Guid.Parse(roleId), tenantId);
                     foreach (var perm in rolePerms)
                     {
                         rolePermissions.Add(perm.Name);
@@ -190,14 +190,16 @@ public class PermissionService : IPermissionService
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<PermissionDto>> GetByRoleAsync(string roleId)
+    public async Task<IEnumerable<PermissionDto>> GetByRoleAsync(string roleId, string tenantId)
     {
         if (string.IsNullOrWhiteSpace(roleId))
             throw new ArgumentException("Role ID cannot be empty", nameof(roleId));
+        if (string.IsNullOrWhiteSpace(tenantId))
+            throw new ArgumentException("Tenant ID cannot be empty", nameof(tenantId));
 
         try
         {
-            var permissions = await _permissionRepository.GetByRoleAsync(roleId);
+            var permissions = await _permissionRepository.GetByRoleAsync(Guid.Parse(roleId), tenantId);
             _logger.LogDebug("Retrieved {Count} permissions for role {RoleId}",
                 permissions.Count(), roleId);
             return permissions;
@@ -210,16 +212,18 @@ public class PermissionService : IPermissionService
     }
 
     /// <inheritdoc />
-    public async Task<bool> RoleHasPermissionAsync(string roleId, string permissionName)
+    public async Task<bool> RoleHasPermissionAsync(string roleId, string permissionName, string tenantId)
     {
         if (string.IsNullOrWhiteSpace(roleId))
             throw new ArgumentException("Role ID cannot be empty", nameof(roleId));
         if (string.IsNullOrWhiteSpace(permissionName))
             throw new ArgumentException("Permission name cannot be empty", nameof(permissionName));
+        if (string.IsNullOrWhiteSpace(tenantId))
+            throw new ArgumentException("Tenant ID cannot be empty", nameof(tenantId));
 
         try
         {
-            var permissions = await _permissionRepository.GetByRoleAsync(roleId);
+            var permissions = await _permissionRepository.GetByRoleAsync(Guid.Parse(roleId), tenantId);
             var hasPermission = permissions.Any(p =>
                 p.Name.Equals(permissionName, StringComparison.OrdinalIgnoreCase));
 

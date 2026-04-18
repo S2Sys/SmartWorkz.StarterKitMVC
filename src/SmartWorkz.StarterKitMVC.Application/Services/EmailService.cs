@@ -133,18 +133,17 @@ public class EmailService : IEmailService
 
         try
         {
-            var queueItem = new EmailQueueDto
+            var queueItem = new Domain.Entities.Shared.EmailQueue
             {
-                To = message.To,
-                Cc = message.Cc,
-                Bcc = message.Bcc,
+                ToEmail = message.To,
+                CcEmail = message.Cc,
+                BccEmail = message.Bcc,
                 Subject = message.Subject,
                 Body = message.Body,
                 IsHtml = message.IsHtml,
                 CreatedAt = DateTime.UtcNow,
                 Status = "Pending",
-                Attempts = 0,
-                MaxAttempts = 3
+                SendAttempts = 0
             };
 
             await _emailQueueRepository.CreateAsync(queueItem);

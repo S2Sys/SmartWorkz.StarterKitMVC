@@ -172,7 +172,7 @@ public class ConfigurationService : IConfigurationService
         try
         {
             // Save to repository
-            var savedConfig = await _repository.UpsertAsync(config);
+            await _repository.UpsertAsync(config);
 
             // Invalidate cache
             var cacheKey = GenerateCacheKey(config.Key, config.TenantId);
@@ -182,7 +182,7 @@ public class ConfigurationService : IConfigurationService
                 "Configuration saved and cache invalidated: {Key} for tenant {TenantId}",
                 config.Key, config.TenantId);
 
-            return savedConfig;
+            return config;
         }
         catch (Exception ex)
         {

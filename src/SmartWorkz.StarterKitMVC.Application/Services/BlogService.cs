@@ -135,13 +135,13 @@ public class BlogService : IBlogService
             post.CreatedAt = DateTime.UtcNow;
             post.IsPublished = false; // Default to draft
 
-            var created = await _repository.UpsertAsync(post);
+            await _repository.UpsertAsync(post);
 
             _logger.LogInformation(
                 "Blog post created: {PostId} ({Title}) by {AuthorId}",
-                created.BlogPostId, created.Title, created.AuthorId);
+                post.BlogPostId, post.Title, post.AuthorId);
 
-            return created;
+            return post;
         }
         catch (Exception ex)
         {
@@ -164,13 +164,13 @@ public class BlogService : IBlogService
         {
             post.UpdatedAt = DateTime.UtcNow;
 
-            var updated = await _repository.UpsertAsync(post);
+            await _repository.UpsertAsync(post);
 
             _logger.LogInformation(
                 "Blog post updated: {PostId} ({Title})",
-                updated.BlogPostId, updated.Title);
+                post.BlogPostId, post.Title);
 
-            return updated;
+            return post;
         }
         catch (Exception ex)
         {
@@ -187,14 +187,9 @@ public class BlogService : IBlogService
 
         try
         {
-            var result = await _repository.DeleteAsync(id);
-
-            if (result)
-            {
-                _logger.LogInformation("Blog post deleted: {PostId}", id);
-            }
-
-            return result;
+            await _repository.DeleteAsync(id);
+            _logger.LogInformation("Blog post deleted: {PostId}", id);
+            return true;
         }
         catch (Exception ex)
         {

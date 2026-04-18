@@ -341,7 +341,7 @@ public class UserService : IUserService
                 return false;
 
             user.IsActive = false;
-            user.LockoutEndAt = DateTime.UtcNow.Add(duration);
+            user.LockoutEnd = DateTime.UtcNow.Add(duration);
             user.UpdatedAt = DateTime.UtcNow;
 
             await _userRepository.UpsertUserAsync(user);
@@ -370,7 +370,7 @@ public class UserService : IUserService
                 return false;
 
             user.IsActive = true;
-            user.LockoutEndAt = null;
+            user.LockoutEnd = null;
             user.UpdatedAt = DateTime.UtcNow;
 
             await _userRepository.UpsertUserAsync(user);

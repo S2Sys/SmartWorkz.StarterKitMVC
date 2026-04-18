@@ -201,14 +201,13 @@ public class AuthenticationService : IAuthenticationService
 
             // Generate reset token
             var resetToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-            var passwordResetToken = new Shared.DTOs.PasswordResetToken
+            var passwordResetToken = new Domain.Entities.Auth.PasswordResetToken
             {
-                Id = Guid.NewGuid(),
                 UserId = user.UserId,
                 Token = resetToken,
                 ExpiresAt = DateTime.UtcNow.AddHours(1),
-                IsUsed = false,
-                TenantId = tenantId
+                TenantId = tenantId,
+                CreatedAt = DateTime.UtcNow
             };
 
             await _userRepository.CreatePasswordResetTokenAsync(passwordResetToken);
@@ -296,13 +295,11 @@ public class AuthenticationService : IAuthenticationService
     {
         try
         {
-            var refreshToken = new Shared.DTOs.RefreshToken
+            var refreshToken = new Domain.Entities.Auth.RefreshToken
             {
-                Id = Guid.NewGuid(),
                 UserId = userId,
                 Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray()),
                 ExpiresAt = DateTime.UtcNow.AddDays(_refreshTokenExpirationDays),
-                IsRevoked = false,
                 TenantId = tenantId,
                 CreatedAt = DateTime.UtcNow
             };
@@ -327,7 +324,7 @@ public class AuthenticationService : IAuthenticationService
         {
             var refreshToken = await _userRepository.GetRefreshTokenAsync(token, tenantId);
 
-            if (refreshToken == null || refreshToken.IsRevoked)
+            if (refreshToken == null || refreshToken.RevokedAt.HasValue)
                 return false;
 
             if (refreshToken.UserId != userId)
@@ -356,7 +353,7 @@ public class AuthenticationService : IAuthenticationService
         {
             var token = await _userRepository.GetRefreshTokenAsync(refreshToken, tenantId);
 
-            if (token == null || token.IsRevoked || token.ExpiresAt < DateTime.UtcNow)
+            if (token == null || token.RevokedAt.HasValue || token.ExpiresAt < DateTime.UtcNow)
                 return (false, null, "Invalid or expired refresh token");
 
             var user = await _userRepository.GetByIdAsync(token.UserId);
