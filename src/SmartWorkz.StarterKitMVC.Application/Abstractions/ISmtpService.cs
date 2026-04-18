@@ -19,4 +19,9 @@ public interface ISmtpService
     /// </summary>
     Task<Result> SendAsync(string toEmail, string? ccEmail, string? bccEmail,
         string subject, string body, bool isHtml = true, CancellationToken ct = default);
+
+    /// <summary>
+    /// Sends an email via SMTP (alias for SendAsync).
+    /// </summary>
+    Task<Result> SendEmailAsync(string toEmail, string subject, string body, bool isHtml = true, CancellationToken ct = default);
 }
