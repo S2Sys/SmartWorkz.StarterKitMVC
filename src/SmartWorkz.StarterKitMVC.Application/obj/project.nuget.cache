@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "U9zNz4Xm7M8=",
+  "dgSpecHash": "EcrJHbMxSzg=",
   "success": true,
   "projectFilePath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj",
   "expectedPackageFiles": [
@@ -13,8 +13,8 @@
     "C:\\Users\\tsent\\.nuget\\packages\\microsoft.identitymodel.logging\\8.4.0\\microsoft.identitymodel.logging.8.4.0.nupkg.sha512",
     "C:\\Users\\tsent\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.4.0\\microsoft.identitymodel.tokens.8.4.0.nupkg.sha512",
     "C:\\Users\\tsent\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.4.0\\system.identitymodel.tokens.jwt.8.4.0.nupkg.sha512",
-    "C:\\Users\\tsent\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.14\\microsoft.netcore.app.ref.9.0.14.nupkg.sha512",
     "C:\\Users\\tsent\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.14\\microsoft.windowsdesktop.app.ref.9.0.14.nupkg.sha512",
+    "C:\\Users\\tsent\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.14\\microsoft.netcore.app.ref.9.0.14.nupkg.sha512",
     "C:\\Users\\tsent\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.14\\microsoft.aspnetcore.app.ref.9.0.14.nupkg.sha512"
   ],
   "logs": [
