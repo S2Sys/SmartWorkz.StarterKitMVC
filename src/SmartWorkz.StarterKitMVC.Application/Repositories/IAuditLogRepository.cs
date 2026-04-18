@@ -13,6 +13,9 @@ public interface IAuditLogRepository : IDapperRepository<AuditLogDto>
     /// <summary>Get audit logs for a specific user</summary>
     Task<IEnumerable<AuditLogDto>> GetByUserAsync(string userId, string tenantId);
 
+    /// <summary>Get audit logs by action type</summary>
+    Task<IEnumerable<AuditLogDto>> GetByActionAsync(string action, string tenantId);
+
     /// <summary>Get audit logs within a date range</summary>
     Task<IEnumerable<AuditLogDto>> GetByDateRangeAsync(DateTime from, DateTime to, string tenantId);
 

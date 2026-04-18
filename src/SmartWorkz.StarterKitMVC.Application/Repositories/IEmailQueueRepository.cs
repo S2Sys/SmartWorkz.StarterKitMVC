@@ -31,4 +31,9 @@ public interface IEmailQueueRepository
     /// Updates SendAttempts counter. If attempts >= 3, Status='Failed'; else Status='Pending'.
     /// </summary>
     Task MarkFailedAsync(int emailQueueId, string? failureReason, CancellationToken ct = default);
+
+    /// <summary>
+    /// Creates an email queue entry (alias for EnqueueAsync).
+    /// </summary>
+    Task<int> CreateAsync(EmailQueue email, CancellationToken ct = default);
 }

@@ -48,7 +48,7 @@ public class NotificationService : INotificationService
                 Data = request.Data
             };
 
-            var repoNotification = new Repositories.NotificationDto
+            var repoNotification = new NotificationDto
             {
                 NotificationId = notification.NotificationId,
                 UserId = notification.UserId,
@@ -114,7 +114,7 @@ public class NotificationService : INotificationService
 
         try
         {
-            var (notifications, total) = await _repository.GetAllAsync(userId, tenantId, page, pageSize);
+            var (notifications, total) = await _repository.GetPagedAsync(userId, tenantId, page, pageSize);
             _logger.LogDebug("Retrieved {Count} notifications for user {UserId}", notifications.Count(), userId);
             return (notifications.OrderByDescending(n => n.CreatedAt), total);
         }

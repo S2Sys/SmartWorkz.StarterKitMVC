@@ -28,6 +28,6 @@ public interface IPermissionRepository : IDapperRepository<PermissionDto>
     Task AssignToRoleAsync(object roleId, object permissionId);
 
     /// <summary>Remove a permission from a role</summary>
-    Task RemoveRolePermissionAsync(object roleId, object permissionId);
+    Task<bool> RemoveRolePermissionAsync(object roleId, object permissionId);
 }
 
