@@ -148,6 +148,240 @@ public static class AdoHelper
         }
     }
 
+    /// <summary>Execute query returning multiple result sets (2 sets).</summary>
+    public static async Task<Result<(List<T1>, List<T2>)>> ExecuteQueryMultipleAsync<T1, T2>(
+        IDbConnection connection,
+        string commandText,
+        IDbProvider provider,
+        Func<IDataReader, T1> mapper1,
+        Func<IDataReader, T2> mapper2,
+        Dictionary<string, object?>? parameters = null,
+        CommandType commandType = CommandType.Text,
+        int commandTimeout = 30)
+        where T1 : class
+        where T2 : class
+    {
+        try
+        {
+            if (mapper1 == null)
+                return Result.Fail<(List<T1>, List<T2>)>(
+                    new Error("ADO.MAPPER_NULL", "mapper1 cannot be null"));
+            if (mapper2 == null)
+                return Result.Fail<(List<T1>, List<T2>)>(
+                    new Error("ADO.MAPPER_NULL", "mapper2 cannot be null"));
+
+            var results1 = new List<T1>();
+            var results2 = new List<T2>();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = commandText;
+            command.CommandType = commandType;
+            command.CommandTimeout = commandTimeout;
+
+            AddParameters(command, parameters, provider);
+
+            if (connection.State != ConnectionState.Open)
+                await OpenConnectionAsync(connection);
+
+            using var reader = await ExecuteReaderAsyncInternal(command, CommandBehavior.SequentialAccess);
+
+            // Read first result set
+            while (await ReadAsyncInternal(reader))
+            {
+                results1.Add(mapper1(reader));
+            }
+
+            // Move to next result set
+            if (!await NextResultAsyncInternal(reader))
+                return Result.Ok((results1, results2));
+
+            // Read second result set
+            while (await ReadAsyncInternal(reader))
+            {
+                results2.Add(mapper2(reader));
+            }
+
+            return Result.Ok((results1, results2));
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<(List<T1>, List<T2>)>(
+                new Error("ADO.QUERY_MULTIPLE_FAILED", ex.Message));
+        }
+    }
+
+    /// <summary>Execute query returning multiple result sets (3 sets).</summary>
+    public static async Task<Result<(List<T1>, List<T2>, List<T3>)>> ExecuteQueryMultipleAsync<T1, T2, T3>(
+        IDbConnection connection,
+        string commandText,
+        IDbProvider provider,
+        Func<IDataReader, T1> mapper1,
+        Func<IDataReader, T2> mapper2,
+        Func<IDataReader, T3> mapper3,
+        Dictionary<string, object?>? parameters = null,
+        CommandType commandType = CommandType.Text,
+        int commandTimeout = 30)
+        where T1 : class
+        where T2 : class
+        where T3 : class
+    {
+        try
+        {
+            if (mapper1 == null)
+                return Result.Fail<(List<T1>, List<T2>, List<T3>)>(
+                    new Error("ADO.MAPPER_NULL", "mapper1 cannot be null"));
+            if (mapper2 == null)
+                return Result.Fail<(List<T1>, List<T2>, List<T3>)>(
+                    new Error("ADO.MAPPER_NULL", "mapper2 cannot be null"));
+            if (mapper3 == null)
+                return Result.Fail<(List<T1>, List<T2>, List<T3>)>(
+                    new Error("ADO.MAPPER_NULL", "mapper3 cannot be null"));
+
+            var results1 = new List<T1>();
+            var results2 = new List<T2>();
+            var results3 = new List<T3>();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = commandText;
+            command.CommandType = commandType;
+            command.CommandTimeout = commandTimeout;
+
+            AddParameters(command, parameters, provider);
+
+            if (connection.State != ConnectionState.Open)
+                await OpenConnectionAsync(connection);
+
+            using var reader = await ExecuteReaderAsyncInternal(command, CommandBehavior.SequentialAccess);
+
+            // Read first result set
+            while (await ReadAsyncInternal(reader))
+            {
+                results1.Add(mapper1(reader));
+            }
+
+            // Move to second result set
+            if (!await NextResultAsyncInternal(reader))
+                return Result.Ok((results1, results2, results3));
+
+            // Read second result set
+            while (await ReadAsyncInternal(reader))
+            {
+                results2.Add(mapper2(reader));
+            }
+
+            // Move to third result set
+            if (!await NextResultAsyncInternal(reader))
+                return Result.Ok((results1, results2, results3));
+
+            // Read third result set
+            while (await ReadAsyncInternal(reader))
+            {
+                results3.Add(mapper3(reader));
+            }
+
+            return Result.Ok((results1, results2, results3));
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<(List<T1>, List<T2>, List<T3>)>(
+                new Error("ADO.QUERY_MULTIPLE_FAILED", ex.Message));
+        }
+    }
+
+    /// <summary>Execute query returning multiple result sets (4 sets).</summary>
+    public static async Task<Result<(List<T1>, List<T2>, List<T3>, List<T4>)>> ExecuteQueryMultipleAsync<T1, T2, T3, T4>(
+        IDbConnection connection,
+        string commandText,
+        IDbProvider provider,
+        Func<IDataReader, T1> mapper1,
+        Func<IDataReader, T2> mapper2,
+        Func<IDataReader, T3> mapper3,
+        Func<IDataReader, T4> mapper4,
+        Dictionary<string, object?>? parameters = null,
+        CommandType commandType = CommandType.Text,
+        int commandTimeout = 30)
+        where T1 : class
+        where T2 : class
+        where T3 : class
+        where T4 : class
+    {
+        try
+        {
+            if (mapper1 == null)
+                return Result.Fail<(List<T1>, List<T2>, List<T3>, List<T4>)>(
+                    new Error("ADO.MAPPER_NULL", "mapper1 cannot be null"));
+            if (mapper2 == null)
+                return Result.Fail<(List<T1>, List<T2>, List<T3>, List<T4>)>(
+                    new Error("ADO.MAPPER_NULL", "mapper2 cannot be null"));
+            if (mapper3 == null)
+                return Result.Fail<(List<T1>, List<T2>, List<T3>, List<T4>)>(
+                    new Error("ADO.MAPPER_NULL", "mapper3 cannot be null"));
+            if (mapper4 == null)
+                return Result.Fail<(List<T1>, List<T2>, List<T3>, List<T4>)>(
+                    new Error("ADO.MAPPER_NULL", "mapper4 cannot be null"));
+
+            var results1 = new List<T1>();
+            var results2 = new List<T2>();
+            var results3 = new List<T3>();
+            var results4 = new List<T4>();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = commandText;
+            command.CommandType = commandType;
+            command.CommandTimeout = commandTimeout;
+
+            AddParameters(command, parameters, provider);
+
+            if (connection.State != ConnectionState.Open)
+                await OpenConnectionAsync(connection);
+
+            using var reader = await ExecuteReaderAsyncInternal(command, CommandBehavior.SequentialAccess);
+
+            // Read first result set
+            while (await ReadAsyncInternal(reader))
+            {
+                results1.Add(mapper1(reader));
+            }
+
+            // Move to second result set
+            if (!await NextResultAsyncInternal(reader))
+                return Result.Ok((results1, results2, results3, results4));
+
+            // Read second result set
+            while (await ReadAsyncInternal(reader))
+            {
+                results2.Add(mapper2(reader));
+            }
+
+            // Move to third result set
+            if (!await NextResultAsyncInternal(reader))
+                return Result.Ok((results1, results2, results3, results4));
+
+            // Read third result set
+            while (await ReadAsyncInternal(reader))
+            {
+                results3.Add(mapper3(reader));
+            }
+
+            // Move to fourth result set
+            if (!await NextResultAsyncInternal(reader))
+                return Result.Ok((results1, results2, results3, results4));
+
+            // Read fourth result set
+            while (await ReadAsyncInternal(reader))
+            {
+                results4.Add(mapper4(reader));
+            }
+
+            return Result.Ok((results1, results2, results3, results4));
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<(List<T1>, List<T2>, List<T3>, List<T4>)>(
+                new Error("ADO.QUERY_MULTIPLE_FAILED", ex.Message));
+        }
+    }
+
     /// <summary>Execute transaction with multiple commands.</summary>
     public static async Task<Result> ExecuteTransactionAsync(
         IDbConnection connection,
@@ -230,6 +464,18 @@ public static class AdoHelper
         }
     }
 
+    private static async Task<IDataReader> ExecuteReaderAsyncInternal(IDbCommand command, CommandBehavior behavior)
+    {
+        if (command is DbCommand dbCommand)
+        {
+            return await dbCommand.ExecuteReaderAsync(behavior);
+        }
+        else
+        {
+            return command.ExecuteReader(behavior);
+        }
+    }
+
     private static async Task<bool> ReadAsyncInternal(IDataReader reader)
     {
         if (reader is DbDataReader dbReader)
@@ -239,6 +485,18 @@ public static class AdoHelper
         else
         {
             return reader.Read();
+        }
+    }
+
+    private static async Task<bool> NextResultAsyncInternal(IDataReader reader)
+    {
+        if (reader is DbDataReader dbReader)
+        {
+            return await dbReader.NextResultAsync();
+        }
+        else
+        {
+            return reader.NextResult();
         }
     }
 
