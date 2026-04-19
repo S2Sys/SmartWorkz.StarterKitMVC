@@ -61,9 +61,96 @@
                         <i class="bi bi-gear me-2"></i>Settings
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/roles") ? "active" : "")" asp-page="/Roles/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-shield-check me-2"></i>Roles
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/menuitems") ? "active" : "")" asp-page="/MenuItems/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-list me-2"></i>Menu Items
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/contenttemplates") ? "active" : "")" asp-page="/ContentTemplates/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-file-earmark-text me-2"></i>Content Templates
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/lookups") ? "active" : "")" asp-page="/Lookups/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-list-check me-2"></i>Lookups
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/notifications") ? "active" : "")" asp-page="/Notifications/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-bell me-2"></i>Notifications
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/categories") ? "active" : "")" asp-page="/Categories/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-tag me-2"></i>Categories
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/menus") ? "active" : "")" asp-page="/Menus/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-list me-2"></i>Menus
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/translations") ? "active" : "")" asp-page="/Translations/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-translate me-2"></i>Translations
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/inventory") ? "active" : "")" asp-page="/Inventory/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-box-seam me-2"></i>Inventory
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/seometa") ? "active" : "")" asp-page="/SeoMeta/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-search me-2"></i>SEO Meta
+                    </a>
+                </li>
             </ul>
 
             <hr style="border-color: rgba(255,255,255,0.1);">
+            <h6 style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Master Data</h6>
+
+            <ul class="nav flex-column gap-2">
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/countries") ? "active" : "")" asp-page="/Countries/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-globe me-2"></i>Countries
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/currencies") ? "active" : "")" asp-page="/Currencies/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-currency-dollar me-2"></i>Currencies
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/languages") ? "active" : "")" asp-page="/Languages/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-translate me-2"></i>Languages
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/tags") ? "active" : "")" asp-page="/Tags/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-tags me-2"></i>Tags
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/geohierarchy") ? "active" : "")" asp-page="/GeoHierarchy/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-diagram-3 me-2"></i>Geo Hierarchy
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentPage.Contains("/geolocationpage") ? "active" : "")" asp-page="/GeolocationPage/Index" style="color: #cbd5e1;">
+                        <i class="bi bi-map me-2"></i>Geo Pages
+                    </a>
+                </li>
+            </ul>
+
+            <hr style="border-color: rgba(255,255,255,0.1);">
+            <h6 style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">System</h6>
 
             <ul class="nav flex-column gap-2">
                 <li class="nav-item">
