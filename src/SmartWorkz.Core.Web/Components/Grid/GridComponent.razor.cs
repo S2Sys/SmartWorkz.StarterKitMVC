@@ -3,7 +3,7 @@ using SmartWorkz.Core.Shared.Grid;
 
 namespace SmartWorkz.Core.Web.Components.Grid;
 
-public partial class GridComponent<T> : ComponentBase where T : class
+public partial class GridComponent<T> : ComponentBase, IAsyncDisposable where T : class
 {
     [Parameter]
     public IEnumerable<T> DataSource { get; set; } = [];
@@ -153,7 +153,7 @@ public partial class GridComponent<T> : ComponentBase where T : class
         return style;
     }
 
-    private async Task OnGridStateChanged()
+    private async void OnGridStateChanged()
     {
         await OnStateChanged.InvokeAsync(new GridStateChangedArgs
         {
