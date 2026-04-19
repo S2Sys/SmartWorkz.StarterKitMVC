@@ -22,6 +22,9 @@ Latest: **v4.1.0** (2026-04-02) — Demo pages & comprehensive wiki documentatio
   - [11 — EF Core Repository](docs/wiki/11-ef-core-repository.md) — Generic `IRepository<T>`, when to pick it over Dapper
   - [12 — Hybrid Cache](docs/wiki/12-hybrid-cache.md) — `ICacheService` L1+L2, tenant-namespaced keys, Redis/SQL fallback
   - [13 — Email Templates](docs/wiki/13-email-templates.md) — `EmailTemplateService` + `TemplatedEmailSender`, SQL vs JSON storage
+  - [14 — Auth Service](docs/wiki/14-auth-service.md) — `IAuthService` + `ITokenService` + `IPasswordHasher`, cookie vs JWT
+  - [15 — Permission Service](docs/wiki/15-permission-service.md) — Features/Permissions/RolePermissions + `[RequirePermission]`
+  - [16 — Claim Service](docs/wiki/16-claim-service.md) — Custom claim types, role/user claims, JWT projection
 
 ### 🏗️ Architecture & Design
 - **📋 Schema Design:** [`docs/srs/SCHEMA-REVIEW-v2.md`](docs/srs/SCHEMA-REVIEW-v2.md) — 42 LEAN tables across 5 schemas
