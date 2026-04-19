@@ -1,9 +1,10 @@
 using System.Collections.Concurrent;
+using SmartWorkz.Core.Shared.Results;
 
 namespace SmartWorkz.Core.Shared.Caching;
 
 /// <summary>
-/// In-memory L1 cache service implementation with thread-safe operations.
+/// In-memory L1 cache service implementation with thread-safe operations and tenant isolation.
 /// Suitable for single-process deployments with TTL and expiration support.
 /// </summary>
 public sealed class MemoryCacheService : ICacheService
@@ -11,75 +12,99 @@ public sealed class MemoryCacheService : ICacheService
     private readonly ConcurrentDictionary<string, (object? Value, DateTime? ExpiresAt)> _storage = new();
 
     /// <summary>
-    /// Gets a cached value by key. Returns null if not found or expired.
+    /// Builds a tenant-scoped cache key.
+    /// </summary>
+    /// <param name="key">Original cache key.</param>
+    /// <param name="tenantId">Tenant identifier. Defaults to "default" if null.</param>
+    /// <returns>Tenant-scoped key in format "{tenantId}:{key}".</returns>
+    private static string BuildKey(string key, string? tenantId = null)
+    {
+        var tenant = tenantId ?? "default";
+        return $"{tenant}:{key}";
+    }
+
+    /// <summary>
+    /// Gets a cached value by key with tenant isolation. Returns failure if not found or expired.
     /// </summary>
     /// <typeparam name="T">The type of value to retrieve.</typeparam>
     /// <param name="key">Cache key.</param>
+    /// <param name="tenantId">Tenant identifier. Defaults to "default" if null.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>Cached value or null if not found or expired.</returns>
-    public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
+    /// <returns>Result containing cached value, or failure if not found or expired.</returns>
+    public async Task<Result<T?>> GetAsync<T>(string key, string? tenantId = null, CancellationToken cancellationToken = default)
     {
         Guard.NotEmpty(key, nameof(key));
 
-        if (_storage.TryGetValue(key, out var entry))
+        var fullKey = BuildKey(key, tenantId);
+
+        if (_storage.TryGetValue(fullKey, out var entry))
         {
             // Check if expired
             if (entry.ExpiresAt.HasValue && DateTime.UtcNow >= entry.ExpiresAt.Value)
             {
-                _storage.TryRemove(key, out _);
-                return await Task.FromResult(default(T?));
+                _storage.TryRemove(fullKey, out _);
+                return await Task.FromResult(Result.Fail<T?>("Cache.KeyNotFound", "Cache key not found"));
             }
 
-            return await Task.FromResult((T?)entry.Value);
+            return await Task.FromResult(Result.Ok<T?>((T?)entry.Value));
         }
 
-        return await Task.FromResult(default(T?));
+        return await Task.FromResult(Result.Fail<T?>("Cache.KeyNotFound", "Cache key not found"));
     }
 
     /// <summary>
-    /// Sets a cached value with optional TTL expiration.
+    /// Sets a cached value with optional TTL expiration and tenant isolation.
     /// </summary>
     /// <typeparam name="T">The type of value to cache.</typeparam>
     /// <param name="key">Cache key.</param>
     /// <param name="value">Value to cache.</param>
-    /// <param name="ttl">Time to live. If null, no expiration.</param>
+    /// <param name="ttlMinutes">Time to live in minutes. If null, no expiration.</param>
+    /// <param name="tenantId">Tenant identifier. Defaults to "default" if null.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    public async Task SetAsync<T>(string key, T value, TimeSpan? ttl = null, CancellationToken cancellationToken = default)
+    /// <returns>Success result.</returns>
+    public async Task<Result> SetAsync<T>(string key, T value, int? ttlMinutes = null, string? tenantId = null, CancellationToken cancellationToken = default)
     {
         Guard.NotEmpty(key, nameof(key));
 
-        DateTime? expiresAt = ttl.HasValue ? DateTime.UtcNow.Add(ttl.Value) : null;
+        var fullKey = BuildKey(key, tenantId);
+        DateTime? expiresAt = ttlMinutes.HasValue ? DateTime.UtcNow.AddMinutes(ttlMinutes.Value) : null;
 
-        _storage[key] = (value, expiresAt);
-        await Task.CompletedTask;
+        _storage[fullKey] = (value, expiresAt);
+        return await Task.FromResult(Result.Ok());
     }
 
     /// <summary>
-    /// Removes a single cache entry.
+    /// Removes a single cache entry with tenant isolation.
     /// </summary>
     /// <param name="key">Cache key.</param>
+    /// <param name="tenantId">Tenant identifier. Defaults to "default" if null.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
+    /// <returns>Success result.</returns>
+    public async Task<Result> RemoveAsync(string key, string? tenantId = null, CancellationToken cancellationToken = default)
     {
         Guard.NotEmpty(key, nameof(key));
 
-        _storage.TryRemove(key, out _);
-        await Task.CompletedTask;
+        var fullKey = BuildKey(key, tenantId);
+        _storage.TryRemove(fullKey, out _);
+        return await Task.FromResult(Result.Ok());
     }
 
     /// <summary>
-    /// Removes all cache entries matching a prefix pattern.
-    /// Example: RemoveByPrefixAsync("user:") removes "user:1", "user:2", etc.
+    /// Removes all cache entries matching a prefix pattern with tenant isolation.
+    /// Example: RemoveByPrefixAsync("user:*", "tenant1") removes "tenant1:user:*" entries.
     /// </summary>
     /// <param name="prefix">Key prefix to match.</param>
+    /// <param name="tenantId">Tenant identifier. Defaults to "default" if null.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    public async Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+    /// <returns>Success result.</returns>
+    public async Task<Result> RemoveByPrefixAsync(string prefix, string? tenantId = null, CancellationToken cancellationToken = default)
     {
         Guard.NotEmpty(prefix, nameof(prefix));
 
+        var tenant = tenantId ?? "default";
         string searchPrefix = prefix.EndsWith("*")
-            ? prefix.TrimEnd('*')
-            : prefix;
+            ? $"{tenant}:{prefix.TrimEnd('*')}"
+            : $"{tenant}:{prefix}";
 
         var keysToRemove = _storage.Keys.Where(k => k.StartsWith(searchPrefix)).ToList();
         foreach (var key in keysToRemove)
@@ -87,20 +112,23 @@ public sealed class MemoryCacheService : ICacheService
             _storage.TryRemove(key, out _);
         }
 
-        await Task.CompletedTask;
+        return await Task.FromResult(Result.Ok());
     }
 
     /// <summary>
-    /// Checks if a key exists in the cache (ignores expiration check).
+    /// Checks if a key exists in the cache with tenant isolation (ignores expiration check).
     /// </summary>
     /// <param name="key">Cache key.</param>
+    /// <param name="tenantId">Tenant identifier. Defaults to "default" if null.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>True if key exists; false otherwise.</returns>
-    public async Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default)
+    /// <returns>True if key exists and is not expired; false otherwise.</returns>
+    public async Task<bool> ExistsAsync(string key, string? tenantId = null, CancellationToken cancellationToken = default)
     {
         Guard.NotEmpty(key, nameof(key));
 
-        if (!_storage.TryGetValue(key, out var entry))
+        var fullKey = BuildKey(key, tenantId);
+
+        if (!_storage.TryGetValue(fullKey, out var entry))
         {
             return await Task.FromResult(false);
         }
@@ -108,7 +136,7 @@ public sealed class MemoryCacheService : ICacheService
         // Check if expired
         if (entry.ExpiresAt.HasValue && DateTime.UtcNow >= entry.ExpiresAt.Value)
         {
-            _storage.TryRemove(key, out _);
+            _storage.TryRemove(fullKey, out _);
             return await Task.FromResult(false);
         }
 
@@ -116,12 +144,23 @@ public sealed class MemoryCacheService : ICacheService
     }
 
     /// <summary>
-    /// Clears all cache entries.
+    /// Clears all cache entries for the specified tenant (or "default" if not specified).
+    /// Does not clear entries from other tenants.
     /// </summary>
+    /// <param name="tenantId">Tenant identifier. Defaults to "default" if null.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    public async Task ClearAsync(CancellationToken cancellationToken = default)
+    /// <returns>Success result.</returns>
+    public async Task<Result> ClearAsync(string? tenantId = null, CancellationToken cancellationToken = default)
     {
-        _storage.Clear();
-        await Task.CompletedTask;
+        var tenant = tenantId ?? "default";
+        var prefixToMatch = $"{tenant}:";
+
+        var keysToRemove = _storage.Keys.Where(k => k.StartsWith(prefixToMatch)).ToList();
+        foreach (var key in keysToRemove)
+        {
+            _storage.TryRemove(key, out _);
+        }
+
+        return await Task.FromResult(Result.Ok());
     }
 }
