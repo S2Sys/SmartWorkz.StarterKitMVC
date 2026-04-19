@@ -45,7 +45,7 @@ public sealed class Address : ValueObject
         ));
     }
 
-    protected override IEnumerable<object> GetEqualityComponents()
+    protected override IEnumerable<object?> GetAtomicValues()
     {
         yield return Street;
         yield return City;
