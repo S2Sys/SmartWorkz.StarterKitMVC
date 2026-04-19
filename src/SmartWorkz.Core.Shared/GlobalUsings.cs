@@ -9,3 +9,4 @@ global using SmartWorkz.Core.Shared.Extensions;
 global using SmartWorkz.Core.Shared.Primitives;
 global using SmartWorkz.Core.Shared.Base_Classes;
 global using SmartWorkz.Core.Shared.Response;
+global using SmartWorkz.Core.Shared.Logging;
