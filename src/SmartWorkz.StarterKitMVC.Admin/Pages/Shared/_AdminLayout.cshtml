@@ -35,63 +35,112 @@
                 </a>
             </div>
 
-            <ul class="nav flex-column gap-2">
-                <li class="nav-item">
-                    <a class="nav-link @(currentPage.Contains("/dashboard") ? "active" : "")" asp-page="/Dashboard/Index" style="color: #cbd5e1;">
-                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(currentPage.Contains("/users") ? "active" : "")" asp-page="/Users/Index" style="color: #cbd5e1;">
-                        <i class="bi bi-people me-2"></i>Users
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(currentPage.Contains("/tenants") ? "active" : "")" asp-page="/Tenants/Index" style="color: #cbd5e1;">
-                        <i class="bi bi-building me-2"></i>Tenants
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(currentPage.Contains("/permissions") ? "active" : "")" asp-page="/Permissions/Index" style="color: #cbd5e1;">
-                        <i class="bi bi-shield-lock me-2"></i>Permissions
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(currentPage.Contains("/settings") ? "active" : "")" asp-page="/Settings/Index" style="color: #cbd5e1;">
-                        <i class="bi bi-gear me-2"></i>Settings
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(currentPage.Contains("/products") ? "active" : "")" asp-page="/Products/Index" style="color: #cbd5e1;">
-                        <i class="bi bi-box me-2"></i>Products
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(currentPage.Contains("/lookups") ? "active" : "")" asp-page="/Lookups/Index" style="color: #cbd5e1;">
-                        <i class="bi bi-list-check me-2"></i>Lookups
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(currentPage.Contains("/emailtemplates") ? "active" : "")" asp-page="/EmailTemplates/Index" style="color: #cbd5e1;">
-                        <i class="bi bi-envelope me-2"></i>Email Templates
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(currentPage.Contains("/resources") ? "active" : "")" asp-page="/Resources/Languages" style="color: #cbd5e1;">
-                        <i class="bi bi-translate me-2"></i>Resources
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(currentPage.Contains("/calendar") ? "active" : "")" asp-page="/Calendar/Index" style="color: #cbd5e1;">
-                        <i class="bi bi-calendar-event me-2"></i>Calendar
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(currentPage.Contains("/theme") ? "active" : "")" asp-page="/Theme/Index" style="color: #cbd5e1;">
-                        <i class="bi bi-palette me-2"></i>Theme
-                    </a>
-                </li>
-            </ul>
+            <!-- Dashboard -->
+            <div class="nav flex-column gap-1">
+                <a class="nav-link @(currentPage.Contains("/dashboard") ? "active" : "")" asp-page="/Dashboard/Index" style="color: #cbd5e1;">
+                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                </a>
+            </div>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 0.75rem 0;">
+
+            <!-- Administration Section -->
+            <div class="nav-group">
+                <button class="nav-group-toggle btn btn-link text-start w-100" type="button" data-bs-toggle="collapse" data-bs-target="#adminMenu" style="color: #a1a5b4; padding: 0.5rem 0;">
+                    <i class="bi bi-shield me-2"></i>Administration
+                    <i class="bi bi-chevron-down ms-auto" style="font-size: 0.85rem;"></i>
+                </button>
+                <div class="collapse show" id="adminMenu">
+                    <ul class="nav flex-column gap-1 ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link @(currentPage.Contains("/users") ? "active" : "")" asp-page="/Users/Index" style="color: #cbd5e1;">
+                                <i class="bi bi-people me-2"></i>Users
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentPage.Contains("/tenants") ? "active" : "")" asp-page="/Tenants/Index" style="color: #cbd5e1;">
+                                <i class="bi bi-building me-2"></i>Tenants
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentPage.Contains("/permissions") ? "active" : "")" asp-page="/Permissions/Index" style="color: #cbd5e1;">
+                                <i class="bi bi-shield-lock me-2"></i>Permissions
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="nav-group">
+                <button class="nav-group-toggle btn btn-link text-start w-100" type="button" data-bs-toggle="collapse" data-bs-target="#contentMenu" style="color: #a1a5b4; padding: 0.5rem 0;">
+                    <i class="bi bi-file-text me-2"></i>Content
+                    <i class="bi bi-chevron-down ms-auto" style="font-size: 0.85rem;"></i>
+                </button>
+                <div class="collapse show" id="contentMenu">
+                    <ul class="nav flex-column gap-1 ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link @(currentPage.Contains("/products") ? "active" : "")" asp-page="/Products/Index" style="color: #cbd5e1;">
+                                <i class="bi bi-box me-2"></i>Products
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentPage.Contains("/emailtemplates") ? "active" : "")" asp-page="/EmailTemplates/Index" style="color: #cbd5e1;">
+                                <i class="bi bi-envelope me-2"></i>Email Templates
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Data Management Section -->
+            <div class="nav-group">
+                <button class="nav-group-toggle btn btn-link text-start w-100" type="button" data-bs-toggle="collapse" data-bs-target="#dataMenu" style="color: #a1a5b4; padding: 0.5rem 0;">
+                    <i class="bi bi-database me-2"></i>Data Management
+                    <i class="bi bi-chevron-down ms-auto" style="font-size: 0.85rem;"></i>
+                </button>
+                <div class="collapse show" id="dataMenu">
+                    <ul class="nav flex-column gap-1 ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link @(currentPage.Contains("/lookups") ? "active" : "")" asp-page="/Lookups/Index" style="color: #cbd5e1;">
+                                <i class="bi bi-list-check me-2"></i>Lookups
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentPage.Contains("/resources") ? "active" : "")" asp-page="/Resources/Languages" style="color: #cbd5e1;">
+                                <i class="bi bi-translate me-2"></i>Resources
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- System Section -->
+            <div class="nav-group">
+                <button class="nav-group-toggle btn btn-link text-start w-100" type="button" data-bs-toggle="collapse" data-bs-target="#systemMenu" style="color: #a1a5b4; padding: 0.5rem 0;">
+                    <i class="bi bi-gear me-2"></i>System
+                    <i class="bi bi-chevron-down ms-auto" style="font-size: 0.85rem;"></i>
+                </button>
+                <div class="collapse show" id="systemMenu">
+                    <ul class="nav flex-column gap-1 ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link @(currentPage.Contains("/settings") ? "active" : "")" asp-page="/Settings/Index" style="color: #cbd5e1;">
+                                <i class="bi bi-sliders me-2"></i>Settings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentPage.Contains("/calendar") ? "active" : "")" asp-page="/Calendar/Index" style="color: #cbd5e1;">
+                                <i class="bi bi-calendar-event me-2"></i>Calendar
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentPage.Contains("/theme") ? "active" : "")" asp-page="/Theme/Index" style="color: #cbd5e1;">
+                                <i class="bi bi-palette me-2"></i>Theme
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
 
             <hr style="border-color: rgba(255,255,255,0.1); margin-top: 1rem;">
 
