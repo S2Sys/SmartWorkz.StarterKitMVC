@@ -1,0 +1,106 @@
+@page
+@model AllFormComponentsModel
+
+@{
+    ViewData["Title"] = "All Form TagHelpers Demo";
+}
+
+<div class="container mt-5">
+    <h1>Complete Form TagHelpers Demo</h1>
+
+    <form-tag method="post" action="" class="mt-4">
+
+        <!-- TextAreaTagHelper -->
+        <section class="mt-4">
+            <h3>TextAreaTagHelper</h3>
+            <div class="mb-3">
+                <label-tag text="Comments" required="true"></label-tag>
+                <textarea-tag rows="5" placeholder="Enter your message..."></textarea-tag>
+            </div>
+        </section>
+
+        <!-- CheckboxTagHelper -->
+        <section class="mt-4">
+            <h3>CheckboxTagHelper</h3>
+            <checkbox-tag label="I agree to the terms and conditions"></checkbox-tag>
+            <checkbox-tag label="Subscribe to newsletter"></checkbox-tag>
+        </section>
+
+        <!-- RadioButtonTagHelper -->
+        <section class="mt-4">
+            <h3>RadioButtonTagHelper</h3>
+            <p class="mb-3">Select your preference:</p>
+            <radio-button-tag group-name="preference" value="option1" label="Option 1"></radio-button-tag>
+            <radio-button-tag group-name="preference" value="option2" label="Option 2"></radio-button-tag>
+            <radio-button-tag group-name="preference" value="option3" label="Option 3" checked="true"></radio-button-tag>
+        </section>
+
+        <!-- FileInputTagHelper -->
+        <section class="mt-4">
+            <h3>FileInputTagHelper</h3>
+            <div class="mb-3">
+                <label-tag text="Upload Document" required="true"></label-tag>
+                <file-input-tag accept=".pdf,.doc,.docx" required="true"></file-input-tag>
+            </div>
+        </section>
+
+        <!-- ValidationMessageTagHelper -->
+        <section class="mt-4">
+            <h3>ValidationMessageTagHelper</h3>
+            <validation-message message="This field is required"></validation-message>
+            <validation-message message="Please enter a valid email address"></validation-message>
+        </section>
+
+        <!-- LabelTagHelper -->
+        <section class="mt-4">
+            <h3>LabelTagHelper</h3>
+            <div class="mb-3">
+                <label-tag text="Full Name" required="true"></label-tag>
+                <input-tag type="text" placeholder="Enter your full name"></input-tag>
+            </div>
+            <div class="mb-3">
+                <label-tag text="Email Address" required="true"></label-tag>
+                <input-tag type="email" placeholder="Enter your email"></input-tag>
+            </div>
+        </section>
+
+        <!-- Full Form Example -->
+        <section class="mt-4">
+            <h2>Complete Form Example</h2>
+
+            <div class="mb-3">
+                <label-tag text="Full Name" required="true"></label-tag>
+                <input-tag type="text" placeholder="John Doe"></input-tag>
+            </div>
+
+            <div class="mb-3">
+                <label-tag text="Email" required="true"></label-tag>
+                <input-tag type="email" placeholder="john@example.com"></input-tag>
+            </div>
+
+            <div class="mb-3">
+                <label-tag text="Phone"></label-tag>
+                <input-tag type="tel" placeholder="+1 (555) 000-0000"></input-tag>
+            </div>
+
+            <div class="mb-3">
+                <label-tag text="Message"></label-tag>
+                <textarea-tag rows="4" placeholder="Enter your message"></textarea-tag>
+            </div>
+
+            <div class="mb-3">
+                <label-tag text="Preferred Contact Method"></label-tag>
+                <radio-button-tag group-name="contact" value="email" label="Email" checked="true"></radio-button-tag>
+                <radio-button-tag group-name="contact" value="phone" label="Phone"></radio-button-tag>
+            </div>
+
+            <checkbox-tag label="I consent to being contacted"></checkbox-tag>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary me-2">Submit</button>
+                <button type="reset" class="btn btn-secondary">Reset</button>
+            </div>
+        </section>
+
+    </form-tag>
+</div>
