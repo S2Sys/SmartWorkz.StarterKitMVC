@@ -1,5 +1,6 @@
 global using System;
 global using System.Collections.Generic;
+global using System.Data;
 global using System.Linq;
 global using System.Threading.Tasks;
 global using SmartWorkz.Core.Shared.Results;
@@ -13,3 +14,4 @@ global using SmartWorkz.Core.Shared.Logging;
 global using SmartWorkz.Core.Shared.Mapping;
 global using SmartWorkz.Core.Shared.Constants;
 global using SmartWorkz.Core.Shared.Helpers;
+global using SmartWorkz.Core.Shared.Data;
