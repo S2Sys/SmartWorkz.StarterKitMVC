@@ -1,4 +1,4 @@
-using SmartWorkz.Core.Results;
+using SmartWorkz.Core.Shared.Results;
 
 namespace SmartWorkz.Core.Shared.Grid;
 
