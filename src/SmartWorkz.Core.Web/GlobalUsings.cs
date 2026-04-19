@@ -6,3 +6,6 @@ global using Microsoft.AspNetCore.Html;
 global using Microsoft.AspNetCore.Mvc.Rendering;
 global using Microsoft.AspNetCore.Mvc.ViewFeatures;
 global using Microsoft.AspNetCore.Razor.TagHelpers;
+global using SmartWorkz.Core.Web.TagHelpers;
+global using SmartWorkz.Core.Web.Services.Grid;
+global using SmartWorkz.Core.Web.Components.Grid;
