@@ -50,14 +50,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Pages/Identity/Roles.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSWRlbnRpdHlcUm9sZXMuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Pages/Identity/Users.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSWRlbnRpdHlcVXNlcnMuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Pages/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
