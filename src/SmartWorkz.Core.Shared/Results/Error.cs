@@ -36,5 +36,8 @@ public sealed class Error
     public static Error Conflict(string message)
         => new("CONFLICT", message);
 
+    public static Error FromException(Exception ex, string code)
+        => new(code, ex.Message);
+
     public override string ToString() => $"[{Code}] {Message}";
 }
