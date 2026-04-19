@@ -10,6 +10,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartWorkz.Core.Web", "..\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartWorkz.Core.External", "..\SmartWorkz.Core.External\SmartWorkz.Core.External.csproj", "{44361EF6-ECEE-46AD-9DCD-54AD8A715114}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartWorkz.Core.Wiki", "..\SmartWorkz.Core.Wiki\SmartWorkz.Core.Wiki.csproj", "{A1B2C3D4-E5F6-47A8-9B0C-1D2E3F4A5B6C}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{F5D5B5F5-5F5F-5F5F-5F5F-5F5F5F5F5F5F}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\docs\GRID_COMPONENT_WIKI.md = ..\..\docs\GRID_COMPONENT_WIKI.md
@@ -40,6 +42,10 @@ Global
 		{44361EF6-ECEE-46AD-9DCD-54AD8A715114}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44361EF6-ECEE-46AD-9DCD-54AD8A715114}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44361EF6-ECEE-46AD-9DCD-54AD8A715114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1B2C3D4-E5F6-47A8-9B0C-1D2E3F4A5B6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-47A8-9B0C-1D2E3F4A5B6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-47A8-9B0C-1D2E3F4A5B6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-47A8-9B0C-1D2E3F4A5B6C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
