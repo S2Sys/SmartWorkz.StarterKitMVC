@@ -36,7 +36,7 @@ public class GridTagHelper : TagHelper
         // 3. Inject required services
 
         output.TagName = "div";
-        output.AddClass("grid-wrapper", " ");
+        output.Attributes.SetAttribute("class", "grid-wrapper");
         output.Content.SetContent($"<!-- Grid: {DataSource} Page Size: {PageSize} -->");
     }
 }

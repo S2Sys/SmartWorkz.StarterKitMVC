@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "krmRk4rkFvU=",
+  "dgSpecHash": "cp/WLq6gZnA=",
   "success": true,
-  "projectFilePath": "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\SmartWorkz.StarterKitMVC.Tests.Integration.csproj",
+  "projectFilePath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\SmartWorkz.StarterKitMVC.Tests.Integration.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\tsent\\.nuget\\packages\\coverlet.collector\\6.0.4\\coverlet.collector.6.0.4.nupkg.sha512",
     "C:\\Users\\tsent\\.nuget\\packages\\microsoft.codecoverage\\17.14.1\\microsoft.codecoverage.17.14.1.nupkg.sha512",

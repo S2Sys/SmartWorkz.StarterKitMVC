@@ -12,11 +12,4 @@ public record GridRequest(
     bool SortDescending = false,
     string? SearchTerm = null,
     Dictionary<string, object>? Filters = null)
-    : PagedQuery(Page, PageSize, SortBy, SortDescending, SearchTerm)
-{
-    /// <summary>
-    /// Column-specific filters. Key is property name, value is filter criteria.
-    /// Example: { "Status": "Active", "DateRange": "2024-01-01,2024-12-31" }
-    /// </summary>
-    public Dictionary<string, object>? Filters { get; } = Filters;
-}
+    : PagedQuery(Page, PageSize, SortBy, SortDescending, SearchTerm);
