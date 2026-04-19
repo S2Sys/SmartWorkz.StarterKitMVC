@@ -1,0 +1,127 @@
+@namespace SmartWorkz.Core.Web.Components.Grid
+@using SmartWorkz.Core.Shared.Grid
+@using SmartWorkz.Core.Shared.Pagination
+@implements IAsyncDisposable
+
+<div class="grid-container @CustomCssClass">
+    @if (StateManager.IsLoading)
+    {
+        <div class="alert alert-info" role="alert">
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Loading data...
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(StateManager.ErrorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error:</strong> @StateManager.ErrorMessage
+            <button type="button" class="btn-close" @onclick="() => StateManager.ClearError()"></button>
+        </div>
+    }
+
+    <table class="table table-striped table-hover">
+        <thead class="table-light">
+            <tr>
+                @if (AllowRowSelection)
+                {
+                    <th style="width: 40px;">
+                        <input type="checkbox" @onchange="SelectAllRows" title="Select all rows" />
+                    </th>
+                }
+                @foreach (var column in VisibleColumns)
+                {
+                    <th style="@GetColumnStyle(column)" @onclick="() => OnSortClick(column.PropertyName)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>@column.DisplayName</span>
+                            @if (column.IsSortable)
+                            {
+                                @if (StateManager.CurrentRequest.SortBy == column.PropertyName)
+                                {
+                                    <span class="sort-indicator">
+                                        @(StateManager.CurrentRequest.SortDescending ? "▼" : "▲")
+                                    </span>
+                                }
+                            }
+                        </div>
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (CurrentPageData?.Any() == true)
+            {
+                @foreach (var item in CurrentPageData)
+                {
+                    <tr>
+                        @if (AllowRowSelection)
+                        {
+                            <td>
+                                <input type="checkbox"
+                                       @onchange="(bool isChecked) => OnRowSelect(GetRowId(item), isChecked)"
+                                       checked="@IsRowSelected(GetRowId(item))" />
+                            </td>
+                        }
+                        @foreach (var column in VisibleColumns)
+                        {
+                            <td>
+                                @RenderCellContent(item, column)
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="@(VisibleColumns.Count + (AllowRowSelection ? 1 : 0))" class="text-center py-4 text-muted">
+                        <em>No data found.</em>
+                        @if (StateManager.CurrentRequest.Filters?.Any() == true)
+                        {
+                            <div>
+                                <button class="btn btn-sm btn-link" @onclick="() => StateManager.ClearFilters()">
+                                    Clear filters
+                                </button>
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (CurrentPageData?.Any() == true && CurrentResponse?.Data.TotalPages > 1)
+    {
+        <nav aria-label="Grid pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(CurrentResponse.Data.HasPreviousPage ? "" : "disabled")">
+                    <button class="page-link" @onclick="() => OnPageChange(StateManager.CurrentRequest.Page - 1)"
+                            disabled="@(!CurrentResponse.Data.HasPreviousPage)">
+                        Previous
+                    </button>
+                </li>
+
+                @for (int i = 1; i <= CurrentResponse.Data.TotalPages && i <= 5; i++)
+                {
+                    var pageNum = i;
+                    <li class="page-item @(CurrentResponse.Data.Page == pageNum ? "active" : "")">
+                        <button class="page-link" @onclick="() => OnPageChange(pageNum)">
+                            @pageNum
+                        </button>
+                    </li>
+                }
+
+                <li class="page-item @(CurrentResponse.Data.HasNextPage ? "" : "disabled")">
+                    <button class="page-link" @onclick="() => OnPageChange(StateManager.CurrentRequest.Page + 1)"
+                            disabled="@(!CurrentResponse.Data.HasNextPage)">
+                        Next
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        <div class="text-center text-muted small">
+            Page @CurrentResponse.Data.Page of @CurrentResponse.Data.TotalPages
+            | Total: @CurrentResponse.Data.TotalCount items
+        </div>
+    }
+</div>
