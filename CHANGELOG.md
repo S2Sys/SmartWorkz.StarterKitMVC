@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **`CachedDapperRepository` now catches `System.Data.Common.DbException`** instead of the SQL Server–specific `SqlException`. This makes the Dapper SP helpers usable with PostgreSQL (Npgsql), Oracle, MySQL, and any other ADO.NET provider without subclassing. SQL Server fidelity preserved: `RepositoryException.SqlErrorNumber` is still populated via a pattern match on `SqlException`; other providers return `null` for now and expose their native exception through `ex.InnerException`. Transient-error detection list is still SQL Server–specific — extend `ExtractErrorNumber` + the transient list when adding providers. See [`docs/wiki/10-dapper-repository.md`](docs/wiki/10-dapper-repository.md).
 - **Framework wiki (Tiers 1–4, 15 new pages)** — `00-getting-started`, `10-dapper-repository`, `11-ef-core-repository`, `12-hybrid-cache`, `13-email-templates`, `14-auth-service`, `15-permission-service`, `16-claim-service`, `17-menu-service`, `18-seo-meta-service`, `19-tag-service`, `20-middleware-stack`, `21-background-jobs`, `22-shared-primitives`, `23-tag-helpers-validators`. Each page follows the standard Purpose → Architecture → DI → Methods → Samples → Provider Swap → Common Mistakes → See Also structure and includes cross-client notes for web / SPA / MAUI / desktop consumers.
 - **Standing project-memory rule** added in `CLAUDE.md` + `memory/wiki_update_rules.md`: every service change must update the corresponding wiki page in the same PR.
 

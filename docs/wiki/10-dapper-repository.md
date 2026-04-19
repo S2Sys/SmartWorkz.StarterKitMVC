@@ -182,29 +182,41 @@ END
 
 ### Error handling — `RepositoryException`
 
-Every SP helper catches `SqlException`, logs it with structured fields (`{SpName}`, `{ErrorNumber}`), and rethrows as `RepositoryException`:
+Every SP helper catches **`System.Data.Common.DbException`** (the ADO.NET base class — covers `SqlException`, `NpgsqlException` / `PostgresException`, `OracleException`, `MySqlException`, etc.), logs it with structured fields (`{SpName}`, `{ErrorNumber}`), and rethrows as `RepositoryException`:
 
 ```csharp
 try
 {
     await _orderRepo.UpsertOrderAsync(order);
 }
-catch (RepositoryException ex) when (ex.SqlErrorNumber == 2627) // unique violation
+catch (RepositoryException ex) when (ex.SqlErrorNumber == 2627) // SQL Server unique violation
 {
-    return Result.Failure(MessageKeys.Crud.DuplicateKey);
+    return Result.Fail(MessageKeys.Crud.DuplicateKey);
 }
 catch (RepositoryException ex)
 {
     _logger.LogError(ex, "Failed SP {Sp}", ex.StoredProcedure);
-    return Result.Failure(MessageKeys.General.InternalError);
+    return Result.Fail(MessageKeys.General.InternalError);
 }
 ```
 
-Transient errors are logged at **Warning**, not **Error**:
+`RepositoryException.SqlErrorNumber` is populated for **SQL Server** (from `SqlException.Number`). For other providers it's `null` — the provider's own exception is still available via `ex.InnerException`:
+
+```csharp
+catch (RepositoryException ex)
+    when (ex.InnerException is Npgsql.PostgresException pg && pg.SqlState == "23505")
+{
+    return Result.Fail(MessageKeys.Crud.DuplicateKey);  // Postgres unique violation
+}
+```
+
+Transient errors are logged at **Warning**, not **Error**. Currently the transient list is SQL Server–specific:
 - 1205 — deadlock victim
 - -2 — command timeout
 - 40197 — service busy (Azure SQL)
 - 64 — connection dropped
+
+When you add Postgres / Oracle / MySQL, extend `ExtractErrorNumber` in [`CachedDapperRepository.cs`](../../src/SmartWorkz.StarterKitMVC.Infrastructure/Repositories/CachedDapperRepository.cs) to pull that provider's numeric code and extend the transient list accordingly. Non–SQL Server providers fall through to the non-transient branch today — they still get wrapped and logged, just at Error level.
 
 ## Provider Swap — SQL Server / Oracle / PostgreSQL
 
@@ -257,14 +269,24 @@ services.AddScoped<IDbConnection>(sp =>
     new MySqlConnector.MySqlConnection(configuration.GetConnectionString("DefaultConnection")));
 ```
 
-### Cross-provider gotcha: exception handling
+### Cross-provider exception handling
 
-`CachedDapperRepository` currently does `catch (SqlException ex)` (SQL Server–specific). When you swap providers you have two options:
+`CachedDapperRepository` catches the ADO.NET base type `System.Data.Common.DbException`, so **every provider's exceptions get wrapped as `RepositoryException` automatically** — no subclass required.
 
-1. **Keep provider-specific error wrapping:** subclass `CachedDapperRepository` per provider and override the catch (recommended for mixed-provider fleets).
-2. **Broaden the catch:** change the base class to `catch (DbException ex)` (the ADO.NET base type) and pull the provider-specific error number via reflection or a small adapter. Works for 95% of cases but loses some fidelity (e.g. `SqlException.Number` → no direct equivalent on Postgres; use `PostgresException.SqlState`).
+What you lose on non–SQL Server providers is **fidelity on the numeric error code**. `ExtractErrorNumber` pattern-matches `SqlException` today and returns `null` for anything else. To regain fidelity per provider, extend the switch:
 
-Pick one and document the chosen strategy alongside the connection factory.
+```csharp
+private static int? ExtractErrorNumber(DbException ex) => ex switch
+{
+    SqlException              se => se.Number,
+    Npgsql.PostgresException  pg => int.TryParse(pg.SqlState, out var n) ? n : null,
+    Oracle.ManagedDataAccess.Client.OracleException oe => oe.Number,
+    MySqlConnector.MySqlException my => my.Number,
+    _                             => null
+};
+```
+
+Add the matching transient-error numbers to `LogDbError` when you do. Postgres's `SqlState` is a 5-char string — keep it as-is or map well-known codes (`23505` unique violation, `40P01` deadlock, `57014` query cancelled) to a synthetic int if you want the numeric contract.
 
 ## Samples from the Codebase
 
@@ -279,7 +301,7 @@ Pick one and document the chosen strategy alongside the connection factory.
 - **Forgetting to `InvalidateCacheKey` after a write** → stale reads until TTL expires. Cache helpers never auto-invalidate.
 - **Missing `TenantId` in `param`** → rows from other tenants leak in. Every `QuerySpAsync` param must include `TenantId` unless the SP is explicitly global.
 - **Returning `IEnumerable<T>` directly from a cached call** without materializing → Dapper's deferred enumeration plus the cache storing the same reference can lead to surprising "already consumed" errors. `CachedDapperRepository` already calls `ToList()` before caching; preserve that when extending.
-- **Catching `SqlException` in the caller** → always catch `RepositoryException` instead. `SqlException` has already been wrapped.
+- **Catching `SqlException` / `DbException` in the caller** → always catch `RepositoryException` instead. The provider exception has already been wrapped; reach `ex.InnerException` if you need the provider-specific type.
 - **Relying on provider-specific types in the repo** (e.g. `SqlDbType`) → defeats the `IDbConnection` abstraction. Keep repos free of provider types; if you need them, use Dapper's `DynamicParameters`.
 
 ## See Also

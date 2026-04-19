@@ -1,4 +1,5 @@
 using System.Data;
+using System.Data.Common;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Memory;
@@ -47,10 +48,11 @@ public abstract class CachedDapperRepository : ICachedDapperRepository
                 commandType: CommandType.StoredProcedure,
                 commandTimeout: timeoutSeconds);
         }
-        catch (SqlException ex)
+        catch (DbException ex)
         {
-            LogSqlError(spName, ex);
-            throw new RepositoryException(spName, $"Failed to execute {spName}: {ex.Message}", ex, ex.Number);
+            var errorNumber = ExtractErrorNumber(ex);
+            LogDbError(spName, ex, errorNumber);
+            throw new RepositoryException(spName, $"Failed to execute {spName}: {ex.Message}", ex, errorNumber);
         }
         catch (Exception ex)
         {
@@ -73,10 +75,11 @@ public abstract class CachedDapperRepository : ICachedDapperRepository
                 commandType: CommandType.StoredProcedure,
                 commandTimeout: timeoutSeconds);
         }
-        catch (SqlException ex)
+        catch (DbException ex)
         {
-            LogSqlError(spName, ex);
-            throw new RepositoryException(spName, $"Failed to execute {spName}: {ex.Message}", ex, ex.Number);
+            var errorNumber = ExtractErrorNumber(ex);
+            LogDbError(spName, ex, errorNumber);
+            throw new RepositoryException(spName, $"Failed to execute {spName}: {ex.Message}", ex, errorNumber);
         }
         catch (Exception ex)
         {
@@ -99,10 +102,11 @@ public abstract class CachedDapperRepository : ICachedDapperRepository
                 commandType: CommandType.StoredProcedure,
                 commandTimeout: timeoutSeconds);
         }
-        catch (SqlException ex)
+        catch (DbException ex)
         {
-            LogSqlError(spName, ex);
-            throw new RepositoryException(spName, $"Failed to execute {spName}: {ex.Message}", ex, ex.Number);
+            var errorNumber = ExtractErrorNumber(ex);
+            LogDbError(spName, ex, errorNumber);
+            throw new RepositoryException(spName, $"Failed to execute {spName}: {ex.Message}", ex, errorNumber);
         }
         catch (Exception ex)
         {
@@ -179,10 +183,11 @@ public abstract class CachedDapperRepository : ICachedDapperRepository
                 commandType: CommandType.StoredProcedure,
                 commandTimeout: timeoutSeconds);
         }
-        catch (SqlException ex)
+        catch (DbException ex)
         {
-            LogSqlError(spName, ex);
-            throw new RepositoryException(spName, $"Failed to execute {spName}: {ex.Message}", ex, ex.Number);
+            var errorNumber = ExtractErrorNumber(ex);
+            LogDbError(spName, ex, errorNumber);
+            throw new RepositoryException(spName, $"Failed to execute {spName}: {ex.Message}", ex, errorNumber);
         }
         catch (Exception ex)
         {
@@ -239,28 +244,60 @@ public abstract class CachedDapperRepository : ICachedDapperRepository
         }
     }
 
-    // ─── Logging Helpers ────────────────────────────────────────────────────────
+    // ─── Provider-Agnostic Error Helpers ────────────────────────────────────────
 
-    private void LogSqlError(string spName, SqlException ex)
+    /// <summary>
+    /// Extract a numeric error code from any <see cref="DbException"/>.
+    /// SQL Server (<see cref="SqlException"/>) populates <c>Number</c>; other providers
+    /// may return <c>null</c> (Postgres uses a string <c>SqlState</c>, MySQL / Oracle have
+    /// their own <c>Number</c> conventions).
+    ///
+    /// When the project adds Postgres / Oracle / MySQL support, extend the switch below
+    /// with the provider-specific pattern match — no change needed in the catch blocks.
+    /// </summary>
+    private static int? ExtractErrorNumber(DbException ex) => ex switch
     {
-        // Transient errors: deadlock (1205), timeout (-2), login timeout (40197), etc.
+        SqlException se => se.Number,
+        _               => null
+    };
+
+    /// <summary>
+    /// Log a <see cref="DbException"/> with provider-agnostic transient detection.
+    /// </summary>
+    private void LogDbError(string spName, DbException ex, int? errorNumber)
+    {
+        // Transient SQL Server error numbers: deadlock (1205), timeout (-2),
+        // login timeout (40197), connection dropped (64).
+        // Other providers fall through to the non-transient branch — extend per provider.
         var transientNumbers = new[] { 1205, -2, 40197, 64 };
-        var isTransient = transientNumbers.Contains(ex.Number);
+        var isTransient = errorNumber.HasValue && transientNumbers.Contains(errorNumber.Value);
 
         if (isTransient)
-            _logger.LogWarning(ex, "Transient SQL error executing {SpName} (Error {ErrorNumber})", spName, ex.Number);
+            _logger.LogWarning(ex, "Transient DB error executing {SpName} (Error {ErrorNumber})", spName, errorNumber);
         else
-            _logger.LogError(ex, "SQL error executing {SpName} (Error {ErrorNumber})", spName, ex.Number);
+            _logger.LogError(ex, "DB error executing {SpName} (Error {ErrorNumber})", spName, errorNumber);
     }
 }
 
 /// <summary>
 /// Exception thrown when a repository operation fails.
-/// Wraps SqlException with context about which stored procedure failed.
+/// Wraps any <see cref="System.Data.Common.DbException"/> (SQL Server, PostgreSQL,
+/// Oracle, MySQL, …) with context about which stored procedure failed.
+/// <para>
+/// <see cref="SqlErrorNumber"/> is populated for SQL Server; it is <c>null</c> for
+/// other providers — pattern-match on <c>Exception.InnerException</c> to reach
+/// provider-specific error data (<c>PostgresException.SqlState</c>, etc.).
+/// </para>
 /// </summary>
 public class RepositoryException : Exception
 {
     public string StoredProcedure { get; }
+
+    /// <summary>
+    /// Numeric error number from the underlying provider when available.
+    /// Populated for SQL Server (<see cref="SqlException.Number"/>); null for
+    /// providers that don't expose a numeric code.
+    /// </summary>
     public int? SqlErrorNumber { get; }
 
     public RepositoryException(string sp, string message, Exception inner, int? sqlError = null)
