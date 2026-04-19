@@ -47,7 +47,7 @@ public static class StringHelper
     public static string RemoveDiacritics(string input)
     {
         if (string.IsNullOrWhiteSpace(input)) return input;
-        var normalized = input.Normalize(System.Text.NormalizationForm.NFD);
+        var normalized = input.Normalize(System.Text.NormalizationForm.FormD);
         var sb = new System.Text.StringBuilder();
         foreach (var c in normalized)
         {
@@ -57,6 +57,6 @@ public static class StringHelper
                 sb.Append(c);
             }
         }
-        return sb.ToString().Normalize(System.Text.NormalizationForm.NFC);
+        return sb.ToString().Normalize(System.Text.NormalizationForm.FormC);
     }
 }
