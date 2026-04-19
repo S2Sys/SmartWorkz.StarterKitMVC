@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../SmartWorkz.Core.Shared/SmartWorkz.Core.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
