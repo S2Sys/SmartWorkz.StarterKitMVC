@@ -9,7 +9,10 @@ using System.Text.Json;
 /// </summary>
 public sealed class JwtSettings
 {
-    /// <summary>Secret key for signing tokens (min 32 chars).</summary>
+    /// <summary>
+    /// Secret key for signing tokens (minimum 32 characters).
+    /// Must be at least 32 characters (256 bits) for HMACSHA256 security.
+    /// </summary>
     public string Secret { get; set; } = string.Empty;
 
     /// <summary>Token issuer (e.g., "YourApp").</summary>
@@ -90,13 +93,18 @@ public sealed class JwtTokenValidationResult
 /// </summary>
 public sealed class JwtHelper
 {
+    /// <summary>Reserved claim names that cannot be used as custom claims.</summary>
+    private static readonly string[] ReservedClaims =
+        { "sub", "email", "name", "roles", "iss", "aud", "iat", "exp" };
+
     /// <summary>
-    /// Generates a JWT access token with the specified claims and settings.
+    /// Internal token generation logic shared by GenerateToken and GenerateRefreshToken.
     /// </summary>
     /// <param name="claims">The claims to include in the token.</param>
     /// <param name="settings">The JWT settings for signing and configuration.</param>
+    /// <param name="isRefreshToken">If true, uses RefreshTokenExpiryDays; otherwise uses ExpiryMinutes.</param>
     /// <returns>A Result containing the signed token or an error.</returns>
-    public static Result<string> GenerateToken(JwtClaims? claims, JwtSettings? settings)
+    private static Result<string> GenerateTokenInternal(JwtClaims? claims, JwtSettings? settings, bool isRefreshToken = false)
     {
         if (claims == null)
             return Result.Fail<string>("JwtHelper.InvalidClaims", "Claims cannot be null");
@@ -133,7 +141,12 @@ public sealed class JwtHelper
             payload["iss"] = settings.Issuer;
             payload["aud"] = settings.Audience;
             payload["iat"] = now.ToUnixTimeSeconds();
-            payload["exp"] = now.AddMinutes(settings.ExpiryMinutes).ToUnixTimeSeconds();
+
+            // Set expiry based on token type
+            if (isRefreshToken)
+                payload["exp"] = now.AddDays(settings.RefreshTokenExpiryDays).ToUnixTimeSeconds();
+            else
+                payload["exp"] = now.AddMinutes(settings.ExpiryMinutes).ToUnixTimeSeconds();
 
             // Add custom claims
             foreach (var kvp in claims.CustomClaims)
@@ -156,9 +169,19 @@ public sealed class JwtHelper
         }
         catch (Exception ex)
         {
-            return Result.Fail<string>("JwtHelper.TokenGenerationFailed", $"Failed to generate token: {ex.Message}");
+            var tokenType = isRefreshToken ? "refresh token" : "token";
+            return Result.Fail<string>("JwtHelper.TokenGenerationFailed", $"Failed to generate {tokenType}: {ex.Message}");
         }
     }
+
+    /// <summary>
+    /// Generates a JWT access token with the specified claims and settings.
+    /// </summary>
+    /// <param name="claims">The claims to include in the token.</param>
+    /// <param name="settings">The JWT settings for signing and configuration.</param>
+    /// <returns>A Result containing the signed token or an error.</returns>
+    public static Result<string> GenerateToken(JwtClaims? claims, JwtSettings? settings)
+        => GenerateTokenInternal(claims, settings, isRefreshToken: false);
 
     /// <summary>
     /// Validates a JWT token and extracts claims if valid.
@@ -212,13 +235,15 @@ public sealed class JwtHelper
                 });
             }
 
-            // Verify signature
+            // Verify signature using constant-time comparison to prevent timing attacks
             string headerPayload = $"{parts[0]}.{parts[1]}";
             using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(settings.Secret));
             byte[] expectedSignature = hmac.ComputeHash(Encoding.UTF8.GetBytes(headerPayload));
             string expectedSignatureB64 = ToBase64Url(expectedSignature);
 
-            if (parts[2] != expectedSignatureB64)
+            if (!CryptographicOperations.FixedTimeEquals(
+                Encoding.UTF8.GetBytes(parts[2]),
+                Encoding.UTF8.GetBytes(expectedSignatureB64)))
             {
                 return Result.Ok(new JwtTokenValidationResult
                 {
@@ -299,7 +324,7 @@ public sealed class JwtHelper
             // Extract custom claims
             foreach (var property in payloadElement.EnumerateObject())
             {
-                if (!new[] { "sub", "email", "name", "roles", "iss", "aud", "iat", "exp" }.Contains(property.Name))
+                if (!ReservedClaims.Contains(property.Name))
                 {
                     if (property.Value.ValueKind == System.Text.Json.JsonValueKind.String)
                         claims.CustomClaims[property.Name] = property.Value.GetString() ?? string.Empty;
@@ -356,68 +381,7 @@ public sealed class JwtHelper
     /// <param name="settings">The JWT settings.</param>
     /// <returns>A Result containing the refresh token or an error.</returns>
     public static Result<string> GenerateRefreshToken(JwtClaims? claims, JwtSettings? settings)
-    {
-        if (claims == null)
-            return Result.Fail<string>("JwtHelper.InvalidClaims", "Claims cannot be null");
-
-        if (settings == null)
-            return Result.Fail<string>("JwtHelper.InvalidSettings", "Settings cannot be null");
-
-        var validationResult = settings.Validate();
-        if (!validationResult.Succeeded)
-            return Result.Fail<string>(validationResult.MessageKey ?? "JwtHelper.InvalidSettings",
-                validationResult.Errors.ToArray());
-
-        try
-        {
-            // Create header
-            var header = new { alg = "HS256", typ = "JWT" };
-            string headerJson = JsonSerializer.Serialize(header);
-            string headerB64 = ToBase64Url(Encoding.UTF8.GetBytes(headerJson));
-
-            // Create payload with longer expiry
-            var now = DateTimeOffset.UtcNow;
-            var payload = new Dictionary<string, object>();
-
-            if (!string.IsNullOrWhiteSpace(claims.Sub))
-                payload["sub"] = claims.Sub;
-            if (!string.IsNullOrWhiteSpace(claims.Email))
-                payload["email"] = claims.Email;
-            if (!string.IsNullOrWhiteSpace(claims.Name))
-                payload["name"] = claims.Name;
-
-            if (claims.Roles.Count > 0)
-                payload["roles"] = claims.Roles;
-
-            payload["iss"] = settings.Issuer;
-            payload["aud"] = settings.Audience;
-            payload["iat"] = now.ToUnixTimeSeconds();
-            payload["exp"] = now.AddDays(settings.RefreshTokenExpiryDays).ToUnixTimeSeconds();
-
-            // Add custom claims
-            foreach (var kvp in claims.CustomClaims)
-            {
-                if (!payload.ContainsKey(kvp.Key))
-                    payload[kvp.Key] = kvp.Value;
-            }
-
-            string payloadJson = JsonSerializer.Serialize(payload);
-            string payloadB64 = ToBase64Url(Encoding.UTF8.GetBytes(payloadJson));
-
-            // Create signature
-            string headerPayload = $"{headerB64}.{payloadB64}";
-            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(settings.Secret));
-            byte[] signature = hmac.ComputeHash(Encoding.UTF8.GetBytes(headerPayload));
-            string signatureB64 = ToBase64Url(signature);
-
-            string token = $"{headerPayload}.{signatureB64}";
-            return Result.Ok(token);
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail<string>("JwtHelper.TokenGenerationFailed", $"Failed to generate refresh token: {ex.Message}");
-        }
-    }
+        => GenerateTokenInternal(claims, settings, isRefreshToken: true);
 
     /// <summary>
     /// Encodes bytes to Base64Url format (no padding, + → -, / → _).
