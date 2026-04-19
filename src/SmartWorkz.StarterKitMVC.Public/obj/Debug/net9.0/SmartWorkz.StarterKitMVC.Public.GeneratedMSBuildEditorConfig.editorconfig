@@ -11,145 +11,145 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = SmartWorkz.StarterKitMVC.Public
 build_property.RootNamespace = SmartWorkz.StarterKitMVC.Public
-build_property.ProjectDir = C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Public\
+build_property.ProjectDir = c:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Public\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Public
+build_property.MSBuildProjectDirectory = c:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Public
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/About.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/About.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWJvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Account/ForgotPassword.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Account/ForgotPassword.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWNjb3VudFxGb3Jnb3RQYXNzd29yZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Account/Login.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Account/Profile.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Account/Profile.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWNjb3VudFxQcm9maWxlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Account/Register.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Account/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Account/ResetPassword.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Account/ResetPassword.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWNjb3VudFxSZXNldFBhc3N3b3JkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Contact.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Contact.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29udGFjdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Demo/Translations.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Demo/Translations.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVtb1xUcmFuc2xhdGlvbnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Demo/Validation.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Demo/Validation.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVtb1xWYWxpZGF0aW9uLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Error.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Features.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Features.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmVhdHVyZXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Index.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Privacy.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJpdmFjeS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Products/Details.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Products/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHVjdHNcRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Products/Index.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Products/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHVjdHNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_ConfirmModal.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_ConfirmModal.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9Db25maXJtTW9kYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_Footer.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_Footer.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9Gb290ZXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_Layout.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_LoadingOverlay.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_LoadingOverlay.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9Mb2FkaW5nT3ZlcmxheS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_Navbar.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_Navbar.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9OYXZiYXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_Pagination.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_Pagination.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9QYWdpbmF0aW9uLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_ToastContainer.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Shared/_ToastContainer.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9Ub2FzdENvbnRhaW5lci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Terms.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/Terms.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVGVybXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/_ViewImports.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/_ViewStart.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Pages/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Authentication/Login.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Authentication/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aGVudGljYXRpb25cTG9naW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Authentication/Register.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Authentication/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aGVudGljYXRpb25cUmVnaXN0ZXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Blog/Index.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Blog/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmxvZ1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Contact/Index.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Contact/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGFjdFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Home/Index.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Profile/Index.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Profile/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Shared/_Layout.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/_ViewStart.cshtml]
+[c:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Public/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

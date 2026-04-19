@@ -4,7 +4,9 @@
       "Read(//s/02_Projects/Starter/03_Development/MVC/SmartWorkz.StarterKitMVC.src/SmartWorkz.StarterKitMVC.Infrastructure/Authorization/**)"
     ],
     "additionalDirectories": [
-      "C:\\Users\\tsent\\.claude\\projects\\c--Users-tsent-source-repos-S2Sys-SmartWorkz-StarterKitMVC\\plans"
+      "C:\\Users\\tsent\\.claude\\projects\\c--Users-tsent-source-repos-S2Sys-SmartWorkz-StarterKitMVC\\plans",
+      "\\tmp",
+      "c:\\tmp"
     ]
   }
 }
