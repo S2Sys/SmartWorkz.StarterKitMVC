@@ -20,3 +20,4 @@ global using SmartWorkz.Core.Shared.File;
 global using SmartWorkz.Core.Shared.Validation;
 global using SmartWorkz.Core.Shared.Security;
 global using SmartWorkz.Core.Shared.Http;
+global using SmartWorkz.Core.Shared.Diagnostics;
