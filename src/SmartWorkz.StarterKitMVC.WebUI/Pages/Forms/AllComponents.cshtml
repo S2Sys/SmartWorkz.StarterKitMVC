@@ -1,0 +1,137 @@
+@page
+@model AllComponentsModel
+
+@{
+    ViewData["Title"] = "Complete Form TagHelpers Demo";
+}
+
+<div class="container mt-5">
+    <h1>Complete Form TagHelpers Demo</h1>
+    <p class="lead">Interactive demos of all form TagHelpers including the 7 new ones</p>
+
+    <form-tag method="post" action="" class="mt-4">
+
+        <!-- InputTagHelper -->
+        <section class="mt-4">
+            <h3>InputTagHelper</h3>
+            <form-group label="Email Address" required="true" help-text="We'll never share your email.">
+                <input-tag type="email" placeholder="name@example.com"></input-tag>
+            </form-group>
+
+            <form-group label="Username" required="true">
+                <input-tag type="text" icon-prefix="User" placeholder="Enter username"></input-tag>
+            </form-group>
+
+            <form-group label="Search" help-text="Search for items">
+                <input-tag type="text" icon-suffix="Search" placeholder="Search..."></input-tag>
+            </form-group>
+        </section>
+
+        <!-- SelectTagHelper -->
+        <section class="mt-4">
+            <h3>SelectTagHelper</h3>
+            <form-group label="Category" required="true">
+                <select-tag add-blank="true" blank-text="-- Choose Category --">
+                </select-tag>
+            </form-group>
+        </section>
+
+        <!-- TextAreaTagHelper (NEW) -->
+        <section class="mt-4">
+            <h3>TextAreaTagHelper (NEW)</h3>
+            <form-group label="Comments" help-text="Enter your detailed comments here">
+                <textarea-tag rows="5" placeholder="Enter your message..."></textarea-tag>
+            </form-group>
+        </section>
+
+        <!-- CheckboxTagHelper (NEW) -->
+        <section class="mt-4">
+            <h3>CheckboxTagHelper (NEW)</h3>
+            <checkbox-tag label="I agree to the terms and conditions"></checkbox-tag>
+            <checkbox-tag label="Subscribe to newsletter" checked="false"></checkbox-tag>
+        </section>
+
+        <!-- RadioButtonTagHelper (NEW) -->
+        <section class="mt-4">
+            <h3>RadioButtonTagHelper (NEW)</h3>
+            <p class="mb-3">Select your preference:</p>
+            <radio-button-tag group-name="preference" value="option1" label="Option 1"></radio-button-tag>
+            <radio-button-tag group-name="preference" value="option2" label="Option 2"></radio-button-tag>
+            <radio-button-tag group-name="preference" value="option3" label="Option 3" checked="true"></radio-button-tag>
+        </section>
+
+        <!-- FileInputTagHelper (NEW) -->
+        <section class="mt-4">
+            <h3>FileInputTagHelper (NEW)</h3>
+            <form-group label="Upload Document" required="true" help-text="PDF, DOC, or DOCX files only">
+                <file-input-tag accept=".pdf,.doc,.docx" required="true"></file-input-tag>
+            </form-group>
+        </section>
+
+        <!-- ValidationMessageTagHelper (NEW) -->
+        <section class="mt-4">
+            <h3>ValidationMessageTagHelper (NEW)</h3>
+            <validation-message message="This field is required"></validation-message>
+            <validation-message message="Please enter a valid email address"></validation-message>
+        </section>
+
+        <!-- LabelTagHelper (NEW) -->
+        <section class="mt-4">
+            <h3>LabelTagHelper (NEW)</h3>
+            <div class="mb-3">
+                <label-tag text="Full Name" required="true"></label-tag>
+                <input-tag type="text" placeholder="Enter your full name"></input-tag>
+            </div>
+            <div class="mb-3">
+                <label-tag text="Email Address" required="true"></label-tag>
+                <input-tag type="email" placeholder="Enter your email"></input-tag>
+            </div>
+        </section>
+
+        <!-- FormTagHelper (NEW) - This form is wrapped in form-tag -->
+        <section class="mt-4">
+            <h3>FormTagHelper (NEW)</h3>
+            <p>This entire form is using the new form-tag helper for modern Bootstrap form styling with needs-validation class.</p>
+        </section>
+
+        <!-- Complete Form Example -->
+        <section class="mt-4">
+            <h2>Complete Contact Form Example</h2>
+            <hr />
+
+            <div class="mb-3">
+                <label-tag text="Full Name" required="true"></label-tag>
+                <input-tag type="text" placeholder="John Doe"></input-tag>
+            </div>
+
+            <div class="mb-3">
+                <label-tag text="Email" required="true"></label-tag>
+                <input-tag type="email" placeholder="john@example.com"></input-tag>
+            </div>
+
+            <div class="mb-3">
+                <label-tag text="Phone"></label-tag>
+                <input-tag type="tel" placeholder="+1 (555) 000-0000"></input-tag>
+            </div>
+
+            <div class="mb-3">
+                <label-tag text="Message"></label-tag>
+                <textarea-tag rows="4" placeholder="Enter your message"></textarea-tag>
+            </div>
+
+            <div class="mb-3">
+                <label-tag text="Preferred Contact Method"></label-tag>
+                <radio-button-tag group-name="contact" value="email" label="Email" checked="true"></radio-button-tag>
+                <radio-button-tag group-name="contact" value="phone" label="Phone"></radio-button-tag>
+            </div>
+
+            <checkbox-tag label="I consent to being contacted"></checkbox-tag>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary me-2">Submit</button>
+                <button type="reset" class="btn btn-secondary">Reset</button>
+            </div>
+        </section>
+
+    </form-tag>
+</div>
