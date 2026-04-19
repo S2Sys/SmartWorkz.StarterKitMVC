@@ -3,7 +3,7 @@ using SmartWorkz.Core.Shared.Caching;
 namespace SmartWorkz.Core.Tests.Caching;
 
 /// <summary>
-/// Tests for MemoryCacheService - in-memory L1 cache.
+/// Tests for MemoryCacheService - in-memory L1 cache with tenant isolation.
 /// </summary>
 public class MemoryCacheServiceTests : IDisposable
 {
@@ -29,37 +29,41 @@ public class MemoryCacheServiceTests : IDisposable
         var value = new { Name = "Test" };
 
         // Act
-        await _cache.SetAsync(key, value);
-        var result = await _cache.GetAsync<dynamic>(key);
+        var setResult = await _cache.SetAsync(key, value);
+        var getResult = await _cache.GetAsync<dynamic>(key);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal("Test", result!.Name);
+        Assert.True(setResult.Succeeded);
+        Assert.True(getResult.Succeeded);
+        Assert.NotNull(getResult.Data);
+        Assert.Equal("Test", getResult.Data!.Name);
     }
 
     [Fact]
-    public async Task GetAsync_NonExistentKey_ReturnsNull()
+    public async Task GetAsync_NonExistentKey_ReturnsFail()
     {
         // Act
         var result = await _cache.GetAsync<string>("nonExistent");
 
         // Assert
-        Assert.Null(result);
+        Assert.False(result.Succeeded);
+        Assert.Null(result.Data);
     }
 
     [Fact]
-    public async Task GetAsync_ExpiredValue_ReturnsNull()
+    public async Task GetAsync_ExpiredValue_ReturnsFail()
     {
         // Arrange
         string key = "expiredKey";
-        await _cache.SetAsync(key, "value", ttl: TimeSpan.FromMilliseconds(50));
+        await _cache.SetAsync(key, "value", ttlMinutes: 0); // 0 minutes = expired immediately
         await Task.Delay(100);
 
         // Act
         var result = await _cache.GetAsync<string>(key);
 
         // Assert
-        Assert.Null(result);
+        Assert.False(result.Succeeded);
+        Assert.Null(result.Data);
     }
 
     [Fact]
@@ -74,8 +78,8 @@ public class MemoryCacheServiceTests : IDisposable
         var result = await _cache.GetAsync<string>(key);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(value, result);
+        Assert.True(result.Succeeded);
+        Assert.Equal(value, result.Data);
     }
 
     [Fact]
@@ -91,8 +95,8 @@ public class MemoryCacheServiceTests : IDisposable
         var result = await _cache.GetAsync<string>(key);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(value, result);
+        Assert.True(result.Succeeded);
+        Assert.Equal(value, result.Data);
     }
 
     #endregion
@@ -107,18 +111,22 @@ public class MemoryCacheServiceTests : IDisposable
         await _cache.SetAsync(key, "value");
 
         // Act
-        await _cache.RemoveAsync(key);
-        var result = await _cache.GetAsync<string>(key);
+        var removeResult = await _cache.RemoveAsync(key);
+        var getResult = await _cache.GetAsync<string>(key);
 
         // Assert
-        Assert.Null(result);
+        Assert.True(removeResult.Succeeded);
+        Assert.False(getResult.Succeeded);
     }
 
     [Fact]
-    public async Task RemoveAsync_NonExistentKey_DoesNotThrow()
+    public async Task RemoveAsync_NonExistentKey_Succeeds()
     {
-        // Act & Assert
-        await _cache.RemoveAsync("nonExistentKey");
+        // Act
+        var result = await _cache.RemoveAsync("nonExistentKey");
+
+        // Assert
+        Assert.True(result.Succeeded);
     }
 
     #endregion
@@ -134,14 +142,15 @@ public class MemoryCacheServiceTests : IDisposable
         await _cache.SetAsync("post:1", "value3");
 
         // Act
-        await _cache.RemoveByPrefixAsync("user:");
+        var removeResult = await _cache.RemoveByPrefixAsync("user:");
         var user1 = await _cache.GetAsync<string>("user:1");
         var post1 = await _cache.GetAsync<string>("post:1");
 
         // Assert
-        Assert.Null(user1);
-        Assert.NotNull(post1);
-        Assert.Equal("value3", post1);
+        Assert.True(removeResult.Succeeded);
+        Assert.False(user1.Succeeded);
+        Assert.True(post1.Succeeded);
+        Assert.Equal("value3", post1.Data);
     }
 
     [Fact]
@@ -153,13 +162,14 @@ public class MemoryCacheServiceTests : IDisposable
         await _cache.SetAsync("post:1", "value3");
 
         // Act
-        await _cache.RemoveByPrefixAsync("user:*");
+        var removeResult = await _cache.RemoveByPrefixAsync("user:*");
         var user1 = await _cache.GetAsync<string>("user:1");
         var post1 = await _cache.GetAsync<string>("post:1");
 
         // Assert
-        Assert.Null(user1);
-        Assert.NotNull(post1);
+        Assert.True(removeResult.Succeeded);
+        Assert.False(user1.Succeeded);
+        Assert.True(post1.Succeeded);
     }
 
     #endregion
@@ -194,7 +204,7 @@ public class MemoryCacheServiceTests : IDisposable
     {
         // Arrange
         string key = "expiredKey";
-        await _cache.SetAsync(key, "value", ttl: TimeSpan.FromMilliseconds(50));
+        await _cache.SetAsync(key, "value", ttlMinutes: 0); // 0 minutes = expired immediately
         await Task.Delay(100);
 
         // Act
@@ -209,7 +219,7 @@ public class MemoryCacheServiceTests : IDisposable
     #region ClearAsync Tests
 
     [Fact]
-    public async Task ClearAsync_RemovesAllEntries()
+    public async Task ClearAsync_RemovesAllEntriesForDefaultTenant()
     {
         // Arrange
         await _cache.SetAsync("key1", "value1");
@@ -217,15 +227,125 @@ public class MemoryCacheServiceTests : IDisposable
         await _cache.SetAsync("key3", "value3");
 
         // Act
-        await _cache.ClearAsync();
+        var clearResult = await _cache.ClearAsync();
         var result1 = await _cache.GetAsync<string>("key1");
         var result2 = await _cache.GetAsync<string>("key2");
         var result3 = await _cache.GetAsync<string>("key3");
 
         // Assert
-        Assert.Null(result1);
-        Assert.Null(result2);
-        Assert.Null(result3);
+        Assert.True(clearResult.Succeeded);
+        Assert.False(result1.Succeeded);
+        Assert.False(result2.Succeeded);
+        Assert.False(result3.Succeeded);
+    }
+
+    [Fact]
+    public async Task ClearAsync_TenantScoped_OnlyClearsSpecificTenant()
+    {
+        // Arrange
+        await _cache.SetAsync("key1", "default-value1", tenantId: null); // "default" tenant
+        await _cache.SetAsync("key2", "default-value2", tenantId: null);
+        await _cache.SetAsync("key1", "tenant1-value1", tenantId: "tenant1");
+        await _cache.SetAsync("key2", "tenant1-value2", tenantId: "tenant1");
+
+        // Act
+        var clearResult = await _cache.ClearAsync(tenantId: "tenant1");
+
+        // Default tenant values should still exist
+        var defaultKey1 = await _cache.GetAsync<string>("key1", tenantId: null);
+        var defaultKey2 = await _cache.GetAsync<string>("key2", tenantId: null);
+
+        // Tenant1 values should be removed
+        var tenant1Key1 = await _cache.GetAsync<string>("key1", tenantId: "tenant1");
+        var tenant1Key2 = await _cache.GetAsync<string>("key2", tenantId: "tenant1");
+
+        // Assert
+        Assert.True(clearResult.Succeeded);
+        Assert.True(defaultKey1.Succeeded);
+        Assert.Equal("default-value1", defaultKey1.Data);
+        Assert.True(defaultKey2.Succeeded);
+        Assert.Equal("default-value2", defaultKey2.Data);
+        Assert.False(tenant1Key1.Succeeded);
+        Assert.False(tenant1Key2.Succeeded);
+    }
+
+    #endregion
+
+    #region Multi-Tenant Isolation Tests
+
+    [Fact]
+    public async Task MultipleTenants_HaveIsolatedCache()
+    {
+        // Arrange
+        const string key = "sharedKey";
+        const string tenant1Value = "tenant1-data";
+        const string tenant2Value = "tenant2-data";
+
+        // Act - Set same key in different tenants
+        await _cache.SetAsync(key, tenant1Value, tenantId: "tenant1");
+        await _cache.SetAsync(key, tenant2Value, tenantId: "tenant2");
+        await _cache.SetAsync(key, "default-data", tenantId: null); // default tenant
+
+        // Get from each tenant
+        var tenant1Result = await _cache.GetAsync<string>(key, tenantId: "tenant1");
+        var tenant2Result = await _cache.GetAsync<string>(key, tenantId: "tenant2");
+        var defaultResult = await _cache.GetAsync<string>(key, tenantId: null);
+
+        // Assert - each tenant should have its own value
+        Assert.True(tenant1Result.Succeeded);
+        Assert.Equal(tenant1Value, tenant1Result.Data);
+
+        Assert.True(tenant2Result.Succeeded);
+        Assert.Equal(tenant2Value, tenant2Result.Data);
+
+        Assert.True(defaultResult.Succeeded);
+        Assert.Equal("default-data", defaultResult.Data);
+    }
+
+    [Fact]
+    public async Task RemoveAsync_TenantScoped_OnlyRemovesFromSpecificTenant()
+    {
+        // Arrange
+        const string key = "testKey";
+        await _cache.SetAsync(key, "tenant1-value", tenantId: "tenant1");
+        await _cache.SetAsync(key, "tenant2-value", tenantId: "tenant2");
+
+        // Act
+        var removeResult = await _cache.RemoveAsync(key, tenantId: "tenant1");
+
+        // Assert
+        var tenant1Result = await _cache.GetAsync<string>(key, tenantId: "tenant1");
+        var tenant2Result = await _cache.GetAsync<string>(key, tenantId: "tenant2");
+
+        Assert.True(removeResult.Succeeded);
+        Assert.False(tenant1Result.Succeeded); // Should be removed
+        Assert.True(tenant2Result.Succeeded); // Should still exist
+        Assert.Equal("tenant2-value", tenant2Result.Data);
+    }
+
+    [Fact]
+    public async Task RemoveByPrefixAsync_TenantScoped_OnlyRemovesFromSpecificTenant()
+    {
+        // Arrange
+        await _cache.SetAsync("user:1", "tenant1-user1", tenantId: "tenant1");
+        await _cache.SetAsync("user:2", "tenant1-user2", tenantId: "tenant1");
+        await _cache.SetAsync("user:1", "tenant2-user1", tenantId: "tenant2");
+        await _cache.SetAsync("user:2", "tenant2-user2", tenantId: "tenant2");
+
+        // Act
+        var removeResult = await _cache.RemoveByPrefixAsync("user:", tenantId: "tenant1");
+
+        // Assert
+        var tenant1User1 = await _cache.GetAsync<string>("user:1", tenantId: "tenant1");
+        var tenant1User2 = await _cache.GetAsync<string>("user:2", tenantId: "tenant1");
+        var tenant2User1 = await _cache.GetAsync<string>("user:1", tenantId: "tenant2");
+        var tenant2User2 = await _cache.GetAsync<string>("user:2", tenantId: "tenant2");
+
+        Assert.True(removeResult.Succeeded);
+        Assert.False(tenant1User1.Succeeded);
+        Assert.False(tenant1User2.Succeeded);
+        Assert.True(tenant2User1.Succeeded);
+        Assert.True(tenant2User2.Succeeded);
     }
 
     #endregion
@@ -250,8 +370,8 @@ public class MemoryCacheServiceTests : IDisposable
         for (int i = 0; i < 100; i++)
         {
             var result = await _cache.GetAsync<string>($"key{i}");
-            Assert.NotNull(result);
-            Assert.Equal($"value{i}", result);
+            Assert.True(result.Succeeded);
+            Assert.Equal($"value{i}", result.Data);
         }
     }
 
@@ -278,8 +398,8 @@ public class MemoryCacheServiceTests : IDisposable
             getTasks.Add(Task.Run(async () =>
             {
                 var result = await _cache.GetAsync<string>($"key{index}");
-                Assert.NotNull(result);
-                Assert.Equal($"value{index}", result);
+                Assert.True(result.Succeeded);
+                Assert.Equal($"value{index}", result.Data);
             }));
         }
 
@@ -309,9 +429,14 @@ public class MemoryCacheServiceTests : IDisposable
         var objectResult = await _cache.GetAsync<dynamic>("objectKey");
 
         // Assert
-        Assert.Equal(intValue, intResult);
-        Assert.Equal(stringValue, stringResult);
-        Assert.NotNull(objectResult);
+        Assert.True(intResult.Succeeded);
+        Assert.Equal(intValue, intResult.Data);
+
+        Assert.True(stringResult.Succeeded);
+        Assert.Equal(stringValue, stringResult.Data);
+
+        Assert.True(objectResult.Succeeded);
+        Assert.NotNull(objectResult.Data);
     }
 
     #endregion
@@ -322,7 +447,7 @@ public class MemoryCacheServiceTests : IDisposable
     public async Task SetAsync_WithNullKey_Throws()
     {
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(() => _cache.SetAsync(null!, "value"));
+        await Assert.ThrowsAsync<ArgumentException>(() => _cache.SetAsync<string>(null!, "value"));
     }
 
     [Fact]
