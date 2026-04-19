@@ -16,3 +16,4 @@ global using SmartWorkz.Core.Shared.Constants;
 global using SmartWorkz.Core.Shared.Helpers;
 global using SmartWorkz.Core.Shared.Data;
 global using SmartWorkz.Core.Shared.Email;
+global using SmartWorkz.Core.Shared.File;
