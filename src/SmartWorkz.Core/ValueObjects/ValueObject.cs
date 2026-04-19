@@ -21,7 +21,13 @@ namespace SmartWorkz.Core.ValueObjects;
 /// </summary>
 public abstract class ValueObject : IEquatable<ValueObject>
 {
-    protected abstract IEnumerable<object> GetEqualityComponents();
+    protected abstract IEnumerable<object?> GetAtomicValues();
+
+    protected virtual IEnumerable<object> GetEqualityComponents()
+    {
+        foreach (var item in GetAtomicValues())
+            yield return item ?? string.Empty;
+    }
 
     public bool Equals(ValueObject? other)
     {

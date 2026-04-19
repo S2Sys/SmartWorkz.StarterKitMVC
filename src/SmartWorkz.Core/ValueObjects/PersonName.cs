@@ -33,7 +33,7 @@ public sealed class PersonName : ValueObject
         ));
     }
 
-    protected override IEnumerable<object> GetEqualityComponents()
+    protected override IEnumerable<object?> GetAtomicValues()
     {
         yield return FirstName;
         yield return MiddleName ?? string.Empty;
