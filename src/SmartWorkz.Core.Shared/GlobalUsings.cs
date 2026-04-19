@@ -23,4 +23,5 @@ global using SmartWorkz.Core.Shared.Http;
 global using SmartWorkz.Core.Shared.Diagnostics;
 global using SmartWorkz.Core.Shared.Configuration;
 global using SmartWorkz.Core.Shared.Caching;
+global using SmartWorkz.Core.Shared.MultiTenancy;
 global using SmartWorkz.Core.Shared.Resilience;
