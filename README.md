@@ -12,6 +12,7 @@ Latest: **v4.1.0** (2026-04-02) — Demo pages & comprehensive wiki documentatio
   - [Validation Demo](/Public/Pages/Demo/Validation.cshtml) — See validation attributes in action
 
 - **📖 Wiki Documentation** (New v4.1.0)
+  - [00 — Getting Started (Core Setup)](docs/wiki/00-getting-started.md) — DI, connection string, tenant middleware, BasePage
   - [01 — Translation System](docs/wiki/01-translation-system.md) — DB-backed translations, T() helper, multi-locale
   - [02 — Localized Validation](docs/wiki/02-localized-validation.md) — MessageKey validation attributes
   - [03 — Base Page Pattern](docs/wiki/03-base-page-pattern.md) — BasePage, TenantId, T() method, toast helpers
