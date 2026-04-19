@@ -177,4 +177,3 @@ c:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.Starte
 c:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Admin\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Admin.pdb
 c:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Admin\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Admin.genruntimeconfig.cache
 c:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Admin\obj\Debug\net9.0\ref\SmartWorkz.StarterKitMVC.Admin.dll
-C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Admin\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
