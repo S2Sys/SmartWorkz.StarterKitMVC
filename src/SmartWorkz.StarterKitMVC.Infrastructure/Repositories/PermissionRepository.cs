@@ -1,9 +1,9 @@
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
 using System.Data;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Infrastructure.Data;
-using SmartWorkz.StarterKitMVC.Shared.DTOs;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
 
@@ -16,7 +16,7 @@ public class PermissionRepository : DapperRepository<PermissionDto>, IPermission
     public PermissionRepository(IDbConnection connection, ILogger<PermissionRepository> logger)
         : base(connection, logger)
     {
-        TableName = "Permission";
+        TableName = "Permissions";
         Schema = "Auth";
         IdColumn = "PermissionId";
     }
@@ -25,7 +25,7 @@ public class PermissionRepository : DapperRepository<PermissionDto>, IPermission
     public async Task<PermissionDto?> GetByNameAsync(string name, string tenantId)
     {
         const string sql = """
-            SELECT * FROM [Auth].[Permission]
+            SELECT * FROM [Auth].[Permissions]
             WHERE [Name] = @Name
               AND TenantId = @TenantId
               AND IsDeleted = 0
@@ -40,7 +40,7 @@ public class PermissionRepository : DapperRepository<PermissionDto>, IPermission
     public async Task<IEnumerable<PermissionDto>> GetAllForTenantAsync(string tenantId)
     {
         const string sql = """
-            SELECT * FROM [Auth].[Permission]
+            SELECT * FROM [Auth].[Permissions]
             WHERE TenantId = @TenantId
               AND IsDeleted = 0
             ORDER BY Category, [Name]
@@ -53,8 +53,8 @@ public class PermissionRepository : DapperRepository<PermissionDto>, IPermission
     public async Task<IEnumerable<PermissionDto>> GetByRoleAsync(Guid roleId, string tenantId)
     {
         const string sql = """
-            SELECT p.* FROM [Auth].[Permission] p
-            INNER JOIN [Auth].[RolePermission] rp ON p.PermissionId = rp.PermissionId
+            SELECT p.* FROM [Auth].[Permissions] p
+            INNER JOIN [Auth].[RolePermissions] rp ON p.PermissionId = rp.PermissionId
             WHERE rp.RoleId = @RoleId
               AND p.TenantId = @TenantId
               AND p.IsDeleted = 0
@@ -68,19 +68,19 @@ public class PermissionRepository : DapperRepository<PermissionDto>, IPermission
     public async Task<IEnumerable<PermissionDto>> GetByUserAsync(Guid userId, string tenantId)
     {
         const string sql = """
-            SELECT DISTINCT p.* FROM [Auth].[Permission] p
+            SELECT DISTINCT p.* FROM [Auth].[Permissions] p
             WHERE TenantId = @TenantId
               AND IsDeleted = 0
               AND (
                 -- Direct user permissions
                 EXISTS (
-                    SELECT 1 FROM [Auth].[UserPermission] up
+                    SELECT 1 FROM [Auth].[UserPermissions] up
                     WHERE up.UserId = @UserId AND up.PermissionId = p.PermissionId
                 )
                 -- Permissions via roles
                 OR EXISTS (
-                    SELECT 1 FROM [Auth].[RolePermission] rp
-                    INNER JOIN [Auth].[UserRole] ur ON rp.RoleId = ur.RoleId
+                    SELECT 1 FROM [Auth].[RolePermissions] rp
+                    INNER JOIN [Auth].[UserRoles] ur ON rp.RoleId = ur.RoleId
                     WHERE ur.UserId = @UserId AND rp.PermissionId = p.PermissionId
                 )
               )
@@ -95,20 +95,20 @@ public class PermissionRepository : DapperRepository<PermissionDto>, IPermission
     {
         const string sql = """
             SELECT CAST(CASE WHEN EXISTS(
-                SELECT 1 FROM [Auth].[Permission] p
+                SELECT 1 FROM [Auth].[Permissions] p
                 WHERE p.[Name] = @PermissionName
                   AND p.TenantId = @TenantId
                   AND p.IsDeleted = 0
                   AND (
                     -- Direct permission
                     EXISTS (
-                        SELECT 1 FROM [Auth].[UserPermission] up
+                        SELECT 1 FROM [Auth].[UserPermissions] up
                         WHERE up.UserId = @UserId AND up.PermissionId = p.PermissionId
                     )
                     -- Permission via role
                     OR EXISTS (
-                        SELECT 1 FROM [Auth].[RolePermission] rp
-                        INNER JOIN [Auth].[UserRole] ur ON rp.RoleId = ur.RoleId
+                        SELECT 1 FROM [Auth].[RolePermissions] rp
+                        INNER JOIN [Auth].[UserRoles] ur ON rp.RoleId = ur.RoleId
                         WHERE ur.UserId = @UserId AND rp.PermissionId = p.PermissionId
                     )
                   )
@@ -128,8 +128,8 @@ public class PermissionRepository : DapperRepository<PermissionDto>, IPermission
     {
         const string sql = """
             SELECT CAST(CASE WHEN EXISTS(
-                SELECT 1 FROM [Auth].[Permission] p
-                INNER JOIN [Auth].[RolePermission] rp ON p.PermissionId = rp.PermissionId
+                SELECT 1 FROM [Auth].[Permissions] p
+                INNER JOIN [Auth].[RolePermissions] rp ON p.PermissionId = rp.PermissionId
                 WHERE rp.RoleId = @RoleId
                   AND p.[Name] = @PermissionName
                   AND p.TenantId = @TenantId
@@ -143,5 +143,33 @@ public class PermissionRepository : DapperRepository<PermissionDto>, IPermission
             PermissionName = permissionName,
             TenantId = tenantId
         });
+    }
+
+    /// <summary>Assign a permission to a role</summary>
+    public async Task AssignToRoleAsync(object roleId, object permissionId)
+    {
+        await Connection.ExecuteAsync(
+            "[Auth].[spUpsertRolePermission]",
+            new
+            {
+                RolePermissionId = 0,
+                RoleId = roleId,
+                PermissionId = permissionId,
+                TenantId = (string?)null,
+                CreatedAt = DateTime.UtcNow
+            },
+            commandType: System.Data.CommandType.StoredProcedure);
+    }
+
+    /// <summary>Remove a permission from a role</summary>
+    public async Task<bool> RemoveRolePermissionAsync(object roleId, object permissionId)
+    {
+        const string sql = """
+            DELETE FROM [Auth].[RolePermissions]
+            WHERE RoleId = @RoleId AND PermissionId = @PermissionId
+            """;
+
+        var result = await Connection.ExecuteAsync(sql, new { RoleId = roleId, PermissionId = permissionId });
+        return result > 0;
     }
 }

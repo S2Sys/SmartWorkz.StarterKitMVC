@@ -33,15 +33,9 @@ public class BlogService : IBlogService
 
         try
         {
-            var posts = await _repository.GetPublishedAsync(tenantId);
-            var paginatedPosts = posts.OrderByDescending(p => p.PublishedAt)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-            var total = posts.Count();
-
-            _logger.LogDebug("Retrieved {Count} published posts for tenant {TenantId}", paginatedPosts.Count, tenantId);
-            return (paginatedPosts, total);
+            var (posts, total) = await _repository.GetPagedAsync(tenantId, published: true, pageNumber: page, pageSize: pageSize);
+            _logger.LogDebug("Retrieved {Count} published posts for tenant {TenantId}", posts.Count(), tenantId);
+            return (posts.OrderByDescending(p => p.PublishedAt), total);
         }
         catch (Exception ex)
         {

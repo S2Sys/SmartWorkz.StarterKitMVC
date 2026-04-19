@@ -6,16 +6,15 @@ namespace SmartWorkz.StarterKitMVC.Application.Mappings;
 
 public static class TenantMapper
 {
-    public static TenantDto ToDto(Tenant src) => new()
-    {
-        TenantId = src.TenantId,
-        Name = src.Name,
-        DisplayName = src.DisplayName,
-        Description = src.Description,
-        IsActive = src.IsActive,
-        CreatedAt = src.CreatedAt,
-        UpdatedAt = src.UpdatedAt
-    };
+    public static TenantDto ToDto(Tenant src) => new(
+        src.TenantId,
+        src.Name,
+        src.DisplayName,
+        src.Description,
+        src.IsActive,
+        src.CreatedAt,
+        src.UpdatedAt
+    );
 
     public static Tenant ToEntity(CreateTenantDto src) => new()
     {

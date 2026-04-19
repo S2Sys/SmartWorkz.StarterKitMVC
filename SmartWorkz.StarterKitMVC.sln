@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.2.11408.102
+VisualStudioVersion = 18.2.11408.102 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
@@ -24,8 +24,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartWorkz.StarterKitMVC.Tests.Unit", "tests\SmartWorkz.StarterKitMVC.Tests.Unit\SmartWorkz.StarterKitMVC.Tests.Unit.csproj", "{005B765F-C833-491C-BFFE-D9DBC81B10F3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartWorkz.StarterKitMVC.Tests.Integration", "tests\SmartWorkz.StarterKitMVC.Tests.Integration\SmartWorkz.StarterKitMVC.Tests.Integration.csproj", "{E2D43468-6EEB-453E-B93A-616D6CE1AF2D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartWorkz.StarterKitMVC.WebUI", "src\SmartWorkz.StarterKitMVC.WebUI\SmartWorkz.StarterKitMVC.WebUI.csproj", "{92FCC176-B49C-4BAC-9643-8979A7693EB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -145,18 +143,6 @@ Global
 		{E2D43468-6EEB-453E-B93A-616D6CE1AF2D}.Release|x64.Build.0 = Release|Any CPU
 		{E2D43468-6EEB-453E-B93A-616D6CE1AF2D}.Release|x86.ActiveCfg = Release|Any CPU
 		{E2D43468-6EEB-453E-B93A-616D6CE1AF2D}.Release|x86.Build.0 = Release|Any CPU
-		{92FCC176-B49C-4BAC-9643-8979A7693EB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{92FCC176-B49C-4BAC-9643-8979A7693EB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{92FCC176-B49C-4BAC-9643-8979A7693EB8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{92FCC176-B49C-4BAC-9643-8979A7693EB8}.Debug|x64.Build.0 = Debug|Any CPU
-		{92FCC176-B49C-4BAC-9643-8979A7693EB8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{92FCC176-B49C-4BAC-9643-8979A7693EB8}.Debug|x86.Build.0 = Debug|Any CPU
-		{92FCC176-B49C-4BAC-9643-8979A7693EB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{92FCC176-B49C-4BAC-9643-8979A7693EB8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{92FCC176-B49C-4BAC-9643-8979A7693EB8}.Release|x64.ActiveCfg = Release|Any CPU
-		{92FCC176-B49C-4BAC-9643-8979A7693EB8}.Release|x64.Build.0 = Release|Any CPU
-		{92FCC176-B49C-4BAC-9643-8979A7693EB8}.Release|x86.ActiveCfg = Release|Any CPU
-		{92FCC176-B49C-4BAC-9643-8979A7693EB8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -171,6 +157,5 @@ Global
 		{B2C3D4E5-F6A7-48B9-C0D1-E2F3A4B5C6D7} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{005B765F-C833-491C-BFFE-D9DBC81B10F3} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{E2D43468-6EEB-453E-B93A-616D6CE1AF2D} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
-		{92FCC176-B49C-4BAC-9643-8979A7693EB8} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

@@ -1,12 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Application.Services;
-using SmartWorkz.StarterKitMVC.Shared.DTOs;
-using SmartWorkz.StarterKitMVC.Shared.Extensions;
 using SmartWorkz.StarterKitMVC.Shared.Primitives;
 using SmartWorkz.StarterKitMVC.Web.Middleware;
-using System.Security.Claims;
 
 namespace SmartWorkz.StarterKitMVC.Web.Controllers.Api;
 
@@ -40,14 +36,10 @@ public class PermissionsController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         _logger.LogInformation("Retrieving all permissions");
-        var tenantId = User.GetTenantId() ?? "DEFAULT";
-        var result = await _permissionService.GetAllAsync(tenantId);
+        var result = await _permissionService.GetAllPermissionsAsync();
         return Ok(result);
     }
 
-    // TODO: Implement GetById once IPermissionService.GetByIdAsync is available
-    // Currently commented out as service doesn't have a GetByIdAsync method
-    /*
     /// <summary>
     /// Get a specific permission by ID.
     /// </summary>
@@ -83,7 +75,6 @@ public class PermissionsController : ControllerBase
 
         return Ok(result);
     }
-    */
 }
 
 /// <summary>

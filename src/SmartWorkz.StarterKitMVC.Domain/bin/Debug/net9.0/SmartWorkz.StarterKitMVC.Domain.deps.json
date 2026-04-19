@@ -7,30 +7,14 @@
   "targets": {
     ".NETCoreApp,Version=v9.0": {
       "SmartWorkz.StarterKitMVC.Domain/1.0.0": {
-        "dependencies": {
-          "SmartWorkz.Core": "1.0.0"
-        },
         "runtime": {
           "SmartWorkz.StarterKitMVC.Domain.dll": {}
-        }
-      },
-      "SmartWorkz.Core/1.0.0": {
-        "runtime": {
-          "SmartWorkz.Core.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
         }
       }
     }
   },
   "libraries": {
     "SmartWorkz.StarterKitMVC.Domain/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "SmartWorkz.Core/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

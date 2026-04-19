@@ -24,8 +24,6 @@ using SmartWorkz.StarterKitMVC.Shared.Primitives;
 using SmartWorkz.StarterKitMVC.Web.Configuration;
 using SmartWorkz.StarterKitMVC.Web.Middleware;
 using SmartWorkz.StarterKitMVC.Web.Localization;
-using SmartWorkz.StarterKitMVC.Web.Controllers.Api.Middleware;
-using SmartWorkz.StarterKitMVC.Web.Attributes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,7 +51,7 @@ builder.Services.AddSingleton<IAuditLogger, NoOpAuditLogger>();
 builder.Services.AddSingleton<IBackgroundJobScheduler, InMemoryBackgroundJobScheduler>();
 builder.Services.AddSingleton<ILocalStorage, JsonFileLocalStorage>();
 builder.Services.AddSingleton<IAiClient, NoOpAiClient>();
-builder.Services.AddScoped<IPermissionService, PermissionService>();
+
 builder.Services.AddHttpClient<IHttpService, HttpService>();
 
 // Notifications
@@ -94,16 +92,11 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "SmartWorkz StarterKit MVC - API",
         Version = "v1",
-        Description = "Enterprise multi-tenant REST API with JWT authentication, RBAC, comprehensive error handling, and Lookups/LoV management",
+        Description = "Enterprise multi-tenant REST API with JWT authentication, RBAC, and comprehensive error handling",
         Contact = new OpenApiContact
         {
             Name = "SmartWorkz",
             Email = "support@smartworkz.com"
-        },
-        License = new OpenApiLicense
-        {
-            Name = "MIT",
-            Url = new Uri("https://opensource.org/licenses/MIT")
         }
     });
 
@@ -133,13 +126,6 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 
-    // Add X-Tenant-Id header parameter to all operations
-    c.OperationFilter<TenantHeaderOperationFilter>();
-
-    // Tag operations by controller name for better organization
-    c.TagActionsBy(api => new[] { api.GroupName ?? (api.ActionDescriptor is Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor cad ? cad.ControllerName : "Unknown") });
-    c.DocInclusionPredicate((name, api) => true);
-
     // Include XML documentation comments (if file exists)
     var xmlFile = $"{typeof(Program).Assembly.GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -150,12 +136,6 @@ builder.Services.AddSwaggerGen(c =>
 
     // Support for Problem Details responses
     // c.SchemaFilter<ProblemDetailsSchemaFilter>(); // Disabled - causes schema generation issues
-});
-
-// Register model binder for TenantFromHeaderAttribute
-builder.Services.AddControllersWithViews(options =>
-{
-    options.ModelBinderProviders.Insert(0, new TenantFromHeaderModelBinderProvider());
 });
 
 var app = builder.Build();
@@ -198,14 +178,8 @@ app.UseRouting();
 
 app.UseMiddleware<CorrelationIdMiddleware>();
 
-// Tenant extraction middleware - must be before authentication
-app.UseTenant();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
-// Custom authorization middleware for tenant isolation validation
-app.UseCustomAuthorization();
 
 // Permission claims middleware (adds permission claims based on roles)
 app.UsePermissions();

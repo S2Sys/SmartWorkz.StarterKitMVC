@@ -148,16 +148,13 @@ public class AuthenticationService : IAuthenticationService
             {
                 UserId = Guid.NewGuid().ToString(),
                 Email = request.Email,
-                NormalizedEmail = request.Email.ToUpperInvariant(),
                 Username = request.Username,
-                NormalizedUsername = request.Username.ToUpperInvariant(),
                 DisplayName = request.DisplayName,
                 PasswordHash = _passwordHasher.Hash(request.Password),
                 IsActive = true,
                 EmailConfirmed = false,
                 TwoFactorEnabled = false,
-                CreatedAt = DateTime.UtcNow,
-                TenantId = request.TenantId
+                CreatedAt = DateTime.UtcNow
             };
 
             await _userRepository.UpsertUserAsync(user);
@@ -209,7 +206,6 @@ public class AuthenticationService : IAuthenticationService
                 UserId = user.UserId,
                 Token = resetToken,
                 ExpiresAt = DateTime.UtcNow.AddHours(1),
-                UsedAt = null,
                 TenantId = tenantId,
                 CreatedAt = DateTime.UtcNow
             };
@@ -304,7 +300,6 @@ public class AuthenticationService : IAuthenticationService
                 UserId = userId,
                 Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray()),
                 ExpiresAt = DateTime.UtcNow.AddDays(_refreshTokenExpirationDays),
-                RevokedAt = null,
                 TenantId = tenantId,
                 CreatedAt = DateTime.UtcNow
             };

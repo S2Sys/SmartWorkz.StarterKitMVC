@@ -163,7 +163,7 @@ public class AuthController : ControllerBase
     [HttpPost("change-password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ChangePassword([FromBody] Shared.DTOs.ChangePasswordRequest request)
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
         if (!AuthValidators.IsValidChangePassword(request))
         {
