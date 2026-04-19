@@ -1,0 +1,45 @@
+@namespace SmartWorkz.Core.Web.Components.Grid
+@using SmartWorkz.Core.Shared.Grid
+
+<div class="grid-filter mb-3">
+    @switch (Column.FilterType)
+    {
+        case "text":
+            <input type="text"
+                   class="form-control"
+                   placeholder="Search @Column.DisplayName"
+                   @onchange="OnFilterChange" />
+            break;
+        case "dropdown":
+            <select class="form-select" @onchange="OnFilterChange">
+                <option value="">-- All --</option>
+                @foreach (var option in FilterOptions)
+                {
+                    <option value="@option">@option</option>
+                }
+            </select>
+            break;
+        case "date":
+            <input type="date" class="form-control" @onchange="OnFilterChange" />
+            break;
+        default:
+            <span class="text-muted">No filter UI for type: @Column.FilterType</span>
+            break;
+    }
+</div>
+
+@code {
+    [Parameter]
+    public GridColumn Column { get; set; } = new();
+
+    [Parameter]
+    public List<object> FilterOptions { get; set; } = [];
+
+    [Parameter]
+    public EventCallback<object> OnFilterApplied { get; set; }
+
+    private async Task OnFilterChange(ChangeEventArgs e)
+    {
+        await OnFilterApplied.InvokeAsync(e.Value);
+    }
+}

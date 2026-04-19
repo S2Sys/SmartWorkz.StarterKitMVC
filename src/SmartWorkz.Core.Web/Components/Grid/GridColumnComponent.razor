@@ -1,0 +1,44 @@
+@namespace SmartWorkz.Core.Web.Components.Grid
+@using SmartWorkz.Core.Shared.Grid
+
+<td>
+    @if (!string.IsNullOrEmpty(CellTemplate))
+    {
+        <span class="badge bg-secondary">@CellTemplate</span>
+    }
+    else
+    {
+        @ColumnValue
+    }
+</td>
+
+@code {
+    [Parameter]
+    public GridColumn Column { get; set; } = new();
+
+    [Parameter]
+    public object? Item { get; set; }
+
+    [Parameter]
+    public RenderFragment<GridCellContext>? CustomTemplate { get; set; }
+
+    private string? ColumnValue
+    {
+        get
+        {
+            if (Item == null)
+                return "-";
+
+            var property = Item.GetType().GetProperty(Column.PropertyName);
+            return property?.GetValue(Item)?.ToString() ?? "-";
+        }
+    }
+
+    private string CellTemplate => Column.CellTemplate ?? string.Empty;
+}
+
+public class GridCellContext
+{
+    public object? Item { get; set; }
+    public GridColumn Column { get; set; } = new();
+}
