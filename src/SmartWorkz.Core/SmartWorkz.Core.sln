@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartWorkz.Core", "SmartWorkz.Core\SmartWorkz.Core.csproj", "{7A3B5C1F-8B2D-4E9F-9C1A-2D5E8F3B7C9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartWorkz.Core", "SmartWorkz.Core.csproj", "{7A3B5C1F-8B2D-4E9F-9C1A-2D5E8F3B7C9A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartWorkz.Core.Shared", "..\SmartWorkz.Core.Shared\SmartWorkz.Core.Shared.csproj", "{8B4C6D2G-9C3E-5F0G-0D2B-3E6F9G4C8D0B}"
 EndProject
