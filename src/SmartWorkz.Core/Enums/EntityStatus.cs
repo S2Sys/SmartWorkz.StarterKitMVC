@@ -1,5 +1,4 @@
 namespace SmartWorkz.Core.Enums;
-[System.ComponentModel.DataAnnotations.Display(Name = "Entity Status")]
 public enum EntityStatus
 {
     [System.ComponentModel.DataAnnotations.Display(Name = "Active")]
