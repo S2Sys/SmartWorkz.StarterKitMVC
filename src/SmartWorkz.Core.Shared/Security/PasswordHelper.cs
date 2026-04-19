@@ -18,12 +18,10 @@ public sealed class PasswordHelper
     /// </summary>
     /// <param name="length">Length of the password (8-128, default 12).</param>
     /// <param name="includeSpecialChars">Whether to include special characters.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A Result containing the generated password or an error.</returns>
     public static ValueTask<Result<string>> GeneratePassword(
         int length = 12,
-        bool includeSpecialChars = true,
-        CancellationToken cancellationToken = default)
+        bool includeSpecialChars = true)
     {
         if (length < 8 || length > 128)
             return new ValueTask<Result<string>>(Result.Fail<string>("Password.InvalidLength", "Password length must be between 8 and 128 characters"));
@@ -38,25 +36,28 @@ public sealed class PasswordHelper
         var charset = chars.ToString();
         var password = new char[length];
 
+        // Create RNG once and reuse it for all character generation and shuffling
+        using var rng = RandomNumberGenerator.Create();
+
         // Ensure we have at least one character of each required type
-        password[0] = GetRandomChar(UppercaseChars);
-        password[1] = GetRandomChar(LowercaseChars);
-        password[2] = GetRandomChar(DigitChars);
+        password[0] = GetRandomChar(UppercaseChars, rng);
+        password[1] = GetRandomChar(LowercaseChars, rng);
+        password[2] = GetRandomChar(DigitChars, rng);
 
         int nextIndex = 3;
         if (includeSpecialChars)
         {
-            password[nextIndex++] = GetRandomChar(SpecialChars);
+            password[nextIndex++] = GetRandomChar(SpecialChars, rng);
         }
 
         // Fill the rest with random characters from the full charset
         for (int i = nextIndex; i < length; i++)
         {
-            password[i] = GetRandomChar(charset);
+            password[i] = GetRandomChar(charset, rng);
         }
 
         // Shuffle the password
-        password = Shuffle(password);
+        password = Shuffle(password, rng);
 
         return new ValueTask<Result<string>>(Result.Ok(new string(password)));
     }
@@ -75,6 +76,7 @@ public sealed class PasswordHelper
             return Result.Fail<PasswordValidationResult>("Password.Required", "Password is required");
 
         policy ??= new PasswordPolicy();
+        policy.Validate();
 
         var failedRequirements = new List<string>();
 
@@ -105,9 +107,8 @@ public sealed class PasswordHelper
     /// <summary>
     /// Gets a random character from the specified character set using cryptographic randomness.
     /// </summary>
-    private static char GetRandomChar(string charset)
+    private static char GetRandomChar(string charset, RandomNumberGenerator rng)
     {
-        using var rng = RandomNumberGenerator.Create();
         byte[] buffer = new byte[1];
         int index;
         do
@@ -122,10 +123,9 @@ public sealed class PasswordHelper
     /// <summary>
     /// Performs Fisher-Yates shuffle on the character array.
     /// </summary>
-    private static char[] Shuffle(char[] chars)
+    private static char[] Shuffle(char[] chars, RandomNumberGenerator rng)
     {
         var shuffled = (char[])chars.Clone();
-        using var rng = RandomNumberGenerator.Create();
 
         for (int i = shuffled.Length - 1; i > 0; i--)
         {
@@ -183,6 +183,20 @@ public sealed class PasswordPolicy
 
     /// <summary>Allowed special characters for validation.</summary>
     public string AllowedSpecialChars { get; set; } = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+    /// <summary>
+    /// Validates the policy invariants.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">When policy invariants are violated.</exception>
+    public void Validate()
+    {
+        if (MinLength < 1)
+            throw new InvalidOperationException("MinLength must be at least 1.");
+        if (MaxLength < MinLength)
+            throw new InvalidOperationException("MaxLength must be >= MinLength.");
+        if (MaxLength > 128)
+            throw new InvalidOperationException("MaxLength cannot exceed 128.");
+    }
 }
 
 /// <summary>Result of password validation against a policy.</summary>
