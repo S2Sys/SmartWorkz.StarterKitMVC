@@ -1,9 +1,9 @@
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
 using System.Data;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Infrastructure.Data;
-using SmartWorkz.StarterKitMVC.Shared.DTOs;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
 
@@ -53,6 +53,23 @@ public class AuditLogRepository : DapperRepository<AuditLogDto>, IAuditLogReposi
         return await ExecuteQueryAsync(sql, new
         {
             UserId = userId,
+            TenantId = tenantId
+        });
+    }
+
+    /// <summary>Get audit logs by action type</summary>
+    public async Task<IEnumerable<AuditLogDto>> GetByActionAsync(string action, string tenantId)
+    {
+        const string sql = """
+            SELECT * FROM [Auth].[AuditTrail]
+            WHERE Action = @Action
+              AND TenantId = @TenantId
+            ORDER BY CreatedAt DESC
+            """;
+
+        return await ExecuteQueryAsync(sql, new
+        {
+            Action = action,
             TenantId = tenantId
         });
     }

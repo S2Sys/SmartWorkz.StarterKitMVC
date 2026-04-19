@@ -1,9 +1,9 @@
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
 using System.Data;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Infrastructure.Data;
-using SmartWorkz.StarterKitMVC.Shared.DTOs;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
 
@@ -120,5 +120,76 @@ public class NotificationRepository : DapperRepository<NotificationDto>, INotifi
             TenantId = tenantId,
             BeforeDate = beforeDate
         });
+    }
+
+    /// <summary>Create a notification</summary>
+    public async Task CreateAsync(NotificationDto notification)
+    {
+        const string sql = """
+            INSERT INTO [Shared].[Notification] (
+                NotificationId, UserId, Title, Message, NotificationType, ActionUrl,
+                IsRead, ReadAt, TenantId, CreatedAt, ExpiresAt, IsDeleted
+            ) VALUES (
+                @NotificationId, @UserId, @Title, @Message, @NotificationType, @ActionUrl,
+                @IsRead, @ReadAt, @TenantId, @CreatedAt, @ExpiresAt, @IsDeleted
+            )
+            """;
+
+        await Connection.ExecuteAsync(sql, notification);
+    }
+
+    /// <summary>Update a notification</summary>
+    public async Task UpdateAsync(NotificationDto notification)
+    {
+        const string sql = """
+            UPDATE [Shared].[Notification]
+            SET UserId = @UserId, Title = @Title, Message = @Message,
+                NotificationType = @NotificationType, ActionUrl = @ActionUrl,
+                IsRead = @IsRead, ReadAt = @ReadAt, TenantId = @TenantId,
+                CreatedAt = @CreatedAt, ExpiresAt = @ExpiresAt, IsDeleted = @IsDeleted
+            WHERE NotificationId = @NotificationId
+            """;
+
+        await Connection.ExecuteAsync(sql, notification);
+    }
+
+    /// <summary>Delete all notifications for a user</summary>
+    public async Task DeleteAllAsync(string userId, string tenantId)
+    {
+        const string sql = """
+            UPDATE [Shared].[Notification]
+            SET IsDeleted = 1
+            WHERE UserId = @UserId
+              AND TenantId = @TenantId
+            """;
+
+        await Connection.ExecuteAsync(sql, new { UserId = userId, TenantId = tenantId });
+    }
+
+    /// <summary>Get paginated notifications</summary>
+    public async Task<(IEnumerable<NotificationDto> Items, int Total)> GetPagedAsync(
+        string userId, string tenantId, int pageNumber, int pageSize)
+    {
+        const string countSql = """
+            SELECT COUNT(*) FROM [Shared].[Notification]
+            WHERE UserId = @UserId
+              AND TenantId = @TenantId
+              AND IsDeleted = 0
+            """;
+
+        const string dataSql = """
+            SELECT * FROM [Shared].[Notification]
+            WHERE UserId = @UserId
+              AND TenantId = @TenantId
+              AND IsDeleted = 0
+            ORDER BY CreatedAt DESC
+            OFFSET (@PageNumber - 1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY
+            """;
+
+        var param = new { UserId = userId, TenantId = tenantId, PageNumber = pageNumber, PageSize = pageSize };
+        var total = await Connection.QueryFirstAsync<int>(countSql, param);
+        var items = await Connection.QueryAsync<NotificationDto>(dataSql, param);
+
+        return (items, total);
     }
 }

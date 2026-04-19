@@ -1,5 +1,5 @@
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
-using SmartWorkz.StarterKitMVC.Application.Repositories;
+
 namespace SmartWorkz.StarterKitMVC.Application.Services;
 
 /// <summary>
@@ -29,7 +29,7 @@ public interface INotificationService
     /// <summary>
     /// Marks a specific notification as read.
     /// </summary>
-    Task<bool> MarkAsReadAsync(Guid notificationId);
+    Task<bool> MarkAsReadAsync(int notificationId);
 
     /// <summary>
     /// Marks all notifications for a user as read.
@@ -44,7 +44,7 @@ public interface INotificationService
     /// <summary>
     /// Deletes a notification by ID.
     /// </summary>
-    Task<bool> DeleteAsync(Guid notificationId);
+    Task<bool> DeleteAsync(int notificationId);
 
     /// <summary>
     /// Deletes all notifications for a user.
@@ -60,6 +60,24 @@ public class NotificationRequest
     public string Title { get; set; }
     public string Message { get; set; }
     public string? ActionUrl { get; set; }
-    public string Type { get; set; } = "InApp";
+    public NotificationType Type { get; set; } = NotificationType.InApp;
+    public NotificationPriority Priority { get; set; } = NotificationPriority.Normal;
     public Dictionary<string, string>? Data { get; set; }
 }
+
+public enum NotificationType
+{
+    InApp = 0,
+    Email = 1,
+    SMS = 2,
+    Push = 3
+}
+
+public enum NotificationPriority
+{
+    Low = 0,
+    Normal = 1,
+    High = 2,
+    Critical = 3
+}
+

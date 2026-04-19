@@ -1,6 +1,6 @@
-using SmartWorkz.StarterKitMVC.Shared.DTOs;
-
 namespace SmartWorkz.StarterKitMVC.Application.Repositories;
+
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
 
 /// <summary>
 /// Repository interface for blog posts (Master.BlogPost table)

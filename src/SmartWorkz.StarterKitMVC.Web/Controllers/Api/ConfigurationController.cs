@@ -1,12 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Application.Services;
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
-using SmartWorkz.StarterKitMVC.Shared.Extensions;
 using SmartWorkz.StarterKitMVC.Shared.Primitives;
 using SmartWorkz.StarterKitMVC.Web.Middleware;
-using System.Security.Claims;
 
 namespace SmartWorkz.StarterKitMVC.Web.Controllers.Api;
 
@@ -39,9 +36,8 @@ public class ConfigurationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
     {
-        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Retrieving all configurations");
-        var result = await _configurationService.GetAllForTenantAsync(tenantId);
+        var result = await _configurationService.GetAllAsync();
         return Ok(result);
     }
 
@@ -67,9 +63,8 @@ public class ConfigurationController : ControllerBase
                 Request.Path));
         }
 
-        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Retrieving configuration: {Key}", key);
-        var result = await _configurationService.GetByKeyAsync(key, tenantId);
+        var result = await _configurationService.GetAsync(key);
 
         if (result == null)
         {
@@ -114,21 +109,9 @@ public class ConfigurationController : ControllerBase
                 Request.Path));
         }
 
-        var userId = User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub) ?? "system";
-        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Creating configuration: {Key}", request.Key);
 
-        var config = new ConfigurationDto
-        {
-            ConfigurationId = Guid.NewGuid(),
-            Key = request.Key,
-            Value = request.Value,
-            Description = request.Description,
-            IsEncrypted = request.IsEncrypted,
-            TenantId = tenantId,
-            CreatedBy = userId
-        };
-        var result = await _configurationService.SaveAsync(config);
+        var result = await _configurationService.CreateAsync(request);
         return CreatedAtAction(nameof(Get), new { key = request.Key }, result);
     }
 
@@ -165,32 +148,9 @@ public class ConfigurationController : ControllerBase
                 Request.Path));
         }
 
-        var userId = User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub) ?? "system";
-        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Updating configuration: {Key}", key);
 
-        var existing = await _configurationService.GetByKeyAsync(key, tenantId);
-        if (existing == null)
-        {
-            _logger.LogWarning("Configuration not found for update: {Key}", key);
-            return NotFound(ProblemDetailsResponse.NotFound(
-                $"Configuration key '{key}' not found",
-                Request.Path));
-        }
-
-        var config = new ConfigurationDto
-        {
-            ConfigurationId = existing.ConfigurationId,
-            Key = key,
-            Value = request.Value ?? existing.Value,
-            Description = request.Description ?? existing.Description,
-            IsEncrypted = existing.IsEncrypted,
-            TenantId = tenantId,
-            CreatedBy = existing.CreatedBy,
-            UpdatedBy = userId,
-            UpdatedAt = DateTime.UtcNow
-        };
-        var result = await _configurationService.SaveAsync(config);
+        var result = await _configurationService.UpdateAsync(key, request);
 
         if (result == null)
         {
@@ -226,10 +186,9 @@ public class ConfigurationController : ControllerBase
                 Request.Path));
         }
 
-        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Deleting configuration: {Key}", key);
 
-        var result = await _configurationService.DeleteAsync(key, tenantId);
+        var result = await _configurationService.DeleteAsync(key);
 
         if (!result)
         {

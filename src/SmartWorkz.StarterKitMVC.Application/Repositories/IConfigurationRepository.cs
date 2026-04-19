@@ -18,4 +18,8 @@ public interface IConfigurationRepository : IDapperRepository<ConfigurationDto>
 
     /// <summary>Get all configuration keys for a tenant</summary>
     Task<IEnumerable<ConfigurationDto>> GetAllForTenantAsync(string tenantId);
+
+    /// <summary>Delete configuration by key</summary>
+    Task<bool> DeleteAsync(string key, string tenantId);
 }
+

@@ -19,9 +19,7 @@ public class TransactionDbContext : DbContext
 
         // TransactionLog Configuration
         modelBuilder.Entity<TransactionLog>()
-            .HasKey(tl => tl.Id);
-        modelBuilder.Entity<TransactionLog>()
-            .Property(tl => tl.Id).HasColumnName("TransactionLogId");
+            .HasKey(tl => tl.TransactionLogId);
 
         modelBuilder.Entity<TransactionLog>()
             .HasIndex(tl => new { tl.TenantId, tl.TransactionType });

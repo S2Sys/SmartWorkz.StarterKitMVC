@@ -83,8 +83,7 @@ public class UserService : IUserService
             var (users, total) = await _userRepository.SearchPagedAsync(
                 tenantId, null, "CreatedAt", true, page, pageSize);
 
-            var tasks = users.Select(u => MapToProfileDto(u, tenantId)).ToList();
-            var profileDtos = await Task.WhenAll(tasks);
+            var profileDtos = await Task.WhenAll(users.Select(u => MapToProfileDto(u, tenantId)));
 
             _logger.LogDebug("Retrieved {Count} users for tenant {TenantId}", users.Count(), tenantId);
 
@@ -111,8 +110,7 @@ public class UserService : IUserService
             var (users, _) = await _userRepository.SearchPagedAsync(
                 tenantId, searchTerm, "DisplayName", false, 1, 100);
 
-            var tasks = users.Select(u => MapToProfileDto(u, tenantId)).ToList();
-            var profileDtos = await Task.WhenAll(tasks);
+            var profileDtos = await Task.WhenAll(users.Select(u => MapToProfileDto(u, tenantId)));
 
             _logger.LogDebug("Found {Count} users matching search term: {SearchTerm}",
                 profileDtos.Length, searchTerm);
@@ -150,17 +148,14 @@ public class UserService : IUserService
             {
                 UserId = Guid.NewGuid().ToString(),
                 Email = user.Email,
-                NormalizedEmail = user.Email.ToUpperInvariant(),
                 Username = user.Username,
-                NormalizedUsername = user.Username.ToUpperInvariant(),
                 DisplayName = user.DisplayName,
                 AvatarUrl = user.AvatarUrl,
                 PasswordHash = _passwordHasher.Hash(password),
                 IsActive = true,
                 EmailConfirmed = false,
                 TwoFactorEnabled = false,
-                CreatedAt = DateTime.UtcNow,
-                TenantId = user.TenantId
+                CreatedAt = DateTime.UtcNow
             };
 
             await _userRepository.UpsertUserAsync(newUser);
@@ -351,7 +346,7 @@ public class UserService : IUserService
 
             await _userRepository.UpsertUserAsync(user);
 
-            _logger.LogInformation("User locked: {UserId} until {LockoutEnd}", userId, user.LockoutEnd);
+            _logger.LogInformation("User locked: {UserId} until {LockoutEndAt}", userId, user.LockoutEndAt);
 
             return true;
         }

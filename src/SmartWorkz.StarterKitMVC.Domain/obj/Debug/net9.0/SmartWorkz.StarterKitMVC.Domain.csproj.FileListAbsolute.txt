@@ -22,7 +22,3 @@ C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.Starte
 C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\refint\SmartWorkz.StarterKitMVC.Domain.dll
 C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Domain.pdb
 C:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\ref\SmartWorkz.StarterKitMVC.Domain.dll
-c:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\bin\Debug\net9.0\SmartWorkz.Core.dll
-c:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\bin\Debug\net9.0\SmartWorkz.Core.pdb
-c:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\SmartWorkz.StarterKitMVC.Domain.csproj.AssemblyReference.cache
-c:\Users\tsent\source\repos\S2Sys\SmartWorkz.StarterKitMVC\src\SmartWorkz.StarterKitMVC.Domain\obj\Debug\net9.0\SmartWor.5864A987.Up2Date

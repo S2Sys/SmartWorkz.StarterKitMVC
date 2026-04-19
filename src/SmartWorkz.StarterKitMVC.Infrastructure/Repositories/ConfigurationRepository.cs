@@ -1,9 +1,9 @@
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
 using System.Data;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Infrastructure.Data;
-using SmartWorkz.StarterKitMVC.Shared.DTOs;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
 
@@ -94,5 +94,24 @@ public class ConfigurationRepository : DapperRepository<ConfigurationDto>, IConf
             """;
 
         return await ExecuteQueryAsync(sql, new { TenantId = tenantId });
+    }
+
+    /// <summary>Delete configuration by key</summary>
+    public async Task<bool> DeleteAsync(string key, string tenantId)
+    {
+        const string sql = """
+            UPDATE [Master].[Configuration]
+            SET IsDeleted = 1, UpdatedAt = @UpdatedAt
+            WHERE [Key] = @Key AND TenantId = @TenantId
+            """;
+
+        var result = await Connection.ExecuteAsync(sql, new
+        {
+            Key = key,
+            TenantId = tenantId,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        return result > 0;
     }
 }

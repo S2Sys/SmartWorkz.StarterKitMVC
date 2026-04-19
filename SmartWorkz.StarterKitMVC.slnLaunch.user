@@ -9,6 +9,10 @@
       {
         "Path": "src\\SmartWorkz.StarterKitMVC.Admin\\SmartWorkz.StarterKitMVC.Admin.csproj",
         "Action": "Start"
+      },
+      {
+        "Path": "src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj",
+        "Action": "Start"
       }
     ]
   }

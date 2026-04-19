@@ -35,10 +35,22 @@ public class AuditService : IAuditService
 
         try
         {
-            log.AuditLogId = Guid.NewGuid();
-            log.CreatedAt = DateTime.UtcNow;
+            var repositoryLog = new AuditLogDto
+            {
+                AuditLogId = Guid.NewGuid(),
+                EntityType = log.EntityType,
+                EntityId = log.EntityId,
+                Action = log.Action,
+                OldValues = log.OldValues,
+                NewValues = log.NewValues,
+                UserId = log.UserId,
+                TenantId = log.TenantId,
+                CreatedAt = DateTime.UtcNow,
+                IPAddress = log.IPAddress,
+                UserAgent = log.UserAgent
+            };
 
-            await _repository.UpsertAsync(log);
+            await _repository.UpsertAsync(repositoryLog);
 
             _logger.LogDebug(
                 "Audit log created: {EntityType} {EntityId} - {Action} by {UserId}",
@@ -73,7 +85,20 @@ public class AuditService : IAuditService
                 "Retrieved {Count} audit logs for entity {EntityType} {EntityId}",
                 logs.Count(), entityType, entityId);
 
-            return logs.OrderByDescending(l => l.CreatedAt);
+            return logs.OrderByDescending(l => l.CreatedAt).Select(l => new AuditLogDto
+            {
+                AuditLogId = l.AuditLogId,
+                EntityType = l.EntityType,
+                EntityId = l.EntityId,
+                Action = l.Action,
+                OldValues = l.OldValues,
+                NewValues = l.NewValues,
+                UserId = l.UserId,
+                TenantId = l.TenantId,
+                CreatedAt = l.CreatedAt,
+                IPAddress = l.IPAddress,
+                UserAgent = l.UserAgent
+            });
         }
         catch (Exception ex)
         {
@@ -148,7 +173,7 @@ public class AuditService : IAuditService
 
         try
         {
-            var logs = await _repository.FindAsync(new { Action = action, TenantId = tenantId });
+            var logs = await _repository.GetByActionAsync(action, tenantId);
 
             _logger.LogDebug(
                 "Retrieved {Count} audit logs for action {Action}",

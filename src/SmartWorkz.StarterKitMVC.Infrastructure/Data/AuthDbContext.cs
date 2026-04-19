@@ -31,9 +31,7 @@ public class AuthDbContext : DbContext
 
         // User Configuration
         modelBuilder.Entity<User>()
-            .HasKey(u => u.Id);
-        modelBuilder.Entity<User>()
-            .Property(u => u.Id).HasColumnName("UserId");
+            .HasKey(u => u.UserId);
 
         modelBuilder.Entity<User>()
             .HasMany(u => u.UserRoles)
@@ -93,9 +91,7 @@ public class AuthDbContext : DbContext
 
         // Role Configuration
         modelBuilder.Entity<Role>()
-            .HasKey(r => r.Id);
-        modelBuilder.Entity<Role>()
-            .Property(r => r.Id).HasColumnName("RoleId");
+            .HasKey(r => r.RoleId);
 
         modelBuilder.Entity<Role>()
             .HasMany(r => r.UserRoles)
@@ -115,9 +111,7 @@ public class AuthDbContext : DbContext
 
         // Permission Configuration
         modelBuilder.Entity<Permission>()
-            .HasKey(p => p.Id);
-        modelBuilder.Entity<Permission>()
-            .Property(p => p.Id).HasColumnName("PermissionId");
+            .HasKey(p => p.PermissionId);
 
         modelBuilder.Entity<Permission>()
             .HasMany(p => p.RolePermissions)
@@ -137,9 +131,7 @@ public class AuthDbContext : DbContext
 
         // UserRole Configuration
         modelBuilder.Entity<UserRole>()
-            .HasKey(ur => ur.Id);
-        modelBuilder.Entity<UserRole>()
-            .Property(ur => ur.Id).HasColumnName("UserRoleId");
+            .HasKey(ur => ur.UserRoleId);
 
         modelBuilder.Entity<UserRole>()
             .HasIndex(ur => new { ur.UserId, ur.RoleId })
@@ -147,9 +139,7 @@ public class AuthDbContext : DbContext
 
         // RolePermission Configuration
         modelBuilder.Entity<RolePermission>()
-            .HasKey(rp => rp.Id);
-        modelBuilder.Entity<RolePermission>()
-            .Property(rp => rp.Id).HasColumnName("RolePermissionId");
+            .HasKey(rp => rp.RolePermissionId);
 
         modelBuilder.Entity<RolePermission>()
             .HasIndex(rp => new { rp.RoleId, rp.PermissionId })
@@ -157,9 +147,7 @@ public class AuthDbContext : DbContext
 
         // UserPermission Configuration
         modelBuilder.Entity<UserPermission>()
-            .HasKey(up => up.Id);
-        modelBuilder.Entity<UserPermission>()
-            .Property(up => up.Id).HasColumnName("UserPermissionId");
+            .HasKey(up => up.UserPermissionId);
 
         modelBuilder.Entity<UserPermission>()
             .HasIndex(up => new { up.UserId, up.PermissionId })
@@ -167,9 +155,7 @@ public class AuthDbContext : DbContext
 
         // RefreshToken Configuration
         modelBuilder.Entity<RefreshToken>()
-            .HasKey(rt => rt.Id);
-        modelBuilder.Entity<RefreshToken>()
-            .Property(rt => rt.Id).HasColumnName("RefreshTokenId");
+            .HasKey(rt => rt.RefreshTokenId);
 
         modelBuilder.Entity<RefreshToken>()
             .HasIndex(rt => new { rt.TenantId, rt.Token })
@@ -203,9 +189,7 @@ public class AuthDbContext : DbContext
 
         // TenantUser Configuration
         modelBuilder.Entity<TenantUser>()
-            .HasKey(tu => tu.Id);
-        modelBuilder.Entity<TenantUser>()
-            .Property(tu => tu.Id).HasColumnName("TenantUserId");
+            .HasKey(tu => tu.TenantUserId);
 
         modelBuilder.Entity<TenantUser>()
             .HasIndex(tu => new { tu.TenantId, tu.UserId })
@@ -213,9 +197,7 @@ public class AuthDbContext : DbContext
 
         // PasswordResetToken Configuration
         modelBuilder.Entity<PasswordResetToken>()
-            .HasKey(prt => prt.Id);
-        modelBuilder.Entity<PasswordResetToken>()
-            .Property(prt => prt.Id).HasColumnName("PasswordResetTokenId");
+            .HasKey(prt => prt.PasswordResetTokenId);
 
         modelBuilder.Entity<PasswordResetToken>()
             .HasIndex(prt => new { prt.TenantId, prt.Token })
@@ -226,9 +208,7 @@ public class AuthDbContext : DbContext
 
         // EmailVerificationToken Configuration
         modelBuilder.Entity<EmailVerificationToken>()
-            .HasKey(evt => evt.Id);
-        modelBuilder.Entity<EmailVerificationToken>()
-            .Property(evt => evt.Id).HasColumnName("EmailVerificationTokenId");
+            .HasKey(evt => evt.EmailVerificationTokenId);
 
         modelBuilder.Entity<EmailVerificationToken>()
             .HasIndex(evt => new { evt.TenantId, evt.Token })
@@ -239,9 +219,7 @@ public class AuthDbContext : DbContext
 
         // TwoFactorToken Configuration
         modelBuilder.Entity<TwoFactorToken>()
-            .HasKey(tft => tft.Id);
-        modelBuilder.Entity<TwoFactorToken>()
-            .Property(tft => tft.Id).HasColumnName("TwoFactorTokenId");
+            .HasKey(tft => tft.TwoFactorTokenId);
 
         modelBuilder.Entity<TwoFactorToken>()
             .HasIndex(tft => new { tft.TenantId, tft.Token })

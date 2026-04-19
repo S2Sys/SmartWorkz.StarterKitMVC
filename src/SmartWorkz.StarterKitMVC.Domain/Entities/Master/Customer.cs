@@ -1,9 +1,8 @@
 namespace SmartWorkz.StarterKitMVC.Domain.Entities.Master;
 
-using SmartWorkz.Core.Entities;
-
-public class Customer : AuditableEntity<int>
+public class Customer
 {
+    public int CustomerId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }
@@ -13,7 +12,13 @@ public class Customer : AuditableEntity<int>
     public string State { get; set; }
     public string ZipCode { get; set; }
     public string Country { get; set; }
+    public string TenantId { get; set; }
     public bool IsActive { get; set; } = true;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public string CreatedBy { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public string UpdatedBy { get; set; }
+    public bool IsDeleted { get; set; }
 
     public Tenant Tenant { get; set; }
 }
