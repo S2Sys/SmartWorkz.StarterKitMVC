@@ -4,3 +4,6 @@ global using System.Linq;
 global using System.Threading.Tasks;
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
+global using SmartWorkz.Core.Abstractions;
+global using SmartWorkz.Core.Entities;
+global using SmartWorkz.Core.ValueObjects;
