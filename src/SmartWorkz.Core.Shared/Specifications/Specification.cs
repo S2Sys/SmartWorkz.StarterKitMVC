@@ -2,77 +2,84 @@ using System.Linq.Expressions;
 
 namespace SmartWorkz.Core.Shared.Specifications;
 
-/// <summary>
-/// Base class for the Specification pattern — encapsulates a business rule as a composable predicate.
-///
-/// Useful for complex filtering logic that would otherwise scatter across repository methods.
-/// The Dapper repositories use object filters (property-bag style) so Specification is
-/// most valuable with EF Core's IQueryable pipeline.
-///
-/// Usage:
-///   public class ActiveTenantSpec : Specification&lt;Tenant&gt;
-///   {
-///       public override Expression&lt;Func&lt;Tenant, bool&gt;&gt; ToExpression()
-///           => t => t.IsActive && !t.IsDeleted;
-///   }
-///
-///   var spec = new ActiveTenantSpec().And(new TenantByIdSpec(id));
-///   var tenants = dbSet.Where(spec.ToExpression()).ToListAsync();
-/// </summary>
-public abstract class Specification<T>
+public abstract class Specification<T> where T : class
 {
-    public abstract Expression<Func<T, bool>> ToExpression();
+    public List<Expression<Func<T, bool>>> Criteria { get; } = new();
+    public List<Expression<Func<T, object>>> Includes { get; } = new();
+    public Expression<Func<T, object>>? OrderBy { get; private set; }
+    public Expression<Func<T, object>>? OrderByDescending { get; private set; }
+    public int? Take { get; private set; }
+    public int? Skip { get; private set; }
+    public bool IsPagingEnabled { get; private set; }
 
-    public bool IsSatisfiedBy(T entity)
-        => ToExpression().Compile()(entity);
+    protected virtual void AddCriteria(Expression<Func<T, bool>> criteria) => Criteria.Add(criteria);
+    protected virtual void AddInclude(Expression<Func<T, object>> includeExpression) => Includes.Add(includeExpression);
+    protected virtual void ApplyPaging(int skip, int take)
+    {
+        Skip = skip;
+        Take = take;
+        IsPagingEnabled = true;
+    }
+    protected virtual void ApplyOrderBy(Expression<Func<T, object>> orderByExpression) => OrderBy = orderByExpression;
+    protected virtual void ApplyOrderByDescending(Expression<Func<T, object>> orderByDescendingExpression) => OrderByDescending = orderByDescendingExpression;
+
+    public Expression<Func<T, bool>> GetCriteria()
+    {
+        if (Criteria.Count == 0)
+            return _ => true;
+
+        var combined = Criteria[0];
+        foreach (var criteria in Criteria.Skip(1))
+        {
+            combined = CombineWithAnd(combined, criteria);
+        }
+
+        return combined;
+    }
+
+    private static Expression<Func<T, bool>> CombineWithAnd(
+        Expression<Func<T, bool>> left,
+        Expression<Func<T, bool>> right)
+    {
+        var param = Expression.Parameter(typeof(T));
+        var leftInvoke = Expression.Invoke(left, param);
+        var rightInvoke = Expression.Invoke(right, param);
+        var and = Expression.And(leftInvoke, rightInvoke);
+        return Expression.Lambda<Func<T, bool>>(and, param);
+    }
 
     public Specification<T> And(Specification<T> other)
-        => new AndSpecification<T>(this, other);
+    {
+        foreach (var criteria in other.Criteria)
+            Criteria.Add(criteria);
+        return this;
+    }
 
     public Specification<T> Or(Specification<T> other)
-        => new OrSpecification<T>(this, other);
+    {
+        var combined = GetCriteria();
+        foreach (var otherCriteria in other.Criteria)
+        {
+            var param = Expression.Parameter(typeof(T));
+            var leftInvoke = Expression.Invoke(combined, param);
+            var rightInvoke = Expression.Invoke(otherCriteria, param);
+            var or = Expression.Or(leftInvoke, rightInvoke);
+            combined = Expression.Lambda<Func<T, bool>>(or, param);
+        }
+        Criteria.Clear();
+        Criteria.Add(combined);
+        return this;
+    }
 
     public Specification<T> Not()
-        => new NotSpecification<T>(this);
-}
-
-internal sealed class AndSpecification<T>(Specification<T> left, Specification<T> right)
-    : Specification<T>
-{
-    public override Expression<Func<T, bool>> ToExpression()
     {
-        var leftExpr = left.ToExpression();
-        var rightExpr = right.ToExpression();
+        var combined = GetCriteria();
         var param = Expression.Parameter(typeof(T));
-        var body = Expression.AndAlso(
-            Expression.Invoke(leftExpr, param),
-            Expression.Invoke(rightExpr, param));
-        return Expression.Lambda<Func<T, bool>>(body, param);
-    }
-}
-
-internal sealed class OrSpecification<T>(Specification<T> left, Specification<T> right)
-    : Specification<T>
-{
-    public override Expression<Func<T, bool>> ToExpression()
-    {
-        var leftExpr = left.ToExpression();
-        var rightExpr = right.ToExpression();
-        var param = Expression.Parameter(typeof(T));
-        var body = Expression.OrElse(
-            Expression.Invoke(leftExpr, param),
-            Expression.Invoke(rightExpr, param));
-        return Expression.Lambda<Func<T, bool>>(body, param);
-    }
-}
-
-internal sealed class NotSpecification<T>(Specification<T> inner) : Specification<T>
-{
-    public override Expression<Func<T, bool>> ToExpression()
-    {
-        var innerExpr = inner.ToExpression();
-        var param = Expression.Parameter(typeof(T));
-        var body = Expression.Not(Expression.Invoke(innerExpr, param));
-        return Expression.Lambda<Func<T, bool>>(body, param);
+        var invoked = Expression.Invoke(combined, param);
+        var not = Expression.Not(invoked);
+        var negated = Expression.Lambda<Func<T, bool>>(not, param);
+        Criteria.Clear();
+        Criteria.Add(negated);
+        return this;
     }
 }
