@@ -2,7 +2,7 @@ using SmartWorkz.Core.Shared.Specifications;
 
 namespace SmartWorkz.Core.Abstractions;
 
-public interface IRepository<TEntity, TId> where TEntity : IEntity<TId>
+public interface IRepository<TEntity, TId> where TEntity : class, IEntity<TId>
 {
     Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken = default);
     Task<IReadOnlyCollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);

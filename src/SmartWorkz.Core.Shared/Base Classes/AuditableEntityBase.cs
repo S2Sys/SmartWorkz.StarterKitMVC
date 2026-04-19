@@ -1,5 +1,7 @@
 namespace SmartWorkz.Core.Shared.Base_Classes;
 
+using SmartWorkz.Core.Shared.Primitives;
+
 public abstract class AuditableEntityBase<TId> : IEntity<TId> where TId : notnull
 {
     public TId Id { get; protected set; } = default!;
