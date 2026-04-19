@@ -38,12 +38,24 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGFzaGJvYXJkXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Pages/EmailTemplates/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW1haWxUZW1wbGF0ZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Pages/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Pages/Lookups/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9va3Vwc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Pages/Lookups/Upsert.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9va3Vwc1xVcHNlcnQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/tsent/source/repos/S2Sys/SmartWorkz.StarterKitMVC/src/SmartWorkz.StarterKitMVC.Admin/Pages/Permissions/Index.cshtml]

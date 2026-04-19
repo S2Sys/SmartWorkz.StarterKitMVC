@@ -174,7 +174,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
@@ -247,6 +247,19 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Admin\\appsettings.json",
+              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Admin\\appsettings.json",
+              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Admin\\appsettings.json",
+              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Admin\\appsettings.json",
+              "ViewState": "AgIAABgAAAAAAAAAAAAAACIAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-04-17T09:40:09.538Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 1,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Public\\appsettings.json",
@@ -256,19 +269,6 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-04-03T07:49:56.633Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Admin\\appsettings.json",
-              "RelativeDocumentMoniker": "src\\SmartWorkz.StarterKitMVC.Admin\\appsettings.json",
-              "ToolTip": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Admin\\appsettings.json",
-              "RelativeToolTip": "src\\SmartWorkz.StarterKitMVC.Admin\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAlAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-04-17T09:40:09.538Z",
-              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -594,8 +594,7 @@
               "RelativeToolTip": "tests\\SmartWorkz.StarterKitMVC.Tests.Unit\\SmartWorkz.StarterKitMVC.Tests.Unit.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-04-04T08:55:25.017Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-04T08:55:25.017Z"
             },
             {
               "$type": "Document",

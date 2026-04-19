@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\SmartWorkz.StarterKitMVC.Tests.Integration.csproj": {}
+    "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\SmartWorkz.StarterKitMVC.Tests.Integration.csproj": {}
   },
   "projects": {
-    "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\SmartWorkz.StarterKitMVC.Tests.Integration.csproj": {
+    "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\SmartWorkz.StarterKitMVC.Tests.Integration.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\SmartWorkz.StarterKitMVC.Tests.Integration.csproj",
+        "projectUniqueName": "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\SmartWorkz.StarterKitMVC.Tests.Integration.csproj",
         "projectName": "SmartWorkz.StarterKitMVC.Tests.Integration",
-        "projectPath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\SmartWorkz.StarterKitMVC.Tests.Integration.csproj",
+        "projectPath": "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\SmartWorkz.StarterKitMVC.Tests.Integration.csproj",
         "packagesPath": "C:\\Users\\tsent\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\obj\\",
+        "outputPath": "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\tests\\SmartWorkz.StarterKitMVC.Tests.Integration\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
