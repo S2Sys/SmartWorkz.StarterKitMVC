@@ -28,6 +28,10 @@ Latest: **v4.1.0** (2026-04-02) — Demo pages & comprehensive wiki documentatio
   - [17 — Menu Service](docs/wiki/17-menu-service.md) — Per-tenant navigation menus, role-gated items
   - [18 — SEO Meta Service](docs/wiki/18-seo-meta-service.md) — Polymorphic SEO (title/desc/OG) keyed on `(EntityType, EntityId)`
   - [19 — Tag Service](docs/wiki/19-tag-service.md) — Polymorphic tagging, entity associations, orphan semantics
+  - [20 — Middleware Stack](docs/wiki/20-middleware-stack.md) — Pipeline order, `UseTenantResolution`, `PermissionMiddleware`, exception + correlation handlers
+  - [21 — Background Jobs](docs/wiki/21-background-jobs.md) — `IHostedService` + `IBackgroundJobScheduler`, Hangfire/Quartz swap
+  - [22 — Shared Primitives](docs/wiki/22-shared-primitives.md) — `Result`/`Result<T>`, `ApiError`, `ProblemDetailsResponse`, `ICorrelationContext`, `MessageKeys`
+  - [23 — Tag Helpers + Validators](docs/wiki/23-tag-helpers-validators.md) — `EnumSelectTagHelper`, `AuthValidators`, `EntityValidators`
 
 ### 🏗️ Architecture & Design
 - **📋 Schema Design:** [`docs/srs/SCHEMA-REVIEW-v2.md`](docs/srs/SCHEMA-REVIEW-v2.md) — 42 LEAN tables across 5 schemas
