@@ -1,0 +1,60 @@
+@page
+@model AllComponentsModel
+@using SmartWorkz.Core.Web.TagHelpers.Navigation
+
+@{
+    ViewData["Title"] = "Display TagHelpers Demo";
+}
+
+<div class="container mt-5">
+    <h1>Display TagHelpers Demo</h1>
+
+    <!-- Alert Examples -->
+    <section class="mt-4">
+        <h3>AlertTagHelper</h3>
+        <alert type="success" message="Operation completed successfully!"></alert>
+        <alert type="danger" message="An error occurred."></alert>
+        <alert type="warning" message="Please review this information."></alert>
+        <alert type="info" message="This is informational."></alert>
+    </section>
+
+    <!-- Badge Examples -->
+    <section class="mt-4">
+        <h3>BadgeTagHelper</h3>
+        <div class="mb-2">
+            <badge type="primary" text="Primary"></badge>
+            <badge type="success" text="Success"></badge>
+            <badge type="danger" text="Danger"></badge>
+            <badge type="warning" text="Warning"></badge>
+        </div>
+    </section>
+
+    <!-- Button Examples -->
+    <section class="mt-4">
+        <h3>ButtonTagHelper</h3>
+        <button variant="primary" class="me-2">Primary Button</button>
+        <button variant="success" class="me-2">Success Button</button>
+        <button variant="danger" class="me-2">Danger Button</button>
+        <a variant="info">Info Link</a>
+    </section>
+
+    <!-- Pagination Example -->
+    <section class="mt-4">
+        <h3>PaginationTagHelper</h3>
+        <pagination current-page="3" total-pages="10" page-url="?page={0}" max-visible="5"></pagination>
+    </section>
+
+    <!-- Breadcrumb Example -->
+    <section class="mt-4">
+        <h3>BreadcrumbTagHelper</h3>
+        @{
+            var breadcrumbItems = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Label = "Home", Url = "/" },
+                new BreadcrumbItem { Label = "Components", Url = "/Components/Services" },
+                new BreadcrumbItem { Label = "Display Demo" }
+            };
+        }
+        <breadcrumb items='@breadcrumbItems'></breadcrumb>
+    </section>
+</div>

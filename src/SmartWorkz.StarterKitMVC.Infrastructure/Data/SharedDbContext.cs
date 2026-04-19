@@ -25,7 +25,9 @@ public class SharedDbContext : DbContext
 
         // SeoMeta Configuration - Polymorphic
         modelBuilder.Entity<SeoMeta>()
-            .HasKey(s => s.SeoMetaId);
+            .HasKey(s => s.Id);
+        modelBuilder.Entity<SeoMeta>()
+            .Property(s => s.Id).HasColumnName("SeoMetaId");
 
         modelBuilder.Entity<SeoMeta>()
             .HasIndex(s => new { s.TenantId, s.EntityType, s.EntityId })
@@ -37,7 +39,9 @@ public class SharedDbContext : DbContext
 
         // Tag Configuration - Polymorphic
         modelBuilder.Entity<Tag>()
-            .HasKey(t => t.TagId);
+            .HasKey(t => t.Id);
+        modelBuilder.Entity<Tag>()
+            .Property(t => t.Id).HasColumnName("TagId");
 
         modelBuilder.Entity<Tag>()
             .HasIndex(t => new { t.TenantId, t.EntityType, t.EntityId });
@@ -48,7 +52,9 @@ public class SharedDbContext : DbContext
 
         // Translation Configuration
         modelBuilder.Entity<Translation>()
-            .HasKey(t => t.TranslationId);
+            .HasKey(t => t.Id);
+        modelBuilder.Entity<Translation>()
+            .Property(t => t.Id).HasColumnName("TranslationId");
 
         modelBuilder.Entity<Translation>()
             .HasIndex(t => new { t.TenantId, t.LanguageId, t.EntityType, t.EntityId })
@@ -56,7 +62,9 @@ public class SharedDbContext : DbContext
 
         // Notification Configuration
         modelBuilder.Entity<Notification>()
-            .HasKey(n => n.NotificationId);
+            .HasKey(n => n.Id);
+        modelBuilder.Entity<Notification>()
+            .Property(n => n.Id).HasColumnName("NotificationId");
 
         modelBuilder.Entity<Notification>()
             .HasIndex(n => new { n.TenantId, n.RecipientId });
@@ -79,7 +87,9 @@ public class SharedDbContext : DbContext
 
         // FileStorage Configuration
         modelBuilder.Entity<FileStorage>()
-            .HasKey(fs => fs.FileStorageId);
+            .HasKey(fs => fs.Id);
+        modelBuilder.Entity<FileStorage>()
+            .Property(fs => fs.Id).HasColumnName("FileStorageId");
 
         modelBuilder.Entity<FileStorage>()
             .HasIndex(fs => new { fs.TenantId, fs.FilePath })
@@ -90,7 +100,9 @@ public class SharedDbContext : DbContext
 
         // EmailQueue Configuration
         modelBuilder.Entity<EmailQueue>()
-            .HasKey(eq => eq.EmailQueueId);
+            .HasKey(eq => eq.Id);
+        modelBuilder.Entity<EmailQueue>()
+            .Property(eq => eq.Id).HasColumnName("EmailQueueId");
 
         modelBuilder.Entity<EmailQueue>()
             .HasIndex(eq => new { eq.TenantId, eq.Status });

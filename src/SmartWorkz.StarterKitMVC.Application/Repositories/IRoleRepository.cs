@@ -1,4 +1,5 @@
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
+
 namespace SmartWorkz.StarterKitMVC.Application.Repositories;
 
 /// <summary>
@@ -6,9 +7,6 @@ namespace SmartWorkz.StarterKitMVC.Application.Repositories;
 /// </summary>
 public interface IRoleRepository : IDapperRepository<RoleDto>
 {
-    /// <summary>Get role by ID with tenant context</summary>
-    Task<RoleDto?> GetByIdAsync(object id, string tenantId);
-
     /// <summary>Get role by name</summary>
     Task<RoleDto?> GetByNameAsync(string name, string tenantId);
 
@@ -24,4 +22,3 @@ public interface IRoleRepository : IDapperRepository<RoleDto>
     /// <summary>Remove all permissions from a role</summary>
     Task RemoveAllPermissionsAsync(Guid roleId);
 }
-

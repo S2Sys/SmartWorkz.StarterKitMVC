@@ -48,7 +48,15 @@ public class EmailService : IEmailService
 
         try
         {
-            await _smtpService.SendEmailAsync(message.To, message.Subject, message.Body, message.IsHtml);
+            var result = await _smtpService.SendAsync(message.To, message.Subject, message.Body, message.IsHtml);
+
+            if (!result.Succeeded)
+            {
+                _logger.LogWarning(
+                    "Failed to send email to {To}: {Error}",
+                    message.To, string.Join(", ", result.Errors));
+                return false;
+            }
 
             _logger.LogInformation(
                 "Email sent successfully to {To}: {Subject}",
@@ -146,7 +154,7 @@ public class EmailService : IEmailService
                 SendAttempts = 0
             };
 
-            await _emailQueueRepository.CreateAsync(queueItem);
+            await _emailQueueRepository.EnqueueAsync(queueItem);
 
             _logger.LogDebug("Email queued for {To}: {Subject}", message.To, message.Subject);
 

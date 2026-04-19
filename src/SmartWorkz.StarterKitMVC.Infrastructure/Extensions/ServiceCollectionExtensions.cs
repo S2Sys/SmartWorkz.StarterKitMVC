@@ -66,11 +66,26 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
+        // Core repositories
         services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IEmailQueueRepository, EmailQueueRepository>();
+
+        // Phase 2: Dapper repositories
+        services.AddScoped<ILookupRepository, LookupRepository>();
+        services.AddScoped<IConfigurationRepository, ConfigurationRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IPermissionRepository, PermissionRepository>();
+        services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+        services.AddScoped<ICountryRepository, CountryRepository>();
+        services.AddScoped<ICustomPageRepository, CustomPageRepository>();
+
+        // Unit of Work for coordinating repositories
+        services.AddScoped<UnitOfWork>();
 
         return services;
     }
@@ -85,7 +100,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<SmartWorkz.StarterKitMVC.Application.Authorization.IPermissionService, SmartWorkz.StarterKitMVC.Infrastructure.Authorization.PermissionService>();
+        services.AddScoped<Application.Services.IPermissionService, Application.Services.PermissionService>();
+        services.AddSingleton<Application.Authorization.IPermissionService, Infrastructure.Authorization.PermissionService>();
         services.AddScoped<IClaimService, ClaimService>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
 

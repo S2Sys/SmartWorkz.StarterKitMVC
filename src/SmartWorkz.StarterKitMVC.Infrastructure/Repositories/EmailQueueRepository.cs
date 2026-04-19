@@ -62,9 +62,4 @@ public sealed class EmailQueueRepository : CachedDapperRepository, IEmailQueueRe
             new { EmailQueueId = emailQueueId, FailureReason = failureReason },
             timeoutSeconds: 10);
     }
-
-    public async Task<int> CreateAsync(EmailQueue email, CancellationToken ct = default)
-    {
-        return await EnqueueAsync(email, ct);
-    }
 }

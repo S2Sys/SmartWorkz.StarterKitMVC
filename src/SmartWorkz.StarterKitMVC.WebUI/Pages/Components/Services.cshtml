@@ -1,0 +1,33 @@
+@page
+@model ServicesModel
+@inject SmartWorkz.Core.Web.Services.Components.IIconProvider IconProvider
+
+@{
+    ViewData["Title"] = "Component Services Demo";
+}
+
+<div class="container mt-5">
+    <h1>Component Services Demo</h1>
+
+    <section class="mt-4">
+        <h3>IconProvider - Bootstrap Icons</h3>
+        <div class="row">
+            <div class="col-md-3 text-center">
+                <icon name="Success" size="lg"></icon>
+                <p>Success</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <icon name="Error" size="lg"></icon>
+                <p>Error</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <icon name="Warning" size="lg"></icon>
+                <p>Warning</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <icon name="Info" size="lg"></icon>
+                <p>Info</p>
+            </div>
+        </div>
+    </section>
+</div>

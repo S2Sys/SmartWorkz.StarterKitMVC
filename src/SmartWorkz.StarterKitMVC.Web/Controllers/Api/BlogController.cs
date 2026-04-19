@@ -4,6 +4,7 @@ using SmartWorkz.StarterKitMVC.Application.Services;
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
 using SmartWorkz.StarterKitMVC.Shared.Extensions;
 using SmartWorkz.StarterKitMVC.Shared.Primitives;
+using SmartWorkz.StarterKitMVC.Shared.Models;
 using SmartWorkz.StarterKitMVC.Web.Middleware;
 
 namespace SmartWorkz.StarterKitMVC.Web.Controllers.Api;
@@ -152,7 +153,7 @@ public class BlogController : ControllerBase
             IsPublished = false,
             ViewCount = 0,
             CreatedAt = DateTime.UtcNow,
-            Tags = request.Tags ?? new List<string>()
+            Tags = request.Tags != null ? string.Join(",", request.Tags) : ""
         };
         var result = await _blogService.CreateAsync(post);
         return CreatedAtAction(nameof(GetBySlug), new { slug = result.Slug }, result);

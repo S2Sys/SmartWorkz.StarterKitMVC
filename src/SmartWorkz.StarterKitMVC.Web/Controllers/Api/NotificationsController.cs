@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Application.Services;
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
+using SmartWorkz.StarterKitMVC.Shared.Extensions;
 using SmartWorkz.StarterKitMVC.Shared.Primitives;
 using SmartWorkz.StarterKitMVC.Web.Middleware;
 using System.Security.Claims;
@@ -45,8 +47,9 @@ public class NotificationsController : ControllerBase
             return Unauthorized();
         }
 
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Retrieving unread notifications for user: {UserId}", userId);
-        var result = await _notificationService.GetUnreadNotificationsAsync(userId);
+        var result = await _notificationService.GetUnreadAsync(userId, tenantId);
         return Ok(result);
     }
 
@@ -69,8 +72,9 @@ public class NotificationsController : ControllerBase
             return Unauthorized();
         }
 
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Retrieving unread notification count for user: {UserId}", userId);
-        var count = await _notificationService.GetUnreadCountAsync(userId);
+        var count = await _notificationService.GetUnreadCountAsync(userId, tenantId);
         return Ok(new UnreadCountResponse(count));
     }
 
@@ -85,14 +89,14 @@ public class NotificationsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> MarkAsRead(int id)
+    public async Task<IActionResult> MarkAsRead(Guid id)
     {
-        if (id <= 0)
+        if (id == Guid.Empty)
         {
             _logger.LogWarning("MarkAsRead called with invalid ID: {Id}", id);
             return BadRequest(ProblemDetailsResponse.ValidationError(
                 "Valid notification ID is required",
-                new Dictionary<string, string[]> { ["id"] = new[] { "ID must be greater than 0" } },
+                new Dictionary<string, string[]> { ["id"] = new[] { "ID cannot be empty" } },
                 Request.Path));
         }
 
@@ -105,9 +109,9 @@ public class NotificationsController : ControllerBase
             return Unauthorized();
         }
 
-        _logger.LogInformation("Marking notification as read: {NotificationId} for user: {UserId}", id, userId);
+        _logger.LogInformation("Marking notification as read: {NotificationId}", id);
 
-        var result = await _notificationService.MarkAsReadAsync(id, userId);
+        var result = await _notificationService.MarkAsReadAsync(id);
 
         if (!result)
         {
@@ -139,9 +143,10 @@ public class NotificationsController : ControllerBase
             return Unauthorized();
         }
 
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Marking all notifications as read for user: {UserId}", userId);
 
-        var count = await _notificationService.MarkAllAsReadAsync(userId);
+        var count = await _notificationService.MarkAllAsReadAsync(userId, tenantId);
 
         return Ok(new { message = $"{count} notifications marked as read", count });
     }

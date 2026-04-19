@@ -1,8 +1,9 @@
 namespace SmartWorkz.StarterKitMVC.Domain.Entities.Auth;
 
-public class User
+using SmartWorkz.Core.Entities;
+
+public class User : AuditableEntity<string>
 {
-    public string UserId { get; set; }
     public string Username { get; set; }
     public string NormalizedUsername { get; set; }
     public string Email { get; set; }
@@ -21,13 +22,7 @@ public class User
     public string DisplayName { get; set; }
     public string AvatarUrl { get; set; }
     public string Locale { get; set; } = "en-US";
-    public string TenantId { get; set; }
     public bool IsActive { get; set; } = true;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public string CreatedBy { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public string UpdatedBy { get; set; }
-    public bool IsDeleted { get; set; }
 
     public ICollection<UserRole> UserRoles { get; set; }
     public ICollection<UserPermission> UserPermissions { get; set; }

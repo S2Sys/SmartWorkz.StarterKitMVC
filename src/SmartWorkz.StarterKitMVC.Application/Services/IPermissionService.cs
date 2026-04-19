@@ -1,4 +1,5 @@
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
+using SmartWorkz.StarterKitMVC.Application.Repositories;
 
 namespace SmartWorkz.StarterKitMVC.Application.Services;
 
@@ -47,4 +48,3 @@ public interface IPermissionService
     /// </summary>
     Task<IEnumerable<PermissionDto>> GetAllAsync(string tenantId);
 }
-

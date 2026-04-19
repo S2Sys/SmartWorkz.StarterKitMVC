@@ -128,6 +128,36 @@ public class MasterDbContext : DbContext
             .HasForeignKey(s => s.TenantId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // Configuration Key Mapping
+        modelBuilder.Entity<Domain.Entities.Master.Configuration>()
+            .HasKey(c => c.Id);
+        modelBuilder.Entity<Domain.Entities.Master.Configuration>()
+            .Property(c => c.Id).HasColumnName("ConfigId");
+
+        // Country Key Mapping
+        modelBuilder.Entity<Country>()
+            .HasKey(c => c.Id);
+        modelBuilder.Entity<Country>()
+            .Property(c => c.Id).HasColumnName("CountryId");
+
+        // Currency Key Mapping
+        modelBuilder.Entity<Currency>()
+            .HasKey(c => c.Id);
+        modelBuilder.Entity<Currency>()
+            .Property(c => c.Id).HasColumnName("CurrencyId");
+
+        // Language Key Mapping
+        modelBuilder.Entity<Language>()
+            .HasKey(l => l.Id);
+        modelBuilder.Entity<Language>()
+            .Property(l => l.Id).HasColumnName("LanguageId");
+
+        // TimeZone Key Mapping
+        modelBuilder.Entity<Domain.Entities.Master.TimeZone>()
+            .HasKey(tz => tz.Id);
+        modelBuilder.Entity<Domain.Entities.Master.TimeZone>()
+            .Property(tz => tz.Id).HasColumnName("TimeZoneId");
+
         // Configuration unique constraints
         modelBuilder.Entity<Domain.Entities.Master.Configuration>()
             .HasIndex(c => new { c.TenantId, c.Key })
@@ -148,6 +178,78 @@ public class MasterDbContext : DbContext
         modelBuilder.Entity<Domain.Entities.Master.TimeZone>()
             .HasIndex(tz => new { tz.TenantId, tz.Identifier })
             .IsUnique();
+
+        // FeatureFlag Key Mapping
+        modelBuilder.Entity<FeatureFlag>()
+            .HasKey(f => f.Id);
+        modelBuilder.Entity<FeatureFlag>()
+            .Property(f => f.Id).HasColumnName("FeatureFlagId");
+
+        // Menu Key Mapping
+        modelBuilder.Entity<Menu>()
+            .HasKey(m => m.Id);
+        modelBuilder.Entity<Menu>()
+            .Property(m => m.Id).HasColumnName("MenuId");
+
+        // MenuItem Key Mapping
+        modelBuilder.Entity<MenuItem>()
+            .HasKey(mi => mi.Id);
+        modelBuilder.Entity<MenuItem>()
+            .Property(mi => mi.Id).HasColumnName("MenuItemId");
+
+        // Category Key Mapping
+        modelBuilder.Entity<Category>()
+            .HasKey(c => c.Id);
+        modelBuilder.Entity<Category>()
+            .Property(c => c.Id).HasColumnName("CategoryId");
+
+        // Product Key Mapping
+        modelBuilder.Entity<Product>()
+            .HasKey(p => p.Id);
+        modelBuilder.Entity<Product>()
+            .Property(p => p.Id).HasColumnName("ProductId");
+
+        // GeoHierarchy Key Mapping
+        modelBuilder.Entity<GeoHierarchy>()
+            .HasKey(g => g.Id);
+        modelBuilder.Entity<GeoHierarchy>()
+            .Property(g => g.Id).HasColumnName("GeoId");
+
+        // GeolocationPage Key Mapping
+        modelBuilder.Entity<GeolocationPage>()
+            .HasKey(gp => gp.Id);
+        modelBuilder.Entity<GeolocationPage>()
+            .Property(gp => gp.Id).HasColumnName("GeoPageId");
+
+        // CustomPage Key Mapping
+        modelBuilder.Entity<CustomPage>()
+            .HasKey(cp => cp.Id);
+        modelBuilder.Entity<CustomPage>()
+            .Property(cp => cp.Id).HasColumnName("PageId");
+
+        // BlogPost Key Mapping
+        modelBuilder.Entity<BlogPost>()
+            .HasKey(bp => bp.Id);
+        modelBuilder.Entity<BlogPost>()
+            .Property(bp => bp.Id).HasColumnName("PostId");
+
+        // Customer Key Mapping
+        modelBuilder.Entity<Customer>()
+            .HasKey(c => c.Id);
+        modelBuilder.Entity<Customer>()
+            .Property(c => c.Id).HasColumnName("CustomerId");
+
+        // Supplier Key Mapping
+        modelBuilder.Entity<Supplier>()
+            .HasKey(s => s.Id);
+        modelBuilder.Entity<Supplier>()
+            .Property(s => s.Id).HasColumnName("SupplierId");
+
+        // Inventory Key Mapping
+        modelBuilder.Entity<Inventory>()
+            .HasKey(i => i.Id);
+        modelBuilder.Entity<Inventory>()
+            .Property(i => i.Id).HasColumnName("InventoryId");
 
         // Category self-referencing relationship
         modelBuilder.Entity<Category>()

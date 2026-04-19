@@ -229,20 +229,23 @@ public class ConfigurationService : IConfigurationService
 
         try
         {
-            var result = await _repository.DeleteAsync(key, tenantId);
+            // Find the config first to verify it exists
+            var config = await _repository.FirstOrDefaultAsync(new { Key = key, TenantId = tenantId });
+            if (config == null)
+                return false;
 
-            if (result)
-            {
-                // Invalidate cache
-                var cacheKey = GenerateCacheKey(key, tenantId);
-                await _cache.RemoveAsync(cacheKey);
+            // Delete by key (assumes Key is the primary key or composite key includes it)
+            await _repository.DeleteAsync(key);
 
-                _logger.LogInformation(
-                    "Configuration deleted and cache invalidated: {Key}",
-                    key);
-            }
+            // Invalidate cache
+            var cacheKey = GenerateCacheKey(key, tenantId);
+            await _cache.RemoveAsync(cacheKey);
 
-            return result;
+            _logger.LogInformation(
+                "Configuration deleted and cache invalidated: {Key}",
+                key);
+
+            return true;
         }
         catch (Exception ex)
         {
