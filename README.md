@@ -25,6 +25,9 @@ Latest: **v4.1.0** (2026-04-02) — Demo pages & comprehensive wiki documentatio
   - [14 — Auth Service](docs/wiki/14-auth-service.md) — `IAuthService` + `ITokenService` + `IPasswordHasher`, cookie vs JWT
   - [15 — Permission Service](docs/wiki/15-permission-service.md) — Features/Permissions/RolePermissions + `[RequirePermission]`
   - [16 — Claim Service](docs/wiki/16-claim-service.md) — Custom claim types, role/user claims, JWT projection
+  - [17 — Menu Service](docs/wiki/17-menu-service.md) — Per-tenant navigation menus, role-gated items
+  - [18 — SEO Meta Service](docs/wiki/18-seo-meta-service.md) — Polymorphic SEO (title/desc/OG) keyed on `(EntityType, EntityId)`
+  - [19 — Tag Service](docs/wiki/19-tag-service.md) — Polymorphic tagging, entity associations, orphan semantics
 
 ### 🏗️ Architecture & Design
 - **📋 Schema Design:** [`docs/srs/SCHEMA-REVIEW-v2.md`](docs/srs/SCHEMA-REVIEW-v2.md) — 42 LEAN tables across 5 schemas
