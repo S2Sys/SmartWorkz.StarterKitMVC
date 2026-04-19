@@ -11,3 +11,4 @@ global using SmartWorkz.Core.Shared.Base_Classes;
 global using SmartWorkz.Core.Shared.Response;
 global using SmartWorkz.Core.Shared.Logging;
 global using SmartWorkz.Core.Shared.Mapping;
+global using SmartWorkz.Core.Shared.Constants;
