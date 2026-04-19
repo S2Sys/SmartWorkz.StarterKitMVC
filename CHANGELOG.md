@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Framework wiki (Tiers 1–4, 15 new pages)** — `00-getting-started`, `10-dapper-repository`, `11-ef-core-repository`, `12-hybrid-cache`, `13-email-templates`, `14-auth-service`, `15-permission-service`, `16-claim-service`, `17-menu-service`, `18-seo-meta-service`, `19-tag-service`, `20-middleware-stack`, `21-background-jobs`, `22-shared-primitives`, `23-tag-helpers-validators`. Each page follows the standard Purpose → Architecture → DI → Methods → Samples → Provider Swap → Common Mistakes → See Also structure and includes cross-client notes for web / SPA / MAUI / desktop consumers.
+- **Standing project-memory rule** added in `CLAUDE.md` + `memory/wiki_update_rules.md`: every service change must update the corresponding wiki page in the same PR.
+
+### Removed
+- **`SmartWorkz.StarterKitMVC.Shared.Primitives.Result` / `Result<T>` / `Error`** (record-struct shape) — deleted. Zero production usages; `Shared.Models.Result` (class, `MessageKey`-driven) remains the canonical service return type. No caller migration required.
+
 ## [4.2.0] - 2026-04-02
 
 ### Added - Complete Stored Procedure Library

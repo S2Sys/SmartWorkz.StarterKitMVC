@@ -6,20 +6,15 @@ The types in `Shared/` are the framework's **public vocabulary** — every servi
 
 | Type | File | Used for |
 |------|------|----------|
-| `Result` / `Result<T>` (Models) | [`Shared/Models/ValidationResult.cs`](../../src/SmartWorkz.StarterKitMVC.Shared/Models/ValidationResult.cs) | Service-to-caller success/failure with `MessageKey` |
-| `Result` / `Result<T>` (Primitives) | [`Shared/Primitives/Result.cs`](../../src/SmartWorkz.StarterKitMVC.Shared/Primitives/Result.cs) | `Error(Code, Message)` result (alternative shape) |
+| `Result` / `Result<T>` | [`Shared/Models/ValidationResult.cs`](../../src/SmartWorkz.StarterKitMVC.Shared/Models/ValidationResult.cs) | Service-to-caller success/failure with `MessageKey` |
 | `ApiError` | [`Shared/Primitives/ApiError.cs`](../../src/SmartWorkz.StarterKitMVC.Shared/Primitives/ApiError.cs) | Serialised error for API responses |
 | `ProblemDetailsResponse` | [`Shared/Primitives/ProblemDetails.cs`](../../src/SmartWorkz.StarterKitMVC.Shared/Primitives/ProblemDetails.cs) | RFC 7807 error envelope used by `GlobalExceptionHandlingMiddleware` |
 | `ICorrelationContext` / `CorrelationContext` | [`Shared/Primitives/CorrelationContext.cs`](../../src/SmartWorkz.StarterKitMVC.Shared/Primitives/CorrelationContext.cs) | Per-request correlation id for distributed tracing |
 | `MessageKeys` | [`Shared/Constants/MessageKeys.cs`](../../src/SmartWorkz.StarterKitMVC.Shared/Constants/MessageKeys.cs) | All translatable strings |
 
-## `Result` — two flavours (know which one to use)
+## `Result` / `Result<T>` — the service return type
 
-The codebase currently ships **two** `Result` types with overlapping names but different shapes. Pick one per project; do not mix.
-
-### `Shared.Models.Result` (class, MessageKey-driven) — **used by services today**
-
-Returned by `IAuthService`, every service method, and many Dapper repos. Fields:
+Every service in the framework returns `Result` (no payload) or `Result<T>` (with typed payload). It's the single shape every caller — Razor page, REST controller, Angular, MAUI — expects.
 
 ```csharp
 public class Result
@@ -38,41 +33,43 @@ public class Result
 public class Result<T> : Result { public T? Data { get; } }
 ```
 
-Why `MessageKey` instead of a literal string: the web host translates at render time, SPA/mobile clients look up a resource bundle by the same key. Never return a user-readable string from a service — always a key.
+Why `MessageKey` instead of a literal string: the web host translates at render time via `ITranslationService`, SPA/mobile clients look up a resource bundle by the same key. **Never return a user-readable string from a service** — always a key.
+
+### Service pattern
 
 ```csharp
-// Service
 public async Task<Result<UserProfileDto>> GetProfileAsync(string userId)
 {
     var user = await _users.GetByIdAsync(userId);
-    if (user is null) return Result.Fail<UserProfileDto>(MessageKeys.User.UserNotFound);
+    if (user is null)
+        return Result.Fail<UserProfileDto>(MessageKeys.User.UserNotFound);
 
     return Result.Ok(Map(user));
 }
+```
 
-// Razor page caller
+### Razor page caller
+
+```csharp
 var r = await _auth.GetProfileAsync(userId);
 if (!r.Succeeded) { AddErrors(r); return Page(); }   // BasePage helper binds to ModelState
 var profile = r.Data!;
 ```
 
-### `Shared.Primitives.Result` (record struct, Error-driven)
-
-Heavier-weight alternative with `readonly record struct` + an `Error(Code, Message)` value:
+### REST controller caller
 
 ```csharp
-public readonly record struct Error(string Code, string Message)
-{
-    public static readonly Error None = new("None", string.Empty);
-}
-
-public readonly record struct Result { bool IsSuccess; Error Error; … }
-public readonly record struct Result<T> { bool IsSuccess; T? Value; Error Error; … }
+var r = await _auth.GetProfileAsync(userId);
+if (!r.Succeeded)
+    return BadRequest(new ApiError { Code = r.MessageKey!, Message = r.MessageKey! });
+return Ok(r.Data);
 ```
 
-Good for API boundaries where you want the error code + message in one object. Less good as a service return because the `Message` tends to drift to an English string.
+### Rules
 
-> **Convergence TODO.** When the project decides which shape wins, retire the other. Until then, pick the shape that matches the service you're calling and don't invent a third.
+- **Only one `Result` type.** An earlier duplicate at `Shared.Primitives.Result` (record struct + `Error(Code, Message)`) was removed — it had zero production usages.
+- **No exceptions for expected failures.** If the outcome is a business state (not found, invalid credentials, concurrency conflict), return `Result.Fail(messageKey)`. Reserve exceptions for truly exceptional conditions.
+- **Errors list is for secondary details** — e.g. field-level validation failures. Primary failure code goes in `MessageKey`.
 
 ## `ApiError` — the over-the-wire error
 
@@ -210,7 +207,7 @@ Add / rename / remove any primitive, and the entire client fleet needs a matchin
 
 ## Common Mistakes
 
-- **Mixing the two `Result` types** in one service — pick one per project. Today the services use `Shared.Models.Result`.
+- **Introducing a second `Result` shape** — there is exactly one (`Shared.Models.Result`). If you need a different shape (record struct, `Error` object, etc.), change this one and migrate every caller; don't create a parallel type.
 - **Returning a literal string as an error** instead of a `MessageKey` — breaks localization everywhere.
 - **Swallowing the `MessageKey`** on the caller side — page model should always `AddErrors(result)` so `ModelState` gets it; API should return `ApiError { Code = result.MessageKey }`.
 - **Forgetting to set `TraceId`** on `ApiError` / `ProblemDetailsResponse` — makes client-side support tickets impossible to correlate with server logs.
