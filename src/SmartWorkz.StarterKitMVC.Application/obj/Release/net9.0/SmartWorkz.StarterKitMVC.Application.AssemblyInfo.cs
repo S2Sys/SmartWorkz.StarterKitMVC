@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartWorkz.StarterKitMVC.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1dd35c864b6c2d8690bdd6682e37c1bcda2500f6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6ad4a3eacbe7def4625a0fd6e513affe930ac22a")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartWorkz.StarterKitMVC.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartWorkz.StarterKitMVC.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
