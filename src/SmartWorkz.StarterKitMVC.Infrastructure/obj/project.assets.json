@@ -3205,8 +3205,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj": {
-              "projectPath": "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj"
+            "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj": {
+              "projectPath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj"
             },
             "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Domain\\SmartWorkz.StarterKitMVC.Domain.csproj": {
               "projectPath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Domain\\SmartWorkz.StarterKitMVC.Domain.csproj"

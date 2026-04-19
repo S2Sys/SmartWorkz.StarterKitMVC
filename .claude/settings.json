@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Read(//s/02_Projects/Starter/03_Development/MVC/SmartWorkz.StarterKitMVC.src/SmartWorkz.StarterKitMVC.Infrastructure/Authorization/**)"
+      "Read(//s/02_Projects/Starter/03_Development/MVC/SmartWorkz.StarterKitMVC.src/SmartWorkz.StarterKitMVC.Infrastructure/Authorization/**)",
+      "Read(//c/Users/tsent/source/repos/S2Sys/SmartWorkz.Core.Tests/Resilience/**)",
+      "Read(//c/Users/tsent/source/repos/S2Sys/SmartWorkz.Core.Shared/Resilience/**)"
     ],
     "additionalDirectories": [
       "C:\\Users\\tsent\\.claude\\projects\\c--Users-tsent-source-repos-S2Sys-SmartWorkz-StarterKitMVC\\plans",

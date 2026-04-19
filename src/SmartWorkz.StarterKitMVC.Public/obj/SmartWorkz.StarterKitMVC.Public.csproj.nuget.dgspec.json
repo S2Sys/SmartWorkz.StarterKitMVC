@@ -4,14 +4,14 @@
     "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Public\\SmartWorkz.StarterKitMVC.Public.csproj": {}
   },
   "projects": {
-    "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj": {
+    "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj",
+        "projectUniqueName": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj",
         "projectName": "SmartWorkz.StarterKitMVC.Application",
-        "projectPath": "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj",
+        "projectPath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj",
         "packagesPath": "C:\\Users\\tsent\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\obj\\",
+        "outputPath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -31,6 +31,7 @@
         },
         "frameworks": {
           "net9.0": {
+            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
               "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Domain\\SmartWorkz.StarterKitMVC.Domain.csproj": {
@@ -56,6 +57,7 @@
       },
       "frameworks": {
         "net9.0": {
+          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "Microsoft.Extensions.Configuration.Abstractions": {
@@ -136,6 +138,7 @@
         },
         "frameworks": {
           "net9.0": {
+            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {}
           }
@@ -154,6 +157,7 @@
       },
       "frameworks": {
         "net9.0": {
+          "framework": "net9.0",
           "targetAlias": "net9.0",
           "imports": [
             "net461",
@@ -216,10 +220,11 @@
         },
         "frameworks": {
           "net9.0": {
+            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj": {
-                "projectPath": "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj"
+              "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj": {
+                "projectPath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj"
               },
               "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Domain\\SmartWorkz.StarterKitMVC.Domain.csproj": {
                 "projectPath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Domain\\SmartWorkz.StarterKitMVC.Domain.csproj"
@@ -244,6 +249,7 @@
       },
       "frameworks": {
         "net9.0": {
+          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "Dapper": {
@@ -364,10 +370,11 @@
         },
         "frameworks": {
           "net9.0": {
+            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj": {
-                "projectPath": "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj"
+              "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj": {
+                "projectPath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Application\\SmartWorkz.StarterKitMVC.Application.csproj"
               },
               "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Infrastructure\\SmartWorkz.StarterKitMVC.Infrastructure.csproj": {
                 "projectPath": "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.StarterKitMVC.Infrastructure\\SmartWorkz.StarterKitMVC.Infrastructure.csproj"
@@ -392,6 +399,7 @@
       },
       "frameworks": {
         "net9.0": {
+          "framework": "net9.0",
           "targetAlias": "net9.0",
           "imports": [
             "net461",
@@ -461,6 +469,7 @@
         },
         "frameworks": {
           "net9.0": {
+            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {}
           }
@@ -479,6 +488,7 @@
       },
       "frameworks": {
         "net9.0": {
+          "framework": "net9.0",
           "targetAlias": "net9.0",
           "imports": [
             "net461",
