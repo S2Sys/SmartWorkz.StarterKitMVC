@@ -39,7 +39,7 @@ public class RoleService : IRoleService
 
         try
         {
-            var role = await _roleRepository.GetByIdAsync(roleId, tenantId);
+            var role = await _roleRepository.GetByIdAsync(Guid.Parse(roleId));
             _logger.LogDebug("Retrieved role: {RoleId}", roleId);
             return role;
         }
@@ -127,15 +127,7 @@ public class RoleService : IRoleService
             role.RoleId = Guid.NewGuid();
             role.CreatedAt = DateTime.UtcNow;
 
-            await _roleRepository.UpsertAsync(new RoleDto
-            {
-                RoleId = role.RoleId,
-                Name = role.Name,
-                DisplayName = role.DisplayName,
-                Description = role.Description,
-                TenantId = role.TenantId,
-                CreatedAt = role.CreatedAt
-            });
+            await _roleRepository.UpsertAsync(role);
 
             // Invalidate cache
             await InvalidateRoleCache(role.TenantId);
@@ -167,15 +159,7 @@ public class RoleService : IRoleService
         {
             role.UpdatedAt = DateTime.UtcNow;
 
-            await _roleRepository.UpsertAsync(new RoleDto
-            {
-                RoleId = role.RoleId,
-                Name = role.Name,
-                DisplayName = role.DisplayName,
-                Description = role.Description,
-                TenantId = role.TenantId,
-                UpdatedAt = role.UpdatedAt
-            });
+            await _roleRepository.UpsertAsync(role);
 
             // Invalidate cache
             await InvalidateRoleCache(role.TenantId);
@@ -201,11 +185,11 @@ public class RoleService : IRoleService
 
         try
         {
-            var role = await _roleRepository.GetByIdAsync(roleId, "");
+            var role = await _roleRepository.GetByIdAsync(Guid.Parse(roleId));
             if (role == null)
                 return false;
 
-            await _roleRepository.DeleteAsync(roleId);
+            await _roleRepository.DeleteAsync(Guid.Parse(roleId));
 
             // Invalidate cache
             await InvalidateRoleCache(role.TenantId);
@@ -231,28 +215,16 @@ public class RoleService : IRoleService
 
         try
         {
-            var permissionIdList = permissionIds?.ToList() ?? new List<string>();
+            var roleGuid = Guid.Parse(roleId);
+            var permissionIdList = permissionIds?
+                .Select(p => Guid.Parse(p))
+                .ToList() ?? new List<Guid>();
 
-            // Get the role to determine tenant
-            var role = await _roleRepository.GetByIdAsync(roleId, tenantId);
-            if (role == null)
-                return false;
-
-            // Remove existing permissions
-            var existingPermissions = await _permissionRepository.GetByRoleAsync(Guid.Parse(roleId), role.TenantId);
-            foreach (var existingPerm in existingPermissions)
-            {
-                await _permissionRepository.RemoveRolePermissionAsync(roleId, existingPerm.PermissionId);
-            }
-
-            // Assign new permissions
-            foreach (var permissionId in permissionIdList)
-            {
-                await _permissionRepository.AssignToRoleAsync(roleId, permissionId);
-            }
+            // Assign permissions using batch operation
+            await _roleRepository.AssignPermissionsAsync(roleGuid, permissionIdList, tenantId);
 
             // Invalidate cache
-            await InvalidateRoleCache(role.TenantId);
+            await InvalidateRoleCache(tenantId);
 
             _logger.LogInformation(
                 "Assigned {PermissionCount} permissions to role {RoleId}",
@@ -268,16 +240,19 @@ public class RoleService : IRoleService
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<PermissionDto>> GetPermissionsAsync(string roleId, string tenantId)
+    public async Task<IEnumerable<PermissionDto>> GetPermissionsAsync(string roleId)
     {
         if (string.IsNullOrWhiteSpace(roleId))
             throw new ArgumentException("Role ID cannot be empty", nameof(roleId));
-        if (string.IsNullOrWhiteSpace(tenantId))
-            throw new ArgumentException("Tenant ID cannot be empty", nameof(tenantId));
 
         try
         {
-            var permissions = await _permissionRepository.GetByRoleAsync(Guid.Parse(roleId), tenantId);
+            var roleGuid = Guid.Parse(roleId);
+            var role = await _roleRepository.GetByIdAsync(roleGuid);
+            if (role == null)
+                return new List<PermissionDto>();
+
+            var permissions = await _roleRepository.GetPermissionsAsync(roleGuid, role.TenantId);
             _logger.LogDebug("Retrieved {Count} permissions for role {RoleId}",
                 permissions.Count(), roleId);
             return permissions;
@@ -290,33 +265,38 @@ public class RoleService : IRoleService
     }
 
     /// <inheritdoc />
-    public async Task<bool> RemovePermissionAsync(string roleId, string permissionId, string tenantId)
+    public async Task<bool> RemovePermissionAsync(string roleId, string permissionId)
     {
         if (string.IsNullOrWhiteSpace(roleId))
             throw new ArgumentException("Role ID cannot be empty", nameof(roleId));
         if (string.IsNullOrWhiteSpace(permissionId))
             throw new ArgumentException("Permission ID cannot be empty", nameof(permissionId));
-        if (string.IsNullOrWhiteSpace(tenantId))
-            throw new ArgumentException("Tenant ID cannot be empty", nameof(tenantId));
 
         try
         {
-            var role = await _roleRepository.GetByIdAsync(roleId, tenantId);
+            var roleGuid = Guid.Parse(roleId);
+            var role = await _roleRepository.GetByIdAsync(roleGuid);
             if (role == null)
                 return false;
 
-            var result = await _permissionRepository.RemoveRolePermissionAsync(roleId, Guid.Parse(permissionId));
+            // Get current permissions and rebuild without the one being removed
+            var permissionGuid = Guid.Parse(permissionId);
+            var currentPermissions = await _roleRepository.GetPermissionsAsync(roleGuid, role.TenantId);
+            var updatedPermissions = currentPermissions
+                .Where(p => p.PermissionId != permissionGuid)
+                .Select(p => p.PermissionId)
+                .ToList();
 
-            if (result)
-            {
-                // Invalidate cache
-                await InvalidateRoleCache(role.TenantId);
+            // Reassign permissions
+            await _roleRepository.AssignPermissionsAsync(roleGuid, updatedPermissions, role.TenantId);
 
-                _logger.LogDebug("Permission {PermissionId} removed from role {RoleId}",
-                    permissionId, roleId);
-            }
+            // Invalidate cache
+            await InvalidateRoleCache(role.TenantId);
 
-            return result;
+            _logger.LogDebug("Permission {PermissionId} removed from role {RoleId}",
+                permissionId, roleId);
+
+            return true;
         }
         catch (Exception ex)
         {

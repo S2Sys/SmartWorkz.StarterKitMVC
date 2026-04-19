@@ -64,16 +64,6 @@ public class TenantFromHeaderModelBinderProvider : IModelBinderProvider
             return null;
         }
 
-        var parameterModelType = context.Metadata.ElementType ?? parameterType;
-
-        var bindingSourceMetadata = context.Metadata
-            .GetMetadata<IBindingSourceMetadata>();
-
-        if (bindingSourceMetadata?.BindingSource?.CanAcceptDataFrom(BindingSource.Custom) != true)
-        {
-            return null;
-        }
-
         if (!context.Metadata.ParameterName.Contains("tenant", StringComparison.OrdinalIgnoreCase))
         {
             return null;

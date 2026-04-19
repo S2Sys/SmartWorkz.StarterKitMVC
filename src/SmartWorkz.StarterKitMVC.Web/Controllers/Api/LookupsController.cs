@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Application.Services;
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
+using SmartWorkz.StarterKitMVC.Shared.Extensions;
 using SmartWorkz.StarterKitMVC.Shared.Primitives;
 using SmartWorkz.StarterKitMVC.Web.Middleware;
 using System.Security.Claims;
@@ -37,7 +39,7 @@ public class LookupsController : ControllerBase
     public async Task<IActionResult> GetCurrencies()
     {
         _logger.LogInformation("Retrieving currencies");
-        var result = await _lookupService.GetLookupsByCategoryAsync("Currency");
+        var result = await _lookupService.GetCurrenciesAsync("DEFAULT");
         return Ok(result);
     }
 
@@ -52,7 +54,7 @@ public class LookupsController : ControllerBase
     public async Task<IActionResult> GetLanguages()
     {
         _logger.LogInformation("Retrieving languages");
-        var result = await _lookupService.GetLookupsByCategoryAsync("Language");
+        var result = await _lookupService.GetLanguagesAsync("DEFAULT");
         return Ok(result);
     }
 
@@ -67,7 +69,7 @@ public class LookupsController : ControllerBase
     public async Task<IActionResult> GetTimeZones()
     {
         _logger.LogInformation("Retrieving time zones");
-        var result = await _lookupService.GetLookupsByCategoryAsync("TimeZone");
+        var result = await _lookupService.GetTimeZonesAsync("DEFAULT");
         return Ok(result);
     }
 
@@ -92,7 +94,8 @@ public class LookupsController : ControllerBase
         }
 
         _logger.LogInformation("Retrieving lookups for category: {CategoryKey}", categoryKey);
-        var result = await _lookupService.GetLookupsByCategoryAsync(categoryKey);
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
+        var result = await _lookupService.GetByCategoryAsync(categoryKey, tenantId);
 
         if (result == null || !result.Any())
         {
@@ -130,7 +133,21 @@ public class LookupsController : ControllerBase
 
         _logger.LogInformation("Creating lookup: {Category} - {Code}", request.Category, request.Code);
 
-        var result = await _lookupService.CreateLookupAsync(request);
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
+        var userId = User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub) ?? "system";
+
+        var lookup = new LookupDto
+        {
+            LookupId = Guid.NewGuid(),
+            CategoryKey = request.Category,
+            Key = request.Code,
+            Value = request.Code,
+            DisplayName = request.DisplayValue,
+            SortOrder = request.DisplayOrder ?? 0,
+            TenantId = tenantId,
+            CreatedBy = userId
+        };
+        var result = await _lookupService.UpsertAsync(lookup);
         return CreatedAtAction(nameof(GetByCategory), new { categoryKey = request.Category }, result);
     }
 
@@ -170,7 +187,22 @@ public class LookupsController : ControllerBase
 
         _logger.LogInformation("Updating lookup with ID: {Id}", id);
 
-        var result = await _lookupService.UpdateLookupAsync(id, request);
+        var userId = User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub) ?? "system";
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
+
+        var lookup = new LookupDto
+        {
+            LookupId = id,
+            CategoryKey = "",
+            Key = "",
+            Value = "",
+            DisplayName = request.DisplayValue,
+            SortOrder = request.DisplayOrder ?? 0,
+            TenantId = tenantId,
+            UpdatedAt = DateTime.UtcNow,
+            UpdatedBy = userId
+        };
+        var result = await _lookupService.UpsertAsync(lookup);
 
         if (result == null)
         {
@@ -209,7 +241,7 @@ public class LookupsController : ControllerBase
 
         _logger.LogInformation("Deleting lookup with ID: {Id}", id);
 
-        var result = await _lookupService.DeleteLookupAsync(id);
+        var result = await _lookupService.DeleteAsync(id);
 
         if (!result)
         {

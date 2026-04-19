@@ -1,5 +1,5 @@
-using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
+using SmartWorkz.StarterKitMVC.Application.Repositories;
 
 namespace SmartWorkz.StarterKitMVC.Application.Services;
 

@@ -1,5 +1,5 @@
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
-
+using SmartWorkz.StarterKitMVC.Application.Repositories;
 namespace SmartWorkz.StarterKitMVC.Application.Services;
 
 /// <summary>
@@ -33,4 +33,3 @@ public interface IAuditService
     /// </summary>
     Task<IEnumerable<AuditLogDto>> GetByActionAsync(string action, string tenantId);
 }
-

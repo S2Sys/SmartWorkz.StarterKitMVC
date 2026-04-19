@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartWorkz.StarterKitMVC.Application.Services;
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
+using SmartWorkz.StarterKitMVC.Shared.Extensions;
 using SmartWorkz.StarterKitMVC.Shared.Primitives;
 using SmartWorkz.StarterKitMVC.Web.Middleware;
 using System.Security.Claims;
@@ -59,7 +60,8 @@ public class UsersController : ControllerBase
         }
 
         _logger.LogInformation("Retrieving user profile: {Id}", id);
-        var result = await _userService.GetUserByIdAsync(id);
+        var tenantId = User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub) ?? "DEFAULT";
+        var result = await _userService.GetByIdAsync(id, tenantId);
 
         if (result == null)
         {
@@ -93,7 +95,7 @@ public class UsersController : ControllerBase
         }
 
         _logger.LogInformation("Retrieving profile for user: {UserId}", userId);
-        var result = await _userService.GetUserByIdAsync(userId);
+        var result = await _userService.GetByIdAsync(userId, "DEFAULT");
 
         if (result == null)
         {
@@ -142,9 +144,9 @@ public class UsersController : ControllerBase
 
         _logger.LogInformation("Updating user: {Id}", id);
 
-        var result = await _userService.UpdateUserAsync(id, request);
-
-        if (result == null)
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
+        var existingUser = await _userService.GetByIdAsync(id, tenantId);
+        if (existingUser == null)
         {
             _logger.LogWarning("User not found for update: {Id}", id);
             return NotFound(ProblemDetailsResponse.NotFound(
@@ -152,7 +154,28 @@ public class UsersController : ControllerBase
                 Request.Path));
         }
 
-        return Ok(result);
+        var updatedUser = new UserProfileDto(
+            existingUser.UserId,
+            existingUser.Email,
+            existingUser.Username,
+            request.DisplayName ?? existingUser.DisplayName,
+            request.AvatarUrl ?? existingUser.AvatarUrl,
+            existingUser.TenantId,
+            existingUser.EmailConfirmed,
+            existingUser.TwoFactorEnabled);
+
+        var (success, user, error) = await _userService.UpdateAsync(updatedUser);
+
+        if (!success || user == null)
+        {
+            _logger.LogWarning("User update failed for: {Id}: {Error}", id, error);
+            return BadRequest(ProblemDetailsResponse.ValidationError(
+                error ?? "Failed to update user",
+                new Dictionary<string, string[]> { ["user"] = new[] { error ?? "Update failed" } },
+                Request.Path));
+        }
+
+        return Ok(user);
     }
 
     /// <summary>
@@ -204,14 +227,14 @@ public class UsersController : ControllerBase
 
         _logger.LogInformation("Changing password for user: {Id}", id);
 
-        var result = await _userService.ChangePasswordAsync(id, request);
+        var (success, error) = await _userService.ChangePasswordAsync(id, request.CurrentPassword, request.NewPassword);
 
-        if (!result)
+        if (!success)
         {
-            _logger.LogWarning("Password change failed for user: {Id}", id);
+            _logger.LogWarning("Password change failed for user: {Id}: {Error}", id, error);
             return BadRequest(ProblemDetailsResponse.ValidationError(
-                "Password change failed. Verify your current password is correct.",
-                new Dictionary<string, string[]> { ["currentPassword"] = new[] { "Invalid current password" } },
+                error ?? "Password change failed. Verify your current password is correct.",
+                new Dictionary<string, string[]> { ["currentPassword"] = new[] { error ?? "Invalid current password" } },
                 Request.Path));
         }
 
@@ -253,17 +276,18 @@ public class UsersController : ControllerBase
 
         _logger.LogInformation("Enabling 2FA for user: {Id}", id);
 
-        var result = await _userService.Enable2FAAsync(id);
+        var (success, secret, error) = await _userService.EnableTwoFactorAsync(id);
 
-        if (result == null)
+        if (!success)
         {
-            _logger.LogWarning("User not found for 2FA setup: {Id}", id);
-            return NotFound(ProblemDetailsResponse.NotFound(
-                $"User with ID {id} not found",
+            _logger.LogWarning("2FA setup failed for user: {Id}: {Error}", id, error);
+            return BadRequest(ProblemDetailsResponse.ValidationError(
+                error ?? "Failed to enable 2FA",
+                new Dictionary<string, string[]> { ["2fa"] = new[] { error ?? "Setup failed" } },
                 Request.Path));
         }
 
-        return Ok(result);
+        return Ok(new { message = "2FA enabled successfully", secret });
     }
 
     /// <summary>
@@ -292,7 +316,7 @@ public class UsersController : ControllerBase
 
         _logger.LogInformation("Deleting user: {Id}", id);
 
-        var result = await _userService.DeleteUserAsync(id);
+        var result = await _userService.DeleteAsync(id);
 
         if (!result)
         {

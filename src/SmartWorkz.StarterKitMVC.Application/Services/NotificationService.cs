@@ -35,12 +35,13 @@ public class NotificationService : INotificationService
         {
             var notification = new NotificationDto
             {
+                NotificationId = Guid.NewGuid(),
                 UserId = request.UserId,
                 TenantId = request.TenantId,
                 Title = request.Title,
                 Message = request.Message,
                 ActionUrl = request.ActionUrl,
-                NotificationType = request.Type.ToString(),
+                NotificationType = request.Type,
                 IsRead = false,
                 CreatedAt = DateTime.UtcNow,
                 ExpiresAt = DateTime.UtcNow.AddDays(30)
@@ -100,9 +101,15 @@ public class NotificationService : INotificationService
 
         try
         {
-            var (notifications, total) = await _repository.GetPagedAsync(userId, tenantId, page, pageSize);
-            _logger.LogDebug("Retrieved {Count} notifications for user {UserId}", notifications.Count(), userId);
-            return (notifications.OrderByDescending(n => n.CreatedAt), total);
+            var allNotifications = await _repository.GetByUserAsync(userId, tenantId);
+            var paginatedNotifications = allNotifications
+                .OrderByDescending(n => n.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
+            var total = allNotifications.Count();
+
+            _logger.LogDebug("Retrieved {Count} notifications for user {UserId}", paginatedNotifications.Count(), userId);
+            return (paginatedNotifications, total);
         }
         catch (Exception ex)
         {
@@ -114,9 +121,9 @@ public class NotificationService : INotificationService
     }
 
     /// <inheritdoc />
-    public async Task<bool> MarkAsReadAsync(int notificationId)
+    public async Task<bool> MarkAsReadAsync(Guid notificationId)
     {
-        if (notificationId <= 0)
+        if (notificationId == Guid.Empty)
             throw new ArgumentException("Notification ID must be valid", nameof(notificationId));
 
         try
@@ -128,7 +135,7 @@ public class NotificationService : INotificationService
             notification.IsRead = true;
             notification.ReadAt = DateTime.UtcNow;
 
-            await _repository.UpdateAsync(notification);
+            await _repository.UpsertAsync(notification);
 
             _logger.LogDebug("Notification marked as read: {NotificationId}", notificationId);
 
@@ -157,7 +164,7 @@ public class NotificationService : INotificationService
             {
                 notification.IsRead = true;
                 notification.ReadAt = DateTime.UtcNow;
-                await _repository.UpdateAsync(notification);
+                await _repository.UpsertAsync(notification);
             }
 
             _logger.LogInformation(
@@ -200,9 +207,9 @@ public class NotificationService : INotificationService
     }
 
     /// <inheritdoc />
-    public async Task<bool> DeleteAsync(int notificationId)
+    public async Task<bool> DeleteAsync(Guid notificationId)
     {
-        if (notificationId <= 0)
+        if (notificationId == Guid.Empty)
             throw new ArgumentException("Notification ID must be valid", nameof(notificationId));
 
         try
@@ -228,7 +235,12 @@ public class NotificationService : INotificationService
 
         try
         {
-            await _repository.DeleteAllAsync(userId, tenantId);
+            var notifications = await _repository.FindAsync(new { UserId = userId, TenantId = tenantId });
+            foreach (var notification in notifications)
+            {
+                await _repository.DeleteAsync(notification.NotificationId);
+            }
+
             _logger.LogInformation("All notifications deleted for user {UserId}", userId);
             return true;
         }

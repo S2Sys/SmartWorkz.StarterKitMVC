@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Application.Services;
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
+using SmartWorkz.StarterKitMVC.Shared.Extensions;
 using SmartWorkz.StarterKitMVC.Shared.Primitives;
 using SmartWorkz.StarterKitMVC.Web.Middleware;
+using System.Security.Claims;
 
 namespace SmartWorkz.StarterKitMVC.Web.Controllers.Api;
 
@@ -36,8 +39,9 @@ public class RolesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
     {
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Retrieving all roles");
-        var result = await _roleService.GetAllRolesAsync();
+        var result = await _roleService.GetAllAsync(tenantId);
         return Ok(result);
     }
 
@@ -63,8 +67,9 @@ public class RolesController : ControllerBase
                 Request.Path));
         }
 
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Retrieving role: {Id}", id);
-        var result = await _roleService.GetRoleByIdAsync(id);
+        var result = await _roleService.GetByIdAsync(id, tenantId);
 
         if (result == null)
         {
@@ -109,10 +114,21 @@ public class RolesController : ControllerBase
                 Request.Path));
         }
 
+        var userId = User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub) ?? "system";
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Creating role: {Name}", request.Name);
 
-        var result = await _roleService.CreateRoleAsync(request);
-        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+        var role = new RoleDto
+        {
+            RoleId = Guid.NewGuid(),
+            Name = request.Name,
+            DisplayName = request.Name,
+            Description = request.Description,
+            TenantId = tenantId,
+            CreatedBy = userId
+        };
+        var result = await _roleService.CreateAsync(role);
+        return CreatedAtAction(nameof(GetById), new { id = result.RoleId.ToString() }, result);
     }
 
     /// <summary>
@@ -148,9 +164,19 @@ public class RolesController : ControllerBase
                 Request.Path));
         }
 
+        var userId = User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub) ?? "system";
         _logger.LogInformation("Updating role: {Id}", id);
 
-        var result = await _roleService.UpdateRoleAsync(id, request);
+        var role = new RoleDto
+        {
+            RoleId = Guid.Parse(id),
+            Name = request.Name,
+            DisplayName = request.Name,
+            Description = request.Description,
+            UpdatedBy = userId,
+            UpdatedAt = DateTime.UtcNow
+        };
+        var result = await _roleService.UpdateAsync(role);
 
         if (result == null)
         {
@@ -188,7 +214,7 @@ public class RolesController : ControllerBase
 
         _logger.LogInformation("Deleting role: {Id}", id);
 
-        var result = await _roleService.DeleteRoleAsync(id);
+        var result = await _roleService.DeleteAsync(id);
 
         if (!result)
         {
@@ -234,9 +260,10 @@ public class RolesController : ControllerBase
                 Request.Path));
         }
 
+        var tenantId = User.GetTenantId() ?? "DEFAULT";
         _logger.LogInformation("Assigning permissions to role: {Id}", id);
 
-        var result = await _roleService.AssignPermissionsAsync(id, request.PermissionIds);
+        var result = await _roleService.AssignPermissionsAsync(id, request.PermissionIds, tenantId);
 
         if (result == null)
         {
@@ -269,15 +296,3 @@ public record UpdateRoleRequest(
 /// </summary>
 public record AssignPermissionsRequest(List<string> PermissionIds);
 
-/// <summary>
-/// Response model for role information.
-/// </summary>
-public record RoleDto(
-    string Id,
-    string Name,
-    string? Description = null)
-{
-    public List<string> Permissions { get; init; } = new();
-    public DateTime CreatedAt { get; init; }
-    public DateTime? UpdatedAt { get; init; }
-}

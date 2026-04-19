@@ -1,4 +1,5 @@
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
+using SmartWorkz.StarterKitMVC.Application.Repositories;
 
 namespace SmartWorkz.StarterKitMVC.Application.Services;
 
@@ -52,11 +53,10 @@ public interface IRoleService
     /// <summary>
     /// Gets all permissions assigned to a role.
     /// </summary>
-    Task<IEnumerable<PermissionDto>> GetPermissionsAsync(string roleId, string tenantId);
+    Task<IEnumerable<PermissionDto>> GetPermissionsAsync(string roleId);
 
     /// <summary>
     /// Removes a permission from a role.
     /// </summary>
-    Task<bool> RemovePermissionAsync(string roleId, string permissionId, string tenantId);
+    Task<bool> RemovePermissionAsync(string roleId, string permissionId);
 }
-

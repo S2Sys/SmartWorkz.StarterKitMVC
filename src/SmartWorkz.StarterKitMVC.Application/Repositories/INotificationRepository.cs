@@ -1,4 +1,5 @@
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
+
 namespace SmartWorkz.StarterKitMVC.Application.Repositories;
 
 /// <summary>
@@ -23,17 +24,4 @@ public interface INotificationRepository : IDapperRepository<NotificationDto>
 
     /// <summary>Delete old notifications (cleanup)</summary>
     Task DeleteOlderThanAsync(DateTime beforeDate, string tenantId);
-
-    /// <summary>Create a notification</summary>
-    Task CreateAsync(NotificationDto notification);
-
-    /// <summary>Update a notification</summary>
-    Task UpdateAsync(NotificationDto notification);
-
-    /// <summary>Delete all notifications for a user</summary>
-    Task DeleteAllAsync(string userId, string tenantId);
-
-    /// <summary>Get paginated notifications with filtering</summary>
-    Task<(IEnumerable<NotificationDto> Items, int Total)> GetPagedAsync(string userId, string tenantId, int pageNumber, int pageSize);
 }
-

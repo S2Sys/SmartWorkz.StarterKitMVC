@@ -22,7 +22,9 @@ public class ReportDbContext : DbContext
 
         // Report Configuration
         modelBuilder.Entity<Report>()
-            .HasKey(r => r.ReportId);
+            .HasKey(r => r.Id);
+        modelBuilder.Entity<Report>()
+            .Property(r => r.Id).HasColumnName("ReportId");
 
         modelBuilder.Entity<Report>()
             .HasMany(r => r.ReportSchedules)
@@ -42,7 +44,9 @@ public class ReportDbContext : DbContext
 
         // ReportSchedule Configuration
         modelBuilder.Entity<ReportSchedule>()
-            .HasKey(rs => rs.ReportScheduleId);
+            .HasKey(rs => rs.Id);
+        modelBuilder.Entity<ReportSchedule>()
+            .Property(rs => rs.Id).HasColumnName("ReportScheduleId");
 
         modelBuilder.Entity<ReportSchedule>()
             .HasIndex(rs => new { rs.TenantId, rs.IsActive });
@@ -52,7 +56,9 @@ public class ReportDbContext : DbContext
 
         // ReportData Configuration
         modelBuilder.Entity<ReportData>()
-            .HasKey(rd => rd.ReportDataId);
+            .HasKey(rd => rd.Id);
+        modelBuilder.Entity<ReportData>()
+            .Property(rd => rd.Id).HasColumnName("ReportDataId");
 
         modelBuilder.Entity<ReportData>()
             .HasIndex(rd => new { rd.TenantId, rd.ReportId });

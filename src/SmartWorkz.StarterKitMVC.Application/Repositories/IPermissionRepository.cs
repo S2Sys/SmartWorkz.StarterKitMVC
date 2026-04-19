@@ -1,4 +1,5 @@
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
+
 namespace SmartWorkz.StarterKitMVC.Application.Repositories;
 
 /// <summary>
@@ -23,11 +24,4 @@ public interface IPermissionRepository : IDapperRepository<PermissionDto>
 
     /// <summary>Check if role has a specific permission</summary>
     Task<bool> RoleHasPermissionAsync(Guid roleId, string permissionName, string tenantId);
-
-    /// <summary>Assign a permission to a role</summary>
-    Task AssignToRoleAsync(object roleId, object permissionId);
-
-    /// <summary>Remove a permission from a role</summary>
-    Task<bool> RemoveRolePermissionAsync(object roleId, object permissionId);
 }
-

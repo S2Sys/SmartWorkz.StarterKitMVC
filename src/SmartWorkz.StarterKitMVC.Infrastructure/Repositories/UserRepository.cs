@@ -19,21 +19,21 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task<User?> GetByEmailAsync(string email, string tenantId)
     {
         return await QuerySingleSpAsync<User>(
-            "[Auth].[spGetUser]",
+            "Auth.sp_GetUserByEmail",
             new { Email = email, TenantId = tenantId });
     }
 
     public async Task<User?> GetByIdAsync(string userId)
     {
         return await QuerySingleSpAsync<User>(
-            "[Auth].[spGetUser]",
+            "Auth.sp_GetUserById",
             new { UserId = userId });
     }
 
     public async Task<List<string>> GetUserRolesAsync(string userId, string tenantId)
     {
         var roles = await QuerySpAsync<string>(
-            "[Auth].[spGetUserRole]",
+            "Auth.sp_GetUserRoles",
             new { UserId = userId, TenantId = tenantId });
         return roles.ToList();
     }
@@ -41,7 +41,7 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task<List<string>> GetUserPermissionsAsync(string userId, string tenantId)
     {
         var permissions = await QuerySpAsync<string>(
-            "[Auth].[spGetUserPermission]",
+            "Auth.sp_GetUserPermissions",
             new { UserId = userId, TenantId = tenantId });
         return permissions.ToList();
     }
@@ -49,7 +49,7 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task<bool> UserExistsAsync(string email, string tenantId)
     {
         var count = await QuerySingleSpAsync<int?>(
-            "[Auth].[spUserExists]",
+            "Auth.sp_UserExists",
             new { Email = email, TenantId = tenantId });
         return (count ?? 0) > 0;
     }
@@ -59,18 +59,15 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task UpsertUserAsync(User user)
     {
         await ExecuteSpAsync(
-            "[Auth].[spUpsertUser]",
+            "Auth.sp_UpsertUser",
             new
             {
                 user.UserId,
                 UserName      = user.Username,
-                NormalizedUserName = user.NormalizedUsername,
                 user.Email,
-                NormalizedEmail = user.NormalizedEmail,
                 user.PasswordHash,
                 user.DisplayName,
                 user.PhoneNumber,
-                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
                 user.AvatarUrl,
                 user.Locale,
                 TenantId      = user.TenantId,
@@ -78,12 +75,11 @@ public class UserRepository : CachedDapperRepository, IUserRepository
                 user.EmailConfirmed,
                 user.TwoFactorEnabled,
                 user.LockoutEnabled,
-                user.LockoutEnd,
                 user.AccessFailedCount,
-                SecurityStamp = user.SecurityStamp,
-                ConcurrencyStamp = user.ConcurrencyStamp,
                 UpdatedAt     = user.UpdatedAt ?? DateTime.UtcNow,
-                user.UpdatedBy
+                user.UpdatedBy,
+                Roles         = (string?)null,   // don't touch roles
+                Permissions   = (string?)null    // don't touch permissions
             });
     }
 
@@ -97,13 +93,10 @@ public class UserRepository : CachedDapperRepository, IUserRepository
         var p = new DynamicParameters();
         p.Add("UserId",            user.UserId);
         p.Add("UserName",          user.Username);
-        p.Add("NormalizedUserName", user.NormalizedUsername);
         p.Add("Email",             user.Email);
-        p.Add("NormalizedEmail",   user.NormalizedEmail);
         p.Add("PasswordHash",      user.PasswordHash);
         p.Add("DisplayName",       user.DisplayName);
         p.Add("PhoneNumber",       user.PhoneNumber);
-        p.Add("PhoneNumberConfirmed", user.PhoneNumberConfirmed);
         p.Add("AvatarUrl",         user.AvatarUrl);
         p.Add("Locale",            user.Locale);
         p.Add("TenantId",          user.TenantId);
@@ -111,16 +104,13 @@ public class UserRepository : CachedDapperRepository, IUserRepository
         p.Add("EmailConfirmed",    user.EmailConfirmed);
         p.Add("TwoFactorEnabled",  user.TwoFactorEnabled);
         p.Add("LockoutEnabled",    user.LockoutEnabled);
-        p.Add("LockoutEnd",        user.LockoutEnd);
         p.Add("AccessFailedCount", user.AccessFailedCount);
-        p.Add("SecurityStamp",     user.SecurityStamp);
-        p.Add("ConcurrencyStamp",  user.ConcurrencyStamp);
         p.Add("UpdatedAt",         user.UpdatedAt ?? DateTime.UtcNow);
         p.Add("UpdatedBy",         user.UpdatedBy);
         p.Add("Roles",        rolesTvp, DbType.Object);
         p.Add("Permissions",  permsTvp, DbType.Object);
 
-        await ExecuteSpAsync("[Auth].[spUpsertUser]", p);
+        await ExecuteSpAsync("Auth.sp_UpsertUser", p);
     }
 
     // ── Paged search ─────────────────────────────────────────────────────────
@@ -197,48 +187,29 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task<RefreshToken?> GetRefreshTokenAsync(string token, string tenantId)
     {
         return await QuerySingleSpAsync<RefreshToken>(
-            "[Auth].[spGetAuthToken]",
-            new { Token = token, TokenType = "RefreshToken", TenantId = tenantId });
+            "Auth.sp_GetRefreshToken",
+            new { Token = token, TenantId = tenantId });
     }
 
     public async Task CreateRefreshTokenAsync(RefreshToken refreshToken)
     {
         await ExecuteSpAsync(
-            "[Auth].[spUpsertAuthToken]",
+            "Auth.sp_CreateRefreshToken",
             new
             {
-                AuthTokenId = 0,
                 refreshToken.UserId,
                 refreshToken.Token,
-                TokenType = "RefreshToken",
-                TokenSubType = (string?)null,
                 refreshToken.ExpiresAt,
-                UsedAt = (DateTime?)null,
-                VerifiedAt = (DateTime?)null,
-                RevokedAt = (DateTime?)null,
-                Attempts = 0,
-                refreshToken.TenantId
+                refreshToken.TenantId,
+                refreshToken.CreatedAt
             });
     }
 
     public async Task RevokeRefreshTokenAsync(string userId, string refreshToken)
     {
         await ExecuteSpAsync(
-            "[Auth].[spUpsertAuthToken]",
-            new
-            {
-                AuthTokenId = 0,
-                UserId = userId,
-                Token = refreshToken,
-                TokenType = "RefreshToken",
-                TokenSubType = (string?)null,
-                ExpiresAt = DateTime.UtcNow,
-                UsedAt = (DateTime?)null,
-                VerifiedAt = (DateTime?)null,
-                RevokedAt = DateTime.UtcNow,
-                Attempts = 0,
-                TenantId = (string?)null
-            });
+            "Auth.sp_RevokeRefreshToken",
+            new { UserId = userId, Token = refreshToken });
     }
 
     // ── Password reset ───────────────────────────────────────────────────────
@@ -246,62 +217,36 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task<PasswordResetToken?> GetPasswordResetTokenAsync(string userId, string token, string tenantId)
     {
         return await QuerySingleSpAsync<PasswordResetToken>(
-            "[Auth].[spGetAuthToken]",
-            new { UserId = userId, Token = token, TokenType = "PasswordReset", TenantId = tenantId });
+            "Auth.sp_GetPasswordResetToken",
+            new { UserId = userId, Token = token, TenantId = tenantId });
     }
 
     public async Task CreatePasswordResetTokenAsync(PasswordResetToken resetToken)
     {
         await ExecuteSpAsync(
-            "[Auth].[spUpsertAuthToken]",
+            "Auth.sp_CreatePasswordResetToken",
             new
             {
-                AuthTokenId = 0,
                 resetToken.UserId,
                 resetToken.Token,
-                TokenType = "PasswordReset",
-                TokenSubType = (string?)null,
                 resetToken.ExpiresAt,
-                UsedAt = (DateTime?)null,
-                VerifiedAt = (DateTime?)null,
-                RevokedAt = (DateTime?)null,
-                Attempts = 0,
-                resetToken.TenantId
+                resetToken.TenantId,
+                resetToken.CreatedAt
             });
     }
 
     public async Task UsePasswordResetTokenAsync(int passwordResetTokenId)
     {
         await ExecuteSpAsync(
-            "[Auth].[spUpsertAuthToken]",
-            new
-            {
-                AuthTokenId = passwordResetTokenId,
-                UserId = (string?)null,
-                Token = (string?)null,
-                TokenType = (string?)null,
-                TokenSubType = (string?)null,
-                ExpiresAt = DateTime.UtcNow,
-                UsedAt = DateTime.UtcNow,
-                VerifiedAt = (DateTime?)null,
-                RevokedAt = (DateTime?)null,
-                Attempts = 0,
-                TenantId = (string?)null
-            });
+            "Auth.sp_UpdatePasswordResetToken",
+            new { PasswordResetTokenId = passwordResetTokenId, UsedAt = DateTime.UtcNow });
     }
 
     public async Task InvalidatePreviousPasswordResetTokensAsync(string userId)
     {
-        var sql = """
-            UPDATE Auth.AuthTokens
-            SET RevokedAt = @RevokedAt, UpdatedAt = GETUTCDATE()
-            WHERE UserId = @UserId
-              AND TokenType = 'PasswordReset'
-              AND IsDeleted = 0
-              AND ExpiresAt > GETUTCDATE()
-            """;
-
-        await Connection.ExecuteAsync(sql, new { UserId = userId, RevokedAt = DateTime.UtcNow });
+        await ExecuteSpAsync(
+            "Auth.sp_InvalidatePreviousPasswordResetTokens",
+            new { UserId = userId });
     }
 
     // ── Email verification ───────────────────────────────────────────────────
@@ -309,47 +254,29 @@ public class UserRepository : CachedDapperRepository, IUserRepository
     public async Task<EmailVerificationToken?> GetEmailVerificationTokenAsync(string userId, string token, string tenantId)
     {
         return await QuerySingleSpAsync<EmailVerificationToken>(
-            "[Auth].[spGetAuthToken]",
-            new { UserId = userId, Token = token, TokenType = "EmailVerification", TenantId = tenantId });
+            "Auth.sp_GetEmailVerificationToken",
+            new { UserId = userId, Token = token, TenantId = tenantId });
     }
 
     public async Task CreateEmailVerificationTokenAsync(EmailVerificationToken verificationToken)
     {
         await ExecuteSpAsync(
-            "[Auth].[spUpsertAuthToken]",
+            "Auth.sp_CreateEmailVerificationToken",
             new
             {
-                AuthTokenId = 0,
                 verificationToken.UserId,
+                verificationToken.Email,
                 verificationToken.Token,
-                TokenType = "EmailVerification",
-                TokenSubType = verificationToken.Email,
                 verificationToken.ExpiresAt,
-                UsedAt = (DateTime?)null,
-                VerifiedAt = (DateTime?)null,
-                RevokedAt = (DateTime?)null,
-                Attempts = 0,
-                verificationToken.TenantId
+                verificationToken.TenantId,
+                verificationToken.CreatedAt
             });
     }
 
     public async Task UseEmailVerificationTokenAsync(int emailVerificationTokenId)
     {
         await ExecuteSpAsync(
-            "[Auth].[spUpsertAuthToken]",
-            new
-            {
-                AuthTokenId = emailVerificationTokenId,
-                UserId = (string?)null,
-                Token = (string?)null,
-                TokenType = (string?)null,
-                TokenSubType = (string?)null,
-                ExpiresAt = DateTime.UtcNow,
-                UsedAt = (DateTime?)null,
-                VerifiedAt = DateTime.UtcNow,
-                RevokedAt = (DateTime?)null,
-                Attempts = 0,
-                TenantId = (string?)null
-            });
+            "Auth.sp_UpdateEmailVerificationToken",
+            new { EmailVerificationTokenId = emailVerificationTokenId, VerifiedAt = DateTime.UtcNow });
     }
 }

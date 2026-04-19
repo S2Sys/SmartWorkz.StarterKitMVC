@@ -1,9 +1,9 @@
-using SmartWorkz.StarterKitMVC.Shared.DTOs;
 using System.Data;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Infrastructure.Data;
+using SmartWorkz.StarterKitMVC.Shared.DTOs;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
 
