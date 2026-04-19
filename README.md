@@ -18,6 +18,10 @@ Latest: **v4.1.0** (2026-04-02) — Demo pages & comprehensive wiki documentatio
   - [03 — Base Page Pattern](docs/wiki/03-base-page-pattern.md) — BasePage, TenantId, T() method, toast helpers
   - [04 — Result Pattern](docs/wiki/04-result-pattern.md) — Result/Result<T> for explicit success/failure
   - [05 — HTMX List Pattern](docs/wiki/05-htmx-list-pattern.md) — Dynamic search/filter/pagination with HTMX
+  - [10 — Dapper Repository](docs/wiki/10-dapper-repository.md) — `CachedDapperRepository`, SP helpers, provider swap (SQL Server / Oracle / Postgres)
+  - [11 — EF Core Repository](docs/wiki/11-ef-core-repository.md) — Generic `IRepository<T>`, when to pick it over Dapper
+  - [12 — Hybrid Cache](docs/wiki/12-hybrid-cache.md) — `ICacheService` L1+L2, tenant-namespaced keys, Redis/SQL fallback
+  - [13 — Email Templates](docs/wiki/13-email-templates.md) — `EmailTemplateService` + `TemplatedEmailSender`, SQL vs JSON storage
 
 ### 🏗️ Architecture & Design
 - **📋 Schema Design:** [`docs/srs/SCHEMA-REVIEW-v2.md`](docs/srs/SCHEMA-REVIEW-v2.md) — 42 LEAN tables across 5 schemas
