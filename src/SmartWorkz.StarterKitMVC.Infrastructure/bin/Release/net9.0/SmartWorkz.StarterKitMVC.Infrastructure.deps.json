@@ -464,7 +464,8 @@
       "SmartWorkz.StarterKitMVC.Application/1.0.0": {
         "dependencies": {
           "SmartWorkz.StarterKitMVC.Domain": "1.0.0",
-          "SmartWorkz.StarterKitMVC.Shared": "1.0.0"
+          "SmartWorkz.StarterKitMVC.Shared": "1.0.0",
+          "System.IdentityModel.Tokens.Jwt": "8.4.0"
         },
         "runtime": {
           "SmartWorkz.StarterKitMVC.Application.dll": {
