@@ -1,0 +1,55 @@
+@page
+@model DocModel
+@{
+    ViewData["Title"] = Model.Document?.Title ?? "Documentation";
+}
+
+@if (Model.Document == null)
+{
+    <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle"></i>
+        <strong>Document not found</strong>
+        <p class="mb-0 mt-2">The requested documentation page could not be found. Try browsing using the navigation sidebar.</p>
+    </div>
+}
+else
+{
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active">@Model.Document.Category</li>
+            <li class="breadcrumb-item active">@Model.Document.Title</li>
+        </ol>
+    </nav>
+
+    <article class="wiki-article">
+        @Html.Raw(Model.HtmlContent)
+    </article>
+
+    <hr class="my-5" />
+
+    <div class="row mt-4 pt-4 border-top">
+        <div class="col-md-6">
+            @if (Model.PreviousDocument != null)
+            {
+                <div>
+                    <small class="text-muted">← Previous</small><br />
+                    <a href="/doc?slug=@Model.PreviousDocument.Slug" class="text-decoration-none">
+                        @Model.PreviousDocument.Title
+                    </a>
+                </div>
+            }
+        </div>
+        <div class="col-md-6 text-end">
+            @if (Model.NextDocument != null)
+            {
+                <div>
+                    <small class="text-muted">Next →</small><br />
+                    <a href="/doc?slug=@Model.NextDocument.Slug" class="text-decoration-none">
+                        @Model.NextDocument.Title
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+}

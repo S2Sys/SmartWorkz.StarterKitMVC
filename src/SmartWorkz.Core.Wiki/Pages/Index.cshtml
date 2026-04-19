@@ -1,0 +1,48 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "SmartWorkz Core Documentation";
+}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto mb-4">
+        <h1 class="display-5 mb-3">SmartWorkz Core Documentation</h1>
+        <p class="lead text-muted">
+            Complete reference for building applications with SmartWorkz.Core infrastructure.
+            Covers grid components, caching, multi-tenancy, feature flags, event bus, and much more.
+        </p>
+    </div>
+</div>
+
+<div class="row g-3">
+    @foreach (var category in Model.Categories)
+    {
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-light">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-folder text-primary"></i>
+                        @category.Name
+                    </h5>
+                    <p class="card-text text-muted small">
+                        @category.Documents.Count document@(category.Documents.Count != 1 ? "s" : "")
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent border-top">
+                    <a href="/doc?slug=@category.Documents.First().Slug" class="btn btn-sm btn-primary">
+                        Read More <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="row mt-5">
+    <div class="col-lg-8 mx-auto">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            <strong>Need help?</strong> Use the navigation sidebar on the left to browse all documentation categories.
+        </div>
+    </div>
+</div>
