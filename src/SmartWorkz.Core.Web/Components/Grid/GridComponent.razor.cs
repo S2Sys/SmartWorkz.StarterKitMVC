@@ -1,27 +1,17 @@
 using Microsoft.AspNetCore.Components;
 using SmartWorkz.Core.Shared.Grid;
+using SmartWorkz.Core.Web.Components.DataContext;
+using SmartWorkz.Core.Web.Services.Grid;
 
 namespace SmartWorkz.Core.Web.Components.Grid;
 
 public partial class GridComponent<T> : ComponentBase, IAsyncDisposable where T : class
 {
     [Parameter]
-    public IEnumerable<T> DataSource { get; set; } = [];
+    public IDataContext<T>? DataContext { get; set; }
 
     [Parameter]
     public List<GridColumn> Columns { get; set; } = [];
-
-    [Parameter]
-    public int PageSize { get; set; } = 20;
-
-    [Parameter]
-    public bool AllowRowSelection { get; set; }
-
-    [Parameter]
-    public bool AllowExport { get; set; }
-
-    [Parameter]
-    public bool AllowColumnVisibilityToggle { get; set; }
 
     [Parameter]
     public string? CustomCssClass { get; set; }
@@ -29,102 +19,66 @@ public partial class GridComponent<T> : ComponentBase, IAsyncDisposable where T 
     [Parameter]
     public RenderFragment<T>? RowTemplate { get; set; }
 
-    [Parameter]
-    public EventCallback<GridStateChangedArgs> OnStateChanged { get; set; }
-
-    protected GridStateManager StateManager { get; private set; } = new();
-    protected GridResponse<T>? CurrentResponse { get; private set; }
-    protected List<T> CurrentPageData { get; private set; } = [];
     protected List<GridColumn> VisibleColumns => Columns.Where(c => c.IsVisible).ToList();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        StateManager.OnStateChanged += OnGridStateChanged;
-        StateManager.UpdatePagination(1, PageSize);
-        await LoadData();
-    }
-
-    protected async Task LoadData()
-    {
-        StateManager.SetLoading(true);
-        StateManager.ClearError();
-
-        try
+        if (DataContext != null)
         {
-            // In-memory data source: apply filtering/sorting locally
-            var provider = new GridDataProvider(new HttpClient());
-            var gridRequest = StateManager.CurrentRequest;
-            var pagedResult = GridDataProvider.ApplyGridLogic(DataSource, gridRequest);
-
-            CurrentResponse = new GridResponse<T>
-            {
-                Data = pagedResult,
-                Columns = Columns
-            };
-
-            CurrentPageData = CurrentResponse.Data.Items.ToList();
+            DataContext.OnStateChanged += StateHasChanged;
         }
-        catch (Exception ex)
-        {
-            StateManager.SetError(ex.Message);
-        }
-        finally
-        {
-            StateManager.SetLoading(false);
-        }
-
-        await InvokeAsync(StateHasChanged);
     }
 
     protected async Task OnSortClick(string propertyName)
     {
+        if (DataContext == null)
+            return;
+
         var column = Columns.FirstOrDefault(c => c.PropertyName == propertyName);
         if (column?.IsSortable != true)
             return;
 
-        // Toggle sort direction if already sorted by this column
-        var isCurrentSort = StateManager.CurrentRequest.SortBy == propertyName;
-        var newDescending = isCurrentSort ? !StateManager.CurrentRequest.SortDescending : false;
+        var isCurrentSort = DataContext.CurrentRequest.SortBy == propertyName;
+        var newDescending = isCurrentSort ? !DataContext.CurrentRequest.SortDescending : false;
 
-        StateManager.UpdateSort(propertyName, newDescending);
-        StateManager.UpdatePagination(1, PageSize);
-        await LoadData();
+        await DataContext.UpdateSort(propertyName, newDescending);
     }
 
     protected async Task OnPageChange(int pageNumber)
     {
-        StateManager.UpdatePagination(pageNumber, PageSize);
-        await LoadData();
+        if (DataContext != null)
+        {
+            await DataContext.UpdatePagination(pageNumber, DataContext.CurrentRequest.PageSize);
+        }
     }
 
     protected void OnRowSelect(object rowId, bool isChecked)
     {
-        StateManager.ToggleRowSelection(rowId);
+        if (DataContext != null)
+        {
+            DataContext.ToggleRowSelection(rowId);
+        }
     }
 
     protected async Task SelectAllRows(ChangeEventArgs e)
     {
-        var isChecked = (bool?)e.Value ?? false;
-        var allRowIds = CurrentPageData.Select(GetRowId).ToList();
-
-        if (isChecked)
-            StateManager.SetSelectedRows(allRowIds);
-        else
-            StateManager.SetSelectedRows([]);
-
+        if (DataContext != null)
+        {
+            var isChecked = (bool?)e.Value ?? false;
+            DataContext.ToggleSelectAll(isChecked);
+        }
         await Task.CompletedTask;
     }
 
     protected object GetRowId(T item)
     {
-        // Simple default: assume first property is ID, can be overridden
         var firstProperty = typeof(T).GetProperties().FirstOrDefault();
         return firstProperty?.GetValue(item) ?? item;
     }
 
     protected bool IsRowSelected(object rowId)
     {
-        return StateManager.SelectedRowIds.Contains(rowId);
+        return DataContext?.SelectedRowIds.Contains(rowId) ?? false;
     }
 
     protected RenderFragment RenderCellContent(T item, GridColumn column)
@@ -153,24 +107,12 @@ public partial class GridComponent<T> : ComponentBase, IAsyncDisposable where T 
         return style;
     }
 
-    private async void OnGridStateChanged()
-    {
-        await OnStateChanged.InvokeAsync(new GridStateChangedArgs
-        {
-            Request = StateManager.CurrentRequest,
-            SelectedRowIds = StateManager.SelectedRowIds.ToList()
-        });
-    }
-
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
-        StateManager.OnStateChanged -= OnGridStateChanged;
+        if (DataContext != null)
+        {
+            DataContext.OnStateChanged -= StateHasChanged;
+        }
         await ValueTask.CompletedTask;
     }
-}
-
-public class GridStateChangedArgs
-{
-    public GridRequest Request { get; set; } = new();
-    public List<object> SelectedRowIds { get; set; } = [];
 }
