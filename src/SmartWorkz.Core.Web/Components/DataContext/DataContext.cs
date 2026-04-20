@@ -1,17 +1,18 @@
 using SmartWorkz.Core.Shared.Grid;
 using SmartWorkz.Core.Shared.Pagination;
 using SmartWorkz.Core.Web.Services.Grid;
+using System.Reflection;
 
 namespace SmartWorkz.Core.Web.Components.DataContext;
 
 public class DataContext<T> : IDataContext<T> where T : class
 {
-    private readonly GridDataProvider _dataProvider;
     private GridRequest _currentRequest;
     private GridResponse<T>? _currentResponse;
     private readonly List<object> _selectedRowIds = [];
     private bool _isLoading;
     private string? _error;
+    private PropertyInfo? _cachedIdProperty;
 
     public GridRequest CurrentRequest => _currentRequest;
     public GridResponse<T>? CurrentResponse => _currentResponse;
@@ -23,17 +24,42 @@ public class DataContext<T> : IDataContext<T> where T : class
 
     public DataContext()
     {
-        _dataProvider = new GridDataProvider(new HttpClient());
         _currentRequest = new GridRequest(Page: 1, PageSize: 20);
+        CacheIdProperty();
+    }
+
+    private void CacheIdProperty()
+    {
+        var properties = typeof(T).GetProperties();
+
+        // First, look for [Key] attribute
+        _cachedIdProperty = properties.FirstOrDefault(p =>
+            p.GetCustomAttribute<System.ComponentModel.DataAnnotations.KeyAttribute>() != null);
+
+        // Fall back to property named "Id" or "id"
+        if (_cachedIdProperty == null)
+        {
+            _cachedIdProperty = properties.FirstOrDefault(p =>
+                p.Name.Equals("Id", StringComparison.OrdinalIgnoreCase));
+        }
+
+        // If still not found, use first property but warn
+        if (_cachedIdProperty == null)
+        {
+            _cachedIdProperty = properties.FirstOrDefault();
+        }
+
+        if (_cachedIdProperty == null)
+        {
+            throw new InvalidOperationException(
+                $"Type '{typeof(T).Name}' has no properties. Cannot determine row ID property.");
+        }
     }
 
     public async Task Initialize(IEnumerable<T> dataSource)
     {
-        try
+        await ExecuteWithStateManagement(async () =>
         {
-            SetLoading(true);
-            ClearError();
-
             var gridLogic = GridDataProvider.ApplyGridLogic(dataSource, _currentRequest);
 
             _currentResponse = new GridResponse<T>
@@ -41,26 +67,13 @@ public class DataContext<T> : IDataContext<T> where T : class
                 Data = gridLogic,
                 Columns = []
             };
-
-            RaiseStateChanged();
-        }
-        catch (Exception ex)
-        {
-            SetError(ex.Message);
-        }
-        finally
-        {
-            SetLoading(false);
-        }
+        });
     }
 
     public async Task UpdateSort(string propertyName, bool isDescending)
     {
-        try
+        await ExecuteWithStateManagement(async () =>
         {
-            SetLoading(true);
-            ClearError();
-
             _currentRequest = _currentRequest with
             {
                 SortBy = propertyName,
@@ -69,25 +82,13 @@ public class DataContext<T> : IDataContext<T> where T : class
             };
 
             await RefreshData();
-            RaiseStateChanged();
-        }
-        catch (Exception ex)
-        {
-            SetError(ex.Message);
-        }
-        finally
-        {
-            SetLoading(false);
-        }
+        });
     }
 
     public async Task UpdateFilter(string property, string filterOperator, object? value)
     {
-        try
+        await ExecuteWithStateManagement(async () =>
         {
-            SetLoading(true);
-            ClearError();
-
             var filters = _currentRequest.Filters ?? new Dictionary<string, object>();
 
             // Add or update filter
@@ -107,25 +108,13 @@ public class DataContext<T> : IDataContext<T> where T : class
             };
 
             await RefreshData();
-            RaiseStateChanged();
-        }
-        catch (Exception ex)
-        {
-            SetError(ex.Message);
-        }
-        finally
-        {
-            SetLoading(false);
-        }
+        });
     }
 
     public async Task UpdatePagination(int pageNumber, int pageSize)
     {
-        try
+        await ExecuteWithStateManagement(async () =>
         {
-            SetLoading(true);
-            ClearError();
-
             _currentRequest = _currentRequest with
             {
                 Page = Math.Max(1, pageNumber),
@@ -133,16 +122,7 @@ public class DataContext<T> : IDataContext<T> where T : class
             };
 
             await RefreshData();
-            RaiseStateChanged();
-        }
-        catch (Exception ex)
-        {
-            SetError(ex.Message);
-        }
-        finally
-        {
-            SetLoading(false);
-        }
+        });
     }
 
     public void ToggleRowSelection(object rowId)
@@ -183,11 +163,8 @@ public class DataContext<T> : IDataContext<T> where T : class
 
     public async Task ClearFilters()
     {
-        try
+        await ExecuteWithStateManagement(async () =>
         {
-            SetLoading(true);
-            ClearError();
-
             _currentRequest = _currentRequest with
             {
                 Filters = null,
@@ -195,6 +172,16 @@ public class DataContext<T> : IDataContext<T> where T : class
             };
 
             await RefreshData();
+        });
+    }
+
+    private async Task ExecuteWithStateManagement(Func<Task> operation)
+    {
+        try
+        {
+            SetLoading(true);
+            ClearError();
+            await operation();
             RaiseStateChanged();
         }
         catch (Exception ex)
@@ -224,7 +211,12 @@ public class DataContext<T> : IDataContext<T> where T : class
 
     private object GetRowId(T item)
     {
-        var firstProperty = typeof(T).GetProperties().FirstOrDefault();
-        return firstProperty?.GetValue(item) ?? item;
+        if (_cachedIdProperty == null)
+        {
+            throw new InvalidOperationException("Row ID property was not found during initialization.");
+        }
+
+        var value = _cachedIdProperty.GetValue(item);
+        return value ?? item;
     }
 }
