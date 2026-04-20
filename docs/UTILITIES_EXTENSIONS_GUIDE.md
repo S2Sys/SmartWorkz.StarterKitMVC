@@ -45,7 +45,7 @@ var result = TextHelper.Truncate("Hello World", 8, "...");
 // Success: "Hello..."
 
 var longText = TextHelper.Truncate("The quick brown fox", 10);
-// Success: "The quick..."
+// Success: "The qui..."
 
 // Error cases handled
 var empty = TextHelper.Truncate("", 5);  // Fails: input empty
