@@ -1,0 +1,37 @@
+@model SmartWorkz.Sample.ECommerce.Application.DTOs.ProductDto
+
+@{ ViewData["Title"] = Model?.Name ?? "Product"; }
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h1>@Model?.Name</h1>
+                <p class="text-muted">@Model?.CategoryName</p>
+                <hr />
+                <p>@Model?.Description</p>
+                <h3 class="text-primary">$@Model?.Price</h3>
+                <p class="text-muted">Stock: @(Model?.Stock ?? 0) units available</p>
+                <hr />
+                @if (Model?.Stock > 0)
+                {
+                    <form method="post" action="/cart/add">
+                        <input type="hidden" name="productId" value="@Model?.Id" />
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity:</label>
+                            <input type="number" id="quantity" name="quantity" class="form-control" style="width: 100px;" min="1" max="@Model?.Stock" value="1" />
+                        </div>
+                        <button type="submit" class="btn btn-success btn-lg">Add to Cart</button>
+                    </form>
+                }
+                else
+                {
+                    <div class="alert alert-warning">Out of Stock</div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <a href="/catalog" class="btn btn-secondary mb-3">Back to Catalog</a>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+@model List<SmartWorkz.Sample.ECommerce.Application.DTOs.ProductDto>
+
+@{ ViewData["Title"] = "Home"; }
+
+<div class="jumbotron bg-light p-5 mb-4">
+    <h1 class="display-4">Welcome to ShopWorkz</h1>
+    <p class="lead">Discover amazing products at great prices</p>
+    <a class="btn btn-primary btn-lg" href="/catalog">Browse Catalog</a>
+</div>
+
+<h2 class="mb-4">Featured Products</h2>
+<div class="row">
+    @if (Model != null && Model.Count > 0)
+    {
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">@(product.Description != null && product.Description.Length > 50 ? product.Description.Substring(0, 50) + "..." : product.Description ?? "No description")</p>
+                        <p class="card-text"><strong>$@product.Price</strong></p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a href="/product/@product.Id" class="btn btn-sm btn-primary">View Details</a>
+                        <form method="post" action="/cart/add" style="display:inline">
+                            <input type="hidden" name="productId" value="@product.Id" />
+                            <button type="submit" class="btn btn-sm btn-success">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <p class="text-muted">No products available at this time.</p>
+        </div>
+    }
+</div>
