@@ -1,0 +1,235 @@
+@namespace SmartWorkz.Core.Web.Components.Data
+@using SmartWorkz.Core.Web.Components.Data.Models
+
+<div class="tree-node @(Node.IsLeaf ? "leaf" : "") @(Node.IsDisabled ? "disabled" : "")" style="margin-left: @(IndentationPixels * Level)px;">
+    <div class="tree-node-content d-flex align-items-center gap-2">
+        <!-- Toggle button -->
+        @if (!Node.IsLeaf && Node.Children?.Count > 0)
+        {
+            <button class="tree-toggle @(Node.IsExpanded ? "expanded" : "")"
+                    @onclick="@((e) => ToggleNodeAsync())"
+                    aria-expanded="@Node.IsExpanded"
+                    disabled="@Node.IsDisabled">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        }
+        else if (!Node.IsLeaf)
+        {
+            <div style="width: 24px;"></div>
+        }
+
+        <!-- Checkbox -->
+        @if (ShowCheckboxes)
+        {
+            <input type="checkbox"
+                   class="form-check-input"
+                   @onchange="@((ChangeEventArgs e) => SelectNodeAsync((bool)e.Value!))"
+                   checked="@SelectedNodes.Contains(Node)"
+                   disabled="@Node.IsDisabled"
+                   aria-label="Select node" />
+        }
+
+        <!-- Icon -->
+        @if (!string.IsNullOrEmpty(Node.IconClass))
+        {
+            <i class="tree-icon @Node.IconClass"></i>
+        }
+
+        <!-- Label -->
+        <span class="tree-label @(SelectedNodes.Contains(Node) ? "selected" : "")"
+              @onclick="@((e) => SelectNodeAsync(!SelectedNodes.Contains(Node)))"
+              style="cursor: @(Node.IsDisabled ? "not-allowed" : "pointer")">
+            @Node.Label
+        </span>
+    </div>
+
+    <!-- Children -->
+    @if (!Node.IsLeaf && Node.IsExpanded && Node.Children != null && Node.Children.Count > 0)
+    {
+        <div class="tree-children">
+            @foreach (var child in Node.Children)
+            {
+                <TreeNodeComponent Node="child"
+                                   AllowMultiSelect="AllowMultiSelect"
+                                   ShowCheckboxes="ShowCheckboxes"
+                                   SelectedNodes="SelectedNodes"
+                                   OnNodeSelected="OnNodeSelected"
+                                   IndentationPixels="IndentationPixels"
+                                   Level="@(Level + 1)" />
+            }
+        </div>
+    }
+
+    <!-- Loading indicator for lazy-loaded children -->
+    @if (!Node.IsLeaf && Node.IsExpanded && IsLoadingChildren)
+    {
+        <div style="margin-left: @(IndentationPixels)px; padding: 0.5rem;">
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            <small class="text-muted">Loading...</small>
+        </div>
+    }
+</div>
+
+@code {
+    private bool IsLoadingChildren { get; set; }
+
+    /// <summary>Tree node to render.</summary>
+    [Parameter]
+    public required TreeNode Node { get; set; }
+
+    /// <summary>Allow multi-select.</summary>
+    [Parameter]
+    public bool AllowMultiSelect { get; set; } = false;
+
+    /// <summary>Show selection checkboxes.</summary>
+    [Parameter]
+    public bool ShowCheckboxes { get; set; } = false;
+
+    /// <summary>Allow search filtering.</summary>
+    [Parameter]
+    public bool AllowSearch { get; set; } = false;
+
+    /// <summary>Currently selected nodes.</summary>
+    [Parameter]
+    public required List<TreeNode> SelectedNodes { get; set; }
+
+    /// <summary>Callback when node is selected.</summary>
+    [Parameter]
+    public EventCallback<(TreeNode, bool)> OnNodeSelected { get; set; }
+
+    /// <summary>Indentation pixels per level.</summary>
+    [Parameter]
+    public int IndentationPixels { get; set; } = 20;
+
+    /// <summary>Nesting level.</summary>
+    [Parameter]
+    public int Level { get; set; }
+
+    private async Task ToggleNodeAsync()
+    {
+        if (Node.IsDisabled)
+            return;
+
+        if (!Node.IsExpanded && Node.LoadChildrenAsync != null && (Node.Children == null || Node.Children.Count == 0))
+        {
+            // Load children asynchronously (lazy loading)
+            IsLoadingChildren = true;
+            StateHasChanged();
+
+            try
+            {
+                var children = await Node.LoadChildrenAsync(Node.Id);
+                Node.Children = children ?? [];
+            }
+            catch (Exception)
+            {
+                // Handle error silently or log
+            }
+            finally
+            {
+                IsLoadingChildren = false;
+            }
+        }
+
+        Node.IsExpanded = !Node.IsExpanded;
+    }
+
+    private async Task SelectNodeAsync(bool isSelected)
+    {
+        if (Node.IsDisabled)
+            return;
+
+        if (isSelected)
+        {
+            if (!AllowMultiSelect)
+                SelectedNodes.Clear();
+            SelectedNodes.Add(Node);
+        }
+        else
+        {
+            SelectedNodes.Remove(Node);
+        }
+
+        await OnNodeSelected.InvokeAsync((Node, isSelected));
+    }
+}
+
+<style>
+    .tree-node {
+        user-select: none;
+    }
+
+    .tree-node.disabled .tree-label,
+    .tree-node.disabled .tree-toggle {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .tree-node-content {
+        padding: 0.25rem 0;
+    }
+
+    .tree-toggle {
+        min-width: 24px;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--bs-body-color);
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+
+    .tree-toggle:hover {
+        color: var(--bs-primary);
+    }
+
+    .tree-toggle.expanded {
+        transform: rotate(90deg);
+    }
+
+    .tree-label {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+    }
+
+    .tree-label:hover {
+        background-color: var(--bs-light);
+    }
+
+    .tree-label.selected {
+        background-color: var(--bs-primary);
+        color: white;
+    }
+
+    .tree-children {
+        margin-top: 0.25rem;
+        border-left: 1px solid var(--bs-border-color);
+        padding-left: 8px;
+        margin-left: 12px;
+    }
+
+    .tree-icon {
+        font-size: 0.9rem;
+        min-width: 1em;
+    }
+
+    .d-flex {
+        display: flex;
+    }
+
+    .align-items-center {
+        align-items: center;
+    }
+
+    .gap-2 {
+        gap: 0.5rem;
+    }
+</style>

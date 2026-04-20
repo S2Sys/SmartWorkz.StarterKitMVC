@@ -1,0 +1,151 @@
+@namespace SmartWorkz.Core.Web.Components.Data
+@using SmartWorkz.Core.Web.Components.Data.Models
+
+<div class="treeview-container @CssClass">
+    @if (RootNodes != null && RootNodes.Count > 0)
+    {
+        @foreach (var node in RootNodes)
+        {
+            <TreeNodeComponent Node="node"
+                               AllowMultiSelect="AllowMultiSelect"
+                               ShowCheckboxes="ShowCheckboxes"
+                               AllowSearch="AllowSearch"
+                               SelectedNodes="SelectedNodes"
+                               OnNodeSelected="HandleNodeSelected"
+                               IndentationPixels="Options?.IndentationPixels ?? 20"
+                               Level="0" />
+        }
+    }
+    else
+    {
+        <div class="alert alert-info mb-0">No tree data available.</div>
+    }
+</div>
+
+<TreeNodeComponent @ref="_nodeComponent" />
+
+@code {
+    private TreeNodeComponent? _nodeComponent;
+    private List<TreeNode> SelectedNodes { get; set; } = [];
+
+    /// <summary>Root nodes of the tree.</summary>
+    [Parameter]
+    public List<TreeNode>? RootNodes { get; set; }
+
+    /// <summary>Tree view configuration.</summary>
+    [Parameter]
+    public TreeViewOptions? Options { get; set; }
+
+    /// <summary>Allow multiple node selection.</summary>
+    [Parameter]
+    public bool AllowMultiSelect { get; set; } = false;
+
+    /// <summary>Show checkboxes for selection.</summary>
+    [Parameter]
+    public bool ShowCheckboxes { get; set; } = false;
+
+    /// <summary>Enable search/filter functionality.</summary>
+    [Parameter]
+    public bool AllowSearch { get; set; } = false;
+
+    /// <summary>Custom CSS class.</summary>
+    [Parameter]
+    public string? CssClass { get; set; }
+
+    /// <summary>Callback when node is selected.</summary>
+    [Parameter]
+    public EventCallback<TreeNodeSelectedEventArgs> OnNodeSelected { get; set; }
+
+    /// <summary>Callback when tree data changes.</summary>
+    [Parameter]
+    public EventCallback<List<TreeNode>> OnDataChanged { get; set; }
+
+    private void HandleNodeSelected(TreeNode node, bool isSelected)
+    {
+        if (isSelected)
+        {
+            if (!AllowMultiSelect)
+                SelectedNodes.Clear();
+            SelectedNodes.Add(node);
+        }
+        else
+        {
+            SelectedNodes.Remove(node);
+        }
+
+        var args = new TreeNodeSelectedEventArgs
+        {
+            SelectedNode = node,
+            AllSelectedNodes = SelectedNodes,
+            IsMultiSelect = AllowMultiSelect
+        };
+
+        OnNodeSelected.InvokeAsync(args);
+    }
+}
+
+<style>
+    .treeview-container {
+        font-family: var(--bs-font-sans-serif);
+        color: var(--bs-body-color);
+    }
+
+    .treeview-container .tree-node {
+        margin: 0.25rem 0;
+    }
+
+    .treeview-container .tree-toggle {
+        background: none;
+        border: none;
+        padding: 0.25rem 0.5rem;
+        cursor: pointer;
+        color: var(--bs-body-color);
+        width: 24px;
+        height: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease;
+    }
+
+    .treeview-container .tree-toggle:hover {
+        color: var(--bs-primary);
+    }
+
+    .treeview-container .tree-toggle.expanded {
+        transform: rotate(90deg);
+    }
+
+    .treeview-container .tree-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .treeview-container .tree-label:hover {
+        background-color: var(--bs-light);
+    }
+
+    .treeview-container .tree-label.selected {
+        background-color: var(--bs-primary);
+        color: white;
+    }
+
+    .treeview-container .tree-children {
+        margin-left: 20px;
+        border-left: 1px solid var(--bs-border-color);
+        padding-left: 0;
+    }
+
+    .treeview-container .tree-node.leaf > .tree-label {
+        padding-left: 2.5rem;
+    }
+
+    .treeview-container .tree-icon {
+        font-size: 0.9rem;
+    }
+</style>

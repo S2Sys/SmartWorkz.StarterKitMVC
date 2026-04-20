@@ -1,0 +1,367 @@
+@namespace SmartWorkz.Core.Web.Components.Data
+@using SmartWorkz.Core.Web.Components.Data.Models
+@typeparam T where T : class
+
+<div class="table-container @(IsResponsive ? "table-responsive" : "")">
+    @if (IsLoading)
+    {
+        <div class="alert alert-info mb-0">
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            @LoadingMessage
+        </div>
+    }
+    else if (Data == null || Data.Count == 0)
+    {
+        <div class="alert alert-info mb-0">@EmptyMessage</div>
+    }
+    else
+    {
+        <table class="table @GetTableClasses()">
+            <thead>
+                <tr>
+                    @if (AllowRowSelection)
+                    {
+                        <th style="width: 40px;">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   @onchange="@((ChangeEventArgs e) => SelectAllAsync((bool)e.Value!))"
+                                   aria-label="Select all" />
+                        </th>
+                    }
+
+                    @foreach (var column in Columns ?? new List<TableColumn>())
+                    {
+                        <th style="@(column.Width != null ? $"width: {column.Width}" : "");"
+                            class="@column.Align"
+                            @onclick="@((e) => HandleSortAsync(column))">
+
+                            <div class="d-flex align-items-center justify-content-@(column.Align == "right" ? "end" : column.Align == "center" ? "center" : "start") @(column.IsSortable ? "cursor-pointer" : "")">
+                                <span>@column.Title</span>
+
+                                @if (column.IsSortable)
+                                {
+                                    @if (CurrentRequest.SortBy == column.PropertyName)
+                                    {
+                                        <i class="fa-solid fa-chevron-@(CurrentRequest.SortDescending ? "down" : "up") ms-2"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa-solid fa-arrows-up-down ms-2 opacity-50"></i>
+                                    }
+                                }
+                            </div>
+                        </th>
+                    }
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Data)
+                {
+                    var isSelected = SelectedRows.Contains(item);
+                    <tr class="@(isSelected ? "table-active" : "") @(IsClickable ? "cursor-pointer" : "")">
+                        @if (AllowRowSelection)
+                        {
+                            <td>
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       @onchange="@((ChangeEventArgs e) => ToggleRowSelectionAsync(item, (bool)e.Value!))"
+                                       aria-label="Select row"
+                                       checked="@isSelected" />
+                            </td>
+                        }
+
+                        @foreach (var column in Columns ?? new List<TableColumn>())
+                        {
+                            <td class="@column.Align">
+                                @if (column.Formatter != null)
+                                {
+                                    var value = GetPropertyValue(item, column.PropertyName);
+                                    @column.Formatter(value)
+                                }
+                                else
+                                {
+                                    @GetPropertyValue(item, column.PropertyName)
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (ShowPagination && TotalPages > 1)
+        {
+            <nav aria-label="Table pagination" class="mt-3">
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item @(CurrentRequest.Page <= 1 ? "disabled" : "")">
+                        <a class="page-link" href="#" @onclick="@((e) => GoToPageAsync(1, e))">First</a>
+                    </li>
+
+                    <li class="page-item @(CurrentRequest.Page <= 1 ? "disabled" : "")">
+                        <a class="page-link" href="#" @onclick="@((e) => GoToPageAsync(CurrentRequest.Page - 1, e))">Previous</a>
+                    </li>
+
+                    @for (int i = Math.Max(1, CurrentRequest.Page - 2); i <= Math.Min(TotalPages, CurrentRequest.Page + 2); i++)
+                    {
+                        var pageNum = i;
+                        <li class="page-item @(pageNum == CurrentRequest.Page ? "active" : "")">
+                            <a class="page-link" href="#" @onclick="@((e) => GoToPageAsync(pageNum, e))">@pageNum</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(CurrentRequest.Page >= TotalPages ? "disabled" : "")">
+                        <a class="page-link" href="#" @onclick="@((e) => GoToPageAsync(CurrentRequest.Page + 1, e))">Next</a>
+                    </li>
+
+                    <li class="page-item @(CurrentRequest.Page >= TotalPages ? "disabled" : "")">
+                        <a class="page-link" href="#" @onclick="@((e) => GoToPageAsync(TotalPages, e))">Last</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="text-center text-muted small mt-2">
+                Page @CurrentRequest.Page of @TotalPages (@Data.Count of @TotalCount items)
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private List<T> SelectedRows { get; set; } = [];
+    private TableRequest CurrentRequest { get; set; } = new();
+    private int TotalCount { get; set; }
+    private int TotalPages { get; set; }
+
+    /// <summary>Data to display in table.</summary>
+    [Parameter]
+    public List<T>? Data { get; set; }
+
+    /// <summary>Total count of items (for pagination).</summary>
+    [Parameter]
+    public int TotalItems { get; set; }
+
+    /// <summary>Table column definitions.</summary>
+    [Parameter]
+    public List<TableColumn>? Columns { get; set; }
+
+    /// <summary>Number of rows per page.</summary>
+    [Parameter]
+    public int PageSize { get; set; } = 10;
+
+    /// <summary>Enable row striping.</summary>
+    [Parameter]
+    public bool IsStriped { get; set; } = true;
+
+    /// <summary>Enable hover effect.</summary>
+    [Parameter]
+    public bool HasHoverEffect { get; set; } = true;
+
+    /// <summary>Enable row selection.</summary>
+    [Parameter]
+    public bool AllowRowSelection { get; set; } = false;
+
+    /// <summary>Enable multi-row selection.</summary>
+    [Parameter]
+    public bool AllowMultiSelect { get; set; } = true;
+
+    /// <summary>Show table borders.</summary>
+    [Parameter]
+    public bool HasBorders { get; set; } = true;
+
+    /// <summary>Make table responsive.</summary>
+    [Parameter]
+    public bool IsResponsive { get; set; } = true;
+
+    /// <summary>Compact padding.</summary>
+    [Parameter]
+    public bool IsCompact { get; set; } = false;
+
+    /// <summary>Show pagination controls.</summary>
+    [Parameter]
+    public bool ShowPagination { get; set; } = true;
+
+    /// <summary>Enable row click.</summary>
+    [Parameter]
+    public bool IsClickable { get; set; } = false;
+
+    /// <summary>Show loading state.</summary>
+    [Parameter]
+    public bool IsLoading { get; set; } = false;
+
+    /// <summary>Empty message.</summary>
+    [Parameter]
+    public string EmptyMessage { get; set; } = "No data available.";
+
+    /// <summary>Loading message.</summary>
+    [Parameter]
+    public string LoadingMessage { get; set; } = "Loading data...";
+
+    /// <summary>Callback on sort change.</summary>
+    [Parameter]
+    public EventCallback<TableRequest> OnSort { get; set; }
+
+    /// <summary>Callback on page change.</summary>
+    [Parameter]
+    public EventCallback<int> OnPageChanged { get; set; }
+
+    /// <summary>Callback on row selection change.</summary>
+    [Parameter]
+    public EventCallback<List<T>> OnSelectionChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        CurrentRequest = new TableRequest { PageSize = PageSize };
+        TotalCount = TotalItems;
+        CalculateTotalPages();
+    }
+
+    protected override void OnParametersSet()
+    {
+        TotalCount = TotalItems;
+        CalculateTotalPages();
+    }
+
+    private string GetTableClasses()
+    {
+        var classes = new List<string> { "table" };
+        if (IsStriped) classes.Add("table-striped");
+        if (HasHoverEffect) classes.Add("table-hover");
+        if (HasBorders) classes.Add("table-bordered");
+        if (IsCompact) classes.Add("table-sm");
+        return string.Join(" ", classes);
+    }
+
+    private async Task HandleSortAsync(TableColumn column)
+    {
+        if (!column.IsSortable) return;
+
+        if (CurrentRequest.SortBy == column.PropertyName)
+        {
+            CurrentRequest.SortDescending = !CurrentRequest.SortDescending;
+        }
+        else
+        {
+            CurrentRequest.SortBy = column.PropertyName;
+            CurrentRequest.SortDescending = false;
+        }
+
+        await OnSort.InvokeAsync(CurrentRequest);
+    }
+
+    private async Task GoToPageAsync(int page, MouseEventArgs e)
+    {
+        e.PreventDefault();
+        if (page >= 1 && page <= TotalPages && page != CurrentRequest.Page)
+        {
+            CurrentRequest.Page = page;
+            await OnPageChanged.InvokeAsync(page);
+        }
+    }
+
+    private async Task ToggleRowSelectionAsync(T item, bool isChecked)
+    {
+        if (isChecked)
+        {
+            if (!AllowMultiSelect)
+                SelectedRows.Clear();
+            SelectedRows.Add(item);
+        }
+        else
+        {
+            SelectedRows.Remove(item);
+        }
+
+        await OnSelectionChanged.InvokeAsync(SelectedRows);
+    }
+
+    private async Task SelectAllAsync(bool isChecked)
+    {
+        if (isChecked)
+        {
+            SelectedRows = new List<T>(Data ?? []);
+        }
+        else
+        {
+            SelectedRows.Clear();
+        }
+
+        await OnSelectionChanged.InvokeAsync(SelectedRows);
+    }
+
+    private object? GetPropertyValue(T item, string? propertyName)
+    {
+        if (string.IsNullOrEmpty(propertyName) || item == null)
+            return null;
+
+        var property = typeof(T).GetProperty(propertyName);
+        return property?.GetValue(item);
+    }
+
+    private void CalculateTotalPages()
+    {
+        TotalPages = (TotalCount + PageSize - 1) / PageSize;
+    }
+}
+
+<style>
+    .table-container {
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.375rem;
+        overflow: hidden;
+    }
+
+    .table-responsive {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background-color: var(--bs-light);
+        border-bottom: 2px solid var(--bs-border-color);
+        font-weight: 600;
+        vertical-align: middle;
+    }
+
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: var(--bs-table-hover-bg);
+    }
+
+    .table-active {
+        background-color: var(--bs-table-active-bg) !important;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    .pagination {
+        gap: 0.25rem;
+    }
+
+    .page-link {
+        border-radius: 0.375rem;
+        margin: 0 0.25rem;
+    }
+
+    .d-flex {
+        display: flex;
+    }
+
+    .opacity-50 {
+        opacity: 0.5;
+    }
+</style>
