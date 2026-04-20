@@ -10,10 +10,11 @@ SmartWorkz provides a multi-layered validation and object transformation approac
 
 1. **IMapper** — Service-based object transformation between types
 2. **IMapperProfile** — Pluggable mapping strategies for type pairs
-3. **Guard** — Fast-fail argument validation (entry point checks)
-4. **ValidatorBase & ValidatorBuilder** — Declarative validation rules
-5. **CompositeValidator** — Combine multiple validators
-6. **ValidationRules** — Regex patterns for common formats
+3. **ValueConverter<T>** — Runtime type conversion without registration
+4. **Guard** — Fast-fail argument validation (entry point checks)
+5. **ValidatorBase & ValidatorBuilder** — Declarative validation rules
+6. **CompositeValidator** — Combine multiple validators
+7. **ValidationRules** — Regex patterns for common formats
 
 **Validation Pipeline:**
 
@@ -689,6 +690,272 @@ public class ProductToProductDtoProfile : IMapperProfile<Product, ProductDto>
             .GetStockLevelAsync(source.Id, cancellationToken);
         
         return dto;
+    }
+}
+```
+
+---
+
+## ValueConverter<T>: Runtime Type Conversion
+
+`ValueConverter<T>` is an abstract base class for converting between types without registering mapper profiles. Use it when you need ad-hoc, one-time conversions or when conversion logic is specific to a single type pair.
+
+**Key difference from IMapper:**
+- **IMapper** — Register profiles for reusable, service-based mappings across the application
+- **ValueConverter<T>** — Direct conversion from a fixed source type to various targets, no registration needed
+
+### ValueConverter<T> Class Reference
+
+```csharp
+namespace SmartWorkz.Core.Shared.Base_Classes;
+
+public abstract class ValueConverter<T>
+{
+    /// <summary>Convert a single object to target type.</summary>
+    public abstract TTarget Convert<TTarget>(T source) where TTarget : class;
+    
+    /// <summary>Convert a single object using runtime type resolution.</summary>
+    public abstract object Convert(T source, Type targetType);
+    
+    /// <summary>Convert a collection to target type.</summary>
+    public virtual List<TTarget> ConvertList<TTarget>(
+        IEnumerable<T> sources) where TTarget : class;
+    
+    /// <summary>Convert a collection using runtime type resolution.</summary>
+    public virtual List<object> ConvertList(
+        IEnumerable<T> sources, Type targetType);
+    
+    /// <summary>Convert from a different source collection type.</summary>
+    public virtual List<TTarget> ConvertFromList<TSource, TTarget>(
+        IEnumerable<TSource> sources)
+        where TTarget : class
+        where TSource : class;
+}
+```
+
+---
+
+### Convert<TTarget>(source)
+
+Converts a single source object to a strongly-typed target.
+
+**Usage:**
+
+```csharp
+// Create a concrete converter
+public class UserValueConverter : ValueConverter<User>
+{
+    public override UserDto Convert<UserDto>(User source)
+    {
+        Guard.NotNull(source, nameof(source));
+        
+        return new UserDto
+        {
+            Id = source.Id,
+            Email = source.Email,
+            FirstName = source.FirstName,
+            LastName = source.LastName,
+            IsActive = source.IsActive
+        };
+    }
+    
+    public override object Convert(User source, Type targetType)
+    {
+        return targetType.Name switch
+        {
+            nameof(UserDto) => Convert<UserDto>(source),
+            nameof(UserSummaryDto) => new UserSummaryDto 
+            { 
+                Id = source.Id, 
+                Email = source.Email 
+            },
+            _ => throw new NotSupportedException($"Cannot convert to {targetType.Name}")
+        };
+    }
+}
+
+// Using the converter
+var converter = new UserValueConverter();
+var user = new User { Id = "123", Email = "user@example.com", FirstName = "John" };
+
+var userDto = converter.Convert<UserDto>(user);  // Returns UserDto
+```
+
+---
+
+### Convert(source, Type)
+
+Converts a single object using runtime type information instead of generics.
+
+**Usage:**
+
+```csharp
+var converter = new UserValueConverter();
+var user = new User { Id = "456", Email = "alice@example.com" };
+
+// Convert using Type parameter (useful for dynamic conversion)
+Type targetType = typeof(UserSummaryDto);
+var userSummary = converter.Convert(user, targetType);  // Returns object (UserSummaryDto)
+
+// Runtime type discovery — useful in reflection scenarios
+var targetTypeName = "UserAdminDto";
+var adminType = Type.GetType($"MyApp.Dtos.{targetTypeName}");
+if (adminType != null)
+{
+    var adminDto = converter.Convert(user, adminType);
+}
+```
+
+---
+
+### ConvertList<TTarget>(sources)
+
+Converts a collection of source objects to a list of target type.
+
+**Usage:**
+
+```csharp
+public class ProductValueConverter : ValueConverter<Product>
+{
+    public override ProductDto Convert<ProductDto>(Product source)
+    {
+        Guard.NotNull(source, nameof(source));
+        
+        return new ProductDto
+        {
+            Id = source.Id,
+            Name = source.Name,
+            Price = source.Price,
+            InStock = source.StockLevel > 0
+        };
+    }
+    
+    public override object Convert(Product source, Type targetType)
+    {
+        return targetType.Name switch
+        {
+            nameof(ProductDto) => Convert<ProductDto>(source),
+            _ => throw new NotSupportedException()
+        };
+    }
+}
+
+// Using the converter
+var converter = new ProductValueConverter();
+var products = new[]
+{
+    new Product { Id = "P1", Name = "Widget", Price = 19.99m, StockLevel = 100 },
+    new Product { Id = "P2", Name = "Gadget", Price = 29.99m, StockLevel = 0 }
+};
+
+var productDtos = converter.ConvertList<ProductDto>(products);
+// Returns: List<ProductDto> with 2 items
+```
+
+---
+
+### ConvertList(sources, Type)
+
+Converts a collection using runtime type resolution.
+
+**Usage:**
+
+```csharp
+var converter = new ProductValueConverter();
+var products = GetProductsFromDatabase();
+
+// Convert using Type parameter
+Type targetType = typeof(ProductDto);
+var dtos = converter.ConvertList(products, targetType);  // Returns List<object> (ProductDto items)
+
+// Useful in generic handlers that don't know the target type until runtime
+public IEnumerable<object> ConvertProductsForExport(
+    IEnumerable<Product> products, 
+    string exportFormat)
+{
+    var targetType = exportFormat switch
+    {
+        "detailed" => typeof(ProductDetailedDto),
+        "summary" => typeof(ProductSummaryDto),
+        _ => typeof(ProductDto)
+    };
+    
+    return converter.ConvertList(products, targetType);
+}
+```
+
+---
+
+### ConvertFromList<TSource, TTarget>(sources)
+
+Converts a collection from a different source type.
+
+**Usage:**
+
+```csharp
+// Original converter is for User -> UserDto
+public class UserValueConverter : ValueConverter<User>
+{
+    public override TTarget Convert<TTarget>(User source) { ... }
+    public override object Convert(User source, Type targetType) { ... }
+}
+
+// But you have a collection of LegacyUser that needs conversion to UserDto
+var converter = new UserValueConverter();
+var legacyUsers = new[]
+{
+    new LegacyUser { UserID = 1, EmailAddress = "old@example.com" },
+    new LegacyUser { UserID = 2, EmailAddress = "legacy@example.com" }
+};
+
+// Convert from different source type
+var modernDtos = converter.ConvertFromList<LegacyUser, UserDto>(legacyUsers);
+// Returns: List<UserDto> with 2 items
+```
+
+---
+
+## ValueConverter vs IMapper: When to Use Each
+
+| Scenario | Use IMapper | Use ValueConverter |
+|----------|-----------|-------------------|
+| Registered, reusable mapping | ✓ | |
+| Async mapping operations | ✓ | |
+| Nested object mapping via profiles | ✓ | |
+| One-off, simple conversions | | ✓ |
+| Converting DTO to different DTO | | ✓ |
+| No DI container (static conversion) | | ✓ |
+| Dynamic type conversion at runtime | | ✓ |
+
+**Example: Choose the Right Tool**
+
+```csharp
+// Use IMapper — this conversion happens across the app
+public class UserController
+{
+    private readonly IMapper _mapper;
+    
+    public IActionResult GetUser(string id)
+    {
+        var user = _repository.GetById(id);
+        
+        // IMapper is registered, reusable, handles nested mappings
+        var dto = _mapper.Map<User, UserDto>(user);
+        return Ok(dto);
+    }
+}
+
+// Use ValueConverter — one-time conversion specific to an export feature
+public class ExportService
+{
+    public byte[] ExportUsersToCSV(IEnumerable<User> users)
+    {
+        var converter = new UserValueConverter();
+        
+        // ValueConverter is faster for simple, direct conversions
+        var summaries = converter.ConvertList<UserSummaryDto>(users);
+        
+        return GenerateCSV(summaries);
     }
 }
 ```
@@ -1548,8 +1815,10 @@ RuleFor(x => x.Email)
 | Guard.InRange | Value within bounds | `pageSize = Guard.InRange(pageSize, 1, 100, nameof(pageSize))` |
 | Guard.NotDefault | Non-default value | `id = Guard.NotDefault(id, nameof(id))` |
 | Guard.Requires | Custom condition | `Guard.Requires(pwd == confirm, nameof(confirm), "Passwords don't match")` |
-| IMapper.Map | Single entity transform | `dto = mapper.Map<User, UserDto>(user)` |
-| IMapper.MapCollection | Batch entity transform | `dtos = mapper.MapCollection<User, UserDto>(users)` |
+| IMapper.Map | Single entity transform (registered) | `dto = mapper.Map<User, UserDto>(user)` |
+| IMapper.MapCollection | Batch entity transform (registered) | `dtos = mapper.MapCollection<User, UserDto>(users)` |
+| ValueConverter.Convert | Single object transform (ad-hoc) | `dto = converter.Convert<UserDto>(user)` |
+| ValueConverter.ConvertList | Collection transform (ad-hoc) | `dtos = converter.ConvertList<UserDto>(users)` |
 | ValidatorBase | Class-based validator | `public class UserValidator : ValidatorBase<User> { ... }` |
 | ValidatorBuilder | Inline fluent validator | `new ValidatorBuilder<User>().RuleFor(x => x.Name).NotEmpty()` |
 | CompositeValidator | Combine multiple validators | `new CompositeValidator<T>(val1, val2, val3)` |
