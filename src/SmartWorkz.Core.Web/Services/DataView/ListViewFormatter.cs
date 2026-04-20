@@ -11,6 +11,7 @@ public class ListViewFormatter : IListViewFormatter
     {
         if (value == null)
             return "-";
+
         return $"{currencySymbol}{value:N2}";
     }
 
@@ -18,8 +19,10 @@ public class ListViewFormatter : IListViewFormatter
     {
         if (string.IsNullOrEmpty(text))
             return "-";
+
         if (text.Length <= maxLength)
             return text;
+
         return text[..maxLength] + "...";
     }
 
