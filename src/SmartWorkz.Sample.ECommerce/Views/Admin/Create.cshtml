@@ -1,0 +1,49 @@
+@{ ViewData["Title"] = "Create Product"; }
+
+<div class="container py-4" style="max-width: 600px;">
+    <h1 class="mb-4">Create New Product</h1>
+
+    <form method="post" action="/admin/products/create">
+        <div class="mb-3">
+            <label for="name" class="form-label">Product Name</label>
+            <input type="text" name="name" id="name" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="slug" class="form-label">URL Slug</label>
+            <input type="text" name="slug" id="slug" class="form-control" placeholder="e.g., my-product-name" required>
+            <small class="text-muted">Used in product URLs (lowercase, with hyphens)</small>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea name="description" id="description" class="form-control" rows="3" placeholder="Product description"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="price" class="form-label">Price ($)</label>
+            <input type="number" name="price" id="price" class="form-control" step="0.01" min="0" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="stock" class="form-label">Stock Quantity</label>
+            <input type="number" name="stock" id="stock" class="form-control" min="0" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="categoryId" class="form-label">Category</label>
+            <select name="categoryId" id="categoryId" class="form-select" required>
+                <option value="">-- Select Category --</option>
+                @foreach (var category in ViewBag.Categories ?? new List<object>())
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">Create Product</button>
+            <a href="/admin/products" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

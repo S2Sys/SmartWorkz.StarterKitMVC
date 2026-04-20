@@ -1,0 +1,54 @@
+@{ ViewData["Title"] = "Edit Product"; var product = ViewBag.Product; }
+
+<div class="container py-4" style="max-width: 600px;">
+    <h1 class="mb-4">Edit Product</h1>
+
+    <form method="post" action="/admin/products/@product.Id/edit">
+        <div class="mb-3">
+            <label class="form-label">Product ID</label>
+            <input type="text" class="form-control" value="@product.Id" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Product Name</label>
+            <input type="text" name="name" id="name" class="form-control" value="@product.Name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="slug" class="form-label">URL Slug</label>
+            <input type="text" name="slug" id="slug" class="form-control" value="@product.Slug" required>
+            <small class="text-muted">Used in product URLs (lowercase, with hyphens)</small>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea name="description" id="description" class="form-control" rows="3">@product.Description</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="price" class="form-label">Price ($)</label>
+            <input type="number" name="price" id="price" class="form-control" step="0.01" min="0" value="@product.Price?.Amount" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="stock" class="form-label">Stock Quantity</label>
+            <input type="number" name="stock" id="stock" class="form-control" min="0" value="@product.Stock" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="categoryId" class="form-label">Category</label>
+            <select name="categoryId" id="categoryId" class="form-select" required>
+                <option value="">-- Select Category --</option>
+                @foreach (var category in ViewBag.Categories ?? new List<object>())
+                {
+                    <option value="@category.Id" selected="@(category.Id == product.CategoryId)">@category.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">Update Product</button>
+            <a href="/admin/products" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

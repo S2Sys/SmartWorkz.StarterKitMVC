@@ -1,0 +1,129 @@
+@model SmartWorkz.Sample.ECommerce.Web.Models.ProductListViewModel
+
+@{ ViewData["Title"] = "Manage Products"; }
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Manage Products</h1>
+        <a href="/admin/products/create" class="btn btn-primary">+ Add Product</a>
+    </div>
+
+    <!-- Search -->
+    <form method="get" action="/admin/products/search" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search products..." value="@Model.SearchQuery">
+            <button class="btn btn-outline-secondary" type="submit">Search</button>
+        </div>
+    </form>
+
+    <!-- Sorting -->
+    @if (string.IsNullOrEmpty(Model.SearchQuery))
+    {
+        <div class="mb-4">
+            <label for="sortBy" class="form-label">Sort By:</label>
+            <form method="get" class="d-flex gap-2">
+                <select name="sortBy" id="sortBy" class="form-select" style="max-width: 200px;" onchange="this.form.submit()">
+                    <option value="name" selected="@(Model.SortBy == "name")">Name (A-Z)</option>
+                    <option value="price-asc" selected="@(Model.SortBy == "price-asc")">Price (Low to High)</option>
+                    <option value="price-desc" selected="@(Model.SortBy == "price-desc")">Price (High to Low)</option>
+                </select>
+                <input type="hidden" name="page" value="1" />
+            </form>
+        </div>
+    }
+
+    <!-- Products Table -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Products != null && Model.Products.Count > 0)
+                {
+                    @foreach (var product in Model.Products)
+                    {
+                        <tr>
+                            <td>@product.Id</td>
+                            <td>
+                                <strong>@product.Name</strong>
+                                <br>
+                                <small class="text-muted">@product.Slug</small>
+                            </td>
+                            <td>@product.CategoryName</td>
+                            <td>$@product.Price.ToString("F2")</td>
+                            <td>
+                                <span class="badge bg-@(product.Stock > 20 ? "success" : product.Stock > 5 ? "warning" : "danger")">
+                                    @product.Stock
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-@(product.IsActive ? "success" : "secondary")">
+                                    @(product.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/admin/products/@product.Id/edit" class="btn btn-sm btn-warning">Edit</a>
+                                <form method="post" action="/admin/products/@product.Id/delete" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this product?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">No products found</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paging -->
+    @if (Model.Paging.TotalPages > 1)
+    {
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                @if (Model.Paging.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1&sortBy=@Model.SortBy">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=@Model.Paging.PreviousPageNumber&sortBy=@Model.SortBy">Previous</a>
+                    </li>
+                }
+
+                @for (int i = Math.Max(1, Model.Paging.PageNumber - 2); i <= Math.Min(Model.Paging.TotalPages, Model.Paging.PageNumber + 2); i++)
+                {
+                    <li class="page-item @(i == Model.Paging.PageNumber ? "active" : "")">
+                        <a class="page-link" href="?page=@i&sortBy=@Model.SortBy">@i</a>
+                    </li>
+                }
+
+                @if (Model.Paging.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="?page=@Model.Paging.NextPageNumber&sortBy=@Model.SortBy">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=@Model.Paging.TotalPages&sortBy=@Model.SortBy">Last</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+        <div class="text-center text-muted small mt-2">
+            Page @Model.Paging.PageNumber of @Model.Paging.TotalPages | Showing @Model.Products.Count of @Model.Paging.TotalItems products
+        </div>
+    }
+</div>
