@@ -63,7 +63,7 @@ public partial class TemplateEngine : ITemplateEngine
 
             // Security: Validate path to prevent directory traversal attacks
             var pathValidation = ValidateFilePath(filePath);
-            if (!pathValidation.IsSuccess)
+            if (!pathValidation.Succeeded)
                 return Result.Fail<string>(pathValidation.Error.Code, pathValidation.Error.Message);
 
             if (!System.IO.File.Exists(filePath))
