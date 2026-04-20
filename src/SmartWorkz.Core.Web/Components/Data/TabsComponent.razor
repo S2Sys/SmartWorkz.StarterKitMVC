@@ -1,0 +1,264 @@
+@namespace SmartWorkz.Core.Web.Components.Data
+@using SmartWorkz.Core.Web.Components.Data.Models
+
+<div class="tabs-container @GetContainerClasses()">
+    <div class="tab-nav-wrapper">
+        <div class="nav nav-@GetStyleClass()" role="tablist">
+            @if (Items != null)
+            {
+                @foreach (var item in Items)
+                {
+                    <button type="button"
+                            class="nav-link @(item.Id == ActiveTabId ? "active" : "") @(item.IsDisabled ? "disabled" : "")"
+                            id="tab-@item.Id"
+                            data-bs-toggle="tab"
+                            data-bs-target="#pane-@item.Id"
+                            role="tab"
+                            aria-controls="pane-@item.Id"
+                            aria-selected="@(item.Id == ActiveTabId)"
+                            disabled="@item.IsDisabled"
+                            @onclick="@((e) => SelectTabAsync(item))">
+
+                        @if (!string.IsNullOrEmpty(item.IconClass))
+                        {
+                            <i class="@item.IconClass"></i>
+                        }
+
+                        <span class="tab-title">@item.Title</span>
+
+                        @if (!string.IsNullOrEmpty(item.BadgeText))
+                        {
+                            <span class="badge bg-@item.BadgeColor ms-2">@item.BadgeText</span>
+                        }
+
+                        @if (AllowClosing && Items.Count > 1)
+                        {
+                            <button type="button"
+                                    class="btn-close btn-close-sm ms-2"
+                                    @onclick:stopPropagation="true"
+                                    @onclick="@((e) => CloseTabAsync(item))"
+                                    aria-label="Close tab"></button>
+                        }
+                    </button>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="tab-content">
+        @if (Items != null)
+        {
+            @foreach (var item in Items)
+            {
+                <div class="tab-pane fade @(item.Id == ActiveTabId ? "show active" : "")"
+                     id="pane-@item.Id"
+                     role="tabpanel"
+                     aria-labelledby="tab-@item.Id">
+
+                    @if (item.IsLoading)
+                    {
+                        <div class="p-4">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    }
+                    else if (item.Content != null)
+                    {
+                        <div class="tab-pane-content">
+                            @item.Content
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info mt-3">No content available.</div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>List of tab items.</summary>
+    [Parameter]
+    public List<TabItem>? Items { get; set; }
+
+    /// <summary>Currently active tab ID.</summary>
+    [Parameter]
+    public string? ActiveTabId { get; set; }
+
+    /// <summary>Callback when active tab changes.</summary>
+    [Parameter]
+    public EventCallback<TabChangedEventArgs> OnTabChanged { get; set; }
+
+    /// <summary>Tab layout direction (Horizontal or Vertical).</summary>
+    [Parameter]
+    public TabLayout Layout { get; set; } = TabLayout.Horizontal;
+
+    /// <summary>Tab visual style (Tabs, Pills, Underline).</summary>
+    [Parameter]
+    public TabStyle Style { get; set; } = TabStyle.Tabs;
+
+    /// <summary>Allow closing/removing tabs.</summary>
+    [Parameter]
+    public bool AllowClosing { get; set; } = false;
+
+    /// <summary>Callback when tab is closed.</summary>
+    [Parameter]
+    public EventCallback<TabClosedEventArgs> OnTabClosed { get; set; }
+
+    /// <summary>Fill available width.</summary>
+    [Parameter]
+    public bool FillWidth { get; set; } = false;
+
+    /// <summary>Custom CSS class.</summary>
+    [Parameter]
+    public string? CssClass { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (Items != null && Items.Count > 0 && string.IsNullOrEmpty(ActiveTabId))
+        {
+            ActiveTabId = Items.FirstOrDefault(t => !t.IsDisabled)?.Id ?? Items[0].Id;
+        }
+    }
+
+    private async Task SelectTabAsync(TabItem item)
+    {
+        if (item.IsDisabled || item.Id == ActiveTabId)
+            return;
+
+        var previousTabId = ActiveTabId;
+        ActiveTabId = item.Id;
+
+        if (item.LazyLoad && !item.ContentLoaded)
+        {
+            item.IsLoading = true;
+            StateHasChanged();
+            await Task.Delay(300);
+            item.ContentLoaded = true;
+            item.IsLoading = false;
+        }
+
+        await OnTabChanged.InvokeAsync(new TabChangedEventArgs
+        {
+            PreviousTabId = previousTabId ?? string.Empty,
+            ActiveTabId = item.Id,
+            ActiveTab = item
+        });
+    }
+
+    private async Task CloseTabAsync(TabItem item)
+    {
+        var args = new TabClosedEventArgs { ClosedTabId = item.Id, ClosedTab = item };
+        await OnTabClosed.InvokeAsync(args);
+
+        if (!args.Cancel && Items != null)
+        {
+            Items.Remove(item);
+            if (item.Id == ActiveTabId)
+            {
+                ActiveTabId = Items.FirstOrDefault(t => !t.IsDisabled)?.Id;
+            }
+        }
+    }
+
+    private string GetContainerClasses()
+    {
+        var classes = new List<string> { "tabs-wrapper" };
+        if (Layout == TabLayout.Vertical) classes.Add("tabs-vertical");
+        if (FillWidth) classes.Add("tabs-fill");
+        if (!string.IsNullOrEmpty(CssClass)) classes.Add(CssClass);
+        return string.Join(" ", classes);
+    }
+
+    private string GetStyleClass()
+    {
+        return Style switch
+        {
+            TabStyle.Pills => "pills",
+            TabStyle.Underline => "underline",
+            _ => "tabs"
+        };
+    }
+}
+
+<style>
+    .tabs-wrapper {
+        margin-bottom: 1rem;
+    }
+
+    .tab-nav-wrapper {
+        border-bottom: 2px solid var(--bs-light);
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: var(--bs-body-color);
+        padding: 0.75rem 1.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .nav-tabs .nav-link:hover {
+        border-bottom-color: var(--bs-gray-300);
+    }
+
+    .nav-tabs .nav-link.active {
+        border-bottom-color: var(--bs-primary);
+        color: var(--bs-primary);
+        background: none;
+    }
+
+    .nav-pills .nav-link {
+        border-radius: 0.5rem;
+        color: var(--bs-body-color);
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: var(--bs-primary);
+    }
+
+    .tab-content {
+        padding: 1.5rem 0;
+    }
+
+    .tab-pane-content {
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .tabs-vertical .tab-nav-wrapper {
+        border-right: 2px solid var(--bs-light);
+        border-bottom: none;
+    }
+
+    .tabs-vertical .nav {
+        flex-direction: column;
+    }
+
+    .tabs-vertical .nav-link {
+        border-right: 3px solid transparent !important;
+        border-bottom: none !important;
+    }
+
+    .tabs-vertical .nav-link.active {
+        border-right-color: var(--bs-primary) !important;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+    }
+</style>

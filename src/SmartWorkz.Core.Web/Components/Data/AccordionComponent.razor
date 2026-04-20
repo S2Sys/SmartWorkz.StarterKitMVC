@@ -1,0 +1,232 @@
+@namespace SmartWorkz.Core.Web.Components.Data
+@using SmartWorkz.Core.Web.Components.Data.Models
+
+<div class="accordion @GetAccordionClasses()" id="accordion-@UniqueId">
+    @if (Items != null)
+    {
+        @foreach (var item in Items)
+        {
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button @(item.IsExpanded ? "" : "collapsed")"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse-@item.Id"
+                            aria-expanded="@item.IsExpanded"
+                            aria-controls="collapse-@item.Id"
+                            disabled="@item.IsDisabled"
+                            @onclick="@((e) => ToggleItemAsync(item))">
+
+                        @if (!string.IsNullOrEmpty(item.IconClass))
+                        {
+                            <i class="@item.IconClass me-2"></i>
+                        }
+
+                        @if (item.HeaderTemplate != null)
+                        {
+                            @item.HeaderTemplate
+                        }
+                        else
+                        {
+                            <span>@item.Title</span>
+                        }
+
+                        @if (AllowRemoving && Items.Count > 1)
+                        {
+                            <button type="button"
+                                    class="btn-close ms-auto"
+                                    style="margin-right: 1rem;"
+                                    @onclick:stopPropagation="true"
+                                    @onclick="@((e) => RemoveItemAsync(item))"
+                                    aria-label="Remove item"></button>
+                        }
+                    </button>
+                </h2>
+
+                <div id="collapse-@item.Id"
+                     class="accordion-collapse collapse @(item.IsExpanded ? "show" : "")"
+                     data-bs-parent="#accordion-@UniqueId">
+
+                    <div class="accordion-body p-0">
+                        @if (item.IsLoading)
+                        {
+                            <div class="p-4">
+                                <div class="spinner-border spinner-border-sm" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        }
+                        else if (item.Content != null)
+                        {
+                            <div class="p-4">
+                                @item.Content
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info m-0">No content available.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info mb-0">No accordion items configured.</div>
+    }
+</div>
+
+@code {
+    private string UniqueId { get; } = Guid.NewGuid().ToString();
+
+    /// <summary>List of accordion items.</summary>
+    [Parameter]
+    public List<AccordionItem>? Items { get; set; }
+
+    /// <summary>Allow multiple items expanded simultaneously.</summary>
+    [Parameter]
+    public bool AllowMultiple { get; set; } = false;
+
+    /// <summary>Auto-collapse siblings when opening.</summary>
+    [Parameter]
+    public bool AutoCollapseSiblings { get; set; } = true;
+
+    /// <summary>Show toggle icons.</summary>
+    [Parameter]
+    public bool ShowToggleIcon { get; set; } = true;
+
+    /// <summary>Allow removing items dynamically.</summary>
+    [Parameter]
+    public bool AllowRemoving { get; set; } = false;
+
+    /// <summary>Is flush (no borders, seamless).</summary>
+    [Parameter]
+    public bool IsFlush { get; set; } = false;
+
+    /// <summary>Callback when item expands.</summary>
+    [Parameter]
+    public EventCallback<AccordionExpandedEventArgs> OnExpanded { get; set; }
+
+    /// <summary>Callback when item collapses.</summary>
+    [Parameter]
+    public EventCallback<AccordionCollapsedEventArgs> OnCollapsed { get; set; }
+
+    /// <summary>Callback when item is removed.</summary>
+    [Parameter]
+    public EventCallback<AccordionItemRemovedEventArgs> OnItemRemoved { get; set; }
+
+    /// <summary>Custom CSS class.</summary>
+    [Parameter]
+    public string? CssClass { get; set; }
+
+    private async Task ToggleItemAsync(AccordionItem item)
+    {
+        if (item.IsDisabled)
+            return;
+
+        if (!AllowMultiple && AutoCollapseSiblings && !item.IsExpanded)
+        {
+            // Collapse all other items
+            foreach (var other in Items!.Where(i => i.Id != item.Id))
+            {
+                if (other.IsExpanded)
+                {
+                    other.IsExpanded = false;
+                    await OnCollapsed.InvokeAsync(new AccordionCollapsedEventArgs
+                    {
+                        ItemId = other.Id,
+                        Item = other
+                    });
+                }
+            }
+        }
+
+        item.IsExpanded = !item.IsExpanded;
+
+        if (item.IsExpanded)
+        {
+            if (item.LazyLoad && !item.ContentLoaded)
+            {
+                item.IsLoading = true;
+                StateHasChanged();
+                await Task.Delay(200);
+                item.ContentLoaded = true;
+                item.IsLoading = false;
+            }
+
+            await OnExpanded.InvokeAsync(new AccordionExpandedEventArgs
+            {
+                ItemId = item.Id,
+                Item = item
+            });
+        }
+        else
+        {
+            await OnCollapsed.InvokeAsync(new AccordionCollapsedEventArgs
+            {
+                ItemId = item.Id,
+                Item = item
+            });
+        }
+    }
+
+    private async Task RemoveItemAsync(AccordionItem item)
+    {
+        var args = new AccordionItemRemovedEventArgs { ItemId = item.Id, Item = item };
+        await OnItemRemoved.InvokeAsync(args);
+
+        if (!args.Cancel && Items != null)
+        {
+            Items.Remove(item);
+            StateHasChanged();
+        }
+    }
+
+    private string GetAccordionClasses()
+    {
+        var classes = new List<string> { "accordion" };
+        if (IsFlush) classes.Add("accordion-flush");
+        if (!string.IsNullOrEmpty(CssClass)) classes.Add(CssClass);
+        return string.Join(" ", classes);
+    }
+}
+
+<style>
+    .accordion-button {
+        padding: 1rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: var(--bs-light);
+        color: var(--bs-primary);
+    }
+
+    .accordion-button:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .accordion-body {
+        padding: 0;
+    }
+
+    .accordion-item {
+        border: 1px solid var(--bs-border-color);
+        margin-bottom: 0.5rem;
+        border-radius: 0.375rem;
+    }
+
+    .accordion-flush {
+        border-radius: 0;
+    }
+
+    .accordion-flush .accordion-item {
+        border-right: 0;
+        border-left: 0;
+        border-radius: 0;
+        margin-bottom: 0;
+    }
+</style>

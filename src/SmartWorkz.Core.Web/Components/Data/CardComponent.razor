@@ -1,0 +1,171 @@
+@namespace SmartWorkz.Core.Web.Components.Data
+@using SmartWorkz.Core.Web.Components.Data.Models
+@typeparam T where T : class
+
+<div class="card @GetCardClasses()" @onclick="HandleCardClick" role="region">
+    @if (!string.IsNullOrEmpty(Title) || !string.IsNullOrEmpty(ImageUrl) || !string.IsNullOrEmpty(BadgeText))
+    {
+        <div class="card-header position-relative @(ImageUrl != null ? "p-0" : "")">
+            @if (!string.IsNullOrEmpty(ImageUrl))
+            {
+                <img src="@ImageUrl" class="card-img-top" alt="@Title" style="height: 200px; object-fit: cover;" />
+            }
+
+            <div class="@(ImageUrl != null ? "position-absolute top-0 start-0 p-2" : "")">
+                @if (!string.IsNullOrEmpty(BadgeText))
+                {
+                    <span class="badge bg-@BadgeColor">@BadgeText</span>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(Title) || !string.IsNullOrEmpty(Subtitle) || !string.IsNullOrEmpty(IconClass))
+            {
+                <div class="p-3 @(ImageUrl != null ? "bg-white" : "")">
+                    <div class="d-flex align-items-center gap-2">
+                        @if (!string.IsNullOrEmpty(IconClass))
+                        {
+                            <i class="@IconClass"></i>
+                        }
+                        <div class="flex-grow-1">
+                            @if (!string.IsNullOrEmpty(Title))
+                            {
+                                <h5 class="card-title mb-0">@Title</h5>
+                            }
+                            @if (!string.IsNullOrEmpty(Subtitle))
+                            {
+                                <small class="text-muted">@Subtitle</small>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (IsLoading)
+    {
+        <div class="card-body">
+            <div class="placeholder-glow">
+                <span class="placeholder col-7"></span>
+                <span class="placeholder col-4"></span>
+                <span class="placeholder col-4"></span>
+            </div>
+        </div>
+    }
+    else if (ChildContent != null)
+    {
+        <div class="card-body">
+            @ChildContent
+        </div>
+    }
+
+    @if (ActionContent != null)
+    {
+        <div class="card-footer bg-light">
+            @ActionContent
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>Card title/header text.</summary>
+    [Parameter]
+    public string? Title { get; set; }
+
+    /// <summary>Card subtitle (shown under title).</summary>
+    [Parameter]
+    public string? Subtitle { get; set; }
+
+    /// <summary>URL to header image.</summary>
+    [Parameter]
+    public string? ImageUrl { get; set; }
+
+    /// <summary>Icon to display in header.</summary>
+    [Parameter]
+    public string? IconClass { get; set; }
+
+    /// <summary>Card elevation/shadow level (1-3, default 1).</summary>
+    [Parameter]
+    public int ElevationLevel { get; set; } = 1;
+
+    /// <summary>Custom CSS classes.</summary>
+    [Parameter]
+    public string? CssClass { get; set; }
+
+    /// <summary>Enable click effects (pointer cursor, hover shadow).</summary>
+    [Parameter]
+    public bool IsClickable { get; set; } = false;
+
+    /// <summary>Show loading skeleton.</summary>
+    [Parameter]
+    public bool IsLoading { get; set; } = false;
+
+    /// <summary>Badge text (e.g., "New", "Featured").</summary>
+    [Parameter]
+    public string? BadgeText { get; set; }
+
+    /// <summary>Badge color (success, warning, danger, info, primary, secondary).</summary>
+    [Parameter]
+    public string BadgeColor { get; set; } = "success";
+
+    /// <summary>Card content.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Footer content (actions, buttons).</summary>
+    [Parameter]
+    public RenderFragment? ActionContent { get; set; }
+
+    /// <summary>Callback when card is clicked.</summary>
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    private string GetCardClasses()
+    {
+        var classes = new List<string> { "shadow-sm" };
+
+        // Add elevation shadow
+        if (ElevationLevel > 1)
+            classes.Add($"shadow-{ElevationLevel}");
+
+        // Add clickable styling
+        if (IsClickable)
+            classes.Add("card-hover");
+
+        // Add custom classes
+        if (!string.IsNullOrEmpty(CssClass))
+            classes.Add(CssClass);
+
+        return string.Join(" ", classes);
+    }
+
+    private async Task HandleCardClick()
+    {
+        if (IsClickable)
+            await OnClick.InvokeAsync();
+    }
+}
+
+<style>
+    .card-hover {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .card-hover:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+        transform: translateY(-2px);
+    }
+
+    .shadow-1 {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .shadow-2 {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .shadow-3 {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+</style>
