@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.101.0" />
-    <PackageReference Include="iTextSharp" Version="5.5.13.3" />
+    <PackageReference Include="QuestPDF" Version="2024.12.2" />
   </ItemGroup>
 
 </Project>

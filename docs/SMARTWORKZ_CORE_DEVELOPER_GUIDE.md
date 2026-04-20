@@ -9,6 +9,9 @@
 1. [Architecture Overview](#architecture-overview)
 2. [Core Patterns](#core-patterns)
 3. [Data & Caching](#data--caching)
+   - 3.1 [In-Memory Cache Service](#1-in-memory-cache-service)
+   - 3.2 [Cache Attribute (Phase 1)](#2-cache-attribute--phase-1)
+   - 3.3 [DbProviderFactory & DbExtensions (Phase 1)](#3-dbproviderfactory--dbextensions--phase-1)
 4. [Grid Component System](#grid-component-system)
 5. [Multi-Tenancy](#multi-tenancy)
 6. [Feature Flags](#feature-flags)
@@ -17,10 +20,12 @@
 9. [Security & Validation](#security--validation)
 10. [Logging & Diagnostics](#logging--diagnostics)
 11. [Communication Services](#communication-services)
+    - 11.1 [Template Engine (Phase 1)](#3-template-engine--phase-1)
 12. [Resilience Patterns](#resilience-patterns)
-13. [Helper Libraries](#helper-libraries)
-14. [Domain-Driven Design](#domain-driven-design)
-15. [Integration Patterns](#integration-patterns)
+13. [HTTP Client (Phase 1)](#http-client--phase-1)
+14. [Helper Libraries](#helper-libraries)
+15. [Domain-Driven Design](#domain-driven-design)
+16. [Integration Patterns](#integration-patterns)
 
 ---
 
@@ -308,6 +313,122 @@ public class TenantAwareCacheService
     }
 }
 ```
+
+---
+
+### 2. Cache Attribute (Phase 1)
+
+**Purpose**: Automatic HTTP action result caching without boilerplate `ICacheService` code.
+
+**When to use:**
+- Simple endpoints returning the same data for all users
+- Response rarely changes (> 5 minutes)
+- Want automatic expiration without manual cache keys
+
+**Configuration:**
+
+```csharp
+[Cache(Seconds = 60)]              // Default: 60 second absolute expiration
+[Cache(Seconds = 300, SlidingExpiration = true)]  // Sliding: reset on each hit
+[Cache(Seconds = 600, Key = "AllProducts")]       // Custom key
+```
+
+**Properties:**
+- `Seconds` (int) — Cache duration in seconds (default: 60)
+- `Key` (string?) — Custom cache key; if null, uses request path
+- `SlidingExpiration` (bool) — Reset expiry on each hit (default: false)
+
+**Example:**
+
+```csharp
+[ApiController]
+public class ProductsController : ControllerBase
+{
+    // Cache GET /api/products/5 for 60 seconds
+    [Cache(Seconds = 60)]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetProduct(int id)
+    {
+        var product = await _service.GetProductAsync(id);
+        return Ok(product);
+    }
+
+    // Cache with custom key and sliding expiration
+    [Cache(Seconds = 300, Key = "AllProducts", SlidingExpiration = true)]
+    [HttpGet]
+    public async Task<IActionResult> ListProducts()
+    {
+        var products = await _service.ListAsync();
+        return Ok(products);
+    }
+}
+```
+
+**vs. ICacheService:**
+- `[Cache]` — Simple decorator, no boilerplate, per-instance (not distributed)
+- `ICacheService` — Programmatic control, distributed cache, complex invalidation
+
+Use `[Cache]` for read-only endpoints. Use `ICacheService` when you need explicit control or distributed caching.
+
+---
+
+### 3. DbProviderFactory & DbExtensions (Phase 1)
+
+**Purpose**: Type-safe database provider selection and simplified data access aliases.
+
+**DbProviderFactory — Enum Overload:**
+
+```csharp
+// Type-safe provider lookup (instead of string)
+var provider = DbProviderFactory.GetProvider(DatabaseProvider.SqlServer);
+
+// Supported providers
+public enum DatabaseProvider
+{
+    SqlServer,
+    MySql,
+    PostgreSql,
+    Sqlite
+}
+```
+
+**DbExtensions — Simplified Aliases:**
+
+Extension methods on `IDbProvider` for shorter, more intuitive names:
+
+```csharp
+// ADO.NET helpers
+var users = await provider.QueryAsync<User>(
+    "SELECT * FROM Users WHERE Id = @Id",
+    new { Id = 1 }
+);
+
+var count = await provider.ScalarAsync<int>(
+    "SELECT COUNT(*) FROM Users"
+);
+
+var affected = await provider.NonQueryAsync(
+    "UPDATE Users SET Status = @Status WHERE Id = @Id",
+    new { Status = "Active", Id = 1 }
+);
+
+// Dapper helpers  
+var user = await provider.QuerySingleAsync<User>(
+    "SELECT * FROM Users WHERE Id = @Id",
+    new { Id = 1 }
+);
+```
+
+**Before vs. After:**
+
+| Verbose | Alias |
+|---------|-------|
+| `AdoHelper.ExecuteQueryAsync<T>` | `provider.QueryAsync<T>` |
+| `AdoHelper.ExecuteScalarAsync<T>` | `provider.ScalarAsync<T>` |
+| `AdoHelper.ExecuteNonQueryAsync` | `provider.NonQueryAsync` |
+| `DapperHelper.DapperQueryAsync<T>` | `provider.QueryAsync<T>` |
+| `DapperHelper.DapperQuerySingleAsync<T>` | `provider.QuerySingleAsync<T>` |
+| `DapperHelper.DapperExecuteAsync` | `provider.ExecuteAsync` |
 
 ---
 
@@ -1615,6 +1736,161 @@ public class TwilioSmsService : ISmsService
     }
 }
 ```
+
+### 3. Template Engine (Phase 1)
+
+**Purpose**: File and string-based template rendering with placeholder substitution for dynamic email/SMS content.
+
+**Interface:**
+
+```csharp
+public interface ITemplateEngine
+{
+    // Synchronous string rendering
+    string Render(string content, IDictionary<string, string> values);
+    string Render(string content, object model);
+
+    // Asynchronous file-based rendering
+    Task<Result<string>> RenderFileAsync(
+        string filePath,
+        IDictionary<string, string> values,
+        CancellationToken ct = default);
+    
+    Task<Result<string>> RenderFileAsync(
+        string filePath,
+        object model,
+        CancellationToken ct = default);
+
+    // Batch directory loading/rendering
+    Task<Result<Dictionary<string, string>>> LoadDirectoryAsync(
+        string directoryPath,
+        string searchPattern = "*.html",
+        CancellationToken ct = default);
+    
+    Task<Result<Dictionary<string, string>>> RenderDirectoryAsync(
+        string directoryPath,
+        IDictionary<string, string> values,
+        string searchPattern = "*.html",
+        CancellationToken ct = default);
+}
+```
+
+**Setup:**
+
+```csharp
+// Program.cs
+services.AddScoped<ITemplateEngine, TemplateEngine>();
+```
+
+**Placeholder Syntax:**
+
+```csharp
+// Simple placeholders — match object properties
+var result = _templateEngine.Render(
+    "Hello {Name}! Your order {OrderNumber} is confirmed.",
+    new { Name = "Alice", OrderNumber = "ORD-123" }
+);
+// Result: "Hello Alice! Your order ORD-123 is confirmed."
+
+// Translation key placeholders — match dictionary keys
+var result = _templateEngine.Render(
+    "{{GREETING}} {{OFFER}}",
+    new Dictionary<string, string>
+    {
+        { "GREETING", "Welcome" },
+        { "OFFER", "Save 10%" }
+    }
+);
+// Result: "Welcome Save 10%"
+```
+
+**File-Based Rendering:**
+
+```csharp
+// Load from file and render
+var result = await _templateEngine.RenderFileAsync(
+    "~/Templates/Emails/order-confirmation.html",
+    new
+    {
+        CustomerName = "Bob Smith",
+        OrderNumber = order.Id,
+        Total = $"${order.Total:F2}",
+        ShippingDate = order.ShippingDate?.ToString("MMMM dd, yyyy") ?? "TBD"
+    }
+);
+
+if (result.IsFailure)
+{
+    _logger.Error($"Template render failed: {result.Error.Message}");
+    return;
+}
+
+await _emailSender.SendAsync(order.Email, "Order Confirmed", result.Value);
+```
+
+**Bulk Rendering:**
+
+```csharp
+// Load all templates from a directory
+var templates = await _templateEngine.LoadDirectoryAsync("~/Templates/Emails");
+
+// Render directory with values applied to all templates
+var rendered = await _templateEngine.RenderDirectoryAsync(
+    "~/Templates/Emails",
+    new Dictionary<string, string>
+    {
+        { "CompanyName", "ACME Corp" },
+        { "SupportEmail", "support@acme.com" }
+    }
+);
+```
+
+**Benefits:**
+- No hardcoded strings in C# code
+- Supports both object properties and translation keys
+- Parallel file I/O for performance
+- Safe error handling via `Result<T>`
+- Case-insensitive placeholder matching
+
+See detailed guide: [TEMPLATE_ENGINE_GUIDE.md](TEMPLATE_ENGINE_GUIDE.md)
+
+---
+
+## HTTP Client (Phase 1)
+
+### HttpStatusCode Enum for Retry Policies
+
+**Purpose**: Type-safe HTTP status codes instead of magic integers in retry configuration.
+
+```csharp
+// Before Phase 1: Magic integers
+new RetryPolicy
+{
+    RetryableStatusCodes = [408, 429, 500, 502, 503]
+}
+
+// Phase 1: Type-safe enums
+new RetryPolicy
+{
+    RetryableStatusCodes = [
+        HttpStatusCode.RequestTimeout,      // 408
+        HttpStatusCode.TooManyRequests,     // 429
+        HttpStatusCode.InternalServerError, // 500
+        HttpStatusCode.BadGateway,          // 502
+        HttpStatusCode.ServiceUnavailable   // 503
+    ]
+}
+```
+
+**Common Retryable Codes:**
+- `RequestTimeout` (408) — Client timeout
+- `TooManyRequests` (429) — Rate limit
+- `InternalServerError` (500) — Server error
+- `BadGateway` (502) — Gateway issue
+- `ServiceUnavailable` (503) — Temporary unavailability
+- `GatewayTimeout` (504) — Gateway timeout
+
+See: [HTTP_CLIENT_GUIDE.md](HTTP_CLIENT_GUIDE.md#retry-policies)
 
 ---
 

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Sample.ECommerce.Web.Models;
+        namespace SmartWorkz.Sample.ECommerce.Web.Models;
 
 public class PagingModel
 {

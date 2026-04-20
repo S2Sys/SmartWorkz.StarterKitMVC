@@ -1,7 +1,7 @@
 namespace SmartWorkz.Core.Shared.Data;
 
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 /// <summary>
 /// Factory for creating database provider instances.
