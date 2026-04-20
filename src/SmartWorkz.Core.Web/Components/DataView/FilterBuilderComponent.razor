@@ -1,0 +1,136 @@
+@typeparam T where T : class
+
+<div class="filter-builder-container">
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0">Filter Builder</h6>
+        </div>
+        <div class="card-body">
+            @if (AvailableColumns?.Count > 0)
+            {
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Column:</label>
+                        <select class="form-select" @bind="SelectedColumn">
+                            <option value="">-- Select Column --</option>
+                            @foreach (var col in AvailableColumns)
+                            {
+                                <option value="@col">@col</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Operator:</label>
+                        <select class="form-select" @bind="SelectedOperator">
+                            <option value="equals">Equals</option>
+                            <option value="contains">Contains</option>
+                            <option value="startswith">Starts With</option>
+                            <option value="endswith">Ends With</option>
+                            <option value="greaterthan">Greater Than</option>
+                            <option value="lessthan">Less Than</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Value:</label>
+                        <input type="text" class="form-control" @bind="FilterValue" placeholder="Enter value" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <button class="btn btn-primary" @onclick="AddFilter">Add Filter</button>
+                    <button class="btn btn-outline-secondary" @onclick="ClearAll">Clear All</button>
+                </div>
+
+                @if (ActiveFilters?.Count > 0)
+                {
+                    <div class="active-filters">
+                        <h6>Active Filters:</h6>
+                        <div class="list-group">
+                            @foreach (var (index, filter) in ActiveFilters.Select((f, i) => (i, f)))
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>
+                                        <strong>@filter.Column</strong>
+                                        @filter.Operator
+                                        "<span class="text-monospace">@filter.Value</span>"
+                                    </span>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="@(() => RemoveFilter(index))">Remove</button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-warning">No columns available for filtering</div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IDataContext<T>? DataContext { get; set; }
+
+    [Parameter]
+    public List<string>? AvailableColumns { get; set; }
+
+    [Parameter]
+    public EventCallback<List<FilterDefinition>> OnFiltersChanged { get; set; }
+
+    private string SelectedColumn { get; set; } = "";
+    private string SelectedOperator { get; set; } = "equals";
+    private string FilterValue { get; set; } = "";
+    private List<FilterDefinition> ActiveFilters { get; set; } = [];
+
+    private async Task AddFilter()
+    {
+        if (string.IsNullOrEmpty(SelectedColumn) || string.IsNullOrEmpty(FilterValue))
+        {
+            return;
+        }
+
+        ActiveFilters.Add(new FilterDefinition
+        {
+            Column = SelectedColumn,
+            Operator = SelectedOperator,
+            Value = FilterValue
+        });
+
+        if (DataContext != null)
+        {
+            await DataContext.UpdateFilter(SelectedColumn, SelectedOperator, FilterValue);
+        }
+
+        SelectedColumn = "";
+        FilterValue = "";
+        await OnFiltersChanged.InvokeAsync(ActiveFilters);
+    }
+
+    private async Task RemoveFilter(int index)
+    {
+        if (index >= 0 && index < ActiveFilters.Count)
+        {
+            ActiveFilters.RemoveAt(index);
+            await OnFiltersChanged.InvokeAsync(ActiveFilters);
+        }
+    }
+
+    private async Task ClearAll()
+    {
+        ActiveFilters.Clear();
+        if (DataContext != null)
+        {
+            await DataContext.ClearFilters();
+        }
+        await OnFiltersChanged.InvokeAsync(ActiveFilters);
+    }
+
+    public class FilterDefinition
+    {
+        public string Column { get; set; } = "";
+        public string Operator { get; set; } = "equals";
+        public string Value { get; set; } = "";
+    }
+}

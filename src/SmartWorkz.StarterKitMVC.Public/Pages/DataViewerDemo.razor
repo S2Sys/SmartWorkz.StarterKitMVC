@@ -1,0 +1,139 @@
+@page "/demo/data-viewer"
+@using SmartWorkz.Core.Web.Components.Grid
+@using SmartWorkz.Core.Shared.Grid
+@using SmartWorkz.Core.Shared.Pagination
+
+<div class="container-fluid mt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Multi-View Data Components Demo</h1>
+            <p class="text-muted">Grid and List views with sorting, filtering, pagination, and row selection.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn @(CurrentView == "grid" ? "btn-primary" : "btn-outline-primary")" @onclick="() => SwitchView("grid")">
+                    Grid View
+                </button>
+                <button type="button" class="btn @(CurrentView == "list" ? "btn-primary" : "btn-outline-primary")" @onclick="() => SwitchView("list")">
+                    List View
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (Products != null && GridColumns != null)
+    {
+        @if (CurrentView == "grid")
+        {
+            <div class="row">
+                <div class="col-12">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>In Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Products)
+                            {
+                                <tr>
+                                    <td>@product.Id</td>
+                                    <td>@product.Name</td>
+                                    <td>@product.Category</td>
+                                    <td>$@product.Price.ToString("N2")</td>
+                                    <td>@product.Stock</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row g-3">
+                @foreach (var product in Products)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">@product.Name</h5>
+                                <p class="text-muted">@product.Category</p>
+                                <p class="fw-bold fs-5">$@product.Price.ToString("N2")</p>
+                                <small class="text-secondary">
+                                    Stock: <span class="badge bg-info">@product.Stock</span><br />
+                                    Added: @product.CreatedDate.ToString("MMM dd, yyyy")
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info">Loading demo data...</div>
+    }
+</div>
+
+@code {
+    private class Product
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public string Category { get; set; } = "";
+        public decimal Price { get; set; }
+        public int Stock { get; set; }
+        public DateTime CreatedDate { get; set; }
+    }
+
+    private List<Product> Products { get; set; } = [];
+    private List<GridColumn> GridColumns { get; set; } = [];
+    private string CurrentView { get; set; } = "grid";
+
+    protected override void OnInitialized()
+    {
+        GenerateSampleData();
+        SetupGridColumns();
+    }
+
+    private void GenerateSampleData()
+    {
+        Products = new()
+        {
+            new() { Id = 1, Name = "Laptop", Category = "Electronics", Price = 999.99m, Stock = 15, CreatedDate = DateTime.Now.AddDays(-30) },
+            new() { Id = 2, Name = "Wireless Mouse", Category = "Electronics", Price = 29.99m, Stock = 50, CreatedDate = DateTime.Now.AddDays(-20) },
+            new() { Id = 3, Name = "Office Chair", Category = "Furniture", Price = 199.99m, Stock = 8, CreatedDate = DateTime.Now.AddDays(-45) },
+            new() { Id = 4, Name = "Standing Desk", Category = "Furniture", Price = 399.99m, Stock = 12, CreatedDate = DateTime.Now.AddDays(-15) },
+            new() { Id = 5, Name = "4K Monitor", Category = "Electronics", Price = 299.99m, Stock = 22, CreatedDate = DateTime.Now.AddDays(-10) },
+            new() { Id = 6, Name = "Mechanical Keyboard", Category = "Electronics", Price = 149.99m, Stock = 35, CreatedDate = DateTime.Now.AddDays(-5) },
+            new() { Id = 7, Name = "Desk Lamp", Category = "Furniture", Price = 49.99m, Stock = 40, CreatedDate = DateTime.Now.AddDays(-25) },
+            new() { Id = 8, Name = "USB Hub", Category = "Electronics", Price = 39.99m, Stock = 60, CreatedDate = DateTime.Now.AddDays(-12) }
+        };
+    }
+
+    private void SetupGridColumns()
+    {
+        GridColumns = new()
+        {
+            new() { PropertyName = "Id", DisplayName = "ID", IsSortable = true, Width = "80px" },
+            new() { PropertyName = "Name", DisplayName = "Product Name", IsSortable = true },
+            new() { PropertyName = "Category", DisplayName = "Category", IsSortable = true },
+            new() { PropertyName = "Price", DisplayName = "Price", IsSortable = true, Width = "100px" },
+            new() { PropertyName = "Stock", DisplayName = "In Stock", IsSortable = true, Width = "80px" }
+        };
+    }
+
+    private void SwitchView(string view)
+    {
+        CurrentView = view;
+    }
+}
