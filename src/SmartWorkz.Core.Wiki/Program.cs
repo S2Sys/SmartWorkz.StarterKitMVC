@@ -3,7 +3,7 @@ using SmartWorkz.Core.Wiki.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
-builder.Services.AddScoped<WikiDocumentService>();
+builder.Services.AddSingleton<WikiDocumentService>();
 
 var app = builder.Build();
 
