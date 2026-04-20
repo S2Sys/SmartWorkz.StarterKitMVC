@@ -367,6 +367,118 @@ public class DetailsModel : PageModel
 
 ---
 
+## [Cache] Attribute (Phase 1) — Simpler Alternative
+
+For simple, read-only endpoints where all users see the same data, use `[Cache]` instead of manually coding cache logic:
+
+### Step 1: Add Attribute to Controller Action
+
+```csharp
+// Controllers/ProductsController.cs
+using Microsoft.AspNetCore.Mvc;
+
+namespace YourApp.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ProductsController : ControllerBase
+{
+    private readonly IProductService _service;
+
+    public ProductsController(IProductService service)
+    {
+        _service = service;
+    }
+
+    // ✓ Simple: No boilerplate, caches for 60 seconds by default
+    [Cache]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetProduct(int id)
+    {
+        var product = await _service.GetProductAsync(id);
+        if (product == null)
+            return NotFound();
+        return Ok(product);
+    }
+
+    // ✓ Custom duration: Cache for 5 minutes
+    [Cache(Seconds = 300)]
+    [HttpGet]
+    public async Task<IActionResult> ListProducts()
+    {
+        var products = await _service.ListProductsAsync();
+        return Ok(products);
+    }
+
+    // ✓ Sliding expiration: Reset timer on each request
+    [Cache(Seconds = 600, SlidingExpiration = true)]
+    [HttpGet("popular")]
+    public async Task<IActionResult> GetPopularProducts()
+    {
+        var popular = await _service.GetPopularAsync();
+        return Ok(popular);
+    }
+
+    // ✓ Custom key: Cache all results under same key
+    [Cache(Seconds = 300, Key = "AllProductCategories")]
+    [HttpGet("categories")]
+    public async Task<IActionResult> GetCategories()
+    {
+        var categories = await _service.GetCategoriesAsync();
+        return Ok(categories);
+    }
+}
+```
+
+### Configuration Options
+
+| Property | Type | Default | Meaning |
+|----------|------|---------|---------|
+| `Seconds` | int | 60 | Cache duration in seconds |
+| `Key` | string? | null | Custom cache key (null = use request path) |
+| `SlidingExpiration` | bool | false | Reset expiry on each hit |
+
+### When to Use [Cache] vs ICacheService
+
+**Use `[Cache]` for:**
+- Simple endpoints returning the same data
+- GET requests only
+- No manual invalidation needed
+- Response rarely changes
+
+**Use `ICacheService` for:**
+- Complex cache invalidation logic
+- Need to invalidate on other events
+- Query-parameter dependent caching
+- Distributed caching across servers
+
+### Key Difference
+
+```csharp
+// ICacheService: Manual boilerplate
+public async Task<User> GetUserAsync(int id)
+{
+    var key = $"user:{id}";
+    var cached = await _cache.GetAsync<User>(key);
+    if (cached.IsSuccess) return cached.Value;
+    
+    var user = await _repo.GetAsync(id);
+    await _cache.SetAsync(key, user, new CacheOptions { Duration = TimeSpan.FromMinutes(10) });
+    return user;
+}
+
+// [Cache]: Zero boilerplate
+[Cache(Seconds = 600)]
+[HttpGet("{id}")]
+public async Task<IActionResult> GetUser(int id)
+{
+    var user = await _repo.GetAsync(id);
+    return Ok(user);
+}
+```
+
+---
+
 ## Complete Grid Component Example
 
 ### Step 1: Create Data Model

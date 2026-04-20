@@ -27,7 +27,9 @@
     "additionalDirectories": [
       "C:\\Users\\tsent\\.claude\\projects\\c--Users-tsent-source-repos-S2Sys-SmartWorkz-StarterKitMVC\\plans",
       "\\tmp",
-      "c:\\tmp"
+      "c:\\tmp",
+      "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Web",
+      "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.External"
     ]
   }
 }

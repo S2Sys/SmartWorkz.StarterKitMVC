@@ -53,7 +53,7 @@ public class PdfOptions
     /// <summary>
     /// Gets or sets the header background color (RGB).
     /// </summary>
-    public BaseColor? HeaderBackgroundColor { get; set; } = new BaseColor(211, 211, 211); // Light gray
+    public object? HeaderBackgroundColor { get; set; } // Color representation for PDF header
 
     /// <summary>
     /// Gets or sets the default date format.
