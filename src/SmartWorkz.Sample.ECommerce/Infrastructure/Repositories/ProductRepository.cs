@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using SmartWorkz.Core.Abstractions;
 using SmartWorkz.Core.Shared.Specifications;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
@@ -16,19 +17,43 @@ public class ProductRepository(ECommerceDbContext db) : IRepository<Product, int
 
     public async Task<Product?> FindAsync(Specification<Product> specification, CancellationToken cancellationToken = default)
     {
-        IQueryable<Product> query = db.Products.Include(p => p.Category);
+        var query = db.Products.AsQueryable();
+
+        // Apply eager loading includes
+        foreach (var include in specification.Includes)
+            query = query.Include(include);
+
+        // Apply criteria filters
         query = specification.Criteria.Aggregate(query, (q, c) => q.Where(c));
+
+        // Apply ordering
+        query = ApplyOrdering(query, specification);
+
+        // Apply paging
         if (specification.Skip.HasValue) query = query.Skip(specification.Skip.Value);
         if (specification.Take.HasValue) query = query.Take(specification.Take.Value);
+
         return await query.FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<Product>> FindAllAsync(Specification<Product> specification, CancellationToken cancellationToken = default)
     {
-        IQueryable<Product> query = db.Products.Include(p => p.Category);
+        var query = db.Products.AsQueryable();
+
+        // Apply eager loading includes
+        foreach (var include in specification.Includes)
+            query = query.Include(include);
+
+        // Apply criteria filters
         query = specification.Criteria.Aggregate(query, (q, c) => q.Where(c));
+
+        // Apply ordering
+        query = ApplyOrdering(query, specification);
+
+        // Apply paging
         if (specification.Skip.HasValue) query = query.Skip(specification.Skip.Value);
         if (specification.Take.HasValue) query = query.Take(specification.Take.Value);
+
         return await query.ToListAsync(cancellationToken);
     }
 
@@ -90,5 +115,16 @@ public class ProductRepository(ECommerceDbContext db) : IRepository<Product, int
     {
         db.Products.RemoveRange(entities);
         await db.SaveChangesAsync(cancellationToken);
+    }
+
+    private static IQueryable<Product> ApplyOrdering(IQueryable<Product> query, Specification<Product> specification)
+    {
+        if (specification.OrderBy != null)
+            return query.OrderBy(specification.OrderBy);
+
+        if (specification.OrderByDescending != null)
+            return query.OrderByDescending(specification.OrderByDescending);
+
+        return query;
     }
 }
