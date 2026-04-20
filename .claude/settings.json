@@ -8,7 +8,21 @@
       "Bash(cp \"C:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\SmartWorkz.StarterKitMVC\\\\.worktrees\\\\feature\\\\lov-consolidation\\\\src\\\\SmartWorkz.StarterKitMVC.Admin\\\\wwwroot\\\\css\\\\design-tokens.css\" \"C:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\SmartWorkz.StarterKitMVC\\\\src\\\\SmartWorkz.StarterKitMVC.Admin\\\\wwwroot\\\\css\\\\\" && cp \"C:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\SmartWorkz.StarterKitMVC\\\\.worktrees\\\\feature\\\\lov-consolidation\\\\src\\\\SmartWorkz.StarterKitMVC.Admin\\\\wwwroot\\\\css\\\\admin-layout.css\" \"C:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\SmartWorkz.StarterKitMVC\\\\src\\\\SmartWorkz.StarterKitMVC.Admin\\\\wwwroot\\\\css\\\\\")",
       "Bash(cp \"C:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\SmartWorkz.StarterKitMVC\\\\.worktrees\\\\feature\\\\lov-consolidation\\\\src\\\\SmartWorkz.StarterKitMVC.Admin\\\\wwwroot\\\\js\\\\admin-theme.js\" \"C:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\SmartWorkz.StarterKitMVC\\\\src\\\\SmartWorkz.StarterKitMVC.Admin\\\\wwwroot\\\\js\\\\\" && echo \"✅ COPY COMPLETE\" && echo \"\" && echo \"CSS Files:\" && ls -lh \"C:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\SmartWorkz.StarterKitMVC\\\\src\\\\SmartWorkz.StarterKitMVC.Admin\\\\wwwroot\\\\css\\\\design-tokens.css\" \"C:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\SmartWorkz.StarterKitMVC\\\\src\\\\SmartWorkz.StarterKitMVC.Admin\\\\wwwroot\\\\css\\\\admin-layout.css\" && echo \"\" && echo \"JS Files:\" && ls -lh \"C:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\SmartWorkz.StarterKitMVC\\\\src\\\\SmartWorkz.StarterKitMVC.Admin\\\\wwwroot\\\\js\\\\admin-theme.js\")",
       "PowerShell(Get-Process | Where-Object {$_.Name -match \"SmartWorkz|dotnet\"} | Stop-Process -Force -Confirm:$false; Start-Sleep -Milliseconds 500; \"Done\")",
-      "WebFetch(domain:localhost)"
+      "WebFetch(domain:localhost)",
+      "PowerShell(Get-Process | Where-Object {$_.ProcessName -match \"SmartWorkz\"})",
+      "PowerShell(Stop-Process -Id 23628 -Force; Start-Sleep -Milliseconds 500; Get-Process | Where-Object {$_.ProcessName -match \"SmartWorkz\"})",
+      "PowerShell(Stop-Process -Id 28712 -Force -ErrorAction SilentlyContinue)",
+      "PowerShell(dotnet build src/SmartWorkz.Sample.ECommerce/SmartWorkz.Sample.ECommerce.csproj --no-restore 2>&1)",
+      "PowerShell(tail -5)",
+      "PowerShell($process = Get-NetTCPConnection -LocalPort 5010 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess | Get-Unique; if \\($process\\) { Stop-Process -Id $process -Force; Write-Host \"Killed process $process\"; Start-Sleep -Milliseconds 500 } else { Write-Host \"No process found on port 5010\" })",
+      "PowerShell(Get-Process | Where-Object {$_.ProcessName -match \"SmartWorkz|dotnet\"})",
+      "PowerShell(Stop-Process -Id 24172, 1720 -Force -ErrorAction SilentlyContinue; Start-Sleep -Milliseconds 1000; Get-Process | Where-Object {$_.ProcessName -match \"SmartWorkz|dotnet\"} | Measure-Object)",
+      "PowerShell(netstat -ano)",
+      "PowerShell($json = Get-Content 'src/SmartWorkz.Sample.ECommerce/Properties/launchSettings.json' | ConvertFrom-Json; $json.profiles.'SmartWorkz.Sample.ECommerce'.applicationUrl = 'http://localhost:5010'; $json | ConvertTo-Json | Set-Content 'src/SmartWorkz.Sample.ECommerce/Properties/launchSettings.json'; Write-Host \"Updated launchSettings.json to use HTTP only on port 5010\")",
+      "PowerShell(netsh int ipv4 show tcpstats)",
+      "PowerShell($json = Get-Content 'src/SmartWorkz.Sample.ECommerce/Properties/launchSettings.json' | ConvertFrom-Json; $json.profiles.'SmartWorkz.Sample.ECommerce'.applicationUrl = 'http://localhost:5555'; $json | ConvertTo-Json | Set-Content 'src/SmartWorkz.Sample.ECommerce/Properties/launchSettings.json'; Write-Host \"Changed port to 5555\"; Get-Content 'src/SmartWorkz.Sample.ECommerce/Properties/launchSettings.json')",
+      "PowerShell(Get-Process | Where-Object {$_.ProcessName -match \"dotnet|SmartWorkz\"}; Write-Host \"---\"; netstat -ano | Select-String \"9000|listening\" | Head -5)",
+      "PowerShell(curl -v http://localhost:9000 2>&1)"
     ],
     "additionalDirectories": [
       "C:\\Users\\tsent\\.claude\\projects\\c--Users-tsent-source-repos-S2Sys-SmartWorkz-StarterKitMVC\\plans",
