@@ -4,11 +4,23 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Reflection;
 
+/// <summary>Provides template rendering services with support for placeholder substitution.</summary>
+/// <remarks>
+/// This engine supports two placeholder formats: {Key} and {{Key}}, both case-insensitive.
+/// When rendering with a dictionary, all matching placeholders are replaced with corresponding values.
+/// When rendering with an object model, public properties are used as replacement values.
+/// Unmatched placeholders remain unchanged in the rendered output.
+/// </remarks>
 public partial class TemplateEngine : ITemplateEngine
 {
+    /// <summary>Regular expression pattern for matching placeholders in both {{}} and {} formats (case-insensitive).</summary>
     [GeneratedRegex(@"\{\{(\w+)\}\}|\{(\w+)\}")]
     private static partial Regex PlaceholderRegex();
 
+    /// <summary>Renders a template string by replacing placeholders with values from a dictionary.</summary>
+    /// <param name="content">The template content containing placeholders in the format {Key} or {{Key}} (case-insensitive).</param>
+    /// <param name="values">Dictionary of key-value pairs to substitute into the template.</param>
+    /// <returns>The rendered content with placeholders replaced. Unmatched placeholders and null/empty content remain unchanged.</returns>
     public string Render(string content, IDictionary<string, string> values)
     {
         if (string.IsNullOrEmpty(content))
@@ -23,12 +35,21 @@ public partial class TemplateEngine : ITemplateEngine
         });
     }
 
+    /// <summary>Renders a template string by extracting properties from an object model.</summary>
+    /// <param name="content">The template content containing placeholders in the format {Key} or {{Key}} (case-insensitive).</param>
+    /// <param name="model">The model object whose public properties are used for placeholder substitution.</param>
+    /// <returns>The rendered content with placeholders replaced using model properties. Unmatched placeholders remain unchanged.</returns>
     public string Render(string content, object model)
     {
         var dict = ReflectModel(model);
         return Render(content, dict);
     }
 
+    /// <summary>Asynchronously renders a template file by replacing placeholders with values from a dictionary.</summary>
+    /// <param name="filePath">The path to the template file.</param>
+    /// <param name="values">Dictionary of key-value pairs to substitute into the template.</param>
+    /// <param name="ct">Cancellation token to cancel the operation.</param>
+    /// <returns>A result containing the rendered file content, or an error if the file operation fails.</returns>
     public async Task<Result<string>> RenderFileAsync(string filePath, IDictionary<string, string> values, CancellationToken ct = default)
     {
         try
@@ -57,12 +78,22 @@ public partial class TemplateEngine : ITemplateEngine
         }
     }
 
+    /// <summary>Asynchronously renders a template file by extracting properties from an object model.</summary>
+    /// <param name="filePath">The path to the template file.</param>
+    /// <param name="model">The model object whose public properties are used for placeholder substitution.</param>
+    /// <param name="ct">Cancellation token to cancel the operation.</param>
+    /// <returns>A result containing the rendered file content, or an error if the file operation fails.</returns>
     public async Task<Result<string>> RenderFileAsync(string filePath, object model, CancellationToken ct = default)
     {
         var dict = ReflectModel(model);
         return await RenderFileAsync(filePath, dict, ct);
     }
 
+    /// <summary>Asynchronously loads all template files from a directory into a dictionary.</summary>
+    /// <param name="directoryPath">The directory path to scan for template files.</param>
+    /// <param name="searchPattern">The search pattern for files (default "*.html"). Supports wildcards like "*.txt".</param>
+    /// <param name="ct">Cancellation token to cancel the operation.</param>
+    /// <returns>A result containing a dictionary mapping file names (without extension) to their content, or an error if the directory operation fails.</returns>
     public async Task<Result<Dictionary<string, string>>> LoadDirectoryAsync(string directoryPath, string searchPattern = "*.html", CancellationToken ct = default)
     {
         try
@@ -100,6 +131,12 @@ public partial class TemplateEngine : ITemplateEngine
         }
     }
 
+    /// <summary>Asynchronously loads and renders all template files from a directory using values from a dictionary.</summary>
+    /// <param name="directoryPath">The directory path to scan for template files.</param>
+    /// <param name="values">Dictionary of key-value pairs to substitute into each template.</param>
+    /// <param name="searchPattern">The search pattern for files (default "*.html"). Supports wildcards like "*.txt".</param>
+    /// <param name="ct">Cancellation token to cancel the operation.</param>
+    /// <returns>A result containing a dictionary mapping file names (without extension) to their rendered content, or an error if the directory operation fails.</returns>
     public async Task<Result<Dictionary<string, string>>> RenderDirectoryAsync(string directoryPath, IDictionary<string, string> values, string searchPattern = "*.html", CancellationToken ct = default)
     {
         try
