@@ -11,9 +11,9 @@
 <body>
     <div class="d-flex" style="min-height: 100vh;">
         <!-- Sidebar Navigation -->
-        <nav class="wiki-sidebar bg-dark border-end">
-            <div class="wiki-brand p-3 border-bottom border-secondary">
-                <a href="/" class="text-white text-decoration-none d-flex align-items-center gap-2">
+        <nav class="wiki-sidebar">
+            <div class="wiki-brand p-3 border-bottom" style="border-color: rgba(255, 255, 255, 0.1);">
+                <a href="/" class="text-white text-decoration-none">
                     <i class="bi bi-book-fill"></i>
                     <strong>Core Wiki</strong>
                 </a>
@@ -23,9 +23,9 @@
 
         <!-- Main Content -->
         <main class="flex-grow-1 d-flex flex-column">
-            <div class="wiki-header bg-light border-bottom">
-                <div class="container-fluid p-3">
-                    <h1 class="h4 mb-0">@ViewData["Title"]</h1>
+            <div class="wiki-header">
+                <div class="container-fluid px-4">
+                    <h1 class="mb-0">@ViewData["Title"]</h1>
                 </div>
             </div>
 
@@ -35,8 +35,8 @@
                 </div>
             </div>
 
-            <footer class="bg-light border-top text-center py-3 mt-4">
-                <small class="text-muted">SmartWorkz Core &copy; 2026</small>
+            <footer class="border-top text-center py-4 mt-auto">
+                <small>SmartWorkz Core &copy; 2026</small>
             </footer>
         </main>
     </div>
