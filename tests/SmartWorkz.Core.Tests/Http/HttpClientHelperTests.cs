@@ -1,6 +1,7 @@
 namespace SmartWorkz.Core.Tests.Http;
 
 using SmartWorkz.Core.Shared.Http;
+using System.Net;
 using System.Text.Json;
 
 /// <summary>
@@ -156,15 +157,15 @@ public class HttpClientHelperTests
             MaxAttempts = 5,
             BackoffMilliseconds = 100,
             Strategy = RetryStrategy.Exponential,
-            RetryableStatusCodes = new() { 503, 504 }
+            RetryableStatusCodes = new() { HttpStatusCode.ServiceUnavailable, HttpStatusCode.GatewayTimeout }
         };
 
         // Act & Assert
         Assert.Equal(5, policy.MaxAttempts);
         Assert.Equal(100, policy.BackoffMilliseconds);
         Assert.Equal(RetryStrategy.Exponential, policy.Strategy);
-        Assert.Contains(503, policy.RetryableStatusCodes);
-        Assert.Contains(504, policy.RetryableStatusCodes);
+        Assert.Contains(HttpStatusCode.ServiceUnavailable, policy.RetryableStatusCodes);
+        Assert.Contains(HttpStatusCode.GatewayTimeout, policy.RetryableStatusCodes);
     }
 
     [Fact]
