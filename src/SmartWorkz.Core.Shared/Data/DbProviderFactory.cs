@@ -51,7 +51,16 @@ public static class DbProviderFactory
     // Concrete implementations
     private sealed class SqlServerDbProvider : IDbProvider
     {
+        private readonly string _connectionString;
+
         public string ProviderName => "SqlServer";
+        public string ConnectionString => _connectionString;
+
+        public SqlServerDbProvider(string connectionString = "")
+        {
+            _connectionString = connectionString;
+        }
+
         public string GetParameterPrefix() => "@";
         public string GetLastInsertIdSql() => "SELECT @@IDENTITY";
         public string GetPaginationSql(string baseSql, int pageNumber, int pageSize)
@@ -76,7 +85,16 @@ public static class DbProviderFactory
 
     private sealed class MySqlDbProvider : IDbProvider
     {
+        private readonly string _connectionString;
+
         public string ProviderName => "MySql";
+        public string ConnectionString => _connectionString;
+
+        public MySqlDbProvider(string connectionString = "")
+        {
+            _connectionString = connectionString;
+        }
+
         public string GetParameterPrefix() => "@";
         public string GetLastInsertIdSql() => "SELECT LAST_INSERT_ID()";
         public string GetPaginationSql(string baseSql, int pageNumber, int pageSize)
@@ -90,7 +108,16 @@ public static class DbProviderFactory
 
     private sealed class PostgreSqlDbProvider : IDbProvider
     {
+        private readonly string _connectionString;
+
         public string ProviderName => "PostgreSql";
+        public string ConnectionString => _connectionString;
+
+        public PostgreSqlDbProvider(string connectionString = "")
+        {
+            _connectionString = connectionString;
+        }
+
         public string GetParameterPrefix() => "$";
         public string GetLastInsertIdSql() => "SELECT lastval()";
         public string GetPaginationSql(string baseSql, int pageNumber, int pageSize)
@@ -104,7 +131,16 @@ public static class DbProviderFactory
 
     private sealed class SqliteDbProvider : IDbProvider
     {
+        private readonly string _connectionString;
+
         public string ProviderName => "Sqlite";
+        public string ConnectionString => _connectionString;
+
+        public SqliteDbProvider(string connectionString = "")
+        {
+            _connectionString = connectionString;
+        }
+
         public string GetParameterPrefix() => "@";
         public string GetLastInsertIdSql() => "SELECT last_insert_rowid()";
         public string GetPaginationSql(string baseSql, int pageNumber, int pageSize)
@@ -118,7 +154,16 @@ public static class DbProviderFactory
 
     private sealed class OracleDbProvider : IDbProvider
     {
+        private readonly string _connectionString;
+
         public string ProviderName => "Oracle";
+        public string ConnectionString => _connectionString;
+
+        public OracleDbProvider(string connectionString = "")
+        {
+            _connectionString = connectionString;
+        }
+
         public string GetParameterPrefix() => ":";
         public string GetLastInsertIdSql() => throw new NotSupportedException("Oracle requires explicit sequence");
         public string GetPaginationSql(string baseSql, int pageNumber, int pageSize)

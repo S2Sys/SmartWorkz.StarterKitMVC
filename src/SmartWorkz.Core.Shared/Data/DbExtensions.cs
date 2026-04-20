@@ -18,7 +18,7 @@ public static class DbExtensions
         IDbTransaction? tx = null,
         CancellationToken ct = default)
     {
-        var connection = provider.CreateConnection("");
+        var connection = provider.CreateConnection(provider.ConnectionString);
         var parameters = ConvertToParameterDictionary(param, provider);
         var result = await AdoHelper.ExecuteQueryAsync(
             connection,
@@ -39,7 +39,7 @@ public static class DbExtensions
         IDbTransaction? tx = null,
         CancellationToken ct = default)
     {
-        var connection = provider.CreateConnection("");
+        var connection = provider.CreateConnection(provider.ConnectionString);
         var parameters = ConvertToParameterDictionary(param, provider);
         var result = await AdoHelper.ExecuteScalarAsync<T>(
             connection,
@@ -59,7 +59,7 @@ public static class DbExtensions
         IDbTransaction? tx = null,
         CancellationToken ct = default)
     {
-        var connection = provider.CreateConnection("");
+        var connection = provider.CreateConnection(provider.ConnectionString);
         var parameters = ConvertToParameterDictionary(param, provider);
         var result = await AdoHelper.ExecuteNonQueryAsync(
             connection,
@@ -77,7 +77,7 @@ public static class DbExtensions
         string sql,
         object? param) where T : class
     {
-        var connection = provider.CreateConnection("");
+        var connection = provider.CreateConnection(provider.ConnectionString);
         var result = await DapperHelper.DapperQueryAsync<T>(
             connection,
             sql,
@@ -93,7 +93,7 @@ public static class DbExtensions
         string sql,
         object? param = null) where T : class
     {
-        var connection = provider.CreateConnection("");
+        var connection = provider.CreateConnection(provider.ConnectionString);
         var result = await DapperHelper.DapperQuerySingleAsync<T>(
             connection,
             sql,
@@ -109,7 +109,7 @@ public static class DbExtensions
         string sql,
         object? param = null)
     {
-        var connection = provider.CreateConnection("");
+        var connection = provider.CreateConnection(provider.ConnectionString);
         var result = await DapperHelper.DapperExecuteAsync(
             connection,
             sql,

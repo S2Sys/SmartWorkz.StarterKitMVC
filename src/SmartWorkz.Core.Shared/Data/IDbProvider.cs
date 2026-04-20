@@ -9,6 +9,9 @@ public interface IDbProvider
     /// <summary>Provider type identifier (e.g., "SqlServer", "MySql").</summary>
     string ProviderName { get; }
 
+    /// <summary>Connection string for this provider instance.</summary>
+    string ConnectionString { get; }
+
     /// <summary>Create connection with connection string.</summary>
     IDbConnection CreateConnection(string connectionString);
 
