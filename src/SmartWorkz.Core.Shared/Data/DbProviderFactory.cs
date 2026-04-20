@@ -29,6 +29,10 @@ public static class DbProviderFactory
     public static IDbProvider? GetProvider(string providerName)
         => _providers.TryGetValue(providerName, out var provider) ? provider : null;
 
+    /// <summary>Get provider by enum value.</summary>
+    public static IDbProvider? GetProvider(DatabaseProvider provider) =>
+        GetProvider(provider.ToString());
+
     /// <summary>Get provider from connection string (detects provider automatically).</summary>
     public static IDbProvider GetProviderFromConnectionString(string connectionString)
     {
