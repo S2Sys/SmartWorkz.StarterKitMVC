@@ -1,156 +1,131 @@
-namespace SmartWorkz.Core.Web.Tests.Services;
-
-using SmartWorkz.Core.Web.Services.DataView;
 using Xunit;
+using SmartWorkz.Core.Web.Services.DataView;
+
+namespace SmartWorkz.Core.Web.Tests.Services;
 
 public class ListViewFormatterTests
 {
-    private readonly IListViewFormatter _formatter;
-
-    public ListViewFormatterTests()
-    {
-        _formatter = new ListViewFormatter();
-    }
+    private readonly ListViewFormatter _formatter = new();
 
     [Fact]
-    public void FormatDate_WithValidDate_ReturnsFormattedDate()
+    public void FormatDate_WithValidDate_ReturnsFormattedString()
     {
         // Arrange
         var date = new DateTime(2026, 4, 20);
-        var expected = "Apr 20, 2026";
 
         // Act
         var result = _formatter.FormatDate(date);
 
         // Assert
-        Assert.Equal(expected, result);
+        Assert.Equal("Apr 20, 2026", result);
     }
 
     [Fact]
     public void FormatDate_WithNullDate_ReturnsDash()
     {
-        // Arrange
-        DateTime? date = null;
-        var expected = "-";
-
         // Act
-        var result = _formatter.FormatDate(date);
+        var result = _formatter.FormatDate(null);
 
         // Assert
-        Assert.Equal(expected, result);
+        Assert.Equal("-", result);
     }
 
     [Fact]
-    public void FormatCurrency_WithValidValue_ReturnsFormattedCurrency()
+    public void FormatCurrency_WithValidValue_ReturnsFormattedString()
     {
-        // Arrange
-        decimal? value = 1234.56m;
-        var expected = "$1,234.56";
-
         // Act
-        var result = _formatter.FormatCurrency(value);
+        var result = _formatter.FormatCurrency(99.99m);
 
         // Assert
-        Assert.Equal(expected, result);
+        Assert.Equal("$99.99", result);
     }
 
     [Fact]
     public void FormatCurrency_WithNullValue_ReturnsDash()
     {
-        // Arrange
-        decimal? value = null;
-        var expected = "-";
-
         // Act
-        var result = _formatter.FormatCurrency(value);
+        var result = _formatter.FormatCurrency(null);
 
         // Assert
-        Assert.Equal(expected, result);
+        Assert.Equal("-", result);
     }
 
     [Fact]
-    public void TruncateText_WithLongText_TruncatesAndAddsEllipsis()
+    public void TruncateText_WithLongText_TruncatesWithEllipsis()
     {
         // Arrange
-        var text = "This is a very long text that should be truncated because it exceeds the maximum length of 50 characters";
-        var maxLength = 50;
-        var expected = text.Substring(0, maxLength) + "...";
+        var longText = "This is a very long text that should be truncated";
 
         // Act
-        var result = _formatter.TruncateText(text, maxLength);
+        var result = _formatter.TruncateText(longText, 20);
 
         // Assert
-        Assert.Equal(expected, result);
+        Assert.Equal("This is a very long ...", result);
     }
 
     [Fact]
-    public void TruncateText_WithShortText_ReturnsOriginalText()
+    public void TruncateText_WithShortText_ReturnsUnchanged()
     {
         // Arrange
-        var text = "Short text";
-        var maxLength = 100;
-        var expected = "Short text";
+        var shortText = "Short";
 
         // Act
-        var result = _formatter.TruncateText(text, maxLength);
+        var result = _formatter.TruncateText(shortText, 20);
 
         // Assert
-        Assert.Equal(expected, result);
+        Assert.Equal("Short", result);
     }
 
     [Fact]
     public void FormatBoolean_WithTrue_ReturnsYes()
     {
-        // Arrange
-        bool? value = true;
-        var expected = "Yes";
-
         // Act
-        var result = _formatter.FormatBoolean(value);
+        var result = _formatter.FormatBoolean(true);
 
         // Assert
-        Assert.Equal(expected, result);
+        Assert.Equal("Yes", result);
     }
 
     [Fact]
     public void FormatBoolean_WithFalse_ReturnsNo()
     {
-        // Arrange
-        bool? value = false;
-        var expected = "No";
-
         // Act
-        var result = _formatter.FormatBoolean(value);
+        var result = _formatter.FormatBoolean(false);
 
         // Assert
-        Assert.Equal(expected, result);
+        Assert.Equal("No", result);
     }
 
     [Fact]
-    public void FormatValue_WithDateTime_ReturnsFormattedDate()
+    public void FormatValue_WithDateTime_UsesDateFormatter()
     {
         // Arrange
-        object? value = new DateTime(2026, 4, 20);
-        var expected = "Apr 20, 2026";
+        var date = new DateTime(2026, 4, 20);
 
         // Act
-        var result = _formatter.FormatValue(value);
+        var result = _formatter.FormatValue(date);
 
         // Assert
-        Assert.Equal(expected, result);
+        Assert.Equal("Apr 20, 2026", result);
+    }
+
+    [Fact]
+    public void FormatValue_WithDecimal_UsesCurrencyFormatter()
+    {
+        // Act
+        var result = _formatter.FormatValue(49.50m);
+
+        // Assert
+        Assert.Equal("$49.50", result);
     }
 
     [Fact]
     public void FormatValue_WithNull_ReturnsDash()
     {
-        // Arrange
-        object? value = null;
-        var expected = "-";
-
         // Act
-        var result = _formatter.FormatValue(value);
+        var result = _formatter.FormatValue(null);
 
         // Assert
-        Assert.Equal(expected, result);
+        Assert.Equal("-", result);
     }
 }
