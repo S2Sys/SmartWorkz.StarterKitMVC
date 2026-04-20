@@ -21,6 +21,22 @@ public class HomeController(ProductService productService) : Controller
         return health.Succeeded ? Ok(health.Data) : StatusCode(503, health.Error);
     }
 
+    [HttpGet("/debug/products")]
+    public async Task<IActionResult> DebugProducts()
+    {
+        try
+        {
+            var result = await productService.GetAllAsync();
+            if (!result.Succeeded)
+                return BadRequest(new { error = result.Error?.ToString() });
+            return Ok(new { count = result.Data?.Count, products = result.Data?.Take(3) });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.GetType().Name, message = ex.Message, stackTrace = ex.StackTrace });
+        }
+    }
+
     [Route("/Home/Error")]
     public IActionResult Error()
     {

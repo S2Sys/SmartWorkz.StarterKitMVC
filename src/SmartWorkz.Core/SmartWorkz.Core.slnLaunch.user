@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "..\\SmartWorkz.Core.Wiki\\SmartWorkz.Core.Wiki.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "..\\SmartWorkz.Sample.ECommerce\\SmartWorkz.Sample.ECommerce.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

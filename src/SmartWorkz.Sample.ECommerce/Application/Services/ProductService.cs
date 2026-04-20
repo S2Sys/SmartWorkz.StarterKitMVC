@@ -10,8 +10,10 @@ namespace SmartWorkz.Sample.ECommerce.Application.Services;
 public class ProductService(IRepository<Product, int> repo, IMapper mapper)
     : ServiceBase<Product, ProductDto>(repo)
 {
+    private readonly IMapper _mapper = mapper;
+
     protected override ProductDto Map(Product entity) =>
-        mapper.Map<Product, ProductDto>(entity);
+        _mapper.Map<Product, ProductDto>(entity);
 
     protected override Product MapToEntity(ProductDto dto) =>
         throw new NotImplementedException("Use domain constructors");

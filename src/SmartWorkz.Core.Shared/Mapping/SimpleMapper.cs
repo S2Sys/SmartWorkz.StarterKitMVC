@@ -102,9 +102,9 @@ public class SimpleMapper : IMapper
             throw new ArgumentNullException(nameof(profile));
 
         var key = (typeof(TSource), typeof(TTarget));
-        var asyncFunc = new Func<TSource, Task<TTarget>>(async src =>
-            await profile.MapAsync(src));
+        var syncFunc = new Func<TSource, TTarget>(src =>
+            profile.Map(src));
 
-        _mappings[key] = asyncFunc;
+        _mappings[key] = syncFunc;
     }
 }
