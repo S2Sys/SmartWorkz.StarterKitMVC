@@ -297,7 +297,7 @@ public abstract class AuditableEntity<TId> : IAuditable, ISoftDeletable, ITenant
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string? CreatedBy { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public DateTime? UpdatedBy { get; set; }
+    public string? UpdatedBy { get; set; }
 
     // --- ISoftDeletable ---
     public bool IsDeleted { get; set; }
