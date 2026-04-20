@@ -1,3 +1,4 @@
+using SmartWorkz.Core.Abstractions;
 using SmartWorkz.Core.Shared.Base_Classes;
 using SmartWorkz.Core.ValueObjects;
 using SmartWorkz.Sample.ECommerce.Domain.Enums;
@@ -5,7 +6,7 @@ using SmartWorkz.Sample.ECommerce.Domain.Events;
 
 namespace SmartWorkz.Sample.ECommerce.Domain.Entities;
 
-public class Order : AggregateRoot<int>
+public class Order : AggregateRoot<int>, IEntity<int>
 {
     public int CustomerId { get; set; }
     public Customer? Customer { get; set; }

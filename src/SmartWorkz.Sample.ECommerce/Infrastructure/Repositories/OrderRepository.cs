@@ -1,3 +1,4 @@
+using SmartWorkz.Core.Abstractions;
 using SmartWorkz.Core.Shared.Specifications;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 using SmartWorkz.Sample.ECommerce.Infrastructure.Data;
@@ -5,24 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SmartWorkz.Sample.ECommerce.Infrastructure.Repositories;
 
-public interface IOrderRepository
-{
-    Task<Order?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
-    Task<IReadOnlyCollection<Order>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task<Order?> FindAsync(Specification<Order> specification, CancellationToken cancellationToken = default);
-    Task<IReadOnlyCollection<Order>> FindAllAsync(Specification<Order> specification, CancellationToken cancellationToken = default);
-    Task<int> CountAsync(Specification<Order> specification, CancellationToken cancellationToken = default);
-    Task<bool> ExistsAsync(Specification<Order> specification, CancellationToken cancellationToken = default);
-    Task AddAsync(Order entity, CancellationToken cancellationToken = default);
-    Task AddRangeAsync(IEnumerable<Order> entities, CancellationToken cancellationToken = default);
-    Task UpdateAsync(Order entity, CancellationToken cancellationToken = default);
-    Task UpdateRangeAsync(IEnumerable<Order> entities, CancellationToken cancellationToken = default);
-    Task DeleteAsync(int id, CancellationToken cancellationToken = default);
-    Task DeleteAsync(Order entity, CancellationToken cancellationToken = default);
-    Task DeleteRangeAsync(IEnumerable<Order> entities, CancellationToken cancellationToken = default);
-}
-
-public class OrderRepository(ECommerceDbContext db) : IOrderRepository
+public class OrderRepository(ECommerceDbContext db) : IRepository<Order, int>
 {
     public async Task<Order?> GetByIdAsync(int id, CancellationToken cancellationToken = default) =>
         await db.Orders
