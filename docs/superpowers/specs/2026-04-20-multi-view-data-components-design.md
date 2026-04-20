@@ -6,7 +6,7 @@
 ---
 
 ## Problem Statement
-SmartWorkz.Core.Web has Grid component for tabular data display, but web projects need **multiple view modes (Grid, List, Map) for the same dataset** with consistent state synchronization. Without a unified state context:
+SmartWorkz.Core.Web has Grid component for tabular data display, but web projects need **multiple view modes (Grid, List) for the same dataset** with consistent state synchronization. Without a unified state context:
 - Each view manages its own sort/filter/pagination independently
 - Switching views requires re-fetching or loses state
 - Developers duplicate filtering/sorting logic across views
@@ -14,10 +14,11 @@ SmartWorkz.Core.Web has Grid component for tabular data display, but web project
 ## Solution Overview
 Implement **Approach B: Unified DataContext with Composable View Components**
 - Single `DataContext<T>` manages all state (sort, filter, pagination, selection, loading, errors)
-- Three independent view components (Grid, List, Map) consume the shared context
+- Two independent view components (Grid, List) consume the shared context
 - View components are thin rendering layers—no state logic
-- Filtering/sorting applies consistently across all views
+- Filtering/sorting applies consistently across both views
 - State syncs automatically when users switch views
+- **Phase 2 (Future):** Map view component with geographic display
 
 ---
 
@@ -93,45 +94,20 @@ Card or row-based list display for the same data.
 
 ---
 
-#### 4. MapViewComponent<T> (New)
-Geographic display of data with markers and clustering.
-
-**Requirements:**
-- Data type `T` must have property(ies) for coordinates (e.g., `Latitude`, `Longitude`)
-- Optional: `Address` property for geocoding fallback
-
-**Parameters:**
-- `DataContext: DataContext<T>` — shared state
-- `GeoPropertyName: string` — which property contains coordinates (default: "Location")
-- `MapProvider: string` — "Leaflet" or "GoogleMaps" (default: Leaflet)
-- `Cluster: bool` — enable marker clustering for large datasets
-- `DetailTemplate: RenderFragment<T>?` — popup/info window content
-
-**Rendering:**
-- Renders markers for items in `CurrentResponse.Data`
-- Marker click → show popup with item details
-- Clustering enabled for 100+ markers (performance)
-- Filters apply from context (map updates automatically)
-- Pan/zoom doesn't reset filters
-
-**Services Used:**
-- `MapGeoProvider` — validate/normalize coordinates, handle geocoding
-
 ---
 
 #### 5. DataViewerComponent<T> (New)
-Parent container orchestrating all three views.
+Parent container orchestrating both views.
 
 **Parameters:**
 - `DataSource: IEnumerable<T>` — initial data or API endpoint
 - `Columns: List<GridColumn>` — full column schema
-- `AllowedViews: ViewType[]` — which views to enable (default: all)
 - `DefaultView: ViewType` — starting view (default: Grid)
 - `AutoFetch: bool` — initialize data on load (default: true)
 
 **Responsibilities:**
 - Create and maintain `DataContext<T>` instance
-- Render view toggle (buttons/tabs for Grid/List/Map)
+- Render view toggle (buttons/tabs for Grid/List)
 - Switch active view component based on selection
 - Pass context to active view component
 - Handle initialization and cleanup
@@ -139,10 +115,10 @@ Parent container orchestrating all three views.
 **Rendering:**
 ```html
 [View Toggle Buttons]
-Grid | List | Map
+Grid | List
 
 [Active View Component]
-<GridViewComponent/> or <ListViewComponent/> or <MapViewComponent/>
+<GridViewComponent/> or <ListViewComponent/>
 
 [Shared Info]
 Loading spinner, error banner, selection count
@@ -171,8 +147,8 @@ Loading spinner, error banner, selection count
 10. List filter input → `DataContext.UpdateFilter("Category", "equals", "Electronics")`
 11. DataContext updates `CurrentRequest.Filters`, resets page to 1
 12. DataProvider fetches filtered data
-13. Grid, List, and Map all receive updated data automatically
-14. All views display filtered results
+13. Grid and List both receive updated data automatically
+14. Both views display filtered results
 
 ---
 
@@ -188,12 +164,11 @@ Loading spinner, error banner, selection count
 ### New Services
 - **`DataContext<T>`** — state container (non-Razor)
 - **`ListViewFormatter`** — format data for card display (dates, currency, text truncation)
-- **`MapGeoProvider`** — validate coordinates, support geocoding, coordinate normalization
-- **`ViewConfiguration`** — store view-specific settings (visible columns, item layout, map zoom)
+- **`ViewConfiguration`** — store view-specific settings (visible columns, item layout)
 
 ### NuGet Dependencies
 - Existing: `Microsoft.AspNetCore.Components`, `Microsoft.AspNetCore.Mvc.Razor`
-- New (for MapViewComponent): `Leaflet.Blazor` or Google Maps JS API (via CDN)
+- No new external dependencies for Phase 1
 
 ---
 
@@ -203,7 +178,6 @@ Loading spinner, error banner, selection count
 |----------|----------|
 | **API fails** | DataContext.Error = message; views show error banner; retry button calls `UpdateFilter()`|
 | **No data** | CurrentResponse.Data = []; views render empty state message |
-| **Invalid coordinates (Map)** | MapViewComponent skips marker; shows warning; falls back to list view |
 | **Large dataset (1000+ rows)** | GridDataProvider enforces server-side pagination; views don't break |
 | **Filter syntax invalid** | DataContext.Error set; API validation feedback shown to user |
 
@@ -218,7 +192,7 @@ Loading spinner, error banner, selection count
 - `ClearFilters()` resets to default request
 - `OnStateChanged` event fires on state changes
 
-### Component Tests (Grid/List/Map Views)
+### Component Tests (Grid/List Views)
 - View renders data from context
 - Click handlers delegate to context methods
 - View reflects context properties (`IsLoading`, `Error`, `SelectedRowIds`)
@@ -228,29 +202,28 @@ Loading spinner, error banner, selection count
 - DataViewerComponent initializes DataContext and active view
 - Switching views preserves state
 - Filter in Grid → List view shows filtered data (no re-fetch)
-- Sort in List → Map shows sorted markers
+- Sort in List → Grid shows same sorted data
 - Selection syncs across views
 
 ### E2E Tests (Manual or Selenium)
 - User sorts Grid → switches to List → data is sorted
 - User filters in List → Grid shows same filters applied
-- User selects rows in Grid → count displayed; switches to Map → same rows indicated
-- Map markers update when List view filters applied
+- User selects rows in Grid → count displayed; switches to List → same rows indicated
 
 ---
 
 ## Scope Boundaries
 
-**Included:**
+**Included (Phase 1):**
 - DataContext state management
-- Grid, List, Map view components
+- Grid, List view components
 - View toggle/switching
 - State synchronization across views
 - Basic error handling
 
-**Not Included (Phase 2):**
+**Not Included (Phase 2+):**
+- Map view component with geospatial display
 - Real-time WebSocket updates
-- Advanced geospatial queries (distance search, polygons)
 - Custom chart/dashboard components
 - Drag-drop row reordering
 - Column drag-drop reordering
@@ -260,9 +233,9 @@ Loading spinner, error banner, selection count
 
 ## Success Criteria
 
-1. ✅ Grid, List, Map views display same data correctly
-2. ✅ Sort/filter in one view applies to all views automatically
-3. ✅ Row selection syncs across all views
+1. ✅ Grid, List views display same data correctly
+2. ✅ Sort/filter in one view applies to both views automatically
+3. ✅ Row selection syncs across both views
 4. ✅ View toggle preserves state (no data loss)
 5. ✅ Existing Grid component continues to work
 6. ✅ Unit tests ≥80% code coverage
@@ -272,10 +245,9 @@ Loading spinner, error banner, selection count
 
 ## Implementation Roadmap
 
-**Phase 1:** DataContext + enhance GridViewComponent
-**Phase 2:** ListViewComponent + integration tests
-**Phase 3:** MapViewComponent + E2E tests
-**Phase 4:** Documentation + usage examples
+**Phase 1 (Current):** DataContext + enhance GridViewComponent + ListViewComponent + integration tests
+**Phase 2 (Future):** MapViewComponent with geographic display
+**Phase 3 (Future):** Advanced features (charting, exports, real-time updates)
 
 ---
 
@@ -284,4 +256,3 @@ Loading spinner, error banner, selection count
 - Existing: `/src/SmartWorkz.Core.Web/Services/Grid/`
 - New: `/src/SmartWorkz.Core.Web/Components/DataContext/`
 - New: `/src/SmartWorkz.Core.Web/Components/ListView/`
-- New: `/src/SmartWorkz.Core.Web/Components/MapView/`
