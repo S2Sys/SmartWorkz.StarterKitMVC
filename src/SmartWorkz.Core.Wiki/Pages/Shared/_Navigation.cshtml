@@ -4,19 +4,19 @@
     var categories = WikiService.GetCategories();
 }
 
-<div class="wiki-nav p-3">
+<div class="wiki-nav">
     <div class="accordion accordion-flush" id="wikiAccordion">
         @foreach (var category in categories)
         {
-            <div class="accordion-item bg-dark border-secondary">
+            <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button accordion-button-dark collapsed text-white"
+                    <button class="accordion-button collapsed"
                             type="button"
                             data-bs-toggle="collapse"
                             data-bs-target="#collapse-@category.Slug"
                             aria-expanded="false">
                         @category.Name
-                        <span class="badge bg-secondary ms-auto">@category.Documents.Count</span>
+                        <span class="badge ms-auto">@category.Documents.Count</span>
                     </button>
                 </h2>
                 <div id="collapse-@category.Slug"
@@ -27,7 +27,7 @@
                             @foreach (var doc in category.Documents)
                             {
                                 <a href="/doc?slug=@doc.Slug"
-                                   class="list-group-item list-group-item-action list-group-item-dark text-white small">
+                                   class="list-group-item list-group-item-action">
                                     @doc.Title
                                 </a>
                             }

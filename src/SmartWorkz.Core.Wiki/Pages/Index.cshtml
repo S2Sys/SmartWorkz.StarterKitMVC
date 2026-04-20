@@ -4,49 +4,38 @@
     ViewData["Title"] = "SmartWorkz Core Documentation";
 }
 
-<div class="row mb-5">
-    <div class="col-lg-10 mx-auto">
-        <div style="padding: 2rem 0;">
-            <h1 style="font-size: 2.5rem; font-weight: 700; color: #1a1f26; letter-spacing: -1px; margin-bottom: 1rem;">
-                SmartWorkz Core Documentation
-            </h1>
-            <p style="font-size: 1.15rem; line-height: 1.8; color: #6c757d; margin: 0;">
-                Complete reference for building applications with SmartWorkz.Core infrastructure.
-                Covers grid components, caching, multi-tenancy, feature flags, event bus, and much more.
-            </p>
-        </div>
-    </div>
+<div style="padding: 2.5rem 2rem 1.5rem; border-bottom: 1px solid var(--wiki-border); background: var(--wiki-bg-subtle);">
+    <h1 style="font-size: 2rem; font-weight: 700; color: var(--wiki-primary); margin-bottom: 0.625rem; letter-spacing: -0.5px;">
+        SmartWorkz Core Documentation
+    </h1>
+    <p style="font-size: 1rem; color: var(--wiki-text-muted); margin: 0; max-width: 600px; line-height: 1.6;">
+        Complete reference for building applications with SmartWorkz.Core infrastructure.
+    </p>
 </div>
 
-<div class="row g-3">
-    @foreach (var category in Model.Categories)
-    {
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm border-light">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="bi bi-folder text-primary"></i>
-                        @category.Name
-                    </h5>
-                    <p class="card-text text-muted small">
-                        @category.Documents.Count document@(category.Documents.Count != 1 ? "s" : "")
-                    </p>
-                </div>
-                <div class="card-footer bg-transparent border-top">
-                    <a href="/doc?slug=@category.Documents.First().Slug" class="btn btn-sm btn-primary">
-                        Read More <i class="bi bi-arrow-right"></i>
-                    </a>
+<div style="padding: 2rem;">
+    <div class="row g-3">
+        @foreach (var category in Model.Categories)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="wiki-card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-folder2-open text-primary me-2" style="color: var(--wiki-primary) !important;"></i>
+                            @category.Name
+                        </h5>
+                        <p class="card-text">
+                            @category.Documents.Count document@(category.Documents.Count != 1 ? "s" : "")
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="/doc?slug=@category.Documents.First().Slug"
+                           style="color: var(--wiki-primary); font-size: 0.875rem; font-weight: 500; text-decoration: none;">
+                            Browse <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
-
-<div class="row mt-5">
-    <div class="col-lg-8 mx-auto">
-        <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i>
-            <strong>Need help?</strong> Use the navigation sidebar on the left to browse all documentation categories.
-        </div>
+        }
     </div>
 </div>

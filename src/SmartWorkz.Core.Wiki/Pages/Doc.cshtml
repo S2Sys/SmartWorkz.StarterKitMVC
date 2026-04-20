@@ -6,50 +6,57 @@
 
 @if (Model.Document == null)
 {
-    <div class="alert alert-danger">
-        <i class="bi bi-exclamation-triangle"></i>
-        <strong>Document not found</strong>
-        <p class="mb-0 mt-2">The requested documentation page could not be found. Try browsing using the navigation sidebar.</p>
+    <div class="p-4">
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>Document not found.</strong> Try browsing using the navigation sidebar.
+        </div>
     </div>
 }
 else
 {
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
-            <li class="breadcrumb-item active">@Model.Document.Category</li>
-            <li class="breadcrumb-item active">@Model.Document.Title</li>
-        </ol>
-    </nav>
+    <div class="px-3 pt-3">
+        <nav aria-label="breadcrumb" class="wiki-breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><span class="text-muted">@Model.Document.Category</span></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Document.Title</li>
+            </ol>
+        </nav>
+    </div>
 
-    <article class="wiki-article">
-        @Html.Raw(Model.HtmlContent)
-    </article>
+    <div class="wiki-doc-layout">
+        <div class="wiki-article-wrapper">
+            <article class="wiki-article">
+                @Html.Raw(Model.HtmlContent)
+            </article>
 
-    <hr class="my-5" />
-
-    <div class="row mt-4 pt-4 border-top">
-        <div class="col-md-6">
-            @if (Model.PreviousDocument != null)
-            {
+            <div class="wiki-doc-nav">
                 <div>
-                    <small class="text-muted">← Previous</small><br />
-                    <a href="/doc?slug=@Model.PreviousDocument.Slug" class="text-decoration-none">
-                        @Model.PreviousDocument.Title
-                    </a>
+                    @if (Model.PreviousDocument != null)
+                    {
+                        <a href="/doc?slug=@Model.PreviousDocument.Slug">
+                            <small>&#8592; Previous</small>
+                            @Model.PreviousDocument.Title
+                        </a>
+                    }
                 </div>
-            }
-        </div>
-        <div class="col-md-6 text-end">
-            @if (Model.NextDocument != null)
-            {
-                <div>
-                    <small class="text-muted">Next →</small><br />
-                    <a href="/doc?slug=@Model.NextDocument.Slug" class="text-decoration-none">
-                        @Model.NextDocument.Title
-                    </a>
+                <div style="text-align: right;">
+                    @if (Model.NextDocument != null)
+                    {
+                        <a href="/doc?slug=@Model.NextDocument.Slug">
+                            <small>Next &#8594;</small>
+                            @Model.NextDocument.Title
+                        </a>
+                    }
                 </div>
-            }
+            </div>
         </div>
+
+        <aside class="wiki-toc">
+            <div class="wiki-toc-inner">
+                <!-- TOC populated by wiki.js -->
+            </div>
+        </aside>
     </div>
 }
