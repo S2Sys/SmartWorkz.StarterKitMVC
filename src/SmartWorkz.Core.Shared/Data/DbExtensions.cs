@@ -19,13 +19,12 @@ public static class DbExtensions
         CancellationToken ct = default)
     {
         var connection = provider.CreateConnection(provider.ConnectionString);
-        var parameters = ConvertToParameterDictionary(param, provider);
         var result = await AdoHelper.ExecuteQueryAsync(
             connection,
             sql,
             provider,
-            reader => MapDataReader<T>(reader),
-            parameters);
+            mapper: reader => MapDataReader<T>(reader),
+            parameters: ConvertToParameterDictionary(param));
         return result.Succeeded ? result.Data : [];
     }
 
@@ -40,12 +39,11 @@ public static class DbExtensions
         CancellationToken ct = default)
     {
         var connection = provider.CreateConnection(provider.ConnectionString);
-        var parameters = ConvertToParameterDictionary(param, provider);
         var result = await AdoHelper.ExecuteScalarAsync<T>(
             connection,
             sql,
             provider,
-            parameters);
+            parameters: ConvertToParameterDictionary(param));
         return result.Succeeded ? result.Data : default;
     }
 
@@ -60,12 +58,11 @@ public static class DbExtensions
         CancellationToken ct = default)
     {
         var connection = provider.CreateConnection(provider.ConnectionString);
-        var parameters = ConvertToParameterDictionary(param, provider);
         var result = await AdoHelper.ExecuteNonQueryAsync(
             connection,
             sql,
             provider,
-            parameters);
+            parameters: ConvertToParameterDictionary(param));
         return result.Succeeded ? result.Data : 0;
     }
 
@@ -78,10 +75,7 @@ public static class DbExtensions
         object? param) where T : class
     {
         var connection = provider.CreateConnection(provider.ConnectionString);
-        var result = await DapperHelper.DapperQueryAsync<T>(
-            connection,
-            sql,
-            param);
+        var result = await connection.DapperQueryAsync<T>(sql, param);
         return result.Succeeded ? result.Data : [];
     }
 
@@ -94,10 +88,7 @@ public static class DbExtensions
         object? param = null) where T : class
     {
         var connection = provider.CreateConnection(provider.ConnectionString);
-        var result = await DapperHelper.DapperQuerySingleAsync<T>(
-            connection,
-            sql,
-            param);
+        var result = await connection.DapperQuerySingleAsync<T>(sql, param);
         return result.Succeeded ? result.Data : null;
     }
 
@@ -110,21 +101,11 @@ public static class DbExtensions
         object? param = null)
     {
         var connection = provider.CreateConnection(provider.ConnectionString);
-        var result = await DapperHelper.DapperExecuteAsync(
-            connection,
-            sql,
-            param);
+        var result = await connection.DapperExecuteAsync(sql, param);
         return result.Succeeded ? result.Data : 0;
     }
 
-    // Helper methods
-
-    /// <summary>
-    /// Convert anonymous object or dictionary to parameter dictionary.
-    /// </summary>
-    private static Dictionary<string, object?>? ConvertToParameterDictionary(
-        object? param,
-        IDbProvider provider)
+    private static Dictionary<string, object?>? ConvertToParameterDictionary(object? param)
     {
         if (param == null)
             return null;
@@ -143,9 +124,6 @@ public static class DbExtensions
         return paramDict;
     }
 
-    /// <summary>
-    /// Map IDataReader row to object of type T using reflection.
-    /// </summary>
     private static T MapDataReader<T>(IDataReader reader)
     {
         var instance = Activator.CreateInstance<T>();
