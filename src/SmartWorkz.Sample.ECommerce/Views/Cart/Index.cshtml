@@ -1,0 +1,67 @@
+@model SmartWorkz.Sample.ECommerce.Application.DTOs.CartDto
+
+@{ ViewData["Title"] = "Shopping Cart"; }
+
+<h1 class="mb-4">Shopping Cart</h1>
+
+@if (Model?.Items != null && Model.Items.Count > 0)
+{
+    <div class="row">
+        <div class="col-md-8">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Product</th>
+                            <th>Unit Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>@item.ProductName</td>
+                                <td>$@item.UnitPrice</td>
+                                <td>@item.Quantity</td>
+                                <td>$@(item.UnitPrice * item.Quantity)</td>
+                                <td>
+                                    <form method="post" action="/cart/remove" style="display:inline">
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Order Summary</h5>
+                    <hr />
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>$@Model.Total</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong>$@Model.Total</strong>
+                    </div>
+                    <a href="/checkout" class="btn btn-primary btn-lg w-100">Proceed to Checkout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <p>Your cart is empty.</p>
+        <a href="/catalog" class="btn btn-primary">Continue Shopping</a>
+    </div>
+}

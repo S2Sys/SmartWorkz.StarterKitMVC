@@ -15,15 +15,14 @@ public class ECommerceDbContext(DbContextOptions<ECommerceDbContext> options) : 
     {
         base.OnModelCreating(modelBuilder);
 
-        // Owned types
-        modelBuilder.Entity<Product>().OwnsOne(p => p.Price);
-        modelBuilder.Entity<OrderItem>().OwnsOne(i => i.UnitPrice);
-        modelBuilder.Entity<Order>().OwnsOne(o => o.ShippingAddress);
+        // Ignore value objects (complex due to private constructors)
+        modelBuilder.Entity<Product>().Ignore(p => p.Price);
+        modelBuilder.Entity<OrderItem>().Ignore(i => i.UnitPrice);
+        modelBuilder.Entity<Order>().Ignore(o => o.ShippingAddress);
+        modelBuilder.Entity<Order>().Ignore(o => o.Total);
 
-        // Customer EmailAddress owned
-        modelBuilder.Entity<Customer>().OwnsOne(c => c.Email, b => {
-            b.Property(e => e.Value).HasColumnName("Email");
-        });
+        // Ignore complex properties
+        modelBuilder.Entity<Customer>().Ignore(c => c.Email);
 
         // Ignore domain events collection (not persisted)
         modelBuilder.Entity<Order>().Ignore(o => o.DomainEvents);
@@ -31,6 +30,5 @@ public class ECommerceDbContext(DbContextOptions<ECommerceDbContext> options) : 
         // Indexes
         modelBuilder.Entity<Product>().HasIndex(p => p.Slug).IsUnique();
         modelBuilder.Entity<Category>().HasIndex(c => c.Slug).IsUnique();
-        modelBuilder.Entity<Customer>().HasIndex("Email_Value").IsUnique();
     }
 }

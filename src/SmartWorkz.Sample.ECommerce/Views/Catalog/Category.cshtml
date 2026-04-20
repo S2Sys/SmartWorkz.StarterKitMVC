@@ -1,0 +1,13 @@
+@model SmartWorkz.Sample.ECommerce.Application.DTOs.CategoryDto
+
+@{ ViewData["Title"] = Model?.Name ?? "Category"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>@Model?.Name</h1>
+    <a href="/catalog" class="btn btn-secondary">Back to Catalog</a>
+</div>
+
+<p class="text-muted mb-4">@Model?.Description</p>
+
+<p class="text-muted">Products in category: @Model?.ProductCount ?? 0</p>
+<p class="alert alert-info">Category view showing @Model?.ProductCount ?? 0 products</p>
