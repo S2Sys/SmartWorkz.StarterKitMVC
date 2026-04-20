@@ -1,0 +1,194 @@
+@typeparam T where T : class
+
+@if (DataContext == null)
+{
+    <div class="alert alert-warning">DataContext not provided</div>
+    return;
+}
+
+<div class="list-view-container">
+    @if (DataContext.IsLoading)
+    {
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(DataContext.Error))
+    {
+        <div class="alert alert-danger">
+            <strong>Error:</strong> @DataContext.Error
+            <button class="btn btn-sm btn-outline-danger" @onclick="OnRetry">Retry</button>
+        </div>
+    }
+    else if (DataContext.CurrentResponse?.Data?.Items.Any() != true)
+    {
+        <div class="alert alert-info">No items to display</div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <strong>@DataContext.CurrentResponse.Data.Items.Count() items</strong>
+                @if (DataContext.SelectedRowIds.Any())
+                {
+                    <span class="badge bg-primary">@DataContext.SelectedRowIds.Count selected</span>
+                }
+            </div>
+            @if (Configuration?.AllowRowSelection == true && DataContext.CurrentResponse.Data.Items.Any())
+            {
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input"
+                           @onchange="@((ChangeEventArgs e) => OnSelectAll((bool?)e.Value ?? false))" />
+                    Select all
+                </label>
+            }
+        </div>
+
+        <div class="row g-3">
+            @foreach (var item in DataContext.CurrentResponse.Data.Items)
+            {
+                var rowId = GetRowId(item);
+                var isSelected = DataContext.SelectedRowIds.Contains(rowId);
+
+                <div class="col-md-@(12 / (Configuration?.ItemsPerRow ?? 2))">
+                    <div class="@(Configuration?.CardCssClass ?? "card h-100")
+                              @(isSelected ? "border-primary bg-light" : "")">
+                        <div class="card-body">
+                            @if (Configuration?.AllowRowSelection == true)
+                            {
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input"
+                                           id="select_@rowId"
+                                           checked="@isSelected"
+                                           @onchange="@((ChangeEventArgs e) => OnRowSelect(rowId, (bool?)e.Value ?? false))" />
+                                </div>
+                            }
+
+                            @if (ItemTemplate != null)
+                            {
+                                @ItemTemplate(item)
+                            }
+                            else
+                            {
+                                <RenderDefaultCardContent Item="item" Formatter="Formatter" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (DataContext.CurrentResponse.Data.TotalPages > 1)
+        {
+            <nav class="mt-4" aria-label="Pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(DataContext.CurrentRequest.PageNumber == 1 ? "disabled" : "")">
+                        <button class="page-link" @onclick="@(() => OnPageChange(DataContext.CurrentRequest.PageNumber - 1))">
+                            Previous
+                        </button>
+                    </li>
+
+                    @for (int i = 1; i <= DataContext.CurrentResponse.Data.TotalPages; i++)
+                    {
+                        var pageNum = i;
+                        <li class="page-item @(DataContext.CurrentRequest.PageNumber == pageNum ? "active" : "")">
+                            <button class="page-link" @onclick="@(() => OnPageChange(pageNum))">
+                                @pageNum
+                            </button>
+                        </li>
+                    }
+
+                    <li class="page-item @(DataContext.CurrentRequest.PageNumber == DataContext.CurrentResponse.Data.TotalPages ? "disabled" : "")">
+                        <button class="page-link" @onclick="@(() => OnPageChange(DataContext.CurrentRequest.PageNumber + 1))">
+                            Next
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public IDataContext<T>? DataContext { get; set; }
+
+    [Parameter]
+    public ViewConfiguration? Configuration { get; set; }
+
+    [Parameter]
+    public RenderFragment<T>? ItemTemplate { get; set; }
+
+    [Inject]
+    public IListViewFormatter Formatter { get; set; } = new ListViewFormatter();
+
+    protected override void OnInitialized()
+    {
+        if (DataContext != null)
+        {
+            DataContext.OnStateChanged += StateHasChanged;
+        }
+    }
+
+    private async Task OnPageChange(int pageNumber)
+    {
+        if (DataContext != null)
+        {
+            await DataContext.UpdatePagination(pageNumber, DataContext.CurrentRequest.PageSize);
+        }
+    }
+
+    private void OnRowSelect(object rowId, bool isChecked)
+    {
+        if (DataContext != null)
+        {
+            DataContext.ToggleRowSelection(rowId);
+        }
+    }
+
+    private void OnSelectAll(bool isChecked)
+    {
+        if (DataContext != null)
+        {
+            DataContext.ToggleSelectAll(isChecked);
+        }
+    }
+
+    private async Task OnRetry()
+    {
+        if (DataContext != null)
+        {
+            await DataContext.ClearFilters();
+        }
+    }
+
+    private object GetRowId(T item)
+    {
+        var firstProperty = typeof(T).GetProperties().FirstOrDefault();
+        return firstProperty?.GetValue(item) ?? item;
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (DataContext != null)
+        {
+            DataContext.OnStateChanged -= StateHasChanged;
+        }
+        await ValueTask.CompletedTask;
+    }
+}
+
+<RenderDefaultCardContent>
+@typeparam ItemType where ItemType : class
+
+@if (Item != null && Formatter != null)
+{
+    @foreach (var property in typeof(ItemType).GetProperties().Take(3))
+    {
+        var value = property.GetValue(Item);
+        var formatted = Formatter.FormatValue(value);
+        <p class="card-text">
+            <strong>@property.Name:</strong> @formatted
+        </p>
+    }
+}
