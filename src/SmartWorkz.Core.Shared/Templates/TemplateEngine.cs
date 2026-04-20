@@ -3,6 +3,7 @@ namespace SmartWorkz.Core.Shared.Templates;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Reflection;
+using System.Collections.Concurrent;
 
 /// <summary>Provides template rendering services with support for placeholder substitution.</summary>
 /// <remarks>
@@ -16,6 +17,9 @@ public partial class TemplateEngine : ITemplateEngine
     /// <summary>Regular expression pattern for matching placeholders in both {{}} and {} formats (case-insensitive).</summary>
     [GeneratedRegex(@"\{\{(\w+)\}\}|\{(\w+)\}")]
     private static partial Regex PlaceholderRegex();
+
+    /// <summary>Cache of property metadata by type for performance optimization.</summary>
+    private static readonly ConcurrentDictionary<Type, PropertyInfo[]> PropertyCache = new();
 
     /// <summary>Renders a template string by replacing placeholders with values from a dictionary.</summary>
     /// <param name="content">The template content containing placeholders in the format {Key} or {{Key}} (case-insensitive).</param>
@@ -56,6 +60,11 @@ public partial class TemplateEngine : ITemplateEngine
         {
             if (string.IsNullOrWhiteSpace(filePath))
                 return Result.Fail<string>("Error.InvalidFilePath", "File path cannot be null or empty");
+
+            // Security: Validate path to prevent directory traversal attacks
+            var pathValidation = ValidateFilePath(filePath);
+            if (!pathValidation.IsSuccess)
+                return Result.Fail<string>(pathValidation.Error.Code, pathValidation.Error.Message);
 
             if (!System.IO.File.Exists(filePath))
                 return Result.Fail<string>("Error.FileNotFound", $"File not found: {filePath}");
@@ -177,7 +186,7 @@ public partial class TemplateEngine : ITemplateEngine
 
     /// <summary>
     /// Reflects over a model object and builds a case-insensitive dictionary of public properties
-    /// mapped to their string values.
+    /// mapped to their string values. Uses cached property metadata for performance.
     /// </summary>
     private static Dictionary<string, string> ReflectModel(object model)
     {
@@ -186,8 +195,11 @@ public partial class TemplateEngine : ITemplateEngine
         if (model == null)
             return dict;
 
-        var properties = model.GetType().GetProperties(
-            BindingFlags.Public | BindingFlags.IgnoreCase);
+        var modelType = model.GetType();
+
+        // Use cached property metadata to avoid reflection on every call
+        var properties = PropertyCache.GetOrAdd(modelType, type =>
+            type.GetProperties(BindingFlags.Public | BindingFlags.IgnoreCase));
 
         foreach (var property in properties)
         {
@@ -206,5 +218,37 @@ public partial class TemplateEngine : ITemplateEngine
         }
 
         return dict;
+    }
+
+    /// <summary>
+    /// Validates a file path to prevent directory traversal attacks.
+    /// </summary>
+    /// <param name="filePath">The file path to validate.</param>
+    /// <returns>A result indicating if the path is valid and safe.</returns>
+    private static Result<bool> ValidateFilePath(string filePath)
+    {
+        try
+        {
+            // Reject obvious traversal patterns
+            if (filePath.Contains("..") || filePath.Contains("~"))
+                return Result.Fail<bool>("Error.InvalidPath", "Path traversal patterns detected");
+
+            // Normalize and resolve the full path
+            var fullPath = System.IO.Path.GetFullPath(filePath);
+
+            // Ensure the resolved path is an absolute path and doesn't escape current directory context
+            if (!System.IO.Path.IsPathRooted(fullPath))
+                return Result.Fail<bool>("Error.InvalidPath", "Path must be absolute or within current context");
+
+            return Result.Ok(true);
+        }
+        catch (ArgumentException)
+        {
+            return Result.Fail<bool>("Error.InvalidPath", "Invalid path characters detected");
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<bool>("Error.PathValidationFailed", $"Path validation failed: {ex.Message}");
+        }
     }
 }

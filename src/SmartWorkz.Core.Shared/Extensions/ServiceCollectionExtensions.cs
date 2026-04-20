@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddCoreSharedServices(this IServiceCollection services)
     {
-        services.AddSingleton<ITemplateEngine, TemplateEngine>();
+        services.AddScoped<ITemplateEngine, TemplateEngine>();
         return services;
     }
 }
