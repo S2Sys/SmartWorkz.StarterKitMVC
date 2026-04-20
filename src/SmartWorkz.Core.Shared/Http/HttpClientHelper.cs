@@ -1,5 +1,6 @@
 namespace SmartWorkz.Core.Shared.Http;
 
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -183,7 +184,15 @@ public sealed class HttpClientHelper : IHttpClient
         int maxAttempts = _request.RetryPolicy?.MaxAttempts ?? 1;
         int backoffMs = _request.RetryPolicy?.BackoffMilliseconds ?? 1000;
         RetryStrategy strategy = _request.RetryPolicy?.Strategy ?? RetryStrategy.Exponential;
-        List<int> retryableStatusCodes = _request.RetryPolicy?.RetryableStatusCodes ?? new() { 408, 429, 500, 502, 503, 504 };
+        List<HttpStatusCode> retryableStatusCodes = _request.RetryPolicy?.RetryableStatusCodes ?? new()
+        {
+            HttpStatusCode.RequestTimeout,
+            HttpStatusCode.TooManyRequests,
+            HttpStatusCode.InternalServerError,
+            HttpStatusCode.BadGateway,
+            HttpStatusCode.ServiceUnavailable,
+            HttpStatusCode.GatewayTimeout
+        };
 
         HttpResponse<T>? response = null;
         Exception? lastException = null;
@@ -251,7 +260,7 @@ public sealed class HttpClientHelper : IHttpClient
                 }
 
                 // Check if status is retryable
-                if (retryableStatusCodes.Contains((int)responseMessage.StatusCode) && attempt < maxAttempts - 1)
+                if (retryableStatusCodes.Contains(responseMessage.StatusCode) && attempt < maxAttempts - 1)
                 {
                     response = new HttpResponse<T>
                     {

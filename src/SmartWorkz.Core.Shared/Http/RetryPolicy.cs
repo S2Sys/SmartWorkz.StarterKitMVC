@@ -1,5 +1,7 @@
 namespace SmartWorkz.Core.Shared.Http;
 
+using System.Net;
+
 /// <summary>
 /// Specifies the backoff strategy to use when retrying failed HTTP requests.
 /// </summary>
@@ -46,5 +48,13 @@ public sealed class RetryPolicy
     /// Defaults to: 408 (Timeout), 429 (Too Many Requests), 500 (Internal Server Error),
     /// 502 (Bad Gateway), 503 (Service Unavailable), 504 (Gateway Timeout).
     /// </summary>
-    public List<int> RetryableStatusCodes { get; set; } = new() { 408, 429, 500, 502, 503, 504 };
+    public List<HttpStatusCode> RetryableStatusCodes { get; set; } = new()
+    {
+        HttpStatusCode.RequestTimeout,
+        HttpStatusCode.TooManyRequests,
+        HttpStatusCode.InternalServerError,
+        HttpStatusCode.BadGateway,
+        HttpStatusCode.ServiceUnavailable,
+        HttpStatusCode.GatewayTimeout
+    };
 }
