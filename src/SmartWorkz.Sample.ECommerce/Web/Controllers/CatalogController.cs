@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartWorkz.Core.Abstractions;
+using SmartWorkz.Core.Shared.Mapping;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Application.Services;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
@@ -9,12 +10,14 @@ namespace SmartWorkz.Sample.ECommerce.Web.Controllers;
 public class CatalogController(
     IRepository<Category, int> categoryRepo,
     ProductService productService,
-    CatalogSearchService searchService) : Controller
+    CatalogSearchService searchService,
+    IMapper mapper) : Controller
 {
     public async Task<IActionResult> Index()
     {
         var categories = await categoryRepo.GetAllAsync();
-        return View(categories);
+        var categoryDtos = categories.Select(c => mapper.Map<Category, CategoryDto>(c)).ToList();
+        return View(categoryDtos);
     }
 
     [HttpGet("/catalog/category/{slug}")]
