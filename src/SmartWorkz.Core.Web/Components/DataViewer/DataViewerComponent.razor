@@ -1,0 +1,102 @@
+@typeparam T where T : class
+
+<div class="data-viewer-container">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Data Browser</h5>
+
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="view-toggle" id="grid-view"
+                       value="grid" checked="@(CurrentView == ViewType.Grid)"
+                       @onchange="@((ChangeEventArgs e) => OnViewToggle((string?)e.Value))" />
+                <label class="btn btn-outline-primary" for="grid-view">
+                    📊 Grid
+                </label>
+
+                <input type="radio" class="btn-check" name="view-toggle" id="list-view"
+                       value="list" checked="@(CurrentView == ViewType.List)"
+                       @onchange="@((ChangeEventArgs e) => OnViewToggle((string?)e.Value))" />
+                <label class="btn btn-outline-primary" for="list-view">
+                    📋 List
+                </label>
+            </div>
+        </div>
+
+        <div class="card-body">
+            @if (DataContext == null)
+            {
+                <div class="alert alert-danger">DataContext is not initialized</div>
+            }
+            else if (CurrentView == ViewType.Grid)
+            {
+                <GridComponent @ref="gridComponent"
+                              DataSource="DataSource"
+                              Columns="Columns" />
+            }
+            else if (CurrentView == ViewType.List)
+            {
+                <ListViewComponent @ref="listComponent"
+                                  DataContext="DataContext"
+                                  Configuration="ListViewConfig"
+                                  ItemTemplate="ItemTemplate" />
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IEnumerable<T>? DataSource { get; set; }
+
+    [Parameter]
+    public List<GridColumn>? Columns { get; set; }
+
+    [Parameter]
+    public RenderFragment<T>? ItemTemplate { get; set; }
+
+    [Parameter]
+    public ViewType DefaultView { get; set; } = ViewType.Grid;
+
+    [Parameter]
+    public bool AutoFetch { get; set; } = true;
+
+    public IDataContext<T>? DataContext { get; set; }
+    public ViewConfiguration? ListViewConfig { get; set; }
+    public ViewType CurrentView { get; set; }
+
+    private GridViewComponent<T>? gridComponent;
+    private ListViewComponent<T>? listComponent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrentView = DefaultView;
+        DataContext = new DataContext<T>();
+        ListViewConfig = new ViewConfiguration
+        {
+            VisibleColumns = Columns?.Select(c => c.PropertyName).ToList() ?? [],
+            ItemsPerRow = 2
+        };
+
+        if (AutoFetch && DataSource != null)
+        {
+            await DataContext.Initialize(DataSource);
+        }
+    }
+
+    private void OnViewToggle(string? viewValue)
+    {
+        if (viewValue == "grid")
+            CurrentView = ViewType.Grid;
+        else if (viewValue == "list")
+            CurrentView = ViewType.List;
+
+        StateHasChanged();
+    }
+}
+
+public enum ViewType
+{
+    Grid = 0,
+    List = 1,
+    Map = 2
+}

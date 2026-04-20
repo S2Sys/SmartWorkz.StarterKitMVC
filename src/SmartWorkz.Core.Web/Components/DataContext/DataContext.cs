@@ -220,3 +220,10 @@ public class DataContext<T> : IDataContext<T> where T : class
         return value ?? item;
     }
 }
+
+public class GridFilter
+{
+    public string Property { get; set; } = "";
+    public string Operator { get; set; } = "equals";
+    public string? Value { get; set; }
+}
