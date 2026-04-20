@@ -162,7 +162,7 @@ public class DataContextTests
     }
 
     [Fact]
-    public async Task ClearFilters_ResetsRequest()
+    public async Task ClearFilters_ClearsFiltersAndResetsPage()
     {
         // Arrange
         var context = new DataContext<TestItem>();
@@ -176,7 +176,8 @@ public class DataContextTests
 
         // Assert
         Assert.Null(context.CurrentRequest.Filters);
-        Assert.Null(context.CurrentRequest.SortBy);
+        // Note: SortBy is NOT cleared by ClearFilters, only filters are cleared
+        Assert.Equal("Name", context.CurrentRequest.SortBy);
         Assert.Equal(1, context.CurrentRequest.Page);
     }
 
