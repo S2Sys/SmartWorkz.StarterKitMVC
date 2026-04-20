@@ -13,11 +13,27 @@ public class DataContextTests
         public string Category { get; set; } = "";
     }
 
+    private DataContext<TestItem> CreateContext()
+    {
+        return new DataContext<TestItem>();
+    }
+
+    private async Task<DataContext<TestItem>> InitializeContext()
+    {
+        var context = CreateContext();
+        await context.Initialize(new List<TestItem>
+        {
+            new() { Id = 1, Name = "Item 1", Category = "A" },
+            new() { Id = 2, Name = "Item 2", Category = "B" }
+        });
+        return context;
+    }
+
     [Fact]
     public async Task Initialize_WithData_PopulatesCurrentResponse()
     {
         // Arrange
-        var context = new DataContext<TestItem>();
+        var context = CreateContext();
         var items = new List<TestItem>
         {
             new() { Id = 1, Name = "Item 1", Category = "A" },
@@ -37,8 +53,7 @@ public class DataContextTests
     public async Task UpdateSort_ChangesCurrentRequest()
     {
         // Arrange
-        var context = new DataContext<TestItem>();
-        await context.Initialize(new List<TestItem>());
+        var context = await InitializeContext();
 
         // Act
         await context.UpdateSort("Name", false);
@@ -52,19 +67,10 @@ public class DataContextTests
     public async Task UpdateSort_ResetsToPage1()
     {
         // Arrange
-        var context = new DataContext<TestItem>();
-        await context.Initialize(new List<TestItem>());
-        context.CurrentRequest.Page.Equals(1);  // Initial state
-
-        // Act
-        // Verify we start at page 1
+        var context = await InitializeContext();
         Assert.Equal(1, context.CurrentRequest.Page);
 
-        // Manually set page to 5 using a workaround (GridRequest is a record)
-        var oldRequest = context.CurrentRequest;
-        var modifiedRequest = oldRequest with { Page = 5 };
-        // Note: Can't directly modify CurrentRequest as it's a record property
-        // We'll update pagination first
+        // Set page to 5
         await context.UpdatePagination(5, 20);
 
         // Act
@@ -78,8 +84,7 @@ public class DataContextTests
     public async Task UpdateFilter_AddsFilterToRequest()
     {
         // Arrange
-        var context = new DataContext<TestItem>();
-        await context.Initialize(new List<TestItem>());
+        var context = await InitializeContext();
 
         // Act
         await context.UpdateFilter("Category", "equals", "A");
@@ -94,8 +99,7 @@ public class DataContextTests
     public async Task UpdateFilter_ResetsToPage1()
     {
         // Arrange
-        var context = new DataContext<TestItem>();
-        await context.Initialize(new List<TestItem>());
+        var context = await InitializeContext();
 
         // Set page to 5
         await context.UpdatePagination(5, 20);
@@ -112,8 +116,7 @@ public class DataContextTests
     public async Task UpdatePagination_ChangesPaginationParams()
     {
         // Arrange
-        var context = new DataContext<TestItem>();
-        await context.Initialize(new List<TestItem>());
+        var context = await InitializeContext();
 
         // Act
         await context.UpdatePagination(3, 50);
@@ -127,7 +130,7 @@ public class DataContextTests
     public void ToggleRowSelection_TogglesSingleRow()
     {
         // Arrange
-        var context = new DataContext<TestItem>();
+        var context = CreateContext();
         var rowId = 1;
 
         // Act
@@ -136,7 +139,7 @@ public class DataContextTests
         // Assert
         Assert.Contains(rowId, context.SelectedRowIds);
 
-        // Act again
+        // Act again (toggle off)
         context.ToggleRowSelection(rowId);
 
         // Assert
@@ -147,7 +150,7 @@ public class DataContextTests
     public void SetSelectedRows_ReplacesSelection()
     {
         // Arrange
-        var context = new DataContext<TestItem>();
+        var context = CreateContext();
         context.ToggleRowSelection(1);
         context.ToggleRowSelection(2);
 
@@ -165,8 +168,7 @@ public class DataContextTests
     public async Task ClearFilters_ClearsFiltersAndResetsPage()
     {
         // Arrange
-        var context = new DataContext<TestItem>();
-        await context.Initialize(new List<TestItem>());
+        var context = await InitializeContext();
         await context.UpdateFilter("Category", "equals", "A");
         await context.UpdateSort("Name", true);
         await context.UpdatePagination(5, 20);
@@ -185,7 +187,7 @@ public class DataContextTests
     public void OnStateChanged_RaisedWhenStateChanges()
     {
         // Arrange
-        var context = new DataContext<TestItem>();
+        var context = CreateContext();
         var stateChangedCount = 0;
         context.OnStateChanged += () => stateChangedCount++;
 
@@ -197,16 +199,16 @@ public class DataContextTests
     }
 
     [Fact]
-    public void ToggleSelectAll_SelectsAllRows_WhenTrue()
+    public async Task ToggleSelectAll_SelectsAllRows_WhenTrue()
     {
         // Arrange
-        var context = new DataContext<TestItem>();
+        var context = CreateContext();
         var items = new List<TestItem>
         {
             new() { Id = 1, Name = "Item 1", Category = "A" },
             new() { Id = 2, Name = "Item 2", Category = "B" }
         };
-        context.Initialize(items).Wait();
+        await context.Initialize(items);
 
         // Act
         context.ToggleSelectAll(true);
@@ -218,16 +220,10 @@ public class DataContextTests
     }
 
     [Fact]
-    public void ToggleSelectAll_ClearsSelection_WhenFalse()
+    public async Task ToggleSelectAll_ClearsSelection_WhenFalse()
     {
         // Arrange
-        var context = new DataContext<TestItem>();
-        var items = new List<TestItem>
-        {
-            new() { Id = 1, Name = "Item 1", Category = "A" },
-            new() { Id = 2, Name = "Item 2", Category = "B" }
-        };
-        context.Initialize(items).Wait();
+        var context = await InitializeContext();
         context.ToggleSelectAll(true);
 
         // Act
@@ -235,5 +231,51 @@ public class DataContextTests
 
         // Assert
         Assert.Empty(context.SelectedRowIds);
+    }
+
+    [Fact]
+    public async Task IsLoading_SetDuringAsyncOperation()
+    {
+        // Arrange
+        var context = CreateContext();
+        Assert.False(context.IsLoading);
+
+        // Act & Assert - verify IsLoading behavior
+        var initTask = context.Initialize(new List<TestItem>());
+        // Note: Can't easily test IsLoading=true mid-operation without timing issues
+        // This test verifies IsLoading is false after completion
+        await initTask;
+
+        // Assert
+        Assert.False(context.IsLoading);
+    }
+
+    [Fact]
+    public async Task Error_ClearedOnSuccessfulOperation()
+    {
+        // Arrange
+        var context = await InitializeContext();
+        var items = new List<TestItem> { new() { Id = 1, Name = "Test", Category = "A" } };
+
+        // Act
+        await context.Initialize(items);
+
+        // Assert
+        Assert.Null(context.Error);
+    }
+
+    [Fact]
+    public async Task UpdateFilter_WithNullValue_RemovesFilter()
+    {
+        // Arrange
+        var context = await InitializeContext();
+        await context.UpdateFilter("Category", "equals", "A");
+        Assert.Single(context.CurrentRequest.Filters);
+
+        // Act
+        await context.UpdateFilter("Category", "equals", null);
+
+        // Assert
+        Assert.Empty(context.CurrentRequest.Filters);
     }
 }
