@@ -49,7 +49,7 @@ public partial class GridComponent<T> : ComponentBase, IAsyncDisposable where T 
     protected List<T>? CurrentPageData { get; set; }
 
     /// <summary>Current response from data context</summary>
-    protected Response<PaginatedList<T>>? CurrentResponse { get; set; }
+    protected GridResponse<T>? CurrentResponse { get; set; }
 
     protected List<GridColumn> VisibleColumns => Columns.Where(c => c.IsVisible).ToList();
 
