@@ -20,4 +20,10 @@ public class HomeController(ProductService productService) : Controller
         var health = DiagnosticsHelper.GetApplicationHealth();
         return health.Succeeded ? Ok(health.Data) : StatusCode(503, health.Error);
     }
+
+    [Route("/Home/Error")]
+    public IActionResult Error()
+    {
+        return View();
+    }
 }
