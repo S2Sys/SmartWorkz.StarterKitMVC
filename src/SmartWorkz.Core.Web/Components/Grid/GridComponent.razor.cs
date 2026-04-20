@@ -19,6 +19,38 @@ public partial class GridComponent<T> : ComponentBase, IAsyncDisposable where T 
     [Parameter]
     public RenderFragment<T>? RowTemplate { get; set; }
 
+    /// <summary>Enable virtual scrolling for large datasets (10K+ rows)</summary>
+    [Parameter]
+    public bool EnableVirtualization { get; set; } = false;
+
+    /// <summary>Row count threshold to enable virtualization (default 10,000)</summary>
+    [Parameter]
+    public int VirtualizationThreshold { get; set; } = 10_000;
+
+    /// <summary>Height of each row in pixels for virtualization (default 40px)</summary>
+    [Parameter]
+    public int ItemHeight { get; set; } = 40;
+
+    /// <summary>Container height in pixels for virtualized grid</summary>
+    [Parameter]
+    public int ContainerHeight { get; set; } = 600;
+
+    /// <summary>Allow row selection via checkboxes</summary>
+    [Parameter]
+    public bool AllowRowSelection { get; set; } = false;
+
+    /// <summary>All data (used for virtualization)</summary>
+    public List<T>? AllData { get; set; }
+
+    /// <summary>State manager for grid (pagination, sorting, filtering)</summary>
+    protected GridStateManager? StateManager { get; set; }
+
+    /// <summary>Current page data for pagination</summary>
+    protected List<T>? CurrentPageData { get; set; }
+
+    /// <summary>Current response from data context</summary>
+    protected Response<PaginatedList<T>>? CurrentResponse { get; set; }
+
     protected List<GridColumn> VisibleColumns => Columns.Where(c => c.IsVisible).ToList();
 
     protected override void OnInitialized()
