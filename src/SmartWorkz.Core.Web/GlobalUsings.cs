@@ -9,3 +9,4 @@ global using Microsoft.AspNetCore.Razor.TagHelpers;
 global using SmartWorkz.Core.Web.TagHelpers;
 global using SmartWorkz.Core.Web.Services.Grid;
 global using SmartWorkz.Core.Web.Components.Grid;
+global using SmartWorkz.Core.Web.Components.DataContext;
