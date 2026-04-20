@@ -28,3 +28,4 @@ global using SmartWorkz.Core.Shared.Resilience;
 global using SmartWorkz.Core.Shared.Features;
 global using SmartWorkz.Core.Shared.Events;
 global using SmartWorkz.Core.Shared.Communications;
+global using SmartWorkz.Core.Shared.Attributes;
