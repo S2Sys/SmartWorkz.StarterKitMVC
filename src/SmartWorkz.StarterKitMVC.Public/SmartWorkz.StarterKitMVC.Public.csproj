@@ -11,6 +11,7 @@
     <ProjectReference Include="..\SmartWorkz.StarterKitMVC.Application\SmartWorkz.StarterKitMVC.Application.csproj" />
     <ProjectReference Include="..\SmartWorkz.StarterKitMVC.Infrastructure\SmartWorkz.StarterKitMVC.Infrastructure.csproj" />
     <ProjectReference Include="..\SmartWorkz.StarterKitMVC.Shared\SmartWorkz.StarterKitMVC.Shared.csproj" />
+    <ProjectReference Include="..\SmartWorkz.Core.Web\SmartWorkz.Core.Web.csproj" />
   </ItemGroup>
 
 </Project>
