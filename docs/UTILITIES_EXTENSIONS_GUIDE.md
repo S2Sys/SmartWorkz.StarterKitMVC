@@ -10,10 +10,10 @@ SmartWorkz provides a comprehensive set of **static helper utilities** and **ext
 
 ### Key Principles
 
-- **Fluent Extensions**: Common types (string, bool, decimal, int, etc.) have chainable extension methods
+- **Fluent Extensions**: Common types (string, bool, decimal, int, TimeSpan, DateTime, Guid, etc.) have chainable extension methods
 - **Consistent Error Handling**: Text and utility helpers return `Result<T>` for explicit error states
 - **Zero Allocation**: Math and comparison helpers are inline for performance
-- **Static Utilities**: Standalone helper classes for complex operations (compression, JSON, enums)
+- **Static Utilities**: Standalone helper classes for complex operations (compression, JSON, text processing)
 
 ---
 
@@ -203,6 +203,34 @@ var word = TextHelper.Reverse("stressed");
 
 ---
 
+#### RemoveWhitespace — Remove All Whitespace
+
+Removes all whitespace characters (spaces, tabs, newlines) from the input string using regex.
+
+**Signature:**
+```csharp
+public static Result<string> RemoveWhitespace(string text)
+```
+
+**Example:**
+```csharp
+var result = TextHelper.RemoveWhitespace("H e l l o");
+// Success: "Hello"
+
+var spaces = TextHelper.RemoveWhitespace("text with   spaces");
+// Success: "textwithspaces"
+
+var mixed = TextHelper.RemoveWhitespace("  line1\n  line2  ");
+// Success: "line1line2"
+```
+
+**Use Cases:**
+- Remove formatting whitespace from user input
+- Normalize phone numbers or IDs with spaces
+- Clean up copy-pasted text with irregular spacing
+
+---
+
 #### WordWrap — Break Text at Word Boundaries
 
 Wraps text to a specified line length while preserving word boundaries.
@@ -264,453 +292,9 @@ var separator = TextHelper.Repeat("=", 10);
 
 ---
 
-## Slug Generation
-
-### SlugHelper — URL-Friendly Text Conversion
-
-Converts text to URL-friendly slugs with extensive customization options.
-
-#### GenerateSlug — Create Slug with Options
-
-Generates a URL-friendly slug from text with fine-grained configuration.
-
-**Signature:**
-```csharp
-public static Result<string> GenerateSlug(string text, SlugOptions? options = null)
-```
-
-**Parameters:**
-- `text` — Input text to convert
-- `options` — Configuration (uses defaults if null)
-
-**Returns:** `Result<string>` — Generated slug or error
-
-**Example:**
-```csharp
-// Default options
-var simple = SlugHelper.GenerateSlug("Hello World!");
-// Success: "hello-world"
-
-// Custom options
-var options = new SlugOptions
-{
-    Lowercase = true,
-    MaxLength = 50,
-    Separator = "_",
-    RemoveAccents = true,
-    RemoveSpecialChars = true
-};
-var custom = SlugHelper.GenerateSlug("Café & Restaurant!", options);
-// Success: "cafe_restaurant"
-
-// Accented text
-var accented = SlugHelper.GenerateSlug("Señor José");
-// Success: "senor-jose"
-
-// Empty result after processing
-var result = SlugHelper.GenerateSlug("!!!"); // Fails: slug becomes empty
-```
-
----
-
-#### ToSlug — Convenience Method
-
-Convenience method that calls `GenerateSlug` with default options.
-
-**Signature:**
-```csharp
-public static Result<string> ToSlug(string text)
-```
-
-**Example:**
-```csharp
-var slug = SlugHelper.ToSlug("Product Name");
-// Success: "product-name"
-```
-
----
-
-#### SlugOptions — Configuration Class
-
-Configures slug generation behavior. All properties have sensible defaults.
-
-**Properties:**
-
-| Property | Type | Default | Purpose |
-|----------|------|---------|---------|
-| `Lowercase` | `bool` | `true` | Convert to lowercase |
-| `MaxLength` | `int` | `100` | Max slug length (0 = unlimited) |
-| `Separator` | `string` | `"-"` | Character(s) between words |
-| `RemoveAccents` | `bool` | `true` | Remove é, ñ, etc. |
-| `RemoveSpecialChars` | `bool` | `true` | Remove punctuation & symbols |
-
-**Example:**
-```csharp
-// Create custom options
-var options = new SlugOptions
-{
-    Lowercase = true,
-    MaxLength = 75,
-    Separator = "-",
-    RemoveAccents = true,
-    RemoveSpecialChars = true
-};
-
-var slug = SlugHelper.GenerateSlug("Article Title Here", options);
-```
-
-**Use Cases:**
-- Generate SEO-friendly URLs from titles
-- Create unique identifiers from user input
-- Format product names for URLs
-
----
-
-## Math Utilities
-
-### MathHelper — Arithmetic & Comparison Operations
-
-Static helper for common math operations. Methods are inline for performance.
-
-#### Percentage — Calculate Percentage of Value
-
-Calculates what percentage a given value represents.
-
-**Signature:**
-```csharp
-public static decimal Percentage(decimal value, decimal percent)
-```
-
-**Example:**
-```csharp
-var discount = MathHelper.Percentage(100m, 20);  // 20% of 100
-// Returns: 20m
-
-var tax = MathHelper.Percentage(150m, 10);  // 10% of 150
-// Returns: 15m
-
-var portion = MathHelper.Percentage(1000m, 33.33m);
-// Returns: 333.30m
-```
-
----
-
-#### PercentageChange — Calculate Change Between Values
-
-Calculates the percentage change from an old value to a new value. Positive result = increase, negative = decrease.
-
-**Signature:**
-```csharp
-public static decimal PercentageChange(decimal oldValue, decimal newValue)
-```
-
-**Example:**
-```csharp
-var change = MathHelper.PercentageChange(100m, 150m);
-// Returns: 50m (50% increase)
-
-var decrease = MathHelper.PercentageChange(150m, 100m);
-// Returns: -33.33m (33% decrease)
-
-// Special case: zero old value
-var zeroChange = MathHelper.PercentageChange(0m, 50m);
-// Returns: 100m (100% change when starting from zero)
-```
-
-**Use Cases:**
-- Calculate growth rates
-- Track inventory changes
-- Display price increase/decrease percentages
-
----
-
-#### RoundTo — Round to Decimal Places
-
-Rounds a decimal value to a specified number of decimal places using "away from zero" rounding.
-
-**Signature:**
-```csharp
-public static decimal RoundTo(decimal value, int decimals)
-```
-
-**Example:**
-```csharp
-var rounded = MathHelper.RoundTo(3.14159m, 2);
-// Returns: 3.14m
-
-var price = MathHelper.RoundTo(19.995m, 2);
-// Returns: 20.00m  (away from zero rounding)
-
-var whole = MathHelper.RoundTo(42.7m, 0);
-// Returns: 43m
-```
-
-**Note:** Uses `MidpointRounding.AwayFromZero` for consistent banker's rounding avoidance.
-
----
-
-#### Clamp — Constrain Value Within Range
-
-Constrains a value to fall within a specified [min, max] range. Generic and works with any comparable type.
-
-**Signature:**
-```csharp
-public static T Clamp<T>(T value, T min, T max) where T : IComparable<T>
-```
-
-**Example:**
-```csharp
-var value = MathHelper.Clamp(15, 0, 10);
-// Returns: 10 (clamped to max)
-
-var within = MathHelper.Clamp(5, 0, 10);
-// Returns: 5 (already within range)
-
-var below = MathHelper.Clamp(-5, 0, 10);
-// Returns: 0 (clamped to min)
-
-// Works with any IComparable type
-var clampDate = MathHelper.Clamp(
-    DateTime.Parse("2025-06-15"),
-    DateTime.Parse("2025-01-01"),
-    DateTime.Parse("2025-12-31")
-);
-```
-
----
-
-#### Average — Calculate Mean of Values
-
-Calculates the arithmetic mean of the provided decimal values.
-
-**Signature:**
-```csharp
-public static decimal Average(params decimal[] values)
-```
-
-**Example:**
-```csharp
-var avg = MathHelper.Average(10m, 20m, 30m);
-// Returns: 20m
-
-var ratings = MathHelper.Average(4.5m, 3.8m, 4.2m, 4.9m);
-// Returns: 4.35m
-
-// Requires at least one value
-var error = MathHelper.Average();  // Throws: ArgumentException
-```
-
----
-
-## Enum Utilities
-
-### EnumHelper — Reflection-Based Enum Operations
-
-Provides utilities for enum introspection and value retrieval.
-
-#### GetDescription — Extract Display Name
-
-Retrieves the `[Description]` attribute text from an enum value, falling back to the enum name.
-
-**Signature:**
-```csharp
-public static string GetDescription(Enum value)
-```
-
-**Example:**
-```csharp
-public enum OrderStatus
-{
-    [Description("Pending Review")]
-    Pending,
-    [Description("In Progress")]
-    Processing,
-    [Description("Completed")]
-    Done
-}
-
-var status = OrderStatus.Pending;
-var desc = EnumHelper.GetDescription(status);
-// Returns: "Pending Review"
-
-// Without attribute
-var name = EnumHelper.GetDescription(OrderStatus.Done);
-// Returns: "Done" (if no Description attribute)
-```
-
----
-
-#### GetValue<T> — Parse Enum by Name
-
-Attempts to retrieve an enum value by its name, case-insensitive.
-
-**Signature:**
-```csharp
-public static Result<T> GetValue<T>(string name) where T : Enum
-```
-
-**Example:**
-```csharp
-var result = EnumHelper.GetValue<OrderStatus>("Pending");
-// Success: OrderStatus.Pending
-
-var caseInsensitive = EnumHelper.GetValue<OrderStatus>("pending");
-// Success: OrderStatus.Pending
-
-var notFound = EnumHelper.GetValue<OrderStatus>("Invalid");
-// Fails: Error with message "Enum value 'Invalid' not found in OrderStatus"
-```
-
-**Use Cases:**
-- Parse user input to enum values
-- Load enum values from configuration
-- Safely convert strings from API requests
-
----
-
-#### GetAllValues<T> — Retrieve All Enum Members
-
-Returns all values of the specified enum type as a list.
-
-**Signature:**
-```csharp
-public static List<T> GetAllValues<T>() where T : Enum
-```
-
-**Example:**
-```csharp
-var allStatuses = EnumHelper.GetAllValues<OrderStatus>();
-// Returns: [Pending, Processing, Done]
-
-// Populate dropdown
-var options = EnumHelper.GetAllValues<Priority>()
-    .Select(p => new SelectListItem
-    {
-        Value = p.ToString(),
-        Text = p.GetDescription()
-    });
-```
-
----
-
-#### GetName — Retrieve Enum Member Name
-
-Retrieves the name of an enum value as a string.
-
-**Signature:**
-```csharp
-public static string GetName(Enum value)
-```
-
-**Example:**
-```csharp
-var name = EnumHelper.GetName(OrderStatus.Processing);
-// Returns: "Processing"
-
-// Compared to Description attribute
-var desc = EnumHelper.GetDescription(OrderStatus.Processing);
-// Returns: "In Progress" (from attribute)
-```
-
----
-
-## Compression Utilities
-
-### CompressHelper — GZip Compression/Decompression
-
-Provides string and byte array compression using GZip format.
-
-#### CompressString — Compress Text to Bytes
-
-Compresses a string to a GZip-compressed byte array.
-
-**Signature:**
-```csharp
-public static Result<byte[]> CompressString(string text)
-```
-
-**Example:**
-```csharp
-var text = "This is some text to compress";
-var result = CompressHelper.CompressString(text);
-
-if (result.IsSuccess)
-{
-    var compressed = result.Value;
-    // Typically 30-50% of original size
-}
-```
-
----
-
-#### DecompressString — Decompress Bytes to Text
-
-Decompresses a GZip-compressed byte array back to a string.
-
-**Signature:**
-```csharp
-public static Result<string> DecompressString(byte[] compressed)
-```
-
-**Example:**
-```csharp
-var original = "Hello World";
-var compressed = CompressHelper.CompressString(original).Value;
-var decompressed = CompressHelper.DecompressString(compressed).Value;
-// Returns: "Hello World"
-
-// Error cases
-var empty = CompressHelper.DecompressString(new byte[0]);  // Fails: empty data
-```
-
----
-
-#### CompressBytes — Compress Byte Array
-
-Compresses a byte array using GZip. Does not return a Result (synchronous).
-
-**Signature:**
-```csharp
-public static byte[] CompressBytes(byte[] data)
-```
-
-**Example:**
-```csharp
-var data = Encoding.UTF8.GetBytes("Content to compress");
-var compressed = CompressHelper.CompressBytes(data);
-// Returns: GZip-compressed bytes
-```
-
----
-
-#### DecompressBytes — Decompress Byte Array
-
-Decompresses a GZip-compressed byte array. Does not return a Result (synchronous).
-
-**Signature:**
-```csharp
-public static byte[] DecompressBytes(byte[] compressed)
-```
-
-**Example:**
-```csharp
-var original = Encoding.UTF8.GetBytes("Original data");
-var compressed = CompressHelper.CompressBytes(original);
-var restored = CompressHelper.DecompressBytes(compressed);
-// Returns: [79, 114, 105, 103, ...] (UTF-8 bytes of "Original data")
-```
-
-**Use Cases:**
-- Store large text in compressed form
-- Reduce API response sizes
-- Compress cached data in memory
-- Compact log file storage
-
----
-
 ## JSON Utilities
 
-### JsonHelper — JSON Serialization & Validation
+### JsonHelper — JSON Serialization & Deserialization
 
 Provides JSON serialization, deserialization, and validation.
 
@@ -793,31 +377,34 @@ var empty = JsonHelper.Deserialize<Product>("");
 
 ---
 
-#### IsValidJson — Validate JSON Format
+#### IsPrettyJson — Detect Formatted JSON
 
-Validates whether a string is valid JSON format.
+Determines if a JSON string is prettified (formatted with indentation or line breaks).
 
 **Signature:**
 ```csharp
-public static bool IsValidJson(string json)
+public static bool IsPrettyJson(string json)
 ```
 
 **Example:**
 ```csharp
-var valid = JsonHelper.IsValidJson("{ \"key\": \"value\" }");
-// Returns: true
-
-var invalid = JsonHelper.IsValidJson("{invalid json}");
+var compact = JsonHelper.IsPrettyJson("{\"key\":\"value\"}");
 // Returns: false
 
-var empty = JsonHelper.IsValidJson("");
+var indented = JsonHelper.IsPrettyJson(@"
+{
+  ""key"": ""value""
+}");
+// Returns: true (contains newlines)
+
+var singleLine = JsonHelper.IsPrettyJson("{\"key\":\"value\"}");
 // Returns: false
 ```
 
 **Use Cases:**
-- Validate JSON strings before parsing
-- Check data integrity from external sources
-- Verify API responses contain valid JSON
+- Detect formatting for consistent JSON storage
+- Log formatted vs. compact JSON differently
+- Validate JSON source format
 
 ---
 
@@ -832,7 +419,8 @@ Convert booleans to human-readable strings and conditional values.
 | `ToYesNo()` | `bool → string` | `"Yes"` or `"No"` | `true.ToYesNo()` → `"Yes"` |
 | `ToOnOff()` | `bool → string` | `"On"` or `"Off"` | `false.ToOnOff()` → `"Off"` |
 | `ToEnabledDisabled()` | `bool → string` | `"Enabled"` or `"Disabled"` | `true.ToEnabledDisabled()` → `"Enabled"` |
-| `IfTrue<T>()` | `bool, Func<T> → Result<T>` | `Result<T>` with value or error | `true.IfTrue(() => new Result<string>("success"))` |
+| `ToInt()` | `bool → int` | `1` or `0` | `true.ToInt()` → `1` |
+| `IfTrue<T>()` | `bool, T, T → T` | Conditional value | `true.IfTrue("yes", "no")` → `"yes"` |
 
 **Examples:**
 
@@ -843,10 +431,46 @@ bool isActive = true;
 var display1 = isActive.ToYesNo();  // "Yes"
 var display2 = isActive.ToOnOff();  // "On"
 var display3 = isActive.ToEnabledDisabled();  // "Enabled"
+var asInt = isActive.ToInt();  // 1
 
-// Conditional function invocation
-var result = isActive.IfTrue(() => new Result<string>("success"));
-// Returns: Result<string> with success value if isActive is true
+// Conditional value selection
+var status = isActive.IfTrue("Active", "Inactive");
+// Returns: "Active"
+
+var permission = hasAdminRole.IfTrue(100, 10);  // Admin=100, User=10
+// Returns: 100 (if hasAdminRole is true)
+```
+
+---
+
+### DateTimeExtensions — DateTime Validation & Conversion
+
+Work with DateTime values for time checks and conversions.
+
+| Method | Signature | Returns | Example |
+|--------|-----------|---------|---------|
+| `ToUtcKind()` | `DateTime → DateTime` | UTC-kind DateTime | `dt.ToUtcKind()` |
+| `IsBetween()` | `DateTime, start, end → bool` | `true` if in range | `dt.IsBetween(start, end)` → `true` |
+
+**Examples:**
+
+```csharp
+var date = new DateTime(2025, 6, 15, 14, 30, 0, DateTimeKind.Local);
+
+// Convert to UTC
+var utc = date.ToUtcKind();  // Converts to UTC if not already
+
+// Range checking
+var start = new DateTime(2025, 1, 1);
+var end = new DateTime(2025, 12, 31);
+
+if (date.IsBetween(start, end))
+    Console.WriteLine("Date is in 2025");
+
+// Inclusive range check
+var tomorrow = DateTime.UtcNow.AddDays(1);
+if (tomorrow.IsBetween(DateTime.UtcNow, DateTime.UtcNow.AddDays(2)))
+    Console.WriteLine("Tomorrow is within range");
 ```
 
 ---
@@ -858,11 +482,12 @@ Validate decimal values and perform range operations.
 | Method | Signature | Returns | Example |
 |--------|-----------|---------|---------|
 | `IsPositive()` | `decimal → bool` | `true` if > 0 | `5m.IsPositive()` → `true` |
+| `IsNegative()` | `decimal → bool` | `true` if < 0 | `-5m.IsNegative()` → `true` |
 | `IsZero()` | `decimal → bool` | `true` if == 0 | `0m.IsZero()` → `true` |
+| `Abs()` | `decimal → decimal` | Absolute value | `-5m.Abs()` → `5m` |
 | `Round()` | `decimal, int → decimal` | Rounded value | `3.14159m.Round(2)` → `3.14m` |
 | `Clamp()` | `decimal, min, max → decimal` | Constrained value | `15m.Clamp(0, 10)` → `10m` |
 | `IsBetween()` | `decimal, min, max → bool` | `true` if in range | `5m.IsBetween(0, 10)` → `true` |
-| `TruncateDecimals()` | `decimal, int → decimal` | Truncated value | `3.14159m.TruncateDecimals(2)` → `3.14m` |
 
 **Examples:**
 
@@ -873,13 +498,17 @@ decimal price = 19.99m;
 if (price.IsPositive())
     Console.WriteLine("Price is positive");
 
+if (!price.IsZero())
+    Console.WriteLine("Price has a value");
+
 if (price.IsBetween(0, 100))
     Console.WriteLine("Price in valid range");
 
 // Manipulation
 var rounded = price.Round(0);  // 20m
+var absolute = (-price).Abs();  // 19.99m
 var clamped = price.Clamp(15, 25);  // 19.99m (within range)
-var truncated = price.TruncateDecimals(1);  // 19.9m
+var high = 150m.Clamp(0, 100);  // 100m (clamped to max)
 ```
 
 ---
@@ -891,18 +520,28 @@ Validate and format GUIDs conveniently.
 | Method | Signature | Returns | Example |
 |--------|-----------|---------|---------|
 | `IsEmpty()` | `Guid → bool` | `true` if Guid.Empty | `Guid.Empty.IsEmpty()` → `true` |
+| `IsNotEmpty()` | `Guid → bool` | `true` if not Guid.Empty | `guid.IsNotEmpty()` → `true` |
+| `IfEmpty()` | `Guid, Guid → Guid` | Default if empty | `emptyId.IfEmpty(defaultId)` |
 | `ToShortString()` | `Guid → string` | First 8 chars | `guid.ToShortString()` → `"a1b2c3d4"` |
-| `TryParseExact()` | `string → (bool, Guid)` | Parsed or Empty | `GuidExtensions.TryParseExact(str, out result)` |
+| `TryParseExact()` | `string → (bool, Guid)` | Parse result | `GuidExtensions.TryParseExact(str, out result)` |
 
 **Examples:**
 
 ```csharp
 var id = Guid.NewGuid();
 var emptyId = Guid.Empty;
+var defaultId = Guid.Parse("00000000-0000-0000-0000-000000000001");
 
 // Validation
 if (emptyId.IsEmpty())
     Console.WriteLine("ID is empty");
+
+if (id.IsNotEmpty())
+    Console.WriteLine("ID has a value");
+
+// Use default for empty values
+var safeId = emptyId.IfEmpty(defaultId);
+// Returns: defaultId (since emptyId was empty)
 
 // Formatting
 var shortId = id.ToShortString();  // "a1b2c3d4"
@@ -910,6 +549,8 @@ var shortId = id.ToShortString();  // "a1b2c3d4"
 // Parsing
 if (GuidExtensions.TryParseExact("a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4", out var parsed))
     Console.WriteLine($"Parsed: {parsed}");
+else
+    Console.WriteLine("Invalid GUID format");
 ```
 
 ---
@@ -921,10 +562,12 @@ Validate and manipulate integer values.
 | Method | Signature | Returns | Example |
 |--------|-----------|---------|---------|
 | `IsPositive()` | `int → bool` | `true` if > 0 | `5.IsPositive()` → `true` |
+| `IsNegative()` | `int → bool` | `true` if < 0 | `-5.IsNegative()` → `true` |
 | `IsEven()` | `int → bool` | `true` if divisible by 2 | `4.IsEven()` → `true` |
 | `IsOdd()` | `int → bool` | `true` if not divisible by 2 | `3.IsOdd()` → `true` |
-| `Square()` | `int → int` | Value squared | `5.Square()` → `25` |
+| `Abs()` | `int → int` | Absolute value | `-5.Abs()` → `5` |
 | `Clamp()` | `int, min, max → int` | Constrained value | `15.Clamp(0, 10)` → `10` |
+| `Square()` | `int → int` | Value squared | `5.Square()` → `25` |
 | `IsBetween()` | `int, min, max → bool` | `true` if in range | `5.IsBetween(0, 10)` → `true` |
 
 **Examples:**
@@ -936,13 +579,22 @@ int count = 42;
 if (count.IsPositive() && count.IsEven())
     Console.WriteLine("Count is positive and even");
 
-// Math
+if (count.IsOdd())
+    Console.WriteLine("Count is odd");
+
+// Math operations
 var square = count.Square();  // 1764
+var absolute = (-count).Abs();  // 42
 var bounded = count.Clamp(0, 50);  // 42 (already in range)
 
 // Range checking
 if (count.IsBetween(0, 100))
     Console.WriteLine("Count is in valid range");
+
+// Practical example: pagination
+int pageNum = 5;
+int totalPages = 3;
+var validPage = pageNum.Clamp(1, totalPages);  // 3 (clamped to max)
 ```
 
 ---
@@ -955,8 +607,15 @@ Work with time spans for relative date calculations.
 |--------|-----------|---------|---------|
 | `IsZero()` | `TimeSpan → bool` | `true` if duration is zero | `TimeSpan.Zero.IsZero()` → `true` |
 | `IsPositive()` | `TimeSpan → bool` | `true` if > 0 | `TimeSpan.FromHours(1).IsPositive()` → `true` |
-| `FromNow()` | `TimeSpan → DateTime` | Future time | `TimeSpan.FromHours(1).FromNow()` |
-| `Ago()` | `TimeSpan → DateTime` | Past time | `TimeSpan.FromDays(7).Ago()` |
+| `IsNegative()` | `TimeSpan → bool` | `true` if < 0 | `TimeSpan.FromHours(-1).IsNegative()` → `true` |
+| `TotalDays()` | `TimeSpan → int` | Days as int | `TimeSpan.FromDays(3.5).TotalDays()` → `3` |
+| `TotalHours()` | `TimeSpan → int` | Hours as int | `TimeSpan.FromHours(25).TotalHours()` → `25` |
+| `TotalMinutes()` | `TimeSpan → int` | Minutes as int | `TimeSpan.FromMinutes(90).TotalMinutes()` → `90` |
+| `TotalSeconds()` | `TimeSpan → int` | Seconds as int | `TimeSpan.FromSeconds(3661).TotalSeconds()` → `3661` |
+| `FromNow()` | `TimeSpan → DateTime` | Future DateTime | `TimeSpan.FromHours(1).FromNow()` |
+| `FromNow(baseTime)` | `TimeSpan, DateTime → DateTime` | Future DateTime from base | `TimeSpan.FromHours(1).FromNow(customTime)` |
+| `Ago()` | `TimeSpan → DateTime` | Past DateTime | `TimeSpan.FromDays(7).Ago()` |
+| `Ago(baseTime)` | `TimeSpan, DateTime → DateTime` | Past DateTime from base | `TimeSpan.FromDays(7).Ago(customTime)` |
 
 **Examples:**
 
@@ -967,12 +626,38 @@ var duration = TimeSpan.FromDays(3);
 if (duration.IsPositive())
     Console.WriteLine("Duration is positive");
 
-// Date calculations
-var futureDate = TimeSpan.FromHours(6).FromNow();
-// UTC time 6 hours in the future
+if (!duration.IsZero())
+    Console.WriteLine("Has duration");
 
-var pastDate = TimeSpan.FromDays(7).Ago();
-// UTC time 7 days ago
+// Convert to integer units
+var days = duration.TotalDays();  // 3
+var hours = TimeSpan.FromHours(25.5).TotalHours();  // 25
+var minutes = TimeSpan.FromMinutes(90).TotalMinutes();  // 90
+
+// Future dates
+var inSixHours = TimeSpan.FromHours(6).FromNow();
+// DateTime 6 hours in the future (UTC)
+
+var tomorrow = TimeSpan.FromDays(1).FromNow();
+// DateTime tomorrow (UTC)
+
+var nextWeek = TimeSpan.FromDays(7).FromNow();
+// DateTime 1 week in the future
+
+// Past dates
+var lastWeek = TimeSpan.FromDays(7).Ago();
+// DateTime 1 week ago (UTC)
+
+var twoHoursAgo = TimeSpan.FromHours(2).Ago();
+// DateTime 2 hours ago (UTC)
+
+// With custom base time
+var baseDate = new DateTime(2025, 6, 15, 12, 0, 0, DateTimeKind.Utc);
+var future = TimeSpan.FromHours(3).FromNow(baseDate);
+// 2025-06-15 15:00:00 UTC
+
+var past = TimeSpan.FromDays(5).Ago(baseDate);
+// 2025-06-10 12:00:00 UTC
 ```
 
 ---
@@ -1016,40 +701,6 @@ foreach (var value in Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>())
 
 ---
 
-### CollectionExtensions — Collection Checks & Conversions
-
-Safely check and convert collections.
-
-| Method | Signature | Returns | Example |
-|--------|-----------|---------|---------|
-| `IsNullOrEmpty<T>()` | `IEnumerable<T> → bool` | `true` if null or empty | `list.IsNullOrEmpty()` → `true` |
-| `ToReadOnlyCollection<T>()` | `IEnumerable<T> → IReadOnlyCollection<T>` | Read-only wrapper | `list.ToReadOnlyCollection()` |
-
-**Examples:**
-
-```csharp
-List<string> items = new();
-List<string> filled = new() { "a", "b", "c" };
-
-// Safe null/empty check
-if (items.IsNullOrEmpty())
-    Console.WriteLine("No items");
-
-if (!filled.IsNullOrEmpty())
-    Console.WriteLine($"Has {filled.Count} items");
-
-// Handle null references safely
-List<string>? nullable = null;
-if (nullable.IsNullOrEmpty())
-    Console.WriteLine("Null or empty");
-
-// Convert to read-only
-IReadOnlyCollection<string> readOnly = filled.ToReadOnlyCollection();
-// Cannot modify: readOnly.Add("d") → Compilation error
-```
-
----
-
 ### StringExtensions — String Validation & Processing
 
 Handle strings safely with common conversions.
@@ -1074,9 +725,51 @@ if (!text.IsNullOrWhiteSpace())
 var trimmed = text.SafeTrim();  // "Hello World"
 var fromNull = nullable.SafeTrim();  // ""
 
-// Quick slug conversion
+// Quick slug conversion (simple: lowercase and replace spaces with hyphens)
 var slug = "Product Name!".ToSlug();  // "product-name"
 var articleSlug = "Breaking News: Big Story".ToSlug();  // "breaking-news-big-story"
+var hyphenated = "HELLO WORLD".ToSlug();  // "hello-world"
+```
+
+---
+
+### CollectionExtensions — Collection Checks & Conversions
+
+Safely check and convert collections.
+
+| Method | Signature | Returns | Example |
+|--------|-----------|---------|---------|
+| `IsNullOrEmpty<T>()` | `IEnumerable<T>? → bool` | `true` if null or empty | `list.IsNullOrEmpty()` → `true` |
+| `ToReadOnlyCollection<T>()` | `IEnumerable<T> → IReadOnlyCollection<T>` | Read-only wrapper | `list.ToReadOnlyCollection()` |
+
+**Examples:**
+
+```csharp
+List<string> items = new();
+List<string> filled = new() { "a", "b", "c" };
+
+// Safe null/empty check
+if (items.IsNullOrEmpty())
+    Console.WriteLine("No items");
+
+if (!filled.IsNullOrEmpty())
+    Console.WriteLine($"Has {filled.Count} items");
+
+// Handle null references safely
+List<string>? nullable = null;
+if (nullable.IsNullOrEmpty())
+    Console.WriteLine("Null or empty");
+
+// Convert to read-only
+IReadOnlyCollection<string> readOnly = filled.ToReadOnlyCollection();
+// Cannot modify: readOnly.Add("d") → Compilation error
+
+// Practical example: API response
+public IReadOnlyCollection<UserDto> GetUsers()
+{
+    var users = _service.FetchUsers();
+    return users.ToReadOnlyCollection();  // Prevents external modification
+}
 ```
 
 ---
@@ -1125,10 +818,16 @@ if (date.IsBetween(start, end))
 }
 
 // Bool chaining
-var hasPermission = user.IsActive && user.Role.IsAdminOrEditor();
+var hasPermission = user.IsActive && user.Role == "Admin";
 var displayValue = hasPermission
-    .ToYesNo()
-    .ToUpperInvariant();  // "YES"
+    .ToYesNo();  // "Yes" or "No"
+
+// Decimal validation chain
+decimal price = 19.99m;
+if (price.IsPositive() && price.IsBetween(0, 100))
+{
+    var rounded = price.Round(0);
+}
 ```
 
 ### Extension Method Null Safety
@@ -1145,11 +844,18 @@ if (!nullable.IsNullOrWhiteSpace())
 {
     // Never executes
 }
+
+// Collection safety
+List<string>? items = null;
+if (!items.IsNullOrEmpty())
+{
+    // Safe to use items
+}
 ```
 
 ### TextHelper Pipeline Pattern
 
-Compose TextHelper operations using Result<T> combinators:
+Compose TextHelper operations using Result<T>:
 
 ```csharp
 var text = "  Hello World  ";
@@ -1180,18 +886,6 @@ if (string.IsNullOrEmpty(input))
 var result = TextHelper.Truncate(input, 100);
 ```
 
-### SlugHelper Result is Empty
-
-**Problem:** `SlugHelper.GenerateSlug()` returns `"Slug.ResultEmpty"` error
-
-**Cause:** Input contains only special characters that are all removed
-
-**Solution:** Ensure input has alphanumeric content:
-```csharp
-var input = "!!!___---";  // Fails: no alphanumeric chars
-var input2 = "Product-123";  // Succeeds
-```
-
 ### JSON Deserialization Fails
 
 **Problem:** `JsonHelper.Deserialize<T>()` returns `"Error.JsonInvalid"`
@@ -1205,35 +899,59 @@ var bad = JsonHelper.Deserialize<Product>("{name: Widget}");
 var good = JsonHelper.Deserialize<Product>("{\"name\": \"Widget\"}");
 ```
 
-### GZip Decompression Throws
+### Detecting Pretty vs Compact JSON
 
-**Problem:** `CompressHelper.DecompressBytes()` throws exception with corrupted data
+**Problem:** Need to determine if JSON is formatted
 
-**Solution:** Verify compressed data integrity:
+**Solution:** Use `IsPrettyJson()`:
 ```csharp
-// Safe decompression with error handling
-try
+var json = await GetJsonFromSource();
+
+if (JsonHelper.IsPrettyJson(json))
 {
-    var text = CompressHelper.DecompressString(bytes).Value;
+    // Process formatted JSON
 }
-catch (Exception ex)
+else
 {
-    // Log and handle corruption
-    Console.WriteLine($"Decompression failed: {ex.Message}");
+    // Process compact JSON
 }
 ```
 
-### Enum GetValue<T> Returns Error
+### Empty Guid Handling
 
-**Problem:** `EnumHelper.GetValue<T>()` returns `"Error.EnumNotFound"`
+**Problem:** Checking for empty GUIDs repeatedly
 
-**Solution:** Verify enum member exists:
+**Solution:** Use `IsEmpty()` and `IfEmpty()`:
 ```csharp
-var result = EnumHelper.GetValue<OrderStatus>("Processing");
-// Success if "Processing" exists in enum definition
+var userId = GetUserIdFromRequest();
 
-var invalid = EnumHelper.GetValue<OrderStatus>("InvalidValue");
-// Fails: member doesn't exist
+// Check and use default
+var safeUserId = userId.IfEmpty(DefaultUserId);
+
+// Or validate
+if (userId.IsEmpty())
+{
+    throw new ArgumentException("User ID required");
+}
+```
+
+### Range Checking
+
+**Problem:** Multiple conditions for range validation
+
+**Solution:** Use `IsBetween()` extension:
+```csharp
+// Before
+if (price >= 0 && price <= 100)
+{
+    // Process price
+}
+
+// After (cleaner)
+if (price.IsBetween(0, 100))
+{
+    // Process price
+}
 ```
 
 ---
@@ -1241,11 +959,10 @@ var invalid = EnumHelper.GetValue<OrderStatus>("InvalidValue");
 ## Performance Considerations
 
 - **TextHelper**: Most operations are O(n) where n is string length
-- **SlugHelper**: Remove accents uses Unicode normalization (slightly slower but correct)
-- **MathHelper**: All methods are O(1) and inline-friendly
-- **CompressHelper**: GZip compression ratio typically 30-50% for text
+- **JsonHelper**: Serialization/deserialization uses System.Text.Json (optimized)
 - **Extensions**: All are inline and have zero allocation overhead
-- **Enums**: Reflection-based helpers cache internally on first call
+- **DateTime/TimeSpan**: All operations are O(1)
+- **Guid/Int operations**: All inline, no allocations
 
 ---
 
