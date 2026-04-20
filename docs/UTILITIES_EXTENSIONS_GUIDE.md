@@ -203,31 +203,6 @@ var word = TextHelper.Reverse("stressed");
 
 ---
 
-#### RemoveWhitespace — Strip All Spaces
-
-Removes all whitespace characters (spaces, tabs, newlines, etc.) from the string.
-
-**Signature:**
-```csharp
-public static Result<string> RemoveWhitespace(string text)
-```
-
-**Example:**
-```csharp
-var result = TextHelper.RemoveWhitespace("Hello  World  \n  Test");
-// Success: "HelloWorldTest"
-
-var compact = TextHelper.RemoveWhitespace("  123  456  ");
-// Success: "123456"
-```
-
-**Use Cases:**
-- Normalize phone numbers for storage
-- Compact JSON for transmission
-- Clean user input before validation
-
----
-
 #### WordWrap — Break Text at Word Boundaries
 
 Wraps text to a specified line length while preserving word boundaries.
@@ -818,32 +793,31 @@ var empty = JsonHelper.Deserialize<Product>("");
 
 ---
 
-#### IsPrettyJson — Check Formatting
+#### IsValidJson — Validate JSON Format
 
-Determines if a JSON string is prettified (contains newlines/indentation).
+Validates whether a string is valid JSON format.
 
 **Signature:**
 ```csharp
-public static bool IsPrettyJson(string json)
+public static bool IsValidJson(string json)
 ```
 
 **Example:**
 ```csharp
-var pretty = @"{
-  ""name"": ""Widget""
-}";
-var isPretty = JsonHelper.IsPrettyJson(pretty);
+var valid = JsonHelper.IsValidJson("{ \"key\": \"value\" }");
 // Returns: true
 
-var compact = "{\"name\":\"Widget\"}";
-var isCompact = JsonHelper.IsPrettyJson(compact);
+var invalid = JsonHelper.IsValidJson("{invalid json}");
+// Returns: false
+
+var empty = JsonHelper.IsValidJson("");
 // Returns: false
 ```
 
 **Use Cases:**
-- Detect output format before display
-- Choose compression strategy for responses
-- Validate logging output format
+- Validate JSON strings before parsing
+- Check data integrity from external sources
+- Verify API responses contain valid JSON
 
 ---
 
@@ -858,8 +832,7 @@ Convert booleans to human-readable strings and conditional values.
 | `ToYesNo()` | `bool → string` | `"Yes"` or `"No"` | `true.ToYesNo()` → `"Yes"` |
 | `ToOnOff()` | `bool → string` | `"On"` or `"Off"` | `false.ToOnOff()` → `"Off"` |
 | `ToEnabledDisabled()` | `bool → string` | `"Enabled"` or `"Disabled"` | `true.ToEnabledDisabled()` → `"Enabled"` |
-| `ToInt()` | `bool → int` | `1` or `0` | `true.ToInt()` → `1` |
-| `IfTrue<T>()` | `bool, T, T → T` | `T` (first or second) | `condition.IfTrue("yes", "no")` |
+| `IfTrue<T>()` | `bool, Func<T> → Result<T>` | `Result<T>` with value or error | `true.IfTrue(() => new Result<string>("success"))` |
 
 **Examples:**
 
@@ -871,12 +844,9 @@ var display1 = isActive.ToYesNo();  // "Yes"
 var display2 = isActive.ToOnOff();  // "On"
 var display3 = isActive.ToEnabledDisabled();  // "Enabled"
 
-// Numeric conversion
-var numeric = isActive.ToInt();  // 1
-
-// Conditional value selection
-var status = isActive.IfTrue("Active", "Inactive");  // "Active"
-var level = hasPermission.IfTrue(10, 0);  // Generic: works with any type
+// Conditional function invocation
+var result = isActive.IfTrue(() => new Result<string>("success"));
+// Returns: Result<string> with success value if isActive is true
 ```
 
 ---
@@ -888,12 +858,11 @@ Validate decimal values and perform range operations.
 | Method | Signature | Returns | Example |
 |--------|-----------|---------|---------|
 | `IsPositive()` | `decimal → bool` | `true` if > 0 | `5m.IsPositive()` → `true` |
-| `IsNegative()` | `decimal → bool` | `true` if < 0 | `(-5m).IsNegative()` → `true` |
 | `IsZero()` | `decimal → bool` | `true` if == 0 | `0m.IsZero()` → `true` |
-| `Abs()` | `decimal → decimal` | Absolute value | `(-5m).Abs()` → `5m` |
 | `Round()` | `decimal, int → decimal` | Rounded value | `3.14159m.Round(2)` → `3.14m` |
 | `Clamp()` | `decimal, min, max → decimal` | Constrained value | `15m.Clamp(0, 10)` → `10m` |
 | `IsBetween()` | `decimal, min, max → bool` | `true` if in range | `5m.IsBetween(0, 10)` → `true` |
+| `TruncateDecimals()` | `decimal, int → decimal` | Truncated value | `3.14159m.TruncateDecimals(2)` → `3.14m` |
 
 **Examples:**
 
@@ -910,7 +879,7 @@ if (price.IsBetween(0, 100))
 // Manipulation
 var rounded = price.Round(0);  // 20m
 var clamped = price.Clamp(15, 25);  // 19.99m (within range)
-var absolute = (-price).Abs();  // 19.99m
+var truncated = price.TruncateDecimals(1);  // 19.9m
 ```
 
 ---
@@ -922,8 +891,6 @@ Validate and format GUIDs conveniently.
 | Method | Signature | Returns | Example |
 |--------|-----------|---------|---------|
 | `IsEmpty()` | `Guid → bool` | `true` if Guid.Empty | `Guid.Empty.IsEmpty()` → `true` |
-| `IsNotEmpty()` | `Guid → bool` | `true` if not Guid.Empty | `newGuid.IsNotEmpty()` → `true` |
-| `IfEmpty()` | `Guid, Guid → Guid` | First or replacement | `emptyId.IfEmpty(defaultId)` |
 | `ToShortString()` | `Guid → string` | First 8 chars | `guid.ToShortString()` → `"a1b2c3d4"` |
 | `TryParseExact()` | `string → (bool, Guid)` | Parsed or Empty | `GuidExtensions.TryParseExact(str, out result)` |
 
@@ -934,14 +901,8 @@ var id = Guid.NewGuid();
 var emptyId = Guid.Empty;
 
 // Validation
-if (id.IsNotEmpty())
-    Console.WriteLine("ID is valid");
-
 if (emptyId.IsEmpty())
     Console.WriteLine("ID is empty");
-
-// Safe default
-var safeId = emptyId.IfEmpty(Guid.NewGuid());  // Gets new GUID if empty
 
 // Formatting
 var shortId = id.ToShortString();  // "a1b2c3d4"
@@ -960,10 +921,8 @@ Validate and manipulate integer values.
 | Method | Signature | Returns | Example |
 |--------|-----------|---------|---------|
 | `IsPositive()` | `int → bool` | `true` if > 0 | `5.IsPositive()` → `true` |
-| `IsNegative()` | `int → bool` | `true` if < 0 | `(-5).IsNegative()` → `true` |
 | `IsEven()` | `int → bool` | `true` if divisible by 2 | `4.IsEven()` → `true` |
 | `IsOdd()` | `int → bool` | `true` if not divisible by 2 | `3.IsOdd()` → `true` |
-| `Abs()` | `int → int` | Absolute value | `(-5).Abs()` → `5` |
 | `Square()` | `int → int` | Value squared | `5.Square()` → `25` |
 | `Clamp()` | `int, min, max → int` | Constrained value | `15.Clamp(0, 10)` → `10` |
 | `IsBetween()` | `int, min, max → bool` | `true` if in range | `5.IsBetween(0, 10)` → `true` |
@@ -972,18 +931,13 @@ Validate and manipulate integer values.
 
 ```csharp
 int count = 42;
-int index = -5;
 
 // Validation
 if (count.IsPositive() && count.IsEven())
     Console.WriteLine("Count is positive and even");
 
-if (index.IsNegative())
-    Console.WriteLine("Index is negative");
-
 // Math
 var square = count.Square();  // 1764
-var safe = index.Abs();  // 5
 var bounded = count.Clamp(0, 50);  // 42 (already in range)
 
 // Range checking
@@ -1001,15 +955,8 @@ Work with time spans for relative date calculations.
 |--------|-----------|---------|---------|
 | `IsZero()` | `TimeSpan → bool` | `true` if duration is zero | `TimeSpan.Zero.IsZero()` → `true` |
 | `IsPositive()` | `TimeSpan → bool` | `true` if > 0 | `TimeSpan.FromHours(1).IsPositive()` → `true` |
-| `IsNegative()` | `TimeSpan → bool` | `true` if < 0 | `(-1 * TimeSpan.FromHours(1)).IsNegative()` → `true` |
-| `TotalDays()` | `TimeSpan → int` | Days as integer | `TimeSpan.FromDays(5.5).TotalDays()` → `5` |
-| `TotalHours()` | `TimeSpan → int` | Hours as integer | `TimeSpan.FromHours(25).TotalHours()` → `25` |
-| `TotalMinutes()` | `TimeSpan → int` | Minutes as integer | `TimeSpan.FromMinutes(90).TotalMinutes()` → `90` |
-| `TotalSeconds()` | `TimeSpan → int` | Seconds as integer | `TimeSpan.FromSeconds(120).TotalSeconds()` → `120` |
 | `FromNow()` | `TimeSpan → DateTime` | Future time | `TimeSpan.FromHours(1).FromNow()` |
-| `FromNow()` | `TimeSpan, DateTime → DateTime` | Future from base | `duration.FromNow(baseTime)` |
 | `Ago()` | `TimeSpan → DateTime` | Past time | `TimeSpan.FromDays(7).Ago()` |
-| `Ago()` | `TimeSpan, DateTime → DateTime` | Past from base | `duration.Ago(baseTime)` |
 
 **Examples:**
 
@@ -1020,21 +967,12 @@ var duration = TimeSpan.FromDays(3);
 if (duration.IsPositive())
     Console.WriteLine("Duration is positive");
 
-// Conversions
-var hours = duration.TotalHours();  // 72
-var days = duration.TotalDays();  // 3
-
 // Date calculations
 var futureDate = TimeSpan.FromHours(6).FromNow();
 // UTC time 6 hours in the future
 
 var pastDate = TimeSpan.FromDays(7).Ago();
 // UTC time 7 days ago
-
-// With specific base time
-var baseTime = DateTime.Parse("2025-06-15");
-var adjusted = TimeSpan.FromDays(3).FromNow(baseTime);
-// "2025-06-18"
 ```
 
 ---
@@ -1139,33 +1077,6 @@ var fromNull = nullable.SafeTrim();  // ""
 // Quick slug conversion
 var slug = "Product Name!".ToSlug();  // "product-name"
 var articleSlug = "Breaking News: Big Story".ToSlug();  // "breaking-news-big-story"
-```
-
----
-
-### DateTimeExtensions — DateTime Validation & Conversion
-
-Work with DateTime values safely.
-
-| Method | Signature | Returns | Example |
-|--------|-----------|---------|---------|
-| `ToUtcKind()` | `DateTime → DateTime` | UTC-kind version | `local.ToUtcKind()` |
-| `IsBetween()` | `DateTime, start, end → bool` | `true` if in range | `date.IsBetween(start, end)` |
-
-**Examples:**
-
-```csharp
-var localTime = DateTime.Parse("2025-06-15 14:30:00");
-var start = DateTime.Parse("2025-06-01");
-var end = DateTime.Parse("2025-06-30");
-
-// Ensure UTC
-var utc = localTime.ToUtcKind();
-// Returns DateTime with Kind = Utc
-
-// Date range check
-if (localTime.IsBetween(start, end))
-    Console.WriteLine("Date is in June");
 ```
 
 ---
