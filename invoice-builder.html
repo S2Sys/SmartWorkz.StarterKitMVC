@@ -110,8 +110,8 @@ button.secondary:hover { background: #4b5563; }
 
         <div class="form-section">
             <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                <button type="button" onclick="addNewRow()" style="background: #16a34a; padding: 10px 15px; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">➕ Add Row</button>
-                <button type="button" onclick="clearAll()" style="background: #dc2626; padding: 10px 15px; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">🗑️ Clear All</button>
+                <button type="button" onclick="addNewRow()" style="background: #16a34a; padding: 10px 15px; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; display: flex; align-items: center; gap: 6px;">➕ Add Row</button>
+                <button type="button" onclick="clearAll()" style="background: #dc2626; padding: 10px 15px; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; display: flex; align-items: center; gap: 6px;">🗑️ Clear All</button>
             </div>
             <table>
                 <thead>
@@ -207,7 +207,7 @@ function createRow(tbody) {
         <td><input type="number" class="qty" value="1"></td>
         <td><input type="number" class="rate" value="0"></td>
         <td><input type="number" class="amount" readonly></td>
-        <td><button type="button" class="delete-btn" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px;">Delete</button></td>
+        <td><button type="button" class="delete-btn" style="background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 3px; cursor: pointer; font-size: 14px; font-weight: bold;" title="Delete row">✕</button></td>
     `;
     tbody.appendChild(tr);
 }
