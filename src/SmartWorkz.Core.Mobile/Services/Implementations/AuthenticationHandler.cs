@@ -39,8 +39,13 @@ public class AuthenticationHandler : IAuthenticationHandler
             var result = await _secureStorage.GetAsync(TokenKey, ct);
             return result.Succeeded ? result.Data : null;
         }
-        catch
+        catch (OperationCanceledException)
         {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Failed to get authentication token", ex);
             return null;
         }
     }
@@ -57,9 +62,13 @@ public class AuthenticationHandler : IAuthenticationHandler
         {
             await _secureStorage.SetAsync(TokenKey, token, ct);
         }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
-            _logger.LogError($"Failed to set authentication token: {ex.Message}");
+            _logger.LogError("Failed to set authentication token", ex);
         }
     }
 
@@ -74,9 +83,13 @@ public class AuthenticationHandler : IAuthenticationHandler
         {
             await _secureStorage.DeleteAsync(TokenKey, ct);
         }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
-            _logger.LogWarning($"Failed to clear authentication token: {ex.Message}");
+            _logger.LogWarning("Failed to clear authentication token", ex);
         }
     }
 
@@ -169,6 +182,8 @@ public class AuthenticationHandler : IAuthenticationHandler
 
         if (!result.Succeeded)
         {
+            _logger.LogWarning("Token refresh failed: {ErrorCode} - {ErrorMessage}",
+                result.Error?.Code ?? "UNKNOWN", result.Error?.Message ?? "Unknown error");
             // Clear invalid tokens
             await LogoutAsync(ct);
             return Result.Fail(result.Error ?? new Error("AUTH.REFRESH_FAILED", "Token refresh failed"));
