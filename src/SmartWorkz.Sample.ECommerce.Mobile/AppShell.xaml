@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="SmartWorkz.ECommerce.Mobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pages="clr-namespace:SmartWorkz.ECommerce.Mobile.Pages">
+
+    <ShellContent Route="login" ContentTemplate="{DataTemplate pages:LoginPage}" Shell.NavBarIsVisible="False" />
+
+    <TabBar>
+        <ShellContent Title="Home" Route="home" ContentTemplate="{DataTemplate pages:HomePage}" />
+        <ShellContent Title="Cart" Route="cart" ContentTemplate="{DataTemplate pages:CartPage}" />
+        <ShellContent Title="Orders" Route="orders" ContentTemplate="{DataTemplate pages:OrdersPage}" />
+        <ShellContent Title="Profile" Route="profile" ContentTemplate="{DataTemplate pages:ProfilePage}" />
+    </TabBar>
+</Shell>

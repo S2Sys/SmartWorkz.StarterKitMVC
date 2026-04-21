@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net9.0-ios;net9.0-android;net9.0-maccatalyst;net9.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <UseMaui>true</UseMaui>
     <SingleProject>true</SingleProject>
@@ -15,6 +15,16 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">26.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.Contains('windows'))">
+    <WindowsAppSdkUseUnpackagedRuntime>true</WindowsAppSdkUseUnpackagedRuntime>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
+    <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.Contains('windows'))">
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../SmartWorkz.Core.Mobile/SmartWorkz.Core.Mobile.csproj" />
     <ProjectReference Include="../SmartWorkz.Sample.ECommerce/SmartWorkz.Sample.ECommerce.csproj" />
@@ -34,4 +44,5 @@
     <MauiXaml Update="Pages/OrdersPage.xaml" Generator="MSBuild:Compile" />
     <MauiXaml Update="Pages/ProfilePage.xaml" Generator="MSBuild:Compile" />
   </ItemGroup>
+  <Import Project="NoMsix.targets" Condition="$(TargetFramework.Contains('windows'))" />
 </Project>
