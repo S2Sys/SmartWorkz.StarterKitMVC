@@ -4,6 +4,13 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>SmartWorkz.External</RootNamespace>
+    <PackageId>SmartWorkz.External</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Senthilvel T</Authors>
+    <License>MIT</License>
+    <RepositoryUrl>https://github.com/s2sys/smartworkz.external</RepositoryUrl>
+    <Description>External integrations and third-party service adapters</Description>
   </PropertyGroup>
 
   <ItemGroup>

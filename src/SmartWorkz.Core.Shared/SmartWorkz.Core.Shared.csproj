@@ -5,6 +5,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>SmartWorkz.Shared</RootNamespace>
+    <PackageId>SmartWorkz.Shared</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Senthilvel T</Authors>
+    <License>MIT</License>
+    <RepositoryUrl>https://github.com/s2sys/smartworkz.shared</RepositoryUrl>
+    <Description>Core abstractions, domain events, CQRS patterns, and shared utilities</Description>
   </PropertyGroup>
 
   <ItemGroup>
