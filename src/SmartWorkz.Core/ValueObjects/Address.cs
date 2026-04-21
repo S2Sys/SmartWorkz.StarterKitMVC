@@ -22,21 +22,21 @@ public sealed class Address : ValueObject
     public static Result<Address> Create(string? street, string? city, string? state, string? postalCode, string? country)
     {
         if (string.IsNullOrWhiteSpace(street))
-            return Result<Address>.Failure(new Error("STREET_EMPTY", "Street address cannot be empty"));
+            return Result.Fail<Address>(new Error("STREET_EMPTY", "Street address cannot be empty"));
 
         if (string.IsNullOrWhiteSpace(city))
-            return Result<Address>.Failure(new Error("CITY_EMPTY", "City cannot be empty"));
+            return Result.Fail<Address>(new Error("CITY_EMPTY", "City cannot be empty"));
 
         if (string.IsNullOrWhiteSpace(state))
-            return Result<Address>.Failure(new Error("STATE_EMPTY", "State/Province cannot be empty"));
+            return Result.Fail<Address>(new Error("STATE_EMPTY", "State/Province cannot be empty"));
 
         if (string.IsNullOrWhiteSpace(postalCode))
-            return Result<Address>.Failure(new Error("POSTAL_CODE_EMPTY", "Postal code cannot be empty"));
+            return Result.Fail<Address>(new Error("POSTAL_CODE_EMPTY", "Postal code cannot be empty"));
 
         if (string.IsNullOrWhiteSpace(country))
-            return Result<Address>.Failure(new Error("COUNTRY_EMPTY", "Country cannot be empty"));
+            return Result.Fail<Address>(new Error("COUNTRY_EMPTY", "Country cannot be empty"));
 
-        return Result<Address>.Success(new Address(
+        return Result.Ok<Address>(new Address(
             street.Trim(),
             city.Trim(),
             state.Trim(),
@@ -56,3 +56,5 @@ public sealed class Address : ValueObject
 
     public override string ToString() => FullAddress;
 }
+
+

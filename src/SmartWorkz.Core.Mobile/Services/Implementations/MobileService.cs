@@ -1,4 +1,6 @@
-namespace SmartWorkz.Mobile;
+﻿namespace SmartWorkz.Mobile;
+
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 #if !WINDOWS
 public class MobileService : IMobileService
@@ -237,3 +239,4 @@ public class MobileService : IMobileService
     }
 }
 #endif
+

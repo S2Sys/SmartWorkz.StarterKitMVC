@@ -1,5 +1,5 @@
-using Xunit;
-using SmartWorkz.Core.Web.Services.DataView;
+﻿using Xunit;
+using SmartWorkz.Web.Services.DataView;
 
 namespace SmartWorkz.Core.Web.Tests.Services;
 
@@ -129,3 +129,4 @@ public class ListViewFormatterTests
         Assert.Equal("-", result);
     }
 }
+

@@ -1,4 +1,4 @@
-using SmartWorkz.Shared.Grid;
+﻿using SmartWorkz.Shared;
 
 namespace SmartWorkz.Web;
 
@@ -124,3 +124,4 @@ public class GridStateManager
 
     private void RaiseStateChanged() => OnStateChanged?.Invoke();
 }
+

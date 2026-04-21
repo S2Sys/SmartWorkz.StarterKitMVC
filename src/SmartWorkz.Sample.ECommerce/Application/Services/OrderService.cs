@@ -1,4 +1,5 @@
-using SmartWorkz.Core;
+﻿using SmartWorkz.Core;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Application.Validators;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
@@ -62,3 +63,4 @@ public class OrderService(
         return Result<int>.Success(order.Id);
     }
 }
+

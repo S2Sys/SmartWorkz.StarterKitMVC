@@ -1,6 +1,6 @@
-using Xunit;
-using SmartWorkz.Core.Web.Components.DataContext;
-using SmartWorkz.Core.Shared.Grid;
+﻿using Xunit;
+using SmartWorkz.Web.Components.DataContext;
+using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Web.Tests.Integration;
 
@@ -166,3 +166,5 @@ public class MultiViewIntegrationTests
         Assert.DoesNotContain(2, context.SelectedRowIds);
     }
 }
+
+

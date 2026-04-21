@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Components;
-using SmartWorkz.Shared.Grid;
+﻿using Microsoft.AspNetCore.Components;
+using SmartWorkz.Shared;
 using SmartWorkz.Web;
 
 namespace SmartWorkz.Web;
@@ -147,3 +147,4 @@ public partial class GridComponent<T> : ComponentBase, IAsyncDisposable where T 
         await ValueTask.CompletedTask;
     }
 }
+

@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Tests.Metrics;
+﻿namespace SmartWorkz.Core.Tests.Metrics;
 
-using SmartWorkz.Core.Shared.Metrics;
+using SmartWorkz.Shared.Metrics;
 using Moq;
 using Xunit;
 using Microsoft.Extensions.Logging;
@@ -109,3 +109,4 @@ public class OpenTelemetryMetricsCollectorTests
         Assert.Throws<ArgumentException>(() => _collector.RecordGaugeValue(null!, 42.5));
     }
 }
+

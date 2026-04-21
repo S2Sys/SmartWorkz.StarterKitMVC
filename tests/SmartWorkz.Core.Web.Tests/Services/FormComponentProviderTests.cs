@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Web.Tests.Services;
+﻿namespace SmartWorkz.Core.Web.Tests.Services;
 
-using SmartWorkz.Core.Web.Services.Components;
+using SmartWorkz.Web.Services.Components;
 using Xunit;
 
 public class FormComponentProviderTests
@@ -142,3 +142,4 @@ public class FormComponentProviderTests
         Assert.Equal("alert-info", config.AlertInfoClass);
     }
 }
+

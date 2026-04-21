@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Tests.Webhooks;
+﻿namespace SmartWorkz.Core.Tests.Webhooks;
 
-using SmartWorkz.Core.Shared.Webhooks;
+using SmartWorkz.Shared.Webhooks;
 using Moq;
 using Xunit;
 using Microsoft.Extensions.Logging;
@@ -104,3 +104,4 @@ public class WebhookDeliveryServiceTests
         _mockRegistry.Verify(r => r.GetSubscriptionsForEventAsync("TestEvent", default), Times.Once);
     }
 }
+

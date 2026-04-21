@@ -1,7 +1,7 @@
-namespace SmartWorkz.Core.Tests.Security;
+﻿namespace SmartWorkz.Core.Tests.Security;
 
 using System.Text;
-using SmartWorkz.Core.Shared.Security;
+using SmartWorkz.Shared;
 
 public class CryptHelperTests
 {
@@ -470,7 +470,7 @@ public class CryptHelperTests
     public void EncryptDecrypt_WithUnicode_PreservesContent()
     {
         // Arrange
-        var unicodeText = "Unicode: 你好, мир, مرحبا, שלום, 🔒🔐🗝️";
+        var unicodeText = "Unicode: ä½ å¥½, Ð¼Ð¸Ñ€, Ù…Ø±Ø­Ø¨Ø§, ×©×œ×•×, ðŸ”’ðŸ”ðŸ—ï¸";
 
         // Act
         var encryptResult = CryptHelper.EncryptString(unicodeText, TestKey);
@@ -574,3 +574,5 @@ public class CryptHelperTests
         Assert.True(true); // If we got here, it's valid Base64
     }
 }
+
+

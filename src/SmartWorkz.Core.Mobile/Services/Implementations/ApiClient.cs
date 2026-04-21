@@ -1,8 +1,10 @@
-namespace SmartWorkz.Mobile;
+﻿namespace SmartWorkz.Mobile;
+
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 using System.Net.Http.Json;
 using Microsoft.Extensions.Options;
-using SmartWorkz.Shared.Response;
+using SmartWorkz.Shared;
 
 public class ApiClient : IApiClient
 {
@@ -299,3 +301,5 @@ public class ApiClient : IApiClient
         }
     }
 }
+
+

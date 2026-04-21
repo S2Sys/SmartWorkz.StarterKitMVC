@@ -1,9 +1,9 @@
-using Xunit;
+﻿using Xunit;
 using Moq;
-using SmartWorkz.Core.Web.Services.Grid;
-using SmartWorkz.Core.Shared.Grid;
-using SmartWorkz.Core.Shared.Pagination;
-using SmartWorkz.Core.Shared.Results;
+using SmartWorkz.Web.Services.Grid;
+using SmartWorkz.Shared;
+using SmartWorkz.Shared;
+using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Web.Tests.Services;
 
@@ -30,3 +30,6 @@ public class GridDataProviderTests
         public string Name { get; set; } = string.Empty;
     }
 }
+
+
+

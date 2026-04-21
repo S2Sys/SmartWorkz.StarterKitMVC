@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Web.Tests.Services;
+﻿namespace SmartWorkz.Core.Web.Tests.Services;
 
-using SmartWorkz.Core.Web.Services.Components;
+using SmartWorkz.Web.Services.Components;
 using Xunit;
 
 public class IconProviderTests
@@ -208,3 +208,4 @@ public class IconProviderTests
         Assert.NotEqual(infoResult, infoCircleResult);
     }
 }
+

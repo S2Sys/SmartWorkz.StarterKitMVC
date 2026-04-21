@@ -1,7 +1,7 @@
 namespace SmartWorkz.Core.Tests.Diagnostics;
 
 using System.Diagnostics;
-using SmartWorkz.Core.Shared.Diagnostics;
+using SmartWorkz.Shared.Diagnostics;
 
 public class MetricsHelperTests
 {

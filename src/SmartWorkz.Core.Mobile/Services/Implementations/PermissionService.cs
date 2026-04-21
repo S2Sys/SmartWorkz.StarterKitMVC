@@ -1,4 +1,6 @@
-namespace SmartWorkz.Mobile;
+﻿namespace SmartWorkz.Mobile;
+
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 #if !WINDOWS
 public class PermissionService : IPermissionService
@@ -127,3 +129,4 @@ public class PermissionService : IPermissionService
     }
 }
 #endif
+

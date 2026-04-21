@@ -3,7 +3,7 @@ global using System.Collections.Generic;
 global using System.Linq;
 global using System.Threading;
 global using System.Threading.Tasks;
-global using SmartWorkz.Core.Shared.Results;
+global using SmartWorkz.Shared;
 global using ClosedXML.Excel;
 global using QuestPDF.Fluent;
 global using QuestPDF.Helpers;

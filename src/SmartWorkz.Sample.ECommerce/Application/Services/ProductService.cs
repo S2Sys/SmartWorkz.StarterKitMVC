@@ -1,3 +1,4 @@
+﻿using AutoMapper;
 using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
@@ -23,3 +24,4 @@ public class ProductService(IRepository<Product, int> repo, IMapper mapper)
         return products.Select(Map).ToList();
     }
 }
+

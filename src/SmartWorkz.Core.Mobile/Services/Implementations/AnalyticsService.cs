@@ -1,4 +1,6 @@
-namespace SmartWorkz.Mobile;
+﻿namespace SmartWorkz.Mobile;
+
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 public class AnalyticsService : IAnalyticsService
 {
@@ -49,3 +51,4 @@ public class AnalyticsService : IAnalyticsService
         return Task.CompletedTask;
     }
 }
+

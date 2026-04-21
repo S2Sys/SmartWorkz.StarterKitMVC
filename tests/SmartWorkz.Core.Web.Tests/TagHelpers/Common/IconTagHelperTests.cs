@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Moq;
-using SmartWorkz.Core.Web.Services.Components;
-using SmartWorkz.Core.Web.TagHelpers.Common;
+using SmartWorkz.Web.Services.Components;
+using SmartWorkz.Web.TagHelpers.Common;
 using Xunit;
 
 namespace SmartWorkz.Core.Web.Tests.TagHelpers.Common;
@@ -259,3 +259,4 @@ public class IconTagHelperTests
         Assert.Equal("iconProvider", exception.ParamName);
     }
 }
+

@@ -1,4 +1,6 @@
-namespace SmartWorkz.Mobile;
+﻿namespace SmartWorkz.Mobile;
+
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 #if !WINDOWS
 public class SecureStorageService : ISecureStorageService
@@ -108,3 +110,4 @@ public class SecureStorageService : ISecureStorageService
     }
 }
 #endif
+

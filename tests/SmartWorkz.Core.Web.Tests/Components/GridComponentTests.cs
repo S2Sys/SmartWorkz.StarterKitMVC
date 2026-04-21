@@ -1,7 +1,7 @@
-using Xunit;
-using SmartWorkz.Core.Web.Services.Grid;
-using SmartWorkz.Core.Shared.Grid;
-using SmartWorkz.Core.Shared.Pagination;
+﻿using Xunit;
+using SmartWorkz.Web.Services.Grid;
+using SmartWorkz.Shared;
+using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Web.Tests.Components;
 
@@ -109,3 +109,6 @@ public class GridComponentTests
         public decimal Price { get; set; }
     }
 }
+
+
+

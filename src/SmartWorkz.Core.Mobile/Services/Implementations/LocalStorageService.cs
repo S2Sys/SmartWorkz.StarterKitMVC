@@ -1,4 +1,6 @@
-namespace SmartWorkz.Mobile;
+﻿namespace SmartWorkz.Mobile;
+
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 #if !WINDOWS
 using SQLite;
@@ -260,3 +262,4 @@ public class LocalStorageService : ILocalStorageService
     }
 }
 #endif
+

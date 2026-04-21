@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using SmartWorkz.Core.Web.TagHelpers.Navigation;
+using SmartWorkz.Web.TagHelpers.Navigation;
 using Xunit;
 
 namespace SmartWorkz.Core.Web.Tests.TagHelpers.Navigation;
@@ -237,3 +237,4 @@ public class BreadcrumbTagHelperTests
         Assert.Contains("</ol>", html);
     }
 }
+

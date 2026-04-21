@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using SmartWorkz.Core.Web.TagHelpers.Display;
+using SmartWorkz.Web.TagHelpers.Display;
 using Xunit;
 
 namespace SmartWorkz.Core.Web.Tests.TagHelpers.Display;
@@ -262,3 +262,4 @@ public class BadgeTagHelperTests
         Assert.Contains("<span class=\"badge bg-primary\"></span>", content);
     }
 }
+

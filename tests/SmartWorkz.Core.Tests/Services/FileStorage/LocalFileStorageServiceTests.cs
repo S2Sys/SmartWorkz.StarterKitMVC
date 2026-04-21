@@ -1,7 +1,7 @@
-namespace SmartWorkz.Core.Tests.Services.FileStorage;
+﻿namespace SmartWorkz.Core.Tests.Services.FileStorage;
 
-using SmartWorkz.Core.Services.FileStorage;
-using SmartWorkz.Core.Shared.FileStorage;
+using SmartWorkz.Core.FileStorage;
+using SmartWorkz.Shared.FileStorage;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -381,3 +381,4 @@ public class LocalFileStorageServiceTests : IDisposable
             Directory.Delete(_testDirectory, recursive: true);
     }
 }
+

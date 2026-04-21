@@ -1,5 +1,6 @@
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using SmartWorkz.Core;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 using SmartWorkz.Sample.ECommerce.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -127,3 +128,4 @@ public class ProductRepository(ECommerceDbContext db) : IRepository<Product, int
         return query;
     }
 }
+

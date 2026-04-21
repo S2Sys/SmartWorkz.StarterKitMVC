@@ -1,4 +1,6 @@
-namespace SmartWorkz.Mobile;
+﻿namespace SmartWorkz.Mobile;
+
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 using Microsoft.Extensions.Logging;
 
@@ -110,3 +112,4 @@ internal partial class PushNotificationClientService : IPushNotificationClientSe
     // Platform-specific partial method
     private partial Task<string?> GetPushTokenAsyncPlatform(CancellationToken ct);
 }
+

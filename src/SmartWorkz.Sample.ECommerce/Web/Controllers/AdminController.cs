@@ -1,3 +1,5 @@
+﻿using AutoMapper;
+
 using Microsoft.AspNetCore.Mvc;
 using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
@@ -148,3 +150,5 @@ public class AdminController(
         return View(nameof(Products), viewModel);
     }
 }
+
+

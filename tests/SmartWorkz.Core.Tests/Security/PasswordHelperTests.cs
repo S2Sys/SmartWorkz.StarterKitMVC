@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Tests.Security;
+﻿namespace SmartWorkz.Core.Tests.Security;
 
-using SmartWorkz.Core.Shared.Security;
+using SmartWorkz.Shared;
 
 public class PasswordHelperTests
 {
@@ -250,3 +250,5 @@ public class PasswordHelperTests
         Assert.True(validationResult.IsValid, "Password should be valid with default policy (no special chars required)");
     }
 }
+
+

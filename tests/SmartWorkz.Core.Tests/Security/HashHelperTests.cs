@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Tests.Security;
+﻿namespace SmartWorkz.Core.Tests.Security;
 
-using SmartWorkz.Core.Shared.Security;
+using SmartWorkz.Shared;
 
 public class HashHelperTests
 {
@@ -94,7 +94,7 @@ public class HashHelperTests
     public void Sha256_WithUnicode_WorksCorrectly()
     {
         // Arrange
-        const string text = "Hello 世界 🌍";
+        const string text = "Hello ä¸–ç•Œ ðŸŒ";
 
         // Act
         var result = HashHelper.Sha256(text);
@@ -322,3 +322,5 @@ public class HashHelperTests
 
     #endregion
 }
+
+

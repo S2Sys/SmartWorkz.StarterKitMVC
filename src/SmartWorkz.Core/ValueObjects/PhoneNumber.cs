@@ -14,17 +14,17 @@ public sealed class PhoneNumber : ValueObject
     public static Result<PhoneNumber> Create(string? phone)
     {
         if (string.IsNullOrWhiteSpace(phone))
-            return Result<PhoneNumber>.Failure(new Error("PHONE_EMPTY", "Phone number cannot be empty"));
+            return Result.Fail<PhoneNumber>(new Error("PHONE_EMPTY", "Phone number cannot be empty"));
 
         var digitsOnly = Regex.Replace(phone, @"\D", "");
 
         if (digitsOnly.Length < 10)
-            return Result<PhoneNumber>.Failure(new Error("PHONE_TOO_SHORT", "Phone number must contain at least 10 digits"));
+            return Result.Fail<PhoneNumber>(new Error("PHONE_TOO_SHORT", "Phone number must contain at least 10 digits"));
 
         if (digitsOnly.Length > 15)
-            return Result<PhoneNumber>.Failure(new Error("PHONE_TOO_LONG", "Phone number must not exceed 15 digits"));
+            return Result.Fail<PhoneNumber>(new Error("PHONE_TOO_LONG", "Phone number must not exceed 15 digits"));
 
-        return Result<PhoneNumber>.Success(new PhoneNumber(digitsOnly));
+        return Result.Ok<PhoneNumber>(new PhoneNumber(digitsOnly));
     }
 
     protected override IEnumerable<object?> GetAtomicValues()
@@ -34,3 +34,5 @@ public sealed class PhoneNumber : ValueObject
 
     public override string ToString() => FormattedNumber;
 }
+
+

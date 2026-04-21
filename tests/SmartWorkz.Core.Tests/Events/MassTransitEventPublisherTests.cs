@@ -1,6 +1,6 @@
 using MassTransit;
 using Moq;
-using SmartWorkz.Core.Shared.Events;
+using SmartWorkz.Shared.Events;
 using Microsoft.Extensions.Logging;
 
 namespace SmartWorkz.Core.Tests.Events;

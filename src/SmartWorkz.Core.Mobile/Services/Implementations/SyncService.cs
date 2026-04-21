@@ -1,4 +1,6 @@
-namespace SmartWorkz.Mobile;
+﻿namespace SmartWorkz.Mobile;
+
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 using System.Reactive;
 using System.Reactive.Linq;
@@ -285,3 +287,4 @@ internal static class ResultExtensions
         return result.Succeeded ? Result.Ok() : Result.Fail(result.Error ?? new Error("UNKNOWN", "Unknown error"));
     }
 }
+

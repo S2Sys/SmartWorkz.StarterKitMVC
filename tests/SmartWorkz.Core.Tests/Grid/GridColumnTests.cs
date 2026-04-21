@@ -1,5 +1,5 @@
-using Xunit;
-using SmartWorkz.Core.Shared.Grid;
+﻿using Xunit;
+using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Tests.Grid;
 
@@ -42,3 +42,4 @@ public class GridColumnTests
         }
     }
 }
+

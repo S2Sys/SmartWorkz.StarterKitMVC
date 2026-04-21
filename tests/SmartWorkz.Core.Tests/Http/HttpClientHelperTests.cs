@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Tests.Http;
+﻿namespace SmartWorkz.Core.Tests.Http;
 
-using SmartWorkz.Core.Shared.Http;
+using SmartWorkz.Shared.Http;
 using System.Net;
 using System.Text.Json;
 
@@ -400,3 +400,4 @@ public class HttpClientHelperTests
         }
     }
 }
+

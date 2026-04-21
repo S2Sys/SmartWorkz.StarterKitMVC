@@ -1,6 +1,6 @@
-using Xunit;
-using SmartWorkz.Core.Web.Services.Grid;
-using SmartWorkz.Core.Shared.Grid;
+﻿using Xunit;
+using SmartWorkz.Web.Services.Grid;
+using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Web.Tests.Services;
 
@@ -41,3 +41,5 @@ public class GridExportServiceTests
         public decimal Price { get; set; }
     }
 }
+
+

@@ -1,5 +1,5 @@
-using SmartWorkz.Shared.Grid;
-using SmartWorkz.Shared.Pagination;
+﻿using SmartWorkz.Shared;
+using SmartWorkz.Shared;
 using SmartWorkz.Web;
 using System.Reflection;
 
@@ -227,3 +227,4 @@ public class GridFilter
     public string Operator { get; set; } = "equals";
     public string? Value { get; set; }
 }
+

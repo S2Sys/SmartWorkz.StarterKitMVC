@@ -1,9 +1,8 @@
-namespace SmartWorkz.Mobile;
+﻿namespace SmartWorkz.Mobile;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using SmartWorkz.Shared.Resilience;
-using SmartWorkz.Shared.Security;
+using SmartWorkz.Shared;
 
 /// <summary>
 /// Extension methods for configuring SmartWorkz.Core.Mobile services in the dependency injection container.
@@ -111,3 +110,4 @@ public static class ServiceCollectionExtensions
         return services;
     }
 }
+

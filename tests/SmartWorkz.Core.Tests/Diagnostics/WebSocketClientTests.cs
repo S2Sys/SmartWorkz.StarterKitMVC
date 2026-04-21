@@ -1,6 +1,6 @@
 namespace SmartWorkz.Core.Tests.Diagnostics;
 
-using SmartWorkz.Core.Shared.Communications;
+using SmartWorkz.Shared.Communications;
 
 public class WebSocketClientTests
 {

@@ -1,10 +1,10 @@
-namespace SmartWorkz.Core.Tests.Sagas;
+﻿namespace SmartWorkz.Core.Tests.Sagas;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using SmartWorkz.Core.Shared.Events;
-using SmartWorkz.Core.Shared.Sagas;
+using SmartWorkz.Shared.Events;
+using SmartWorkz.Shared.Sagas;
 using Xunit;
 
 /// <summary>
@@ -463,3 +463,4 @@ public class SagaOrchestratorTests
         public Func<TestSagaState, Exception, Task>? GetFailureHandler() => _failureHandler;
     }
 }
+

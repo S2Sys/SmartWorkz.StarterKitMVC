@@ -1,4 +1,4 @@
-using SmartWorkz.Shared.Grid;
+﻿using SmartWorkz.Shared;
 
 namespace SmartWorkz.Web;
 
@@ -50,3 +50,4 @@ public interface IDataContext<T> where T : class
     /// <summary>Initialize data from datasource or API endpoint.</summary>
     Task Initialize(IEnumerable<T> dataSource);
 }
+

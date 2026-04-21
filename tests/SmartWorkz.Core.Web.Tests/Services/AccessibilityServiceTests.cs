@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Web.Tests.Services;
+﻿namespace SmartWorkz.Core.Web.Tests.Services;
 
-using SmartWorkz.Core.Web.Services.Components;
+using SmartWorkz.Web.Services.Components;
 using Xunit;
 
 public class AccessibilityServiceTests
@@ -110,3 +110,4 @@ public class AccessibilityServiceTests
         Assert.Equal(expected, result);
     }
 }
+

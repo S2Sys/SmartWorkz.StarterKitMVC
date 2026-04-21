@@ -1,7 +1,7 @@
-namespace SmartWorkz.Core.Tests.Utilities;
+﻿namespace SmartWorkz.Core.Tests.Utilities;
 
 using System.ComponentModel;
-using SmartWorkz.Core.Shared.Utilities;
+using SmartWorkz.Shared.Utilities;
 
 public class EnumHelperTests
 {
@@ -170,3 +170,4 @@ public class EnumHelperTests
 
     #endregion
 }
+

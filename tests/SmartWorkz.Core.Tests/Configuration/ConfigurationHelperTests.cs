@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Configuration;
-using SmartWorkz.Core.Shared.Configuration;
+using SmartWorkz.Shared.Configuration;
 
 namespace SmartWorkz.Core.Tests.Configuration;
 

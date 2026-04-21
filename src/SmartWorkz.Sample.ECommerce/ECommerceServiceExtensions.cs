@@ -1,3 +1,5 @@
+﻿using AutoMapper;
+
 using Microsoft.EntityFrameworkCore;
 using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.Mapping;
@@ -65,3 +67,5 @@ public static class ECommerceServiceExtensions
         return services;
     }
 }
+
+

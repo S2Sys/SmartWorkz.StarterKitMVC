@@ -1,4 +1,4 @@
-using SmartWorkz.Core.Shared.Features;
+using SmartWorkz.Shared.Features;
 
 namespace SmartWorkz.Core.Tests.Features;
 

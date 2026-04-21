@@ -1,4 +1,5 @@
-using SmartWorkz.Core;
+﻿using SmartWorkz.Core;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 
 namespace SmartWorkz.Sample.ECommerce.Domain.Specifications;
@@ -10,3 +11,4 @@ public class ProductByCategorySpecification : Specification<Product>
         AddCriteria(p => p.CategoryId == categoryId && p.IsActive);
     }
 }
+
