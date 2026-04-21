@@ -229,11 +229,11 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, cl
         .toolbar button { padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
         .toolbar button.secondary { background: white; color: #2563eb; border: 1px solid #2563eb; }
         .invoice { width: 210mm; min-height: 100vh; background: white; margin: 0 auto; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .header { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d9e75 100%); color: white; padding: 25px 30px; margin: 0 0 30px 0; display: flex; align-items: center; gap: 20px; }
+        .header { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d9e75 100%); color: white; padding: 25px 30px; margin: 0 0 30px 0; display: flex; align-items: center; gap: 20px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .header-logo { width: 80px; height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .header-logo img { width: 100%; height: 100%; object-fit: contain; filter: brightness(0) invert(1); }
         .header-content h1 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -1px; }
-        .header-content p { margin: 6px 0 0 0; font-size: 12px; font-weight: 500; }
+        .header-content p { margin: 6px 0 0 0; font-size: 15px; font-weight: 500; }
         .content { padding: 0 30px; background: white; }
         .invoice-info { text-align: right; margin-bottom: 25px; border-bottom: 2px solid #e5e7eb; padding-bottom: 15px; }
         .invoice-info p { margin: 4px 0; font-size: 13px; }
@@ -243,14 +243,14 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, cl
         .billing h3 { font-size: 13px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
         .billing p { font-size: 12px; margin: 6px 0; line-height: 1.6; }
         table { width: 100%; border-collapse: collapse; margin: 25px 0; }
-        thead { background: #f3f4f6; border-bottom: 2px solid #2563eb; }
+        thead { background: #f3f4f6; border-bottom: 2px solid #2563eb; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         th { padding: 12px; text-align: left; font-weight: bold; font-size: 12px; text-transform: uppercase; }
         td { padding: 12px; border-bottom: 1px solid #eee; font-size: 12px; }
         td:nth-child(n+2) { text-align: right; }
-        .summary { background: #f3f4f6; padding: 20px; border-radius: 6px; margin: 25px 0; }
+        .summary { background: #f3f4f6; padding: 20px; border-radius: 6px; margin: 25px 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .summary-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; }
         .summary-item.total { font-weight: bold; color: #2563eb; font-size: 18px; border-top: 2px solid #2563eb; padding-top: 12px; margin-top: 12px; }
-        .amount-words { background: #fffbeb; padding: 15px; border-left: 4px solid #f59e0b; margin: 20px 0; border-radius: 4px; }
+        .amount-words { background: #fffbeb; padding: 15px; border-left: 4px solid #f59e0b; margin: 20px 0; border-radius: 4px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .amount-words p { font-size: 12px; margin: 4px 0; }
         .amount-words .words-value { font-weight: bold; color: #2563eb; font-size: 16px; margin-top: 6px; }
         .footer { margin-top: 25px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 11px; color: #666; }
