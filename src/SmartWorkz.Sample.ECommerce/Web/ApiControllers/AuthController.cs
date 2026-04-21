@@ -9,7 +9,7 @@ namespace SmartWorkz.Sample.ECommerce.Web.ApiControllers;
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController(
-    AuthService authService,
+    ECommerceAuthService authService,
     JwtSettings jwtSettings) : ControllerBase
 {
     /// <summary>
