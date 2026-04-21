@@ -32,17 +32,16 @@ public sealed class RequestDeduplicationService : IRequestDeduplicationService
                 _logger.LogDebug("Request deduplication: reusing in-flight request for key {Key}", key);
                 return cachedTypedTask;
             }
-        }
 
-        // Create new task and store in-flight
-        var newTask = ExecuteAndCleanupAsync<T>(key, executeAsync, ct);
+            // Create task INSIDE the lock
+            var newTask = ExecuteAndCleanupAsync<T>(key, executeAsync, ct);
 
-        lock (_lock)
-        {
+            // Store INSIDE the lock — atomic with the check above
             _inFlightRequests[key] = newTask;
-        }
 
-        return newTask;
+            _logger.LogDebug("Executing request for deduplication key {Key}", key);
+            return newTask;
+        }
     }
 
     private async Task<Result<T>> ExecuteAndCleanupAsync<T>(
@@ -52,7 +51,6 @@ public sealed class RequestDeduplicationService : IRequestDeduplicationService
     {
         try
         {
-            _logger.LogDebug("Executing request for deduplication key {Key}", key);
             return await executeAsync();
         }
         finally
