@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Tests.Diagnostics;
+﻿namespace SmartWorkz.Core.Tests.Diagnostics;
 
-using SmartWorkz.Shared.Communications;
+using SmartWorkz.Shared;
 
 public class WebSocketClientTests
 {
@@ -27,7 +27,6 @@ public class WebSocketClientTests
     public async Task ConnectAsync_WithInvalidUri_ThrowsException()
     {
         // Arrange
-        using var client = new WebSocketClient();
         var uri = new Uri("ws://invalid.invalid.invalid.localhost:9999");
 
         // Act & Assert
@@ -43,7 +42,6 @@ public class WebSocketClientTests
     public async Task SendAsync_NotConnected_ThrowsException()
     {
         // Arrange
-        using var client = new WebSocketClient();
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
@@ -70,7 +68,6 @@ public class WebSocketClientTests
     public async Task ReceiveAsync_NotConnected_ThrowsException()
     {
         // Arrange
-        using var client = new WebSocketClient();
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
@@ -97,7 +94,6 @@ public class WebSocketClientTests
     public async Task CloseAsync_NotConnected_DoesNotThrow()
     {
         // Arrange
-        using var client = new WebSocketClient();
 
         // Act & Assert - should not throw
         await client.CloseAsync(CancellationToken.None);
@@ -197,7 +193,6 @@ public class WebSocketClientTests
     public async Task WebSocketClient_CanBeUsedWithUsingStatement()
     {
         // Arrange & Act
-        using var client = new WebSocketClient();
 
         // Assert - no exception should occur
         Assert.NotNull(client);
@@ -211,7 +206,6 @@ public class WebSocketClientTests
     public async Task WebSocketClient_ThrowsOnSendWhenNotConnected()
     {
         // Arrange
-        using var client = new WebSocketClient();
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
@@ -225,7 +219,6 @@ public class WebSocketClientTests
     public async Task WebSocketClient_ThrowsOnReceiveWhenNotConnected()
     {
         // Arrange
-        using var client = new WebSocketClient();
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(

@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Tests.Data;
+﻿namespace SmartWorkz.Core.Tests.Data;
 
-using SmartWorkz.Shared.Data;
+using SmartWorkz.Shared;
 
 public class XmlHelperTests
 {

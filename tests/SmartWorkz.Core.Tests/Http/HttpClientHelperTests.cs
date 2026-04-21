@@ -1,6 +1,6 @@
 ﻿namespace SmartWorkz.Core.Tests.Http;
 
-using SmartWorkz.Shared.Http;
+using SmartWorkz.Shared;
 using System.Net;
 using System.Text.Json;
 

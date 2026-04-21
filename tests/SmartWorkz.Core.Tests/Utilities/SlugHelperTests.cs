@@ -1,6 +1,6 @@
 ﻿namespace SmartWorkz.Core.Tests.Utilities;
 
-using SmartWorkz.Shared.Utilities;
+using SmartWorkz.Shared;
 
 public class SlugHelperTests
 {

@@ -1,4 +1,4 @@
-﻿using SmartWorkz.Shared.MultiTenancy;
+﻿using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Tests.MultiTenancy;
 
@@ -138,7 +138,6 @@ public class DefaultTenantFeatureFlagsTests : IDisposable
         var tenantId = "tenant-1";
         _featureFlags.EnableFlag(tenantId, "FLAG1");
         _featureFlags.EnableFlag(tenantId, "FLAG2");
-        using var cts = new CancellationTokenSource();
 
         // Act
         var result = await _featureFlags.GetEnabledFeaturesAsync(tenantId, cts.Token);

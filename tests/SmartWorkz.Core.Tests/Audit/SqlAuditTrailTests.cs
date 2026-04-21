@@ -1,8 +1,8 @@
-namespace SmartWorkz.Core.Tests.Audit;
+﻿namespace SmartWorkz.Core.Tests.Audit;
 
 using System.Data;
 using SmartWorkz.Core;
-using SmartWorkz.Shared.Audit;
+using SmartWorkz.Shared;
 using Moq;
 using Xunit;
 using Microsoft.Extensions.Logging;

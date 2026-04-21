@@ -1,6 +1,5 @@
 ﻿using Xunit;
 using SmartWorkz.Shared;
-using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Tests.Grid;
 

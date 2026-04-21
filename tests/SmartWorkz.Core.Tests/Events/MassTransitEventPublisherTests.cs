@@ -1,7 +1,8 @@
-using MassTransit;
+﻿using MassTransit;
 using Moq;
-using SmartWorkz.Shared.Events;
+using SmartWorkz.Shared;
 using Microsoft.Extensions.Logging;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace SmartWorkz.Core.Tests.Events;
 
@@ -238,7 +239,6 @@ public class MassTransitEventPublisherTests
             new TestDomainEvent { EventId = Guid.NewGuid(), OccurredAt = DateTimeOffset.UtcNow, AggregateId = "agg-1" },
             new TestDomainEvent { EventId = Guid.NewGuid(), OccurredAt = DateTimeOffset.UtcNow, AggregateId = "agg-2" }
         };
-        using var cts = new CancellationTokenSource();
 
         // Act
         await _publisher.PublishAsync(events, cts.Token);

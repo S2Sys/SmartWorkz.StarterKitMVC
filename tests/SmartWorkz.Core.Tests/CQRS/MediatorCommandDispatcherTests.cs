@@ -1,8 +1,8 @@
-namespace SmartWorkz.Core.Tests.CQRS;
+﻿namespace SmartWorkz.Core.Tests.CQRS;
 
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using SmartWorkz.Shared.CQRS;
+using SmartWorkz.Shared;
 using Xunit;
 
 /// <summary>

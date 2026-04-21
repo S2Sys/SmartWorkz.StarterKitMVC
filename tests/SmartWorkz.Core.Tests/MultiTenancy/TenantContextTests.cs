@@ -1,4 +1,4 @@
-﻿using SmartWorkz.Shared.MultiTenancy;
+﻿using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Tests.MultiTenancy;
 

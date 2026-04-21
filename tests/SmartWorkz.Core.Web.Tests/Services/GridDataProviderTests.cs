@@ -2,8 +2,6 @@
 using Moq;
 using SmartWorkz.Web.Services.Grid;
 using SmartWorkz.Shared;
-using SmartWorkz.Shared;
-using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Web.Tests.Services;
 

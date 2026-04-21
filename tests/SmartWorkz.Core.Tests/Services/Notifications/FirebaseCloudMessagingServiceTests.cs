@@ -1,8 +1,8 @@
 ﻿namespace SmartWorkz.Core.Tests.Services.Notifications;
 
 using Moq;
-using SmartWorkz.Core.Notifications;
-using SmartWorkz.Shared.Notifications;
+using SmartWorkz.Core;
+using SmartWorkz.Shared;
 using Microsoft.Extensions.Logging;
 using Xunit;
 

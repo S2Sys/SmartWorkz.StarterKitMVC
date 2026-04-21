@@ -486,7 +486,6 @@ public class RateLimiterTests
         var options = new RateLimiterOptions { MaxRequests = 10, WindowMilliseconds = 60000 };
         var rateLimiter = new RateLimiter(options);
         var identifier = "user:reset-cancel";
-        using var cts = new CancellationTokenSource();
 
         // Act & Assert
         await rateLimiter.ResetAsync(identifier, cts.Token);
@@ -498,7 +497,6 @@ public class RateLimiterTests
         // Arrange
         var options = new RateLimiterOptions { MaxRequests = 10, WindowMilliseconds = 60000 };
         var rateLimiter = new RateLimiter(options);
-        using var cts = new CancellationTokenSource();
 
         // Act & Assert
         await rateLimiter.ClearAsync(cts.Token);
