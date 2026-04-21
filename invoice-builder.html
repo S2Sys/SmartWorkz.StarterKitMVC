@@ -100,6 +100,10 @@ button.secondary:hover { background: #4b5563; }
                         <label>PAN Number</label>
                         <input type="text" id="billPan" value="">
                     </div>
+                    <div class="form-group">
+                        <label>GST Number</label>
+                        <input type="text" id="billGst" value="">
+                    </div>
                 </div>
             </div>
         </div>
@@ -225,7 +229,7 @@ function calc() {
     document.getElementById('words').textContent = 'Rupees ' + numberToWords(Math.round(total));
 }
 
-function getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, client, addr, city, country, pan, words, billPan, gst) {
+function getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, client, addr, city, country, pan, words, billPan, gst, billGst) {
     return `<!DOCTYPE html>
 <html>
 <head>
@@ -299,6 +303,7 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, cl
                     <p>${city}</p>
                     <p>${country}</p>
                     ${billPan ? `<p><strong>PAN:</strong> ${billPan}</p>` : ''}
+                    ${billGst ? `<p><strong>GST:</strong> ${billGst}</p>` : ''}
                 </div>
                 <div>
                     <h3>From</h3>
@@ -407,9 +412,10 @@ function downloadInvoice() {
     const pan = document.getElementById('pan').value;
     const billPan = document.getElementById('billPan').value;
     const gst = document.getElementById('gst').value;
+    const billGst = document.getElementById('billGst').value;
     const words = document.getElementById('words').textContent;
 
-    const html = getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, client, addr, city, country, pan, words, billPan, gst);
+    const html = getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, client, addr, city, country, pan, words, billPan, gst, billGst);
 
     const blob = new Blob([html], {type: 'text/html;charset=utf-8'});
     const url = URL.createObjectURL(blob);
@@ -455,9 +461,10 @@ function printInvoice() {
     const pan = document.getElementById('pan').value;
     const billPan = document.getElementById('billPan').value;
     const gst = document.getElementById('gst').value;
+    const billGst = document.getElementById('billGst').value;
     const words = document.getElementById('words').textContent;
 
-    const html = getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, client, addr, city, country, pan, words, billPan, gst);
+    const html = getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, client, addr, city, country, pan, words, billPan, gst, billGst);
 
     const printWindow = window.open('', '', 'width=900,height=700');
     printWindow.document.write(html);
