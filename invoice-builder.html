@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartWorkz Invoice Builder</title>
+    <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; padding: 20px; }
+.container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+.header { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d9e75 100%); color: white; padding: 40px 20px; margin: -20px -20px 30px -20px; display: flex; align-items: center; gap: 30px; min-height: 150px; border-radius: 0; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15); }
+.header-logo { width: 130px; height: 90px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 10px; flex-shrink: 0; }
+.header-logo svg { width: 100%; height: 100%; }
+.header-content { flex: 1; }
+.header-content h1 { margin: 0; font-size: 38px; font-weight: 900; letter-spacing: -1px; }
+.header-content p { margin: 8px 0 0 0; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; opacity: 0.95; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.form-section { background: #f9f9f9; padding: 15px; border-radius: 6px; }
+.form-section h3 { margin: 0 0 15px 0; border-bottom: 2px solid #2563eb; padding-bottom: 8px; font-size: 14px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-group { margin-bottom: 0; }
+.form-group label { display: block; font-weight: bold; margin-bottom: 4px; font-size: 12px; }
+.form-group input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
+.form-group input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+thead { background: #f3f4f6; border-bottom: 2px solid #2563eb; }
+th { padding: 12px; text-align: left; font-weight: bold; font-size: 13px; text-transform: uppercase; }
+td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+td input { width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 3px; font-size: 12px; }
+td input:focus { outline: none; border-color: #2563eb; background: #f0f5ff; }
+.summary { background: #f3f4f6; padding: 20px; border-radius: 6px; margin: 20px 0; }
+.summary-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; }
+.summary-item.total { font-weight: bold; color: #2563eb; font-size: 18px; border-top: 2px solid #2563eb; padding-top: 12px; margin-top: 12px; }
+.buttons { display: flex; gap: 10px; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
+button { padding: 12px 24px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s; }
+button:hover { background: #1d4ed8; }
+button.secondary { background: #6b7280; }
+button.secondary:hover { background: #4b5563; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-logo">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#fff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#e0e7ff;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M 30 20 Q 50 15 60 30 Q 65 40 50 45 Q 35 50 40 65 Q 45 75 60 80 Q 70 85 75 75"
+                          fill="none" stroke="url(#logoGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="header-content">
+                <h1>SMARTWORKZ TECHNOLOGIES</h1>
+                <p>Software Development | Digital Marketing | Mobile Application Development</p>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-section">
+                <h3>Invoice Details</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Invoice Number</label>
+                        <input type="text" id="invNo" value="25-26/SWZ/112">
+                    </div>
+                    <div class="form-group">
+                        <label>Invoice Date</label>
+                        <input type="date" id="invDate" value="2026-04-21">
+                    </div>
+                    <div class="form-group">
+                        <label>Tax Rate (%)</label>
+                        <input type="number" id="taxRate" value="0" onchange="calc()">
+                    </div>
+                    <div class="form-group">
+                        <label>PAN Number</label>
+                        <input type="text" id="pan" value="OTHPS0111111">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Bill To</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Client Name</label>
+                        <input type="text" id="client" value="Client Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" id="addr" value="Address">
+                    </div>
+                    <div class="form-group">
+                        <label>City, State - PIN</label>
+                        <input type="text" id="city" value="City, State">
+                    </div>
+                    <div class="form-group">
+                        <label>Country</label>
+                        <input type="text" id="country" value="Country">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Services / Items</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Service Description</th>
+                        <th style="width: 15%;">Code</th>
+                        <th style="width: 10%;">Qty</th>
+                        <th style="width: 15%;">Rate</th>
+                        <th style="width: 20%;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="services"></tbody>
+            </table>
+
+            <div class="summary">
+                <div class="summary-item">
+                    <span>Subtotal:</span>
+                    <span id="sub">₹0</span>
+                </div>
+                <div class="summary-item">
+                    <span>Tax @ <span id="taxPct">0</span>%:</span>
+                    <span id="tax">₹0</span>
+                </div>
+                <div class="summary-item total">
+                    <span>Total Amount:</span>
+                    <span id="total">₹0</span>
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                    <p style="font-weight: bold; margin-bottom: 6px; font-size: 13px;">Amount in Words:</p>
+                    <p id="words" style="color: #2563eb; font-weight: bold; font-size: 15px;">Rupees Zero only</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="downloadInvoice()">📥 Download Invoice HTML</button>
+            <button class="secondary" onclick="printInvoice()">🖨️ Preview & Print</button>
+        </div>
+    </div>
+
+    <script>
+function numberToWords(n) {
+    const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+    const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+    if (n === 0) return 'Zero';
+
+    function convertHundreds(num) {
+        if (num === 0) return '';
+        if (num < 10) return ones[num];
+        if (num < 20) return teens[num - 10];
+        if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 ? ' ' + ones[num % 10] : '');
+        return ones[Math.floor(num / 100)] + ' Hundred' + (num % 100 ? ' ' + convertHundreds(num % 100) : '');
+    }
+
+    const scales = ['', ' Thousand', ' Lakh', ' Crore'];
+    const parts = [];
+    let scaleIndex = 0;
+    let num = Math.floor(n);
+
+    while (num > 0) {
+        let part = scaleIndex === 0 ? num % 1000 : (scaleIndex === 1 ? num % 100 : num);
+        if (scaleIndex > 0) num = Math.floor(num / (scaleIndex === 1 ? 100 : 1));
+        else num = Math.floor(num / 1000);
+
+        if (part > 0) {
+            let words = convertHundreds(part);
+            words += scales[scaleIndex];
+            parts.unshift(words);
+        }
+        scaleIndex++;
+    }
+
+    return parts.join(' ') + ' only';
+}
+
+function initTable() {
+    const tbody = document.getElementById('services');
+    tbody.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="text" class="desc" placeholder="Service description"></td>
+            <td><input type="text" class="code" placeholder="Code"></td>
+            <td><input type="number" class="qty" value="1" onchange="calc()"></td>
+            <td><input type="number" class="rate" value="0" onchange="calc()"></td>
+            <td><input type="number" class="amount" readonly></td>
+        `;
+        tbody.appendChild(tr);
+    }
+}
+
+function calc() {
+    document.querySelectorAll('#services tr').forEach(row => {
+        const qty = parseFloat(row.querySelector('.qty').value) || 0;
+        const rate = parseFloat(row.querySelector('.rate').value) || 0;
+        row.querySelector('.amount').value = (qty * rate).toFixed(2);
+    });
+
+    let subtotal = Array.from(document.querySelectorAll('.amount')).reduce((sum, el) => sum + (parseFloat(el.value) || 0), 0);
+    let taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+    let tax = (subtotal * taxRate) / 100;
+    let total = subtotal + tax;
+
+    document.getElementById('sub').textContent = '₹' + subtotal.toLocaleString('en-IN', {maximumFractionDigits: 2});
+    document.getElementById('tax').textContent = '₹' + tax.toLocaleString('en-IN', {maximumFractionDigits: 2});
+    document.getElementById('taxPct').textContent = taxRate.toFixed(2);
+    document.getElementById('total').textContent = '₹' + total.toLocaleString('en-IN', {maximumFractionDigits: 2});
+    document.getElementById('words').textContent = 'Rupees ' + numberToWords(Math.round(total));
+}
+
+function getInvoiceHtml(items, subtotal, taxRate, tax, total) {
+    return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice - ${document.getElementById('invNo').value}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; padding: 20px; }
+        .toolbar { display: flex; gap: 10px; justify-content: flex-end; margin-bottom: 20px; max-width: 210mm; margin: 0 auto 20px; }
+        .toolbar button { padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .toolbar button.secondary { background: white; color: #2563eb; border: 1px solid #2563eb; }
+        .invoice { width: 210mm; background: white; margin: 0 auto; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d9e75 100%); color: white; padding: 40px 30px; margin: 0 0 30px 0; }
+        .header h1 { margin: 0; font-size: 42px; font-weight: 900; letter-spacing: -1px; }
+        .header p { margin: 8px 0 0 0; font-size: 15px; font-weight: 500; }
+        .content { padding: 0 30px; }
+        .invoice-info { text-align: right; margin-bottom: 25px; border-bottom: 2px solid #e5e7eb; padding-bottom: 15px; }
+        .invoice-info p { margin: 4px 0; font-size: 13px; }
+        .invoice-info .inv-no { font-size: 16px; font-weight: 700; color: #2563eb; }
+        .invoice-info .inv-date { font-size: 12px; color: #666; }
+        .billing { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 30px 0; }
+        .billing h3 { font-size: 13px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+        .billing p { font-size: 12px; margin: 6px 0; line-height: 1.6; }
+        table { width: 100%; border-collapse: collapse; margin: 25px 0; }
+        thead { background: #f3f4f6; border-bottom: 2px solid #2563eb; }
+        th { padding: 12px; text-align: left; font-weight: bold; font-size: 12px; text-transform: uppercase; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 12px; }
+        td:nth-child(n+3) { text-align: right; }
+        .summary { background: #f3f4f6; padding: 20px; border-radius: 6px; margin: 25px 0; }
+        .summary-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; }
+        .summary-item.total { font-weight: bold; color: #2563eb; font-size: 18px; border-top: 2px solid #2563eb; padding-top: 12px; margin-top: 12px; }
+        .amount-words { background: #fffbeb; padding: 15px; border-left: 4px solid #f59e0b; margin: 20px 0; border-radius: 4px; }
+        .amount-words p { font-size: 12px; margin: 4px 0; }
+        .amount-words .words-value { font-weight: bold; color: #2563eb; font-size: 16px; margin-top: 6px; }
+        .footer { margin-top: 25px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 11px; color: #666; }
+        .bank-details { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 15px 0; }
+        .bank-details p { margin: 2px 0; font-size: 11px; }
+        .bank-details .label { font-weight: bold; margin-bottom: 4px; }
+        @media print { body { background: white; padding: 0; } .toolbar { display: none; } }
+        @page { margin: 0; size: A4; }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <button class="secondary" onclick="window.print()">🖨️ Print Invoice</button>
+    </div>
+    <div class="invoice">
+        <div class="header">
+            <h1>SMARTWORKZ TECHNOLOGIES</h1>
+            <p>Software Development | Digital Marketing | Mobile Application Development</p>
+        </div>
+        <div class="content">
+            <div class="invoice-info">
+                <p class="inv-no">Invoice #${document.getElementById('invNo').value}</p>
+                <p class="inv-date">Date: ${document.getElementById('invDate').value}</p>
+            </div>
+            <div class="billing">
+                <div>
+                    <h3>Bill To</h3>
+                    <p><strong>${document.getElementById('client').value}</strong></p>
+                    <p>${document.getElementById('addr').value}</p>
+                    <p>${document.getElementById('city').value}</p>
+                    <p>${document.getElementById('country').value}</p>
+                </div>
+                <div>
+                    <h3>From</h3>
+                    <p><strong>SmartWorkz Technologies India Private Limited</strong></p>
+                    <p>CIN: U72200TG2012PTC082768</p>
+                    <p>1/3-H3, Pachakadu, Sankari, Salem - 637301</p>
+                    <p>hello@smartworkz.in</p>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Service / Item</th>
+                        <th style="width: 15%;">Code</th>
+                        <th style="width: 10%;">Qty</th>
+                        <th style="width: 15%;">Unit Rate</th>
+                        <th style="width: 20%;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+    items.forEach(item => {
+        html += `<tr>
+                    <td>${item.desc}</td>
+                    <td>${item.code}</td>
+                    <td style="text-align: right;">${item.qty}</td>
+                    <td style="text-align: right;">₹${item.rate.toLocaleString('en-IN', {maximumFractionDigits: 2})}</td>
+                    <td style="text-align: right;">₹${item.amount.toLocaleString('en-IN', {maximumFractionDigits: 2})}</td>
+                </tr>`;
+    });
+
+    html += `</tbody>
+            </table>
+            <div class="summary">
+                <div class="summary-item">
+                    <span>Subtotal:</span>
+                    <span>₹${subtotal.toLocaleString('en-IN', {maximumFractionDigits: 2})}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Tax (${taxRate.toFixed(2)}%):</span>
+                    <span>₹${tax.toLocaleString('en-IN', {maximumFractionDigits: 2})}</span>
+                </div>
+                <div class="summary-item total">
+                    <span>TOTAL AMOUNT DUE:</span>
+                    <span>₹${total.toLocaleString('en-IN', {maximumFractionDigits: 2})}</span>
+                </div>
+            </div>
+            <div class="amount-words">
+                <p><strong>Amount in Words:</strong></p>
+                <p class="words-value">${document.getElementById('words').textContent}</p>
+            </div>
+            <div class="footer">
+                <p><strong>PAN Number:</strong> ${document.getElementById('pan').value}</p>
+                <p style="margin-top: 8px;"><strong>Place of Supply:</strong> Tamil Nadu</p>
+                <h4 style="margin-top: 15px; margin-bottom: 10px; font-weight: 700;">Our Banker's Details</h4>
+                <div class="bank-details">
+                    <div>
+                        <p class="label">Bank Name</p>
+                        <p>SANKAGIRI CANARA BANK</p>
+                    </div>
+                    <div>
+                        <p class="label">Account No</p>
+                        <p>12003956616</p>
+                    </div>
+                    <div>
+                        <p class="label">IFSC Code</p>
+                        <p>CNRB0008679</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
+    return html;
+}
+
+function downloadInvoice() {
+    const items = [];
+    document.querySelectorAll('#services tr').forEach(row => {
+        const desc = row.querySelector('.desc').value || '';
+        const code = row.querySelector('.code').value || '';
+        const qty = parseFloat(row.querySelector('.qty').value) || 0;
+        const rate = parseFloat(row.querySelector('.rate').value) || 0;
+        const amount = parseFloat(row.querySelector('.amount').value) || 0;
+
+        if (desc || code || amount > 0) {
+            items.push({desc, code, qty, rate, amount});
+        }
+    });
+
+    if (items.length === 0) {
+        alert('Add at least one service!');
+        return;
+    }
+
+    const subtotal = items.reduce((sum, item) => sum + item.amount, 0);
+    const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+    const tax = (subtotal * taxRate) / 100;
+    const total = subtotal + tax;
+
+    const html = getInvoiceHtml(items, subtotal, taxRate, tax, total);
+
+    const blob = new Blob([html], {type: 'text/html;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'invoice-' + document.getElementById('invNo').value.replace(/\//g, '-') + '.html';
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
+function printInvoice() {
+    const items = [];
+    document.querySelectorAll('#services tr').forEach(row => {
+        const desc = row.querySelector('.desc').value || '';
+        const code = row.querySelector('.code').value || '';
+        const qty = parseFloat(row.querySelector('.qty').value) || 0;
+        const rate = parseFloat(row.querySelector('.rate').value) || 0;
+        const amount = parseFloat(row.querySelector('.amount').value) || 0;
+
+        if (desc || code || amount > 0) {
+            items.push({desc, code, qty, rate, amount});
+        }
+    });
+
+    if (items.length === 0) {
+        alert('Add at least one service!');
+        return;
+    }
+
+    const subtotal = items.reduce((sum, item) => sum + item.amount, 0);
+    const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+    const tax = (subtotal * taxRate) / 100;
+    const total = subtotal + tax;
+
+    const html = getInvoiceHtml(items, subtotal, taxRate, tax, total);
+
+    const printWindow = window.open('', '', 'width=900,height=700');
+    printWindow.document.write(html);
+    printWindow.document.close();
+    setTimeout(() => printWindow.print(), 250);
+}
+
+window.addEventListener('DOMContentLoaded', initTable);
+window.addEventListener('load', calc);
+    </script>
+</body>
+</html>
