@@ -1,5 +1,7 @@
 namespace SmartWorkz.Core.Tests.Helpers;
 
+using System.Runtime.CompilerServices;
+using Microsoft.CSharp.RuntimeBinder;
 using Xunit;
 
 /// <summary>
@@ -57,13 +59,36 @@ public static class AssertionHelpers
     {
         Assert.NotNull(result);
 
+        object? successValue = null;
+        bool hasProperty = false;
+
+        try
+        {
+            successValue = result.IsSuccess;
+            hasProperty = true;
+        }
+        catch (RuntimeBinderException)
+        {
+            try
+            {
+                successValue = result.Success;
+                hasProperty = true;
+            }
+            catch (RuntimeBinderException)
+            {
+                // Neither property exists
+            }
+        }
+
+        Assert.True(hasProperty, "Result must have either IsSuccess or Success property");
+
         if (shouldSucceed)
         {
-            Assert.True(result.IsSuccess ?? result.Success ?? true, "Command expected to succeed");
+            Assert.True((bool)successValue!, "Command expected to succeed");
         }
         else
         {
-            Assert.False(result.IsSuccess ?? result.Success ?? false, errorMessage ?? "Command expected to fail");
+            Assert.False((bool)successValue!, errorMessage ?? "Command expected to fail");
         }
     }
 
@@ -110,13 +135,59 @@ public static class AssertionHelpers
     {
         Assert.NotNull(sagaResult);
         Assert.Equal(expectedAggregateId, sagaResult.AggregateId);
-        Assert.Equal("Completed", sagaResult.Status ?? sagaResult.State);
+
+        object? statusValue = null;
+        bool hasProperty = false;
+
+        try
+        {
+            statusValue = sagaResult.Status;
+            hasProperty = true;
+        }
+        catch (RuntimeBinderException)
+        {
+            try
+            {
+                statusValue = sagaResult.State;
+                hasProperty = true;
+            }
+            catch (RuntimeBinderException)
+            {
+                // Neither property exists
+            }
+        }
+
+        Assert.True(hasProperty, "Saga result must have either Status or State property");
+        Assert.Equal("Completed", (string)statusValue!);
     }
 
     /// <summary>Assert saga compensation executed on failure.</summary>
     public static void AssertSagaCompensated(dynamic sagaResult)
     {
         Assert.NotNull(sagaResult);
-        Assert.Equal("Compensated", sagaResult.Status ?? sagaResult.State);
+
+        object? statusValue = null;
+        bool hasProperty = false;
+
+        try
+        {
+            statusValue = sagaResult.Status;
+            hasProperty = true;
+        }
+        catch (RuntimeBinderException)
+        {
+            try
+            {
+                statusValue = sagaResult.State;
+                hasProperty = true;
+            }
+            catch (RuntimeBinderException)
+            {
+                // Neither property exists
+            }
+        }
+
+        Assert.True(hasProperty, "Saga result must have either Status or State property");
+        Assert.Equal("Compensated", (string)statusValue!);
     }
 }
