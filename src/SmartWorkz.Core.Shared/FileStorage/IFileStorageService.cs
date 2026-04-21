@@ -23,14 +23,3 @@ public interface IFileStorageService
     /// <summary>Generate a temporary download URL (for cloud providers).</summary>
     Task<string> GenerateTemporaryUrlAsync(string path, TimeSpan expiration, CancellationToken cancellationToken = default);
 }
-
-public class FileMetadata
-{
-    public string Path { get; set; }
-    public string FileName { get; set; }
-    public long SizeBytes { get; set; }
-    public string? ContentType { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset ModifiedAt { get; set; }
-    public Dictionary<string, string>? Tags { get; set; }
-}
