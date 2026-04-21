@@ -20,3 +20,6 @@ Thumbs.db
 
 # Git worktrees
 .worktrees/
+
+# Claude development artifacts (planning, temporary work)
+.claude/
