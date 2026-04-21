@@ -256,13 +256,23 @@ function debounceCalc() {
 
 function calc() {
     try {
-        document.querySelectorAll('#services tr').forEach(row => {
-            const qty = parseFloat(row.querySelector('.qty').value) || 0;
-            const rate = parseFloat(row.querySelector('.rate').value) || 0;
-            row.querySelector('.amount').value = (qty * rate).toFixed(2);
+        const rows = document.getElementById('services').querySelectorAll('tr');
+        let subtotal = 0;
+
+        rows.forEach(row => {
+            const qtyInput = row.querySelector('.qty');
+            const rateInput = row.querySelector('.rate');
+            const amountInput = row.querySelector('.amount');
+
+            if (qtyInput && rateInput && amountInput) {
+                const qty = parseFloat(qtyInput.value) || 0;
+                const rate = parseFloat(rateInput.value) || 0;
+                const amount = qty * rate;
+                amountInput.value = amount.toFixed(2);
+                subtotal += amount;
+            }
         });
 
-        let subtotal = Array.from(document.querySelectorAll('.amount')).reduce((sum, el) => sum + (parseFloat(el.value) || 0), 0);
         let taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
         let tax = (subtotal * taxRate) / 100;
         let total = subtotal + tax;
