@@ -49,13 +49,12 @@ public class SagaOrchestratorTests
         var orchestrator = new SagaOrchestrator(_logger);
 
         // Act
-        var result = await orchestrator.ExecuteSagaAsync(sagaDefinition, initialState, @event);
+        await orchestrator.ExecuteSagaAsync(sagaDefinition, initialState, @event);
 
         // Assert
         Assert.True(initialState.Step1Executed);
         Assert.True(initialState.Step2Executed);
         Assert.Equal(SagaStatus.Completed, initialState.Status);
-        Assert.NotNull(result);
     }
 
     [Fact]
@@ -231,13 +230,20 @@ public class SagaOrchestratorTests
         var initialState = new TestSagaState { Id = "saga-1", OrderId = "order-123" };
         var @event = new TestOrderEvent { EventId = Guid.NewGuid(), AggregateId = "order-123" };
         var cts = new CancellationTokenSource();
+        cts.CancelAfter(50); // Cancel after 50ms
 
         var sagaDefinition = new TestSagaDefinition();
         sagaDefinition.DefineStep<TestOrderEvent>(
             async (evt, state) =>
             {
-                cts.Cancel();
-                await Task.Delay(100);
+                try
+                {
+                    await Task.Delay(1000, cts.Token); // Long delay with cancellation token
+                }
+                catch (OperationCanceledException)
+                {
+                    throw; // Re-throw to propagate cancellation
+                }
                 state.Step1Executed = true;
                 return StepResult.Success();
             });
@@ -245,7 +251,7 @@ public class SagaOrchestratorTests
         var orchestrator = new SagaOrchestrator(_logger);
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
             orchestrator.ExecuteSagaAsync(sagaDefinition, initialState, @event, cts.Token));
     }
 
@@ -360,6 +366,40 @@ public class SagaOrchestratorTests
         Assert.True(executionTimes[1] >= executionTimes[0].AddMilliseconds(40)); // Sequential execution
     }
 
+    [Fact]
+    public async Task ExecuteSagaAsync_WithMultipleEventTypes_FailsOnTypeMismatch()
+    {
+        // Arrange
+        var initialState = new TestSagaState { Id = "saga-1", OrderId = "order-123" };
+        var orderEvent = new TestOrderEvent { EventId = Guid.NewGuid(), AggregateId = "order-123" };
+
+        var sagaDefinition = new TestSagaDefinition();
+        sagaDefinition.DefineStep<TestPaymentEvent>(
+            async (evt, state) =>
+            {
+                state.Step1Executed = true;
+                await Task.Delay(10);
+                return StepResult.Success();
+            });
+
+        sagaDefinition.OnFailure(async (state, ex) =>
+        {
+            state.Status = SagaStatus.Failed;
+            state.FailureReason = ex.Message;
+            await Task.CompletedTask;
+        });
+
+        var orchestrator = new SagaOrchestrator(_logger);
+
+        // Act - ExecuteSagaAsync doesn't throw, it sets the status to Failed
+        await orchestrator.ExecuteSagaAsync(sagaDefinition, initialState, orderEvent);
+
+        // Assert - Saga should be marked as failed due to event type mismatch
+        Assert.Equal(SagaStatus.Failed, initialState.Status);
+        Assert.Contains("Event type mismatch", initialState.FailureReason);
+        Assert.False(initialState.Step1Executed); // Step wasn't executed
+    }
+
     // Test data classes
     public class TestSagaState : SagaState
     {
@@ -369,7 +409,6 @@ public class SagaOrchestratorTests
         public bool Step2Compensated { get; set; }
         public List<string> CompletedSteps { get; set; } = new();
         public List<Guid> EventsProcessed { get; set; } = new();
-        public string FailureReason { get; set; } = string.Empty;
     }
 
     public class TestOrderEvent : IDomainEvent
@@ -379,9 +418,16 @@ public class SagaOrchestratorTests
         public string AggregateId { get; set; } = string.Empty;
     }
 
+    public class TestPaymentEvent : IDomainEvent
+    {
+        public Guid EventId { get; set; }
+        public DateTimeOffset OccurredAt { get; set; } = DateTimeOffset.UtcNow;
+        public string AggregateId { get; set; } = string.Empty;
+    }
+
     public class TestSagaDefinition : ISagaDefinition<TestSagaState>
     {
-        private readonly List<Func<TestOrderEvent, TestSagaState, Task<StepResult>>> _steps = new();
+        private readonly List<Func<IDomainEvent, TestSagaState, Task<StepResult>>> _steps = new();
         private Func<TestSagaState, Exception, Task>? _failureHandler;
 
         public string Name => "TestSaga";
@@ -397,7 +443,8 @@ public class SagaOrchestratorTests
                 {
                     return await handler(typedEvent, state);
                 }
-                return StepResult.Success();
+                // Fail on type mismatch instead of silently succeeding
+                throw new InvalidOperationException($"Event type mismatch: expected {typeof(TEvent).Name}, got {@event.GetType().Name}");
             });
         }
 
@@ -412,7 +459,7 @@ public class SagaOrchestratorTests
             return this;
         }
 
-        public IReadOnlyList<Func<TestOrderEvent, TestSagaState, Task<StepResult>>> GetSteps() => _steps.AsReadOnly();
+        public IReadOnlyList<Func<IDomainEvent, TestSagaState, Task<StepResult>>> GetSteps() => _steps.AsReadOnly();
         public Func<TestSagaState, Exception, Task>? GetFailureHandler() => _failureHandler;
     }
 }

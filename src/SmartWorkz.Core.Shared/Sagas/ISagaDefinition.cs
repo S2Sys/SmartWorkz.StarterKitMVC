@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Sagas;
+namespace SmartWorkz.Core.Shared.Sagas;
 
 using SmartWorkz.Core.Shared.Events;
 
@@ -42,4 +42,16 @@ public interface ISagaDefinition<TSagaState> where TSagaState : class
     /// </summary>
     /// <returns>A task that completes with the configured saga definition.</returns>
     Task<ISagaDefinition<TSagaState>> BuildAsync();
+
+    /// <summary>
+    /// Gets the list of saga steps in execution order.
+    /// </summary>
+    /// <returns>A read-only list of saga step handlers.</returns>
+    IReadOnlyList<Func<IDomainEvent, TSagaState, Task<StepResult>>> GetSteps();
+
+    /// <summary>
+    /// Gets the failure compensation handler if defined.
+    /// </summary>
+    /// <returns>The failure handler function, or null if not defined.</returns>
+    Func<TSagaState, Exception, Task>? GetFailureHandler();
 }
