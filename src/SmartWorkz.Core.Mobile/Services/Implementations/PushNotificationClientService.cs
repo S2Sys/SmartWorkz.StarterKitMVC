@@ -32,7 +32,7 @@ internal partial class PushNotificationClientService : IPushNotificationClientSe
             if (string.IsNullOrEmpty(token))
             {
                 _logger.LogWarning("Failed to get push notification token");
-                return Result.Fail(Error.Invalid("Push token unavailable"));
+                return Result.Fail(new Error("PUSH.TOKEN_UNAVAILABLE", "Push token unavailable"));
             }
 
             // Store token locally
@@ -59,7 +59,7 @@ internal partial class PushNotificationClientService : IPushNotificationClientSe
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error registering push notifications");
-            return Result.Fail(Error.Unexpected("Push notification registration failed"));
+            return Result.Fail(new Error("PUSH.REGISTRATION_FAILED", "Push notification registration failed"));
         }
     }
 
@@ -90,7 +90,7 @@ internal partial class PushNotificationClientService : IPushNotificationClientSe
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error unregistering push notifications");
-            return Result.Fail(Error.Unexpected("Push notification unregistration failed"));
+            return Result.Fail(new Error("PUSH.UNREGISTRATION_FAILED", "Push notification unregistration failed"));
         }
     }
 

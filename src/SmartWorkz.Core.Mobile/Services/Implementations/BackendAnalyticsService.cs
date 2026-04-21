@@ -44,7 +44,7 @@ internal class BackendAnalyticsService : IAnalyticsService
                 return;
             }
 
-            object? userIdToUse;
+            string? userIdToUse;
             Dictionary<string, string>? userPropsToUse;
 
             lock (_lockObject)
@@ -65,13 +65,7 @@ internal class BackendAnalyticsService : IAnalyticsService
 
             using var scope = _scopeFactory.CreateScope();
             var apiClient = scope.ServiceProvider.GetRequiredService<IApiClient>();
-            var result = await apiClient.PostAsync<object>("/api/telemetry/events", payload, ct);
-
-            if (!result.Succeeded)
-            {
-                _logger.LogWarning("Failed to send telemetry event {EventName}: {ErrorCode}",
-                    eventName, result.Error?.Code ?? "UNKNOWN");
-            }
+            await apiClient.PostAsync<object>("/api/telemetry/events", payload, ct);
         }
         catch (Exception ex)
         {
@@ -93,7 +87,7 @@ internal class BackendAnalyticsService : IAnalyticsService
                 return;
             }
 
-            object? userIdToUse;
+            string? userIdToUse;
             Dictionary<string, string>? userPropsToUse;
 
             lock (_lockObject)
@@ -119,13 +113,7 @@ internal class BackendAnalyticsService : IAnalyticsService
 
             using var scope = _scopeFactory.CreateScope();
             var apiClient = scope.ServiceProvider.GetRequiredService<IApiClient>();
-            var result = await apiClient.PostAsync<object>("/api/telemetry/events", payload, ct);
-
-            if (!result.Succeeded)
-            {
-                _logger.LogWarning("Failed to send page view event {PageName}: {ErrorCode}",
-                    pageName, result.Error?.Code ?? "UNKNOWN");
-            }
+            await apiClient.PostAsync<object>("/api/telemetry/events", payload, ct);
         }
         catch (Exception ex)
         {
@@ -147,7 +135,7 @@ internal class BackendAnalyticsService : IAnalyticsService
                 return;
             }
 
-            object? userIdToUse;
+            string? userIdToUse;
             Dictionary<string, string>? userPropsToUse;
 
             lock (_lockObject)
@@ -175,13 +163,7 @@ internal class BackendAnalyticsService : IAnalyticsService
 
             using var scope = _scopeFactory.CreateScope();
             var apiClient = scope.ServiceProvider.GetRequiredService<IApiClient>();
-            var result = await apiClient.PostAsync<object>("/api/telemetry/events", payload, ct);
-
-            if (!result.Succeeded)
-            {
-                _logger.LogWarning("Failed to send error event {ExceptionType}: {ErrorCode}",
-                    ex.GetType().Name, result.Error?.Code ?? "UNKNOWN");
-            }
+            await apiClient.PostAsync<object>("/api/telemetry/events", payload, ct);
         }
         catch (Exception trackingError)
         {
