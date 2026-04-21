@@ -7,6 +7,7 @@ public interface ITokenRefreshInterceptor : IRequestInterceptor
     /// and attempting to refresh the token if needed.
     /// </summary>
     /// <param name="response">The HTTP response message to process.</param>
+    /// <param name="ct">Cancellation token.</param>
     /// <returns>True if the interceptor handled the response and the request should be retried; false otherwise.</returns>
-    Task<bool> OnResponseAsync(HttpResponseMessage response);
+    Task<bool> OnResponseAsync(HttpResponseMessage response, CancellationToken ct = default);
 }

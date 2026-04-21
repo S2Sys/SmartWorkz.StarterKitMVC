@@ -90,6 +90,40 @@ public class ApiClient : IApiClient
 
             var response = await client.SendAsync(request, ct);
 
+            // Handle 401 responses with token refresh interceptors
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                var tokenRefreshInterceptor = _requestInterceptors
+                    .OfType<ITokenRefreshInterceptor>()
+                    .FirstOrDefault();
+
+                if (tokenRefreshInterceptor != null)
+                {
+                    var shouldRetry = await tokenRefreshInterceptor.OnResponseAsync(response, ct);
+                    if (shouldRetry)
+                    {
+                        // Recreate the request with the new token and retry once
+                        var retryRequest = new HttpRequestMessage(HttpMethod.Delete, url);
+
+                        // Copy original headers from the request
+                        foreach (var header in request.Headers)
+                        {
+                            retryRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                        }
+
+                        // The token should already be in response.RequestMessage.Headers.Authorization
+                        // Copy it to the retry request
+                        if (response.RequestMessage?.Headers.Authorization != null)
+                        {
+                            retryRequest.Headers.Authorization = response.RequestMessage.Headers.Authorization;
+                        }
+
+                        response.Dispose();
+                        response = await client.SendAsync(retryRequest, ct);
+                    }
+                }
+            }
+
             if (!response.IsSuccessStatusCode)
             {
                 // Attempt to parse error response body
@@ -151,7 +185,43 @@ public class ApiClient : IApiClient
             await ApplyRequestInterceptorsAsync(request, ct);
             await _authenticationHandler.InjectHeadersAsync(request, ct);
 
-            using (var response = await client.SendAsync(request, ct))
+            var response = await client.SendAsync(request, ct);
+
+            // Handle 401 responses with token refresh interceptors
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                var tokenRefreshInterceptor = _requestInterceptors
+                    .OfType<ITokenRefreshInterceptor>()
+                    .FirstOrDefault();
+
+                if (tokenRefreshInterceptor != null)
+                {
+                    var shouldRetry = await tokenRefreshInterceptor.OnResponseAsync(response, ct);
+                    if (shouldRetry)
+                    {
+                        // Recreate the request with the new token and retry once
+                        var retryRequest = new HttpRequestMessage(HttpMethod.Get, url);
+
+                        // Copy original headers from the request
+                        foreach (var header in request.Headers)
+                        {
+                            retryRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                        }
+
+                        // The token should already be in response.RequestMessage.Headers.Authorization
+                        // Copy it to the retry request
+                        if (response.RequestMessage?.Headers.Authorization != null)
+                        {
+                            retryRequest.Headers.Authorization = response.RequestMessage.Headers.Authorization;
+                        }
+
+                        response.Dispose();
+                        response = await client.SendAsync(retryRequest, ct);
+                    }
+                }
+            }
+
+            using (response)
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -234,6 +304,45 @@ public class ApiClient : IApiClient
             await _authenticationHandler.InjectHeadersAsync(request, ct);
 
             var response = await client.SendAsync(request, ct);
+
+            // Handle 401 responses with token refresh interceptors
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                var tokenRefreshInterceptor = _requestInterceptors
+                    .OfType<ITokenRefreshInterceptor>()
+                    .FirstOrDefault();
+
+                if (tokenRefreshInterceptor != null)
+                {
+                    var shouldRetry = await tokenRefreshInterceptor.OnResponseAsync(response, ct);
+                    if (shouldRetry)
+                    {
+                        // Recreate the request with the new token and retry once
+                        var retryRequest = new HttpRequestMessage(method, url);
+
+                        if (data != null && (method == HttpMethod.Post || method == HttpMethod.Put))
+                        {
+                            retryRequest.Content = JsonContent.Create(data);
+                        }
+
+                        // Copy original headers from the request
+                        foreach (var header in request.Headers)
+                        {
+                            retryRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                        }
+
+                        // The token should already be in response.RequestMessage.Headers.Authorization
+                        // Copy it to the retry request
+                        if (response.RequestMessage?.Headers.Authorization != null)
+                        {
+                            retryRequest.Headers.Authorization = response.RequestMessage.Headers.Authorization;
+                        }
+
+                        response.Dispose();
+                        response = await client.SendAsync(retryRequest, ct);
+                    }
+                }
+            }
 
             if (!response.IsSuccessStatusCode)
             {
