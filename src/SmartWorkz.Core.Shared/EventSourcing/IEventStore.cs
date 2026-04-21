@@ -1,4 +1,3 @@
-using SmartWorkz.Core.Shared.Events;
 
 namespace SmartWorkz.Shared;
 
@@ -20,7 +19,7 @@ public interface IEventStore
     /// <exception cref="InvalidOperationException">Thrown on version conflict or optimistic concurrency violation</exception>
     Task AppendEventsAsync(
         string aggregateId,
-        IEnumerable<SmartWorkz.Core.Shared.Events.IDomainEvent> events,
+        IEnumerable<IDomainEvent> events,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -30,7 +29,7 @@ public interface IEventStore
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Collection of domain events for the aggregate, empty if none exist</returns>
     /// <exception cref="ArgumentNullException">Thrown if aggregateId is null</exception>
-    Task<IEnumerable<SmartWorkz.Core.Shared.Events.IDomainEvent>> GetEventsAsync(
+    Task<IEnumerable<IDomainEvent>> GetEventsAsync(
         string aggregateId,
         CancellationToken cancellationToken = default);
 
@@ -44,7 +43,7 @@ public interface IEventStore
     /// <returns>Collection of events after the specified version, empty if none exist</returns>
     /// <exception cref="ArgumentNullException">Thrown if aggregateId is null</exception>
     /// <exception cref="ArgumentException">Thrown if version is negative</exception>
-    Task<IEnumerable<SmartWorkz.Core.Shared.Events.IDomainEvent>> GetEventsSinceAsync(
+    Task<IEnumerable<IDomainEvent>> GetEventsSinceAsync(
         string aggregateId,
         int version,
         CancellationToken cancellationToken = default);

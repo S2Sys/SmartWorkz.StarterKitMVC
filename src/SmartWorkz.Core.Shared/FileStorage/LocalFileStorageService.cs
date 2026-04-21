@@ -1,6 +1,5 @@
 namespace SmartWorkz.Shared;
 
-using SmartWorkz.Core.Services.FileStorage;
 using Microsoft.Extensions.Logging;
 
 public class LocalFileStorageService : IFileStorageService

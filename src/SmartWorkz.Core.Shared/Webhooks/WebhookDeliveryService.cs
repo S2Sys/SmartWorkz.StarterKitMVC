@@ -3,7 +3,6 @@ namespace SmartWorkz.Shared;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using SmartWorkz.Core.Shared.Guards;
 using Microsoft.Extensions.Logging;
 
 /// <summary>

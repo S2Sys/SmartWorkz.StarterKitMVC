@@ -1,7 +1,6 @@
 namespace SmartWorkz.Shared;
 
 using System.Data;
-using SmartWorkz.Core.Shared.Guards;
 using Microsoft.Extensions.DependencyInjection;
 
 /// <summary>

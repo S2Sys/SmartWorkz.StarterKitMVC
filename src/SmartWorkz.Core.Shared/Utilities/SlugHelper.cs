@@ -2,7 +2,6 @@ namespace SmartWorkz.Shared;
 
 using System.Globalization;
 using System.Text;
-using SmartWorkz.Core.Shared.Results;
 
 /// <summary>
 /// Helper for generating URL-friendly slugs from text input.

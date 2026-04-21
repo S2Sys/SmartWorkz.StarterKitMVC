@@ -1,7 +1,7 @@
 namespace SmartWorkz.Shared;
 
 /// <summary>
-/// Shared configuration constants used throughout SmartWorkz.Core.Shared.
+/// Shared configuration constants used throughout SmartWorkz.Shared.
 /// Enables centralized management of default values and limits.
 /// </summary>
 public static class SharedConstants

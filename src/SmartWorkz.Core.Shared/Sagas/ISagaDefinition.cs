@@ -1,6 +1,5 @@
 namespace SmartWorkz.Shared;
 
-using SmartWorkz.Core.Shared.Events;
 
 /// <summary>
 /// Defines the blueprint for a saga orchestration.

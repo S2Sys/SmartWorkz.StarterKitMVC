@@ -3,7 +3,6 @@ namespace SmartWorkz.Shared;
 using System.Data;
 using System.Text.Json;
 using Dapper;
-using SmartWorkz.Core.Shared.Guards;
 using Microsoft.Extensions.Logging;
 
 /// <summary>

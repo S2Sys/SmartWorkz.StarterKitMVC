@@ -3,7 +3,6 @@ namespace SmartWorkz.Shared;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.Extensions.DependencyInjection;
-using SmartWorkz.Core.Services.Notifications;
 using System.IO;
 
 public static class NotificationStartupExtensions

@@ -1,6 +1,5 @@
 namespace SmartWorkz.Shared;
 
-using SmartWorkz.Core.Shared.Primitives;
 
 public abstract class AuditableEntityBase<TId> : IEntity<TId> where TId : notnull
 {

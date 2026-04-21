@@ -1,7 +1,6 @@
 namespace SmartWorkz.Shared;
 
 using Microsoft.Extensions.Logging;
-using SmartWorkz.Core.Shared.Events;
 
 /// <summary>
 /// Orchestrates the execution of sagas, managing step sequencing, error handling,
