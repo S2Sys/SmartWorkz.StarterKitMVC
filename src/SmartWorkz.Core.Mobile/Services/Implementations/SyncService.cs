@@ -162,7 +162,7 @@ public class SyncService : ISyncService
     }
 
     /// <summary>
-    /// Gets all pending operations from storage.
+    /// Gets all pending operations from storage filtered by sync queue key prefix.
     /// </summary>
     public async Task<Result<IEnumerable<SyncOperation>>> GetPendingOperationsAsync(CancellationToken ct = default)
     {
@@ -172,18 +172,17 @@ public class SyncService : ISyncService
         {
             var operations = new List<SyncOperation>();
 
-            // Load all keys matching pattern (simulation - in real implementation, need storage pattern matching)
-            // For now, we'll iterate through a known storage pattern
-            var allResult = await _localStorageService.GetAllAsync<string>(ct);
+            // Load only entries with the sync operation key prefix
+            var result = await _localStorageService.GetAllByPrefixAsync<string>(SyncQueueKeyPrefix, ct);
 
-            if (!allResult.Succeeded)
+            if (!result.Succeeded)
             {
                 return Result.Ok(operations.AsEnumerable());
             }
 
-            var allEntries = allResult.Data ?? [];
+            var entries = result.Data ?? [];
 
-            foreach (var entry in allEntries)
+            foreach (var entry in entries)
             {
                 try
                 {

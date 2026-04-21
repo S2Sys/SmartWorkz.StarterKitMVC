@@ -135,6 +135,43 @@ public class LocalStorageService : ILocalStorageService
         }
     }
 
+    public async Task<Result<IEnumerable<T>>> GetAllByPrefixAsync<T>(string keyPrefix, CancellationToken ct = default)
+    {
+        try
+        {
+            Guard.NotEmpty(keyPrefix, nameof(keyPrefix));
+
+            var db = await _database.Value;
+            var typeName = typeof(T).FullName ?? typeof(T).Name;
+            var entries = await db.QueryAsync<StorageEntry>(
+                "SELECT * FROM StorageEntry WHERE TypeName = ? AND Key LIKE ?",
+                typeName,
+                keyPrefix + "%"
+            );
+
+            var results = new List<T>();
+            foreach (var entry in entries)
+            {
+                if (entry.ExpiresAt != null && DateTime.Parse(entry.ExpiresAt) <= DateTime.UtcNow)
+                {
+                    await db.DeleteAsync(entry);
+                    continue;
+                }
+
+                var value = JsonSerializer.Deserialize<T>(entry.ValueJson);
+                if (value != null)
+                    results.Add(value);
+            }
+
+            return Result.Ok((IEnumerable<T>)results);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("LocalStorage.GetAllByPrefixAsync failed", ex);
+            return Result.Fail<IEnumerable<T>>(new Error("STORAGE.SQLITE_ERROR", ex.Message));
+        }
+    }
+
     public async Task<Result> ClearAsync(CancellationToken ct = default)
     {
         try
@@ -190,6 +227,11 @@ public class LocalStorageService : ILocalStorageService
     }
 
     public async Task<Result<IEnumerable<T>>> GetAllAsync<T>(CancellationToken ct = default)
+    {
+        return Result.Fail<IEnumerable<T>>(new Error("STORAGE.PLATFORM_UNSUPPORTED", "LocalStorage not available on Windows"));
+    }
+
+    public async Task<Result<IEnumerable<T>>> GetAllByPrefixAsync<T>(string keyPrefix, CancellationToken ct = default)
     {
         return Result.Fail<IEnumerable<T>>(new Error("STORAGE.PLATFORM_UNSUPPORTED", "LocalStorage not available on Windows"));
     }
