@@ -14,7 +14,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; padding:
 .header-content { flex: 1; }
 .header-content h1 { margin: 0; font-size: 38px; font-weight: 900; letter-spacing: -1px; }
 .header-content p { margin: 8px 0 0 0; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; opacity: 0.95; }
-.form-row { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
 .form-section { background: #f9f9f9; padding: 15px; border-radius: 6px; }
 .form-section h3 { margin: 0 0 15px 0; border-bottom: 2px solid #2563eb; padding-bottom: 8px; font-size: 14px; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -73,6 +73,27 @@ button.secondary:hover { background: #4b5563; }
                 </div>
             </div>
 
+            <div class="form-section">
+                <h3>Bill To</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Client Name</label>
+                        <input type="text" id="client" value="Client Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" id="addr" value="Address">
+                    </div>
+                    <div class="form-group">
+                        <label>City, State - PIN</label>
+                        <input type="text" id="city" value="City, State">
+                    </div>
+                    <div class="form-group">
+                        <label>Country</label>
+                        <input type="text" id="country" value="Country">
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="form-section">
@@ -210,7 +231,7 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total) {
         .invoice-info p { margin: 4px 0; font-size: 13px; }
         .invoice-info .inv-no { font-size: 16px; font-weight: 700; color: #2563eb; }
         .invoice-info .inv-date { font-size: 12px; color: #666; }
-        .billing { display: grid; grid-template-columns: 1fr; gap: 40px; margin: 30px 0; }
+        .billing { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 30px 0; }
         .billing h3 { font-size: 13px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
         .billing p { font-size: 12px; margin: 6px 0; line-height: 1.6; }
         table { width: 100%; border-collapse: collapse; margin: 25px 0; }
@@ -252,6 +273,13 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total) {
                 <p class="inv-date">Date: ${document.getElementById('invDate').value}</p>
             </div>
             <div class="billing">
+                <div>
+                    <h3>Bill To</h3>
+                    <p><strong>${document.getElementById('client').value}</strong></p>
+                    <p>${document.getElementById('addr').value}</p>
+                    <p>${document.getElementById('city').value}</p>
+                    <p>${document.getElementById('country').value}</p>
+                </div>
                 <div>
                     <h3>From</h3>
                     <p><strong>SmartWorkz Technologies India Private Limited</strong></p>
