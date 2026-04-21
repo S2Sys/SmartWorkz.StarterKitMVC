@@ -114,6 +114,7 @@ public static class ServiceCollectionExtensions
         // Step 14: Register Phase 1 library extensions
         services.AddSingleton<IResponsiveService, ResponsiveService>();
         services.AddScoped<IMobileCacheService, MobileCacheService>();
+        services.AddSingleton<IRequestDeduplicationService, RequestDeduplicationService>();
         // INavigationService is app-specific — registered by the consuming app (not the library)
         // IMobileFormValidator<T> is open-generic — consuming app registers per-DTO:
         //   services.AddScoped<IMobileFormValidator<LoginDto>, MobileFormValidator<LoginDto>>();
