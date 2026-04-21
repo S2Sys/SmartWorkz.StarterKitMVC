@@ -1,10 +1,15 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Serilog;
 using SmartWorkz.StarterKitMVC.Infrastructure.Authorization;
 using SmartWorkz.StarterKitMVC.Infrastructure.Extensions;
 using SmartWorkz.StarterKitMVC.Public.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure logging to use Serilog (initialized via AddStructuredLogging in AddApplicationStack)
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog();
 
 // ─── Services ─────────────────────────────────────────────────────────────
 builder.Services.AddRazorPages(options =>

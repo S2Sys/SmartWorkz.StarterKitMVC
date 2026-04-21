@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SmartWorkz.Core.Shared\SmartWorkz.Core.Shared.csproj" />
     <ProjectReference Include="..\SmartWorkz.StarterKitMVC.Application\SmartWorkz.StarterKitMVC.Application.csproj" />
     <ProjectReference Include="..\SmartWorkz.StarterKitMVC.Domain\SmartWorkz.StarterKitMVC.Domain.csproj" />
     <ProjectReference Include="..\SmartWorkz.StarterKitMVC.Shared\SmartWorkz.StarterKitMVC.Shared.csproj" />

@@ -90,12 +90,11 @@ public class EnrichedLogger
     /// <param name="context">Additional context data</param>
     public void LogEventPublishedWithContext(string eventType, Guid eventId, IDictionary<string, object> context)
     {
-        var contextString = string.Join(", ", context.Select(kvp => $"{kvp.Key}={kvp.Value}"));
         _innerLogger?.LogInformation(
-            "Event published with context: {EventType}, EventId: {EventId}, Context: {Context}",
+            "Event published with context: {EventType}, EventId: {EventId}, ContextCount: {ContextCount}",
             eventType,
             eventId,
-            contextString);
+            context?.Count ?? 0);
     }
 
     /// <summary>
@@ -298,11 +297,10 @@ public class EnrichedLogger
     /// <param name="context">Dictionary of contextual properties</param>
     public void LogWithContext(string operationName, IDictionary<string, object> context)
     {
-        var contextString = FormatContext(context);
         _innerLogger?.LogInformation(
-            "Operation: {OperationName} | Context: {Context}",
+            "Operation: {OperationName} | ContextCount: {ContextCount}",
             operationName,
-            contextString);
+            context?.Count ?? 0);
     }
 
     /// <summary>
@@ -328,19 +326,11 @@ public class EnrichedLogger
     /// <param name="requestPath">Optional request path</param>
     public void LogCorrelation(string correlationId, string? userId = null, string? requestPath = null)
     {
-        var contextParts = new List<string> { $"CorrelationId={correlationId}" };
-
-        if (!string.IsNullOrEmpty(userId))
-            contextParts.Add($"UserId={userId}");
-
-        if (!string.IsNullOrEmpty(requestPath))
-            contextParts.Add($"RequestPath={requestPath}");
-
-        var contextString = string.Join(" | ", contextParts);
-
         _innerLogger?.LogInformation(
-            "Request context: {Context}",
-            contextString);
+            "Request context: {CorrelationId}, UserId: {UserId}, RequestPath: {RequestPath}",
+            correlationId,
+            userId ?? "N/A",
+            requestPath ?? "N/A");
     }
 
     /// <summary>
@@ -354,21 +344,6 @@ public class EnrichedLogger
             exception,
             "Unhandled exception in {OperationName}",
             operationName);
-    }
-
-    #endregion
-
-    #region Helper Methods
-
-    /// <summary>
-    /// Formats a context dictionary into a readable string.
-    /// </summary>
-    private static string FormatContext(IDictionary<string, object> context)
-    {
-        if (context == null || context.Count == 0)
-            return "No context";
-
-        return string.Join(" | ", context.Select(kvp => $"{kvp.Key}={kvp.Value}"));
     }
 
     #endregion

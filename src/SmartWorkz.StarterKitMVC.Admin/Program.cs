@@ -1,15 +1,14 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Serilog;
 using SmartWorkz.StarterKitMVC.Infrastructure.Authorization;
 using SmartWorkz.StarterKitMVC.Infrastructure.Extensions;
-using SmartWorkz.StarterKitMVC.Admin.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure logging to console (will be written to file via EventLog in appsettings)
+// Configure logging to use Serilog (initialized via AddStructuredLogging in AddApplicationStack)
 builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.SetMinimumLevel(LogLevel.Information);
+builder.Logging.AddSerilog();
 
 // ─── Services ─────────────────────────────────────────────────────────────
 builder.Services.AddRazorPages(options =>
@@ -111,10 +110,6 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
-// Add file logging middleware (logs all requests/responses to ~/Logs/)
-app.UseFileLogging();
-
 app.UseRouting();
 app.UseAuthentication();
 app.UseTenantResolution();
