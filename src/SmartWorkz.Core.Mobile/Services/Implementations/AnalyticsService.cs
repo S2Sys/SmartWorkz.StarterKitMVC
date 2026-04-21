@@ -36,4 +36,16 @@ public class AnalyticsService : IAnalyticsService
     {
         _logger.LogDebug($"Analytics: User property '{key}' set to '{value}' (stub)");
     }
+
+    public Task ClearUserPropertiesAsync(CancellationToken ct = default)
+    {
+        _logger.LogDebug("Analytics stub: User properties cleared");
+        return Task.CompletedTask;
+    }
+
+    public Task ResetAsync(CancellationToken ct = default)
+    {
+        _logger.LogDebug("Analytics stub: Analytics reset");
+        return Task.CompletedTask;
+    }
 }
