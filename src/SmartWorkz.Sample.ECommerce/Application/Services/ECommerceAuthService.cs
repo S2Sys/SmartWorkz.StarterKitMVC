@@ -17,11 +17,11 @@ public class ECommerceAuthService(
         Guard.NotNull(dto, nameof(dto));
         var validation = await registerValidator.ValidateAsync(dto);
         if (!validation.IsValid)
-            return Result<string>.Failure(new Error("Validation.Failed", validation.Failures.First().Message));
+            return Result.Fail<string>(new Error("Validation.Failed", validation.Failures.First().Message));
 
         var emailResult = EmailAddress.Create(dto.Email);
         if (!emailResult.Succeeded)
-            return Result<string>.Failure(emailResult.Error!);
+            return Result.Fail<string>(emailResult.Error!);
 
         var customer = new Customer
         {
@@ -41,9 +41,9 @@ public class ECommerceAuthService(
         var tokenResult = JwtHelper.GenerateToken(jwtClaims, jwtSettings);
 
         if (!tokenResult.Succeeded)
-            return Result<string>.Failure(new Error("Auth.TokenGenerationFailed", "Failed to generate authentication token"));
+            return Result.Fail<string>(new Error("Auth.TokenGenerationFailed", "Failed to generate authentication token"));
 
-        return Result<string>.Success(tokenResult.Data!);
+        return Result.Ok(tokenResult.Data!);
     }
 
     public async Task<Result<string>> LoginAsync(string email, string password)
@@ -56,7 +56,7 @@ public class ECommerceAuthService(
         var customer = customers.FirstOrDefault();
 
         if (customer == null || !EncryptionHelper.VerifyPassword(password, customer.PasswordHash))
-            return Result<string>.Failure(new Error("Auth.InvalidCredentials", "Invalid email or password"));
+            return Result.Fail<string>(new Error("Auth.InvalidCredentials", "Invalid email or password"));
 
         var jwtClaims = new JwtClaims
         {
@@ -67,9 +67,9 @@ public class ECommerceAuthService(
         var tokenResult = JwtHelper.GenerateToken(jwtClaims, jwtSettings);
 
         if (!tokenResult.Succeeded)
-            return Result<string>.Failure(new Error("Auth.TokenGenerationFailed", "Failed to generate authentication token"));
+            return Result.Fail<string>(new Error("Auth.TokenGenerationFailed", "Failed to generate authentication token"));
 
-        return Result<string>.Success(tokenResult.Data!);
+        return Result.Ok(tokenResult.Data!);
     }
 }
 

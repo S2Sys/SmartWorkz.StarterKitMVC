@@ -2,6 +2,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using SmartWorkz.Core;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Application.Mapping;
 using SmartWorkz.Sample.ECommerce.Application.Services;
 using SmartWorkz.Sample.ECommerce.Application.Validators;
@@ -37,7 +38,7 @@ public static class ECommerceServiceExtensions
         services.AddSingleton<InMemoryEventPublisher>();
 
         // Mapper registration with all profiles
-        services.AddSingleton<IMapper>(sp => {
+        services.AddSingleton<SmartWorkz.Shared.IMapper>(sp => {
             var mapper = new SimpleMapper();
             mapper.RegisterProfile<Category, CategoryDto>(new CategoryToCategoryDtoProfile());
             mapper.RegisterProfile<Product, ProductDto>(new ProductToProductDtoProfile());
