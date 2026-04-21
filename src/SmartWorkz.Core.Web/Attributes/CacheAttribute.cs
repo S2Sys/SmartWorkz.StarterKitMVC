@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace SmartWorkz.Core.Web.Attributes;
+namespace SmartWorkz.Web;
 
 /// <summary>Specifies response caching for MVC action methods and controllers.</summary>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Web.TagHelpers.Forms;
+namespace SmartWorkz.Web;
 
 using Microsoft.AspNetCore.Razor.TagHelpers;
 

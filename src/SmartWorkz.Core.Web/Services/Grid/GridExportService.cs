@@ -1,8 +1,8 @@
 using System.Reflection;
 using System.Text;
-using SmartWorkz.Core.Shared.Grid;
+using SmartWorkz.Shared.Grid;
 
-namespace SmartWorkz.Core.Web.Services.Grid;
+namespace SmartWorkz.Web;
 
 /// <summary>
 /// Service for exporting grid data to various formats (CSV, Excel).

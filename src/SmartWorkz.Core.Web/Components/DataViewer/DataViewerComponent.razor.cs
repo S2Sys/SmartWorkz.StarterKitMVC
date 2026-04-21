@@ -1,11 +1,8 @@
 using Microsoft.AspNetCore.Components;
-using SmartWorkz.Core.Shared.Grid;
-using SmartWorkz.Core.Web.Components.DataContext;
-using SmartWorkz.Core.Web.Components.Grid;
-using SmartWorkz.Core.Web.Components.ListView;
-using SmartWorkz.Core.Web.Services.DataView;
+using SmartWorkz.Shared.Grid;
+using SmartWorkz.Web;
 
-namespace SmartWorkz.Core.Web.Components.DataViewer;
+namespace SmartWorkz.Web;
 
 public partial class DataViewerComponent<T> : ComponentBase where T : class
 {

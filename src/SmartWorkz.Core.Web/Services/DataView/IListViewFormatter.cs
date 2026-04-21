@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Web.Services.DataView;
+namespace SmartWorkz.Web;
 
 /// <summary>
 /// Formats data for List/Card view display (dates, currency, text truncation, etc).

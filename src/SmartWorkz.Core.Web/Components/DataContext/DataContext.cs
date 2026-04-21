@@ -1,9 +1,9 @@
-using SmartWorkz.Core.Shared.Grid;
-using SmartWorkz.Core.Shared.Pagination;
-using SmartWorkz.Core.Web.Services.Grid;
+using SmartWorkz.Shared.Grid;
+using SmartWorkz.Shared.Pagination;
+using SmartWorkz.Web;
 using System.Reflection;
 
-namespace SmartWorkz.Core.Web.Components.DataContext;
+namespace SmartWorkz.Web;
 
 public class DataContext<T> : IDataContext<T> where T : class
 {

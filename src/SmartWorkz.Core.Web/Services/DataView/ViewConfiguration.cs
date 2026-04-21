@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Web.Services.DataView;
+namespace SmartWorkz.Web;
 
 /// <summary>
 /// Stores view-specific configuration (visible columns, item layout, formatting rules).

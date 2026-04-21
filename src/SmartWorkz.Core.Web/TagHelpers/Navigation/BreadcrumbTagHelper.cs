@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace SmartWorkz.Core.Web.TagHelpers.Navigation;
+namespace SmartWorkz.Web;
 
 [HtmlTargetElement("breadcrumb")]
 public class BreadcrumbTagHelper : TagHelper

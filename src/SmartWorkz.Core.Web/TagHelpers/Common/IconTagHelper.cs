@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using SmartWorkz.Core.Web.Services.Components;
+using SmartWorkz.Web;
 
-namespace SmartWorkz.Core.Web.TagHelpers.Common;
+namespace SmartWorkz.Web;
 
 [HtmlTargetElement("icon", Attributes = nameof(Name))]
 public class IconTagHelper : TagHelper

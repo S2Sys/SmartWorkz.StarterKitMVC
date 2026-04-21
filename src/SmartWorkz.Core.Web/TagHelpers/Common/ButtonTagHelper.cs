@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace SmartWorkz.Core.Web.TagHelpers.Common;
+namespace SmartWorkz.Web;
 
 [HtmlTargetElement("button", Attributes = nameof(Variant))]
 [HtmlTargetElement("a", Attributes = nameof(Variant))]

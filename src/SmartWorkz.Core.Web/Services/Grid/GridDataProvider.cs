@@ -1,10 +1,10 @@
 using System.Linq.Expressions;
 using System.Text.Json;
-using SmartWorkz.Core.Shared.Grid;
-using SmartWorkz.Core.Shared.Results;
-using SmartWorkz.Core.Shared.Pagination;
+using SmartWorkz.Shared.Grid;
+using SmartWorkz.Shared.Results;
+using SmartWorkz.Shared.Pagination;
 
-namespace SmartWorkz.Core.Web.Services.Grid;
+namespace SmartWorkz.Web;
 
 /// <summary>
 /// Web-specific implementation of grid data fetching via HTTP API or in-memory sources.

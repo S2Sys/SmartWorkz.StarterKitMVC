@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using SmartWorkz.Core.Web.Services.Components;
+using SmartWorkz.Web;
 
-namespace SmartWorkz.Core.Web.TagHelpers.Forms;
+namespace SmartWorkz.Web;
 
 /// <summary>
 /// TagHelper that wraps form controls with Bootstrap form-group styling, label, and help text support.

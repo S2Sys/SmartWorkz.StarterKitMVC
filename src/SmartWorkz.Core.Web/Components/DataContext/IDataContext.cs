@@ -1,6 +1,6 @@
-using SmartWorkz.Core.Shared.Grid;
+using SmartWorkz.Shared.Grid;
 
-namespace SmartWorkz.Core.Web.Components.DataContext;
+namespace SmartWorkz.Web;
 
 /// <summary>
 /// Provides unified state management for multi-view data components (Grid, List, etc).

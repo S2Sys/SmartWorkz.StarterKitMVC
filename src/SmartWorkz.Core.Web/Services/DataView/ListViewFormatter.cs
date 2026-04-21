@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Web.Services.DataView;
+namespace SmartWorkz.Web;
 
 public class ListViewFormatter : IListViewFormatter
 {

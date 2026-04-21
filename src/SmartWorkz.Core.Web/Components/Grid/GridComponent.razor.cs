@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Components;
-using SmartWorkz.Core.Shared.Grid;
-using SmartWorkz.Core.Web.Components.DataContext;
-using SmartWorkz.Core.Web.Services.Grid;
+using SmartWorkz.Shared.Grid;
+using SmartWorkz.Web;
 
-namespace SmartWorkz.Core.Web.Components.Grid;
+namespace SmartWorkz.Web;
 
 public partial class GridComponent<T> : ComponentBase, IAsyncDisposable where T : class
 {

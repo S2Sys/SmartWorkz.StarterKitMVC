@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Web.Services.Components;
+namespace SmartWorkz.Web;
 
 /// <summary>
 /// Enum representing common Bootstrap icons used throughout the application.

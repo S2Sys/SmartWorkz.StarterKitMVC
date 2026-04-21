@@ -1,8 +1,7 @@
-namespace SmartWorkz.Core.Web.Services;
+namespace SmartWorkz.Web;
 
 using Microsoft.Extensions.DependencyInjection;
-using SmartWorkz.Core.Web.Services.Components;
-using SmartWorkz.Core.Web.Services.DataView;
+using SmartWorkz.Web;
 
 /// <summary>
 /// Extension methods for registering SmartWorkz.Core.Web services with dependency injection.
