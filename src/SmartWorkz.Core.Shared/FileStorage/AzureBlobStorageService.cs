@@ -2,7 +2,6 @@ namespace SmartWorkz.Shared;
 
 using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
-using SmartWorkz.Core.Services.FileStorage;
 using Microsoft.Extensions.Logging;
 
 public class AzureBlobStorageService : IFileStorageService

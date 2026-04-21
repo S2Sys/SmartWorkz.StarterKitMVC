@@ -2,7 +2,6 @@ using System.Text.Json;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
-using SmartWorkz.Core.Shared.Events;
 
 namespace SmartWorkz.Shared;
 
@@ -35,7 +34,7 @@ public class SqlEventStore : IEventStore
     /// </summary>
     public async Task AppendEventsAsync(
         string aggregateId,
-        IEnumerable<SmartWorkz.Core.Shared.Events.IDomainEvent> events,
+        IEnumerable<IDomainEvent> events,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(aggregateId))
@@ -116,7 +115,7 @@ public class SqlEventStore : IEventStore
     /// <summary>
     /// Retrieves all events for an aggregate in chronological order.
     /// </summary>
-    public async Task<IEnumerable<SmartWorkz.Core.Shared.Events.IDomainEvent>> GetEventsAsync(
+    public async Task<IEnumerable<IDomainEvent>> GetEventsAsync(
         string aggregateId,
         CancellationToken cancellationToken = default)
     {
@@ -161,7 +160,7 @@ public class SqlEventStore : IEventStore
     /// <summary>
     /// Retrieves events for an aggregate after a specific version.
     /// </summary>
-    public async Task<IEnumerable<SmartWorkz.Core.Shared.Events.IDomainEvent>> GetEventsSinceAsync(
+    public async Task<IEnumerable<IDomainEvent>> GetEventsSinceAsync(
         string aggregateId,
         int version,
         CancellationToken cancellationToken = default)
@@ -445,9 +444,9 @@ public class SqlEventStore : IEventStore
     }
 
     /// <summary>
-    /// Deserializes a stored event record back to SmartWorkz.Core.Shared.Events.IDomainEvent.
+    /// Deserializes a stored event record back to IDomainEvent.
     /// </summary>
-    private SmartWorkz.Core.Shared.Events.IDomainEvent DeserializeEvent(EventRecord record)
+    private IDomainEvent DeserializeEvent(EventRecord record)
     {
         try
         {
@@ -459,13 +458,13 @@ public class SqlEventStore : IEventStore
             }
 
             var @event = JsonSerializer.Deserialize(record.EventData, eventType);
-            if (@event is SmartWorkz.Core.Shared.Events.IDomainEvent domainEvent)
+            if (@event is IDomainEvent domainEvent)
             {
                 return domainEvent;
             }
 
             throw new InvalidOperationException(
-                $"Deserialized type '{eventType.Name}' does not implement SmartWorkz.Core.Shared.Events.IDomainEvent.");
+                $"Deserialized type '{eventType.Name}' does not implement IDomainEvent.");
         }
         catch (JsonException ex)
         {

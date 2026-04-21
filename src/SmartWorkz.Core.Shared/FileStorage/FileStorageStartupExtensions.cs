@@ -3,7 +3,6 @@ namespace SmartWorkz.Shared;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SmartWorkz.Core.Services.FileStorage;
 
 public static class FileStorageStartupExtensions
 {

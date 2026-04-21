@@ -4,7 +4,6 @@ using System.Data;
 using System.Text.Json;
 using Dapper;
 using Microsoft.Extensions.Logging;
-using SmartWorkz.Core;
 
 /// <summary>
 /// SQL Server implementation of IAuditTrail for immutable audit log persistence.

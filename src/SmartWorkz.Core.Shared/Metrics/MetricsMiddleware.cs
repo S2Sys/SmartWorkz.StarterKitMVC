@@ -1,7 +1,6 @@
 namespace SmartWorkz.Shared;
 
 using System.Diagnostics;
-using SmartWorkz.Core.Shared.Guards;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 

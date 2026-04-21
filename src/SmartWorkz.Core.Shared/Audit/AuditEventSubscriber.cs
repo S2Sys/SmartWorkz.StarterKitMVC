@@ -2,7 +2,6 @@ namespace SmartWorkz.Shared;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SmartWorkz.Core.Shared.Events;
 
 /// <summary>
 /// Subscribes to domain events and records them in the audit trail.

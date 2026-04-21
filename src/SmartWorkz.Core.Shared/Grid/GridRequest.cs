@@ -1,4 +1,3 @@
-using SmartWorkz.Core.Shared.Pagination;
 
 namespace SmartWorkz.Shared;
 

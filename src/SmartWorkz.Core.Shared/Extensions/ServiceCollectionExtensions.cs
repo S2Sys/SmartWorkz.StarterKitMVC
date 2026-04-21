@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SmartWorkz.Core.Shared.Events;
-using SmartWorkz.Core.Shared.Templates;
 
 namespace SmartWorkz.Shared;
 

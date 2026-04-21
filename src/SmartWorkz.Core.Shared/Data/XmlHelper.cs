@@ -6,7 +6,6 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using SmartWorkz.Core.Shared.Results;
 
 /// <summary>
 /// Provides static methods for XML serialization, deserialization, and XPath queries.

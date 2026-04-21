@@ -1,6 +1,5 @@
 namespace SmartWorkz.Shared;
 
-using SmartWorkz.Core.Services.BackgroundJobs;
 using Hangfire;
 using Hangfire.Dashboard;
 using Hangfire.SqlServer;

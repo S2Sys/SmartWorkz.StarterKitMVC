@@ -1,7 +1,6 @@
 namespace SmartWorkz.Shared;
 
 using System.Diagnostics.Metrics;
-using SmartWorkz.Core.Shared.Guards;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
