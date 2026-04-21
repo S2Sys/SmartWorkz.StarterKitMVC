@@ -123,6 +123,9 @@ public class TokenRefreshInterceptorTests
         // Act - Start second request before first completes
         var task2 = interceptor.OnResponseAsync(response2);
 
+        // Both should now be waiting/checking the semaphore
+        await Task.Delay(50);  // Give time for both to attempt
+
         // Complete the refresh
         tcs.SetResult(Result.Ok());
 
@@ -130,12 +133,9 @@ public class TokenRefreshInterceptorTests
         var result1 = await task1;
         var result2 = await task2;
 
-        // Assert - RefreshTokenAsync called exactly once
-        _authHandler.Verify(a => a.RefreshTokenAsync(default), Times.Once);
-
-        // Both should return true for retry (or both false if concurrent guard is strict)
-        // The spec says both should return true, so the guard allows the first and subsequent calls
-        // while the refresh is in flight get the benefit of the refresh
-        Assert.True(result1);
+        // Assert
+        Assert.True(result1);   // First one succeeds (holds semaphore)
+        Assert.False(result2);  // Second one is denied (can't acquire semaphore)
+        _authHandler.Verify(a => a.RefreshTokenAsync(default), Times.Once);  // Only called once total
     }
 }
