@@ -74,29 +74,9 @@ public partial class BiometricService
     {
         ct.ThrowIfCancellationRequested();
 
-        try
-        {
-            var isAvailable = await IsAvailableAsyncPlatform(ct);
-            if (!isAvailable)
-            {
-                throw new InvalidOperationException("Biometric authentication not available");
-            }
-
-            // For modern Android versions, BiometricPrompt from AndroidX should be used
-            // This is a simplified implementation that returns success when available
-            // In production, use AndroidX.Biometric.BiometricPrompt with proper UI
-            _logger.LogDebug("Biometric authentication initiated for Android");
-
-            // Simulate successful authentication for now
-            // Production code should integrate with AndroidX.Biometric.BiometricPrompt
-            await Task.Delay(500, ct);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogDebug($"Biometric authentication error: {ex.Message}");
-            throw;
-        }
+        // Android biometric prompt not yet implemented
+        // TODO: Integrate with AndroidX.Biometric.BiometricPrompt for production
+        throw new NotImplementedException("Android biometric authentication not yet implemented. Use biometric context API instead.");
     }
 }
 #endif

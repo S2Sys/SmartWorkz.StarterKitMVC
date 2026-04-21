@@ -86,6 +86,11 @@ public class BiometricService : IBiometricService
                 ? Result.Ok(true)
                 : Result.Fail<bool>(new Error("BIOMETRIC.FAILED", "Biometric authentication failed"));
         }
+        catch (NotImplementedException ex)
+        {
+            _logger.LogWarning($"Biometric authentication not implemented: {ex.Message}");
+            return Result.Fail<bool>(new Error("BIOMETRIC.UNAVAILABLE", ex.Message));
+        }
         catch (Exception ex)
         {
             _logger.LogError("Biometric authentication error", ex);

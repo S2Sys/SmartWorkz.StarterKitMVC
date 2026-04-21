@@ -6,12 +6,12 @@ using SQLite;
 
 public class ErrorHandler : IErrorHandler
 {
-    private readonly IMobileService _mobileService;
+    private readonly IMobileContext _mobileContext;
     private readonly ILogger _logger;
 
-    public ErrorHandler(IMobileService mobileService, ILogger logger)
+    public ErrorHandler(IMobileContext mobileContext, ILogger logger)
     {
-        _mobileService = Guard.NotNull(mobileService, nameof(mobileService));
+        _mobileContext = Guard.NotNull(mobileContext, nameof(mobileContext));
         _logger = Guard.NotNull(logger, nameof(logger));
     }
 
@@ -90,8 +90,8 @@ public class ErrorHandler : IErrorHandler
             Code = error.Code,
             Message = error.Message,
             StackTrace = ex.StackTrace,
-            Platform = _mobileService.GetPlatform(),
-            DeviceId = _mobileService.GetDeviceId(),
+            Platform = _mobileContext.Platform,
+            DeviceId = _mobileContext.DeviceId,
             OccurredAt = DateTime.UtcNow,
             Context = new Dictionary<string, object>
             {
