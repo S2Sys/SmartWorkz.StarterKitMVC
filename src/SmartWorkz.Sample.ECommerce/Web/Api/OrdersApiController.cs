@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Application.Services;
 
@@ -16,8 +17,8 @@ public class OrdersApiController : ControllerBase
 
     public OrdersApiController(OrderService orders, CartService cart)
     {
-        _orders = orders;
-        _cart   = cart;
+        _orders = Guard.NotNull(orders, nameof(orders));
+        _cart   = Guard.NotNull(cart, nameof(cart));
     }
 
     [HttpGet]
@@ -34,9 +35,11 @@ public class OrdersApiController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PlaceOrder([FromBody] CheckoutDto checkout)
     {
+        Guard.NotNull(checkout, nameof(checkout));
         var customerIdStr = User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(customerIdStr, out var customerId)) return Unauthorized();
 
+        // Session access is inherently synchronous; no async variant available
         var cart = _cart.GetCart();
         var result = await _orders.PlaceOrderAsync(customerId, cart, checkout);
         if (!result.Succeeded) return BadRequest(result.Error?.Message);

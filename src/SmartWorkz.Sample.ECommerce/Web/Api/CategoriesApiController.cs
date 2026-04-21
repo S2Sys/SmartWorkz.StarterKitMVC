@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Application.Services;
 
 namespace SmartWorkz.Sample.ECommerce.Web.Api;
@@ -11,7 +12,7 @@ public class CategoriesApiController : ControllerBase
 
     public CategoriesApiController(CatalogSearchService catalog)
     {
-        _catalog = catalog;
+        _catalog = Guard.NotNull(catalog, nameof(catalog));
     }
 
     [HttpGet]

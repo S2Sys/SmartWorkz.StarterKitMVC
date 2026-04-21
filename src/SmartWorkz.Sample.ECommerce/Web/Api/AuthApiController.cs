@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Application.Services;
 
@@ -12,7 +13,7 @@ public class AuthApiController : ControllerBase
 
     public AuthApiController(ECommerceAuthService auth)
     {
-        _auth = auth;
+        _auth = Guard.NotNull(auth, nameof(auth));
     }
 
     [HttpPost("login")]

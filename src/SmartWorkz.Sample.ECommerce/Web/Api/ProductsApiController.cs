@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Application.Services;
 
 namespace SmartWorkz.Sample.ECommerce.Web.Api;
@@ -11,16 +12,15 @@ public class ProductsApiController : ControllerBase
 
     public ProductsApiController(ProductService products)
     {
-        _products = products;
+        _products = Guard.NotNull(products, nameof(products));
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int categoryId = 0)
+    public async Task<IActionResult> GetAll()
     {
         var result = await _products.GetAllAsync();
         if (!result.Succeeded) return BadRequest(result.Error?.Message);
-        var items = result.Data ?? Enumerable.Empty<object>();
-        return Ok(items);
+        return Ok(result.Data);
     }
 
     [HttpGet("{id:int}")]
