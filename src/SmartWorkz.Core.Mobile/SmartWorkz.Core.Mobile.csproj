@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net9.0-ios;net9.0-android;net9.0-maccatalyst;windows10.0.19041.0</TargetFrameworks>
     <UseMaui>true</UseMaui>
+    <SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -9,7 +10,6 @@
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" Condition="'$(TargetFramework)' != 'windows10.0.19041.0'" />
     <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.10" Condition="'$(TargetFramework)' != 'windows10.0.19041.0'" />
     <PackageReference Include="System.Reactive" Version="6.0.1" Condition="'$(TargetFramework)' != 'windows10.0.19041.0'" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../SmartWorkz.Core.Shared/SmartWorkz.Core.Shared.csproj" Condition="'$(TargetFramework)' != 'windows10.0.19041.0'" />
