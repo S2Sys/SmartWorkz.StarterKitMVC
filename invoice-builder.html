@@ -9,8 +9,8 @@
 body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; padding: 20px; }
 .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
 .header { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d9e75 100%); color: white; padding: 40px 20px; margin: -20px -20px 30px -20px; display: flex; align-items: center; gap: 30px; min-height: 150px; border-radius: 0; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15); }
-.header-logo { width: 130px; height: 90px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 10px; flex-shrink: 0; }
-.header-logo svg { width: 100%; height: 100%; }
+.header-logo { width: 140px; height: 90px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; flex-shrink: 0; }
+.header-logo img { width: 100%; height: 100%; object-fit: contain; }
 .header-content { flex: 1; }
 .header-content h1 { margin: 0; font-size: 38px; font-weight: 900; letter-spacing: -1px; }
 .header-content p { margin: 8px 0 0 0; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; opacity: 0.95; }
@@ -42,16 +42,7 @@ button.secondary:hover { background: #4b5563; }
     <div class="container">
         <div class="header">
             <div class="header-logo">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#fff;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#e0e7ff;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M 30 20 Q 50 15 60 30 Q 65 40 50 45 Q 35 50 40 65 Q 45 75 60 80 Q 70 85 75 75"
-                          fill="none" stroke="url(#logoGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <img src="https://smartworkz.in/assets/img/logo_new.png" alt="SmartWorkz Logo" style="width: 100%; height: auto; object-fit: contain;">
             </div>
             <div class="header-content">
                 <h1>SMARTWORKZ TECHNOLOGIES</h1>
@@ -231,9 +222,11 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total) {
         .toolbar button { padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
         .toolbar button.secondary { background: white; color: #2563eb; border: 1px solid #2563eb; }
         .invoice { width: 210mm; background: white; margin: 0 auto; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .header { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d9e75 100%); color: white; padding: 40px 30px; margin: 0 0 30px 0; }
-        .header h1 { margin: 0; font-size: 42px; font-weight: 900; letter-spacing: -1px; }
-        .header p { margin: 8px 0 0 0; font-size: 15px; font-weight: 500; }
+        .header { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d9e75 100%); color: white; padding: 40px 30px; margin: 0 0 30px 0; display: flex; align-items: center; gap: 20px; }
+        .header-logo { width: 100px; height: 80px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); border-radius: 6px; padding: 8px; flex-shrink: 0; }
+        .header-logo img { width: 100%; height: 100%; object-fit: contain; }
+        .header-content h1 { margin: 0; font-size: 42px; font-weight: 900; letter-spacing: -1px; }
+        .header-content p { margin: 8px 0 0 0; font-size: 15px; font-weight: 500; }
         .content { padding: 0 30px; }
         .invoice-info { text-align: right; margin-bottom: 25px; border-bottom: 2px solid #e5e7eb; padding-bottom: 15px; }
         .invoice-info p { margin: 4px 0; font-size: 13px; }
@@ -267,8 +260,13 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total) {
     </div>
     <div class="invoice">
         <div class="header">
-            <h1>SMARTWORKZ TECHNOLOGIES</h1>
-            <p>Software Development | Digital Marketing | Mobile Application Development</p>
+            <div class="header-logo">
+                <img src="https://smartworkz.in/assets/img/logo_new.png" alt="SmartWorkz">
+            </div>
+            <div class="header-content">
+                <h1>SMARTWORKZ TECHNOLOGIES</h1>
+                <p>Software Development | Digital Marketing | Mobile Application Development</p>
+            </div>
         </div>
         <div class="content">
             <div class="invoice-info">
