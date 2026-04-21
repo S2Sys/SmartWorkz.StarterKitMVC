@@ -2,7 +2,6 @@ namespace SmartWorkz.Core.Shared.Sagas;
 
 using Microsoft.Extensions.Logging;
 using SmartWorkz.Core.Shared.Events;
-using SmartWorkz.Core.Sagas;
 
 /// <summary>
 /// Orchestrates the execution of sagas, managing step sequencing, error handling,
@@ -64,6 +63,8 @@ public class SagaOrchestrator
 
         try
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             // Build the saga definition
             await sagaDefinition.BuildAsync();
 
@@ -144,7 +145,8 @@ public class SagaOrchestrator
             return;
         }
 
-        var completedSteps = new List<Func<IDomainEvent, TSagaState, Task<StepResult>>>();
+        // Create list to track step results WITH their compensation handlers
+        var executedSteps = new List<(int StepIndex, StepResult Result, Func<Task>? CompensationHandler)>();
 
         try
         {
@@ -188,17 +190,17 @@ public class SagaOrchestrator
                             stepIndex,
                             result.FailureReason);
 
+                        var failureException = new InvalidOperationException(result.FailureReason);
+
                         // Execute compensation handlers for completed steps in reverse order
-                        await CompensateCompletedStepsAsync(completedSteps, state, @event,
-                            new InvalidOperationException(result.FailureReason));
+                        await CompensateExecutedStepsAsync(executedSteps, state, failureException);
 
                         // Execute the step's compensation handler if it has one
                         if (result.CompensationHandler != null)
                         {
                             try
                             {
-                                await result.CompensationHandler(state,
-                                    new InvalidOperationException(result.FailureReason));
+                                await result.CompensationHandler(state, failureException);
                             }
                             catch (Exception ex)
                             {
@@ -210,9 +212,7 @@ public class SagaOrchestrator
                             }
                         }
 
-                        throw new InvalidOperationException(
-                            $"Saga step {stepIndex} failed: {result.FailureReason}",
-                            null);
+                        throw failureException;
                     }
 
                     _logger.LogInformation(
@@ -220,8 +220,12 @@ public class SagaOrchestrator
                         state.Id,
                         stepIndex);
 
-                    // Track completed step for potential rollback
-                    completedSteps.Add(stepDelegate as Func<IDomainEvent, TSagaState, Task<StepResult>>);
+                    // Store step result and its compensation handler for potential rollback
+                    var compensationHandler = result.CompensationHandler != null
+                        ? (() => result.CompensationHandler(state, new InvalidOperationException("Compensation triggered")))
+                        : (Func<Task>?)null;
+
+                    executedSteps.Add((stepIndex, result, compensationHandler));
                 }
                 catch (Exception stepEx)
                 {
@@ -232,7 +236,7 @@ public class SagaOrchestrator
                         stepIndex);
 
                     // Execute compensation handlers for completed steps in reverse order
-                    await CompensateCompletedStepsAsync(completedSteps, state, @event, stepEx);
+                    await CompensateExecutedStepsAsync(executedSteps, state, stepEx);
 
                     throw;
                 }
@@ -249,65 +253,48 @@ public class SagaOrchestrator
     }
 
     /// <summary>
-    /// Executes compensation handlers for all completed steps in reverse order.
+    /// Executes compensation handlers for all executed steps in reverse order.
+    /// Uses stored compensation handlers to avoid re-executing steps.
     /// </summary>
-    private async Task CompensateCompletedStepsAsync<TSagaState>(
-        List<Func<IDomainEvent, TSagaState, Task<StepResult>>> completedSteps,
+    private async Task CompensateExecutedStepsAsync<TSagaState>(
+        List<(int StepIndex, StepResult Result, Func<Task>? CompensationHandler)> executedSteps,
         TSagaState state,
-        IDomainEvent @event,
         Exception failureException)
         where TSagaState : SagaState
     {
         _logger.LogInformation(
-            "Starting compensation for {CompletedStepCount} completed steps. SagaId={SagaId}",
-            completedSteps.Count,
+            "Starting compensation for {ExecutedStepCount} executed steps. SagaId={SagaId}",
+            executedSteps.Count,
             state.Id);
 
         // Execute compensation in reverse order (LIFO - Last In, First Out)
-        for (int i = completedSteps.Count - 1; i >= 0; i--)
+        foreach (var executedStep in executedSteps.AsEnumerable().Reverse())
         {
             try
             {
-                var step = completedSteps[i];
-                if (step != null)
+                if (executedStep.CompensationHandler != null)
                 {
-                    // Execute the step again to get its compensation handler
                     _logger.LogInformation(
-                        "Compensating step {StepIndex}. SagaId={SagaId}",
-                        i + 1,
+                        "Executing compensation for step {StepIndex}. SagaId={SagaId}",
+                        executedStep.StepIndex,
                         state.Id);
 
-                    var resultTask = step(@event, state);
-                    var result = await resultTask;
+                    await executedStep.CompensationHandler();
 
-                    if (result.CompensationHandler != null)
-                    {
-                        try
-                        {
-                            await result.CompensationHandler(state, failureException);
-                            _logger.LogInformation(
-                                "Step {StepIndex} compensation completed successfully. SagaId={SagaId}",
-                                i + 1,
-                                state.Id);
-                        }
-                        catch (Exception compensationEx)
-                        {
-                            _logger.LogError(
-                                compensationEx,
-                                "Compensation handler failed for step {StepIndex}. SagaId={SagaId}",
-                                i + 1,
-                                state.Id);
-                        }
-                    }
+                    _logger.LogInformation(
+                        "Compensation for step {StepIndex} completed successfully. SagaId={SagaId}",
+                        executedStep.StepIndex,
+                        state.Id);
                 }
             }
-            catch (Exception ex)
+            catch (Exception compensationEx)
             {
                 _logger.LogError(
-                    ex,
-                    "Error during compensation of step {StepIndex}. SagaId={SagaId}",
-                    i + 1,
+                    compensationEx,
+                    "Compensation for step {StepIndex} failed. SagaId={SagaId}",
+                    executedStep.StepIndex,
                     state.Id);
+                // Log but continue with remaining compensations
             }
         }
     }
@@ -319,7 +306,7 @@ public class SagaOrchestrator
         ISagaDefinition<TSagaState> sagaDefinition,
         TSagaState state,
         Exception exception)
-        where TSagaState : class, SagaState
+        where TSagaState : SagaState
     {
         try
         {
