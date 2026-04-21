@@ -203,9 +203,16 @@ function initTable() {
 }
 
 function attachEventHandlers() {
-    document.querySelectorAll('.qty, .rate').forEach(input => {
-        input.addEventListener('input', () => debounceCalc());
-        input.addEventListener('change', () => calc());
+    const tbody = document.getElementById('services');
+    tbody.addEventListener('input', (e) => {
+        if (e.target.classList.contains('qty') || e.target.classList.contains('rate')) {
+            debounceCalc();
+        }
+    });
+    tbody.addEventListener('change', (e) => {
+        if (e.target.classList.contains('qty') || e.target.classList.contains('rate')) {
+            calc();
+        }
     });
 }
 
