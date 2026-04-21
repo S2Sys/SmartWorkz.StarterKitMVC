@@ -8,6 +8,9 @@ using Microsoft.Extensions.Logging;
 /// <summary>
 /// ASP.NET Core middleware for automatic HTTP request/response metrics collection.
 /// Records operation duration, status, and errors for all HTTP requests.
+///
+/// Usage:
+///     app.UseMiddleware&lt;MetricsMiddleware&gt;();
 /// </summary>
 public class MetricsMiddleware
 {
@@ -43,22 +46,5 @@ public class MetricsMiddleware
             _metricsCollector.RecordError(operationName, ex);
             throw;
         }
-    }
-}
-
-/// <summary>
-/// Extension methods for registering MetricsMiddleware in the application pipeline.
-/// </summary>
-public static class MetricsMiddlewareExtensions
-{
-    /// <summary>
-    /// Adds MetricsMiddleware to the application pipeline.
-    /// </summary>
-    /// <param name="app">The application builder.</param>
-    /// <returns>The application builder for method chaining.</returns>
-    public static IApplicationBuilder UseApplicationMetrics(this IApplicationBuilder app)
-    {
-        Guard.NotNull(app, nameof(app));
-        return app.UseMiddleware<MetricsMiddleware>();
     }
 }
