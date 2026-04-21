@@ -1,4 +1,4 @@
-﻿namespace SmartWorkz.Core;
+namespace SmartWorkz.Core;
 
 /// <summary>
 /// Marks an entity that belongs to a tenant.
@@ -6,5 +6,5 @@
 /// </summary>
 public interface ITenantScoped
 {
-    string? TenantId { get; set; }
+    int? TenantId { get; set; }
 }

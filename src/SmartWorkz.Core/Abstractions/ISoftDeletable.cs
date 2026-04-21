@@ -1,4 +1,4 @@
-﻿namespace SmartWorkz.Core;
+namespace SmartWorkz.Core;
 
 /// <summary>
 /// Marks an entity that supports soft deletion.
@@ -8,5 +8,5 @@ public interface ISoftDeletable
 {
     bool IsDeleted { get; set; }
     DateTime? DeletedAt { get; set; }
-    string? DeletedBy { get; set; }
+    int? DeletedBy { get; set; }
 }

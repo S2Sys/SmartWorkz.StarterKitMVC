@@ -1,4 +1,4 @@
-﻿namespace SmartWorkz.Core;
+namespace SmartWorkz.Core;
 
 /// <summary>
 /// Generic base class for all auditable, soft-deletable, tenant-scoped entities.
@@ -19,15 +19,15 @@ public abstract class AuditableEntity<TId> : IAuditable, ISoftDeletable, ITenant
 
     // --- IAuditable ---
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public string? CreatedBy { get; set; }
+    public int? CreatedBy { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public string? UpdatedBy { get; set; }
+    public int? UpdatedBy { get; set; }
 
     // --- ISoftDeletable ---
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
-    public string? DeletedBy { get; set; }
+    public int? DeletedBy { get; set; }
 
     // --- ITenantScoped ---
-    public string? TenantId { get; set; }
+    public int? TenantId { get; set; }
 }
