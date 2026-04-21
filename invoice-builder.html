@@ -193,14 +193,10 @@ function initTable() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td><input type="text" class="desc"></td>
-            <td><input type="number" class="qty" value="1"></td>
-            <td><input type="number" class="rate" value="0"></td>
+            <td><input type="number" class="qty" value="1" onchange="calc()" oninput="debounceCalc()"></td>
+            <td><input type="number" class="rate" value="0" onchange="calc()" oninput="debounceCalc()"></td>
             <td><input type="number" class="amount" readonly></td>
         `;
-        const qtyInput = tr.querySelector('.qty');
-        const rateInput = tr.querySelector('.rate');
-        qtyInput.addEventListener('input', debounceCalc);
-        rateInput.addEventListener('input', debounceCalc);
         tbody.appendChild(tr);
     }
 }
