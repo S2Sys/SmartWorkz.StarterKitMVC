@@ -1,6 +1,6 @@
 using SmartWorkz.Core.Shared.Pagination;
 
-namespace SmartWorkz.Core.Shared.Grid;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Response from a grid data request, including paged data, column metadata, and filter options.

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Resilience;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Defines the contract for a circuit breaker that implements the state machine pattern

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Caching;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Configuration options for cache operations.

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Email;
+namespace SmartWorkz.Shared;
 
 public interface IEmailSender
 {

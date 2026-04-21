@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.File;
+namespace SmartWorkz.Shared;
 
 public static class FileHelper
 {

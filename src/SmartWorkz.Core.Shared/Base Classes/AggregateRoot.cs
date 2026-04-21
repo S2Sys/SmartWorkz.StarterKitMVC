@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Base_Classes;
+namespace SmartWorkz.Shared;
 
 using SmartWorkz.Core.Shared.Primitives;
 

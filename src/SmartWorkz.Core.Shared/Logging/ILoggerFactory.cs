@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Logging;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Factory for creating logger instances by category/source.

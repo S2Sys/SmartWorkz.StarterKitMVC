@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Resilience;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// A thread-safe implementation of the circuit breaker pattern for handling failing dependencies gracefully.

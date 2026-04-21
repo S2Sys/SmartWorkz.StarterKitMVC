@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.MultiTenancy;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Scoped service providing current tenant ID for multi-tenant applications.

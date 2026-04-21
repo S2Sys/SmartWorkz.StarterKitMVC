@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Mapping;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Profile for defining mapping rules between types.

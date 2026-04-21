@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Helpers;
+namespace SmartWorkz.Shared;
 
 using System.Text.Json;
 using System.Text.Json.Serialization;

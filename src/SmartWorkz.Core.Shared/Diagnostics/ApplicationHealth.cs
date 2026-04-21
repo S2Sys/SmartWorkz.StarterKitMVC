@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Diagnostics;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Represents the overall health status of the application.

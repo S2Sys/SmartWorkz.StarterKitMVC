@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.FileStorage;
+namespace SmartWorkz.Shared;
 
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.DependencyInjection;

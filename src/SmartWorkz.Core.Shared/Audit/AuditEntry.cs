@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Audit;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Immutable audit log entry for tracking entity changes and domain events.

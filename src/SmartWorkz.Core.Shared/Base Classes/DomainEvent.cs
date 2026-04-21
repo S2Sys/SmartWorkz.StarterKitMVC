@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Base_Classes;
+namespace SmartWorkz.Shared;
 
 public abstract class DomainEvent : IDomainEvent
 {

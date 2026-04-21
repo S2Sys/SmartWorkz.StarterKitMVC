@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Results;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Functional helpers for chaining Result operations.

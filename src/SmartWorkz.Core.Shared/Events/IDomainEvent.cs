@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Events;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Base interface for domain events in event-driven architecture.

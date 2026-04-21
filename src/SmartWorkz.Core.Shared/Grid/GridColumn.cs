@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Grid;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Defines a single column in a grid, including display options, sorting, filtering, and rendering hints.

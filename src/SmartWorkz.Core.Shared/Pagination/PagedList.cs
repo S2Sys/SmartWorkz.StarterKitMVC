@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Pagination;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// A page of items with metadata.

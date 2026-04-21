@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Notifications;
+namespace SmartWorkz.Shared;
 
 using FirebaseAdmin.Messaging;
 using SmartWorkz.Core.Services.Notifications;

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Caching;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// In-memory implementation of ICacheStore with TTL support and thread-safe operations.

@@ -4,7 +4,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.Core.Shared.Events;
 
-namespace SmartWorkz.Core.Shared.EventSourcing;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// SQL Server implementation of the event store using Dapper for data access.

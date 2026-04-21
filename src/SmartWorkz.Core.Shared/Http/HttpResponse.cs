@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Http;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Represents an HTTP response with status code, typed data, error information, and response headers.

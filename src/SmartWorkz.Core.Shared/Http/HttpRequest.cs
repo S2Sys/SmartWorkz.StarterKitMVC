@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Http;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Represents an HTTP request with configuration for URL, method, headers, body, timeout, and retry policy.

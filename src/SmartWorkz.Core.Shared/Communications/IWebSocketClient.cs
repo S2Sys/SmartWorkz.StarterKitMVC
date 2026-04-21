@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Communications;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Abstraction for WebSocket client operations.

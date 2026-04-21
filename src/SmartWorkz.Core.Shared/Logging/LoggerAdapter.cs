@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Logging;
+namespace SmartWorkz.Shared;
 
 public sealed class LoggerAdapter : ILogger
 {

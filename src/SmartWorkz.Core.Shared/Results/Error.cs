@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Results;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Represents a structured error with a machine-readable code and human-readable message.

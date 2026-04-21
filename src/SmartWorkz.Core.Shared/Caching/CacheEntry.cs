@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Caching;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Represents a cached entry with data, expiration time, and metadata.

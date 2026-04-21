@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace SmartWorkz.Core.Shared.Events;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// In-memory event subscriber that maintains a registry of event handlers.

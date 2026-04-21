@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Audit;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Service for recording and querying immutable audit entries.

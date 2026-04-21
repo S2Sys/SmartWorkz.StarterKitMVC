@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Webhooks;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Abstraction for managing webhook subscriptions and registrations.

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Response;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Generic API response envelope that wraps result data with metadata.

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Configuration;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Exception thrown when configuration validation fails, indicating that a required

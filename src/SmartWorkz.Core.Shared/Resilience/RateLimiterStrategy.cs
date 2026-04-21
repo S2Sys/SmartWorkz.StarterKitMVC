@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Resilience;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Specifies the strategy used by the rate limiter to control request flow.

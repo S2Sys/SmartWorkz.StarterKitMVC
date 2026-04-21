@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Constants;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Shared configuration constants used throughout SmartWorkz.Core.Shared.

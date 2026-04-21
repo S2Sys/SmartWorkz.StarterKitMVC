@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Primitives;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Marks a class as a domain entity with a typed primary key.

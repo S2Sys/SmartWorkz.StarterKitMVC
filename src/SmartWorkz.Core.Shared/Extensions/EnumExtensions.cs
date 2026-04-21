@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.ComponentModel.DataAnnotations;
 
-namespace SmartWorkz.Core.Shared.Extensions;
+namespace SmartWorkz.Shared;
 
 public static class EnumExtensions
 {

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Events;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Registers event handlers for domain events.

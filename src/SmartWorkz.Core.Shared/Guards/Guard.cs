@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Guards;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Static guard clauses for argument validation at method entry points.

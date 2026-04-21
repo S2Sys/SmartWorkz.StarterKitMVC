@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Services.FileStorage;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Interface for file storage operations supporting both local and cloud providers.

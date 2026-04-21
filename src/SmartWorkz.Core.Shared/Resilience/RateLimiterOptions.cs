@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Resilience;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Configuration options for the rate limiter.

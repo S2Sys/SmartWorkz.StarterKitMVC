@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.BackgroundJobs;
+namespace SmartWorkz.Shared;
 
 using SmartWorkz.Core.Services.BackgroundJobs;
 using Hangfire;

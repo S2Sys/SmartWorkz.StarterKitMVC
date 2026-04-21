@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Configuration;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Provides typed access to configuration values with automatic type conversion and validation.

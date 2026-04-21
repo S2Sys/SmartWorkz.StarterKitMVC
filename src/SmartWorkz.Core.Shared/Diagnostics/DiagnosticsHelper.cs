@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 
-namespace SmartWorkz.Core.Shared.Diagnostics;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Sealed helper class for system diagnostics and application health monitoring.

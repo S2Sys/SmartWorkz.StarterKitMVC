@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Data;
+namespace SmartWorkz.Shared;
 
 using System.Collections;
 using System.Reflection;

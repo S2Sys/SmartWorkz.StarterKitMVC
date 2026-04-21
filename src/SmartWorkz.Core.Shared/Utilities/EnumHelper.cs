@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Utilities;
+namespace SmartWorkz.Shared;
 
 using System.ComponentModel;
 using System.Reflection;

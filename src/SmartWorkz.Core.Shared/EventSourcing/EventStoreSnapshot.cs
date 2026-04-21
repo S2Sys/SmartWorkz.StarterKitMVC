@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.EventSourcing;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Represents a snapshot of an aggregate's state at a specific version.

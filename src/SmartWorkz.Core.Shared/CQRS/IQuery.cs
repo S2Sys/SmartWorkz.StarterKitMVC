@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.CQRS;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Marker interface for query objects that return a result without modifying state.

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Validation;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Combines multiple validators into a single validator.

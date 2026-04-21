@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Logging;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Represents an immutable audit record with all relevant audit information.

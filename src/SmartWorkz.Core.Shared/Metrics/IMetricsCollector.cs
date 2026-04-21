@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Metrics;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Abstraction for collecting application metrics and performance data.

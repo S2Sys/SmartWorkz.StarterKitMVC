@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Base_Classes;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Abstract base class for type conversion between domain objects and DTOs.

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Diagnostics;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Defines a correlation context for distributed request tracing across systems.

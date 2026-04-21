@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Data;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Configuration options for XML serialization, deserialization, and query operations.

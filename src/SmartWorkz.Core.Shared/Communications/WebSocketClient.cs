@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Communications;
+namespace SmartWorkz.Shared;
 
 using System.Net.WebSockets;
 using System.Text;

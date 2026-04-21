@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Resilience;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Defines the state of a circuit breaker in the state machine pattern.

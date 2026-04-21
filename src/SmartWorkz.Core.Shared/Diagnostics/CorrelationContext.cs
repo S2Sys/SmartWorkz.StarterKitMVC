@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Diagnostics;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// A sealed implementation of <see cref="ICorrelationContext"/> for distributed request tracing.

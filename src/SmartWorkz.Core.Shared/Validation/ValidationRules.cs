@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Validation;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Pre-built validation rules for common scenarios.

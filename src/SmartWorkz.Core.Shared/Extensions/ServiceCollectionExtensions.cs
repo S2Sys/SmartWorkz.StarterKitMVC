@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SmartWorkz.Core.Shared.Events;
 using SmartWorkz.Core.Shared.Templates;
 
-namespace SmartWorkz.Core.Shared.Extensions;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Specifies the publisher type for event publishing.

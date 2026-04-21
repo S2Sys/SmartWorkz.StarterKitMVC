@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Results;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Represents the outcome of an operation that does not return a value.

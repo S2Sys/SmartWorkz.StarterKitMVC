@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Http;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Abstraction for HTTP client operations with support for async/await and cancellation.

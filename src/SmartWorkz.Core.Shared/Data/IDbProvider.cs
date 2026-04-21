@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Data;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Abstraction for database provider-specific operations.
