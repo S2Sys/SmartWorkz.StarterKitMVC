@@ -65,8 +65,8 @@ public class SqlAuditTrail : IAuditTrail
     /// <inheritdoc />
     public async Task<IReadOnlyCollection<AuditEntry>> GetEntriesAsync(string entityType, string entityId, CancellationToken cancellationToken = default)
     {
-        Guard.NotNullOrEmpty(entityType, nameof(entityType));
-        Guard.NotNullOrEmpty(entityId, nameof(entityId));
+        Guard.NotEmpty(entityType, nameof(entityType));
+        Guard.NotEmpty(entityId, nameof(entityId));
 
         const string sql = @"
             SELECT Id, EntityType, EntityId, Action, UserId, IpAddress, Changes, CorrelationId, TraceId, Timestamp, ReasonCode
@@ -82,7 +82,7 @@ public class SqlAuditTrail : IAuditTrail
     /// <inheritdoc />
     public async Task<IReadOnlyCollection<AuditEntry>> GetEntriesByActionAsync(string action, DateTimeOffset? since = null, CancellationToken cancellationToken = default)
     {
-        Guard.NotNullOrEmpty(action, nameof(action));
+        Guard.NotEmpty(action, nameof(action));
 
         const string sql = @"
             SELECT Id, EntityType, EntityId, Action, UserId, IpAddress, Changes, CorrelationId, TraceId, Timestamp, ReasonCode
@@ -98,7 +98,7 @@ public class SqlAuditTrail : IAuditTrail
     /// <inheritdoc />
     public async Task<IReadOnlyCollection<AuditEntry>> GetEntriesByUserAsync(string userId, DateTimeOffset? since = null, CancellationToken cancellationToken = default)
     {
-        Guard.NotNullOrEmpty(userId, nameof(userId));
+        Guard.NotEmpty(userId, nameof(userId));
 
         const string sql = @"
             SELECT Id, EntityType, EntityId, Action, UserId, IpAddress, Changes, CorrelationId, TraceId, Timestamp, ReasonCode
