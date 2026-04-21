@@ -1,0 +1,241 @@
+namespace SmartWorkz.Core.Mobile;
+
+using System.Net.Http.Json;
+using Microsoft.Extensions.Options;
+
+public class ApiClient : IApiClient
+{
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IConnectionChecker _connectionChecker;
+    private readonly IAuthenticationHandler _authenticationHandler;
+    private readonly IEnumerable<IRequestInterceptor> _requestInterceptors;
+    private readonly IErrorHandler _errorHandler;
+    private readonly MobileApiConfig _config;
+    private readonly ILogger _logger;
+
+    public ApiClient(
+        IHttpClientFactory httpClientFactory,
+        IConnectionChecker connectionChecker,
+        IAuthenticationHandler authenticationHandler,
+        IEnumerable<IRequestInterceptor> requestInterceptors,
+        IErrorHandler errorHandler,
+        IOptions<MobileApiConfig> apiConfig,
+        ILogger logger)
+    {
+        _httpClientFactory = Guard.NotNull(httpClientFactory, nameof(httpClientFactory));
+        _connectionChecker = Guard.NotNull(connectionChecker, nameof(connectionChecker));
+        _authenticationHandler = Guard.NotNull(authenticationHandler, nameof(authenticationHandler));
+        _requestInterceptors = Guard.NotNull(requestInterceptors, nameof(requestInterceptors));
+        _errorHandler = Guard.NotNull(errorHandler, nameof(errorHandler));
+        Guard.NotNull(apiConfig, nameof(apiConfig));
+        _config = apiConfig.Value;
+        _logger = Guard.NotNull(logger, nameof(logger));
+    }
+
+    /// <summary>
+    /// Gets data from an endpoint and deserializes to type T.
+    /// </summary>
+    public async Task<Result<T>> GetAsync<T>(string endpoint, CancellationToken ct = default)
+    {
+        Guard.NotEmpty(endpoint, nameof(endpoint));
+        return await ExecuteRequestAsync<T>(HttpMethod.Get, endpoint, null, ct);
+    }
+
+    /// <summary>
+    /// Posts data to an endpoint and deserializes the response to type T.
+    /// </summary>
+    public async Task<Result<T>> PostAsync<T>(string endpoint, object data, CancellationToken ct = default)
+    {
+        Guard.NotEmpty(endpoint, nameof(endpoint));
+        Guard.NotNull(data, nameof(data));
+        return await ExecuteRequestAsync<T>(HttpMethod.Post, endpoint, data, ct);
+    }
+
+    /// <summary>
+    /// Puts data to an endpoint and deserializes the response to type T.
+    /// </summary>
+    public async Task<Result<T>> PutAsync<T>(string endpoint, object data, CancellationToken ct = default)
+    {
+        Guard.NotEmpty(endpoint, nameof(endpoint));
+        Guard.NotNull(data, nameof(data));
+        return await ExecuteRequestAsync<T>(HttpMethod.Put, endpoint, data, ct);
+    }
+
+    /// <summary>
+    /// Deletes a resource at the endpoint.
+    /// </summary>
+    public async Task<Result> DeleteAsync(string endpoint, CancellationToken ct = default)
+    {
+        Guard.NotEmpty(endpoint, nameof(endpoint));
+
+        ct.ThrowIfCancellationRequested();
+
+        try
+        {
+            var isOnline = await _connectionChecker.IsOnlineAsync();
+            if (!isOnline)
+            {
+                return Result.Fail(new Error("MOBILE.OFFLINE", "No network connection"));
+            }
+
+            var client = _httpClientFactory.CreateClient("MobileApiClient");
+            var url = new Uri(new Uri(_config.BaseUrl), endpoint).ToString();
+            var request = new HttpRequestMessage(HttpMethod.Delete, url);
+
+            await ApplyRequestInterceptorsAsync(request, ct);
+            await _authenticationHandler.InjectHeadersAsync(request, ct);
+
+            var response = await client.SendAsync(request, ct);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return Result.Fail(new Error($"HTTP.{(int)response.StatusCode}", response.ReasonPhrase ?? "Unknown"));
+            }
+
+            return Result.Ok();
+        }
+        catch (Exception ex)
+        {
+            return _errorHandler.HandleException(ex);
+        }
+    }
+
+    /// <summary>
+    /// Gets a raw stream from an endpoint without deserialization.
+    /// </summary>
+    public async Task<Result<Stream>> GetStreamAsync(string endpoint, CancellationToken ct = default)
+    {
+        Guard.NotEmpty(endpoint, nameof(endpoint));
+
+        ct.ThrowIfCancellationRequested();
+
+        try
+        {
+            var isOnline = await _connectionChecker.IsOnlineAsync();
+            if (!isOnline)
+            {
+                return Result.Fail<Stream>(new Error("MOBILE.OFFLINE", "No network connection"));
+            }
+
+            var client = _httpClientFactory.CreateClient("MobileApiClient");
+            var url = new Uri(new Uri(_config.BaseUrl), endpoint).ToString();
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+            await ApplyRequestInterceptorsAsync(request, ct);
+            await _authenticationHandler.InjectHeadersAsync(request, ct);
+
+            using (var response = await client.SendAsync(request, ct))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    return Result.Fail<Stream>(new Error($"HTTP.{(int)response.StatusCode}", response.ReasonPhrase ?? "Unknown"));
+                }
+
+                // Copy the response stream to a MemoryStream so the HttpResponseMessage can be disposed
+                var memoryStream = new MemoryStream();
+                await response.Content.CopyToAsync(memoryStream, ct);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                return Result.Ok<Stream>(memoryStream);
+            }
+        }
+        catch (Exception ex)
+        {
+            return _errorHandler.HandleException<Stream>(ex);
+        }
+    }
+
+    /// <summary>
+    /// Gets data with retry, timeout, and optional cancellation.
+    /// Delegates to error handler's centralized retry policy.
+    /// </summary>
+    public async Task<Result<T>> GetAsync<T>(string endpoint, int retryCount, TimeSpan timeout, CancellationToken ct = default)
+    {
+        Guard.NotEmpty(endpoint, nameof(endpoint));
+        Guard.Requires(retryCount > 0, nameof(retryCount), "Retry count must be greater than 0");
+
+        ct.ThrowIfCancellationRequested();
+
+        // Create a linked CancellationTokenSource for the timeout
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        cts.CancelAfter(timeout);
+
+        // Use errorHandler.HandleWithRetryAsync to execute the request with retries
+        // The handler will apply exponential backoff: 100 * 2^attempt ms
+        Result<T> finalResult = null!;
+        var retryResult = await _errorHandler.HandleWithRetryAsync(
+            async () =>
+            {
+                finalResult = await GetAsync<T>(endpoint, cts.Token);
+                if (!finalResult.Succeeded)
+                    throw new HttpRequestException(finalResult.Error?.Message ?? "Request failed");
+            },
+            retryCount,
+            cts.Token
+        );
+
+        // Return the result from the retry handler, or use the final result if retry succeeded
+        if (!retryResult.Succeeded)
+        {
+            return Result.Fail<T>(retryResult.Error ?? new Error("HTTP.RETRY_FAILED", "Request failed after retries"));
+        }
+
+        return finalResult ?? Result.Fail<T>(new Error("HTTP.RETRY_FAILED", "Request failed after retries"));
+    }
+
+    private async Task<Result<T>> ExecuteRequestAsync<T>(HttpMethod method, string endpoint, object? data, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+
+        try
+        {
+            var isOnline = await _connectionChecker.IsOnlineAsync();
+            if (!isOnline)
+            {
+                return Result.Fail<T>(new Error("MOBILE.OFFLINE", "No network connection"));
+            }
+
+            var client = _httpClientFactory.CreateClient("MobileApiClient");
+            var url = new Uri(new Uri(_config.BaseUrl), endpoint).ToString();
+            var request = new HttpRequestMessage(method, url);
+
+            if (data != null && (method == HttpMethod.Post || method == HttpMethod.Put))
+            {
+                request.Content = JsonContent.Create(data);
+            }
+
+            await ApplyRequestInterceptorsAsync(request, ct);
+            await _authenticationHandler.InjectHeadersAsync(request, ct);
+
+            var response = await client.SendAsync(request, ct);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return Result.Fail<T>(new Error($"HTTP.{(int)response.StatusCode}", response.ReasonPhrase ?? "Unknown"));
+            }
+
+            var contentStream = await response.Content.ReadAsStreamAsync();
+            var deserializedData = await System.Text.Json.JsonSerializer.DeserializeAsync<T>(
+                contentStream,
+                cancellationToken: ct
+            );
+
+            return Result.Ok(deserializedData!);
+        }
+        catch (System.Text.Json.JsonException jsonEx)
+        {
+            return _errorHandler.HandleException<T>(jsonEx);
+        }
+        catch (Exception ex)
+        {
+            return _errorHandler.HandleException<T>(ex);
+        }
+    }
+
+    private async Task ApplyRequestInterceptorsAsync(HttpRequestMessage request, CancellationToken ct)
+    {
+        foreach (var interceptor in _requestInterceptors)
+        {
+            await interceptor.InterceptAsync(request, ct);
+        }
+    }
+}
