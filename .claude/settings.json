@@ -24,7 +24,8 @@
       "PowerShell(Get-Process | Where-Object {$_.ProcessName -match \"dotnet|SmartWorkz\"}; Write-Host \"---\"; netstat -ano | Select-String \"9000|listening\" | Head -5)",
       "PowerShell(curl -v http://localhost:9000 2>&1)",
       "Read(//c/Users/tsent/source/repos/S2Sys/SmartWorkz.Core.Shared/Templates/**)",
-      "Read(//c/Users/tsent/source/repos/S2Sys/**)"
+      "Read(//c/Users/tsent/source/repos/S2Sys/**)",
+      "Read(//c/Users/tsent/.claude/**)"
     ],
     "additionalDirectories": [
       "C:\\Users\\tsent\\.claude\\projects\\c--Users-tsent-source-repos-S2Sys-SmartWorkz-StarterKitMVC\\plans",
@@ -34,7 +35,13 @@
       "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.External",
       "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Shared\\Caching",
       "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Shared\\CQRS",
-      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Shared\\Logging"
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Shared\\Logging",
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Sample.ECommerce\\Web\\Api",
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Sample.ECommerce.Mobile\\ViewModels",
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Sample.ECommerce.Mobile\\Pages",
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Sample.ECommerce.Mobile\\Services",
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Sample.ECommerce.Mobile\\Resources\\Styles",
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Sample.ECommerce.Mobile"
     ]
   }
 }
