@@ -1,0 +1,1 @@
+namespace SmartWorkz.Core.Mobile;
