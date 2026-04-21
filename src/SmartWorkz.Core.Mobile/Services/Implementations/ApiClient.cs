@@ -93,7 +93,7 @@ public class ApiClient : IApiClient
                 // Attempt to parse error response body
                 try
                 {
-                    var contentStream = await response.Content.ReadAsStreamAsync() as MemoryStream
+                    using var contentStream = await response.Content.ReadAsStreamAsync() as MemoryStream
                         ?? new MemoryStream(await response.Content.ReadAsByteArrayAsync(ct));
 
                     contentStream.Seek(0, SeekOrigin.Begin);
@@ -104,7 +104,9 @@ public class ApiClient : IApiClient
 
                     if (errorEnvelope?.Error != null)
                     {
-                        return Result.Fail(new Error(errorEnvelope.Error.Code, errorEnvelope.Error.Message));
+                        var errorCode = errorEnvelope.Error.Code ?? "UNKNOWN_ERROR";
+                        var errorMessage = errorEnvelope.Error.Message ?? "Unknown error";
+                        return Result.Fail(new Error(errorCode, errorMessage));
                     }
                 }
                 catch (System.Text.Json.JsonException)
@@ -236,7 +238,7 @@ public class ApiClient : IApiClient
                 return Result.Fail<T>(new Error($"HTTP.{(int)response.StatusCode}", response.ReasonPhrase ?? "Unknown"));
             }
 
-            var contentStream = await response.Content.ReadAsStreamAsync() as MemoryStream
+            using var contentStream = await response.Content.ReadAsStreamAsync() as MemoryStream
                 ?? new MemoryStream(await response.Content.ReadAsByteArrayAsync(ct));
 
             // Phase 1: Try to deserialize as ApiResponse<T> envelope
@@ -248,25 +250,24 @@ public class ApiClient : IApiClient
                     cancellationToken: ct
                 );
 
-                if (envelope != null)
+                if (envelope?.Success == true && envelope.Data != null)
                 {
-                    if (envelope.Success)
-                    {
-                        return Result.Ok(envelope.Data!);
-                    }
-                    else if (envelope.Error != null)
-                    {
-                        return Result.Fail<T>(new Error(envelope.Error.Code, envelope.Error.Message));
-                    }
-                    else
-                    {
-                        return Result.Fail<T>(new Error("UNKNOWN_ERROR", "API returned failure without error details"));
-                    }
+                    return Result.Ok(envelope.Data);
+                }
+                else if (envelope?.Error != null)
+                {
+                    var errorCode = envelope.Error.Code ?? "UNKNOWN_ERROR";
+                    var errorMessage = envelope.Error.Message ?? "Unknown error";
+                    return Result.Fail<T>(new Error(errorCode, errorMessage));
+                }
+                else if (envelope?.Success == false)
+                {
+                    return Result.Fail<T>(new Error("UNKNOWN_ERROR", "API returned failure without error details"));
                 }
             }
             catch (System.Text.Json.JsonException)
             {
-                // Phase 1 failed; proceed to Phase 2 fallback
+                _logger.LogDebug("Phase 1 envelope deserialization failed, attempting Phase 2 fallback");
             }
 
             // Phase 2: Fallback to direct T deserialization for backward compatibility
@@ -276,7 +277,9 @@ public class ApiClient : IApiClient
                 cancellationToken: ct
             );
 
-            return Result.Ok(deserializedData!);
+            return deserializedData != null
+                ? Result.Ok(deserializedData)
+                : Result.Fail<T>(new Error("DESERIALIZATION_ERROR", "Failed to deserialize response data"));
         }
         catch (System.Text.Json.JsonException jsonEx)
         {
