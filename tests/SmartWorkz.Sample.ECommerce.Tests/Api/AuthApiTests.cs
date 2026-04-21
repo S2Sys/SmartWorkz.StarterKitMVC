@@ -2,15 +2,14 @@ namespace SmartWorkz.Sample.ECommerce.Tests.Api;
 
 using System.Net;
 using System.Net.Http.Json;
-using Microsoft.AspNetCore.Mvc.Testing;
 using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 
-public class AuthApiTests : IClassFixture<WebApplicationFactory<Program>>
+public class AuthApiTests : IClassFixture<ECommerceWebApplicationFactory>
 {
     private readonly HttpClient _client;
 
-    public AuthApiTests(WebApplicationFactory<Program> factory)
+    public AuthApiTests(ECommerceWebApplicationFactory factory)
     {
         _client = factory.CreateClient();
     }

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +40,7 @@ public static class ECommerceServiceExtensions
             ExpiryMinutes = int.TryParse(config["Jwt:ExpiryMinutes"], out var expMin) ? expMin : 60
         };
         services.AddSingleton(jwtSettings);
+        services.AddSingleton<InMemoryEventSubscriber>();
         services.AddSingleton<InMemoryEventPublisher>();
 
         // Mapper registration with all profiles
@@ -110,5 +111,4 @@ public static class ECommerceServiceExtensions
         return services;
     }
 }
-
 
