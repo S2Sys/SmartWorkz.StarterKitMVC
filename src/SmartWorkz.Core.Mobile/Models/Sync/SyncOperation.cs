@@ -2,7 +2,7 @@
 using SQLite;
 #endif
 
-namespace SmartWorkz.Core.Mobile;
+namespace SmartWorkz.Mobile;
 
 #if !WINDOWS
 [Table("sync_operations")]
