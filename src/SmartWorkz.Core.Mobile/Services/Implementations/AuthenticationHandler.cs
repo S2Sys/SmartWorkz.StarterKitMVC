@@ -10,6 +10,7 @@ public class AuthenticationHandler : IAuthenticationHandler
     private readonly JwtSettings _jwtSettings;
     private readonly IMobileContext _mobileContext;
     private readonly Lazy<IApiClient> _apiClient;
+    private readonly IPushNotificationClientService _pushNotificationService;
     private const string TokenKey = "auth::token";
     private const string RefreshTokenKey = "auth::refresh_token";
 
@@ -18,13 +19,15 @@ public class AuthenticationHandler : IAuthenticationHandler
         ILogger logger,
         JwtSettings jwtSettings,
         IMobileContext mobileContext,
-        Lazy<IApiClient> apiClient)
+        Lazy<IApiClient> apiClient,
+        IPushNotificationClientService pushNotificationService)
     {
         _secureStorage = Guard.NotNull(secureStorage, nameof(secureStorage));
         _logger = Guard.NotNull(logger, nameof(logger));
         _jwtSettings = Guard.NotNull(jwtSettings, nameof(jwtSettings));
         _mobileContext = Guard.NotNull(mobileContext, nameof(mobileContext));
         _apiClient = Guard.NotNull(apiClient, nameof(apiClient));
+        _pushNotificationService = Guard.NotNull(pushNotificationService, nameof(pushNotificationService));
     }
 
     /// <summary>
@@ -151,6 +154,14 @@ public class AuthenticationHandler : IAuthenticationHandler
         await _secureStorage.SetAsync(TokenKey, result.Data!.AccessToken, ct);
         await _secureStorage.SetAsync(RefreshTokenKey, result.Data.RefreshToken, ct);
 
+        // Register for push notifications
+        var pushResult = await _pushNotificationService.RegisterAsync(ct);
+        if (!pushResult.Succeeded)
+        {
+            _logger.LogWarning("Failed to register push notifications: {ErrorCode}", pushResult.Error?.Code ?? "UNKNOWN");
+            // Don't fail login if push registration fails - it's not critical
+        }
+
         _logger.LogInformation("User {Email} logged in successfully", email);
         return Result.Ok();
     }
@@ -160,6 +171,13 @@ public class AuthenticationHandler : IAuthenticationHandler
     /// </summary>
     public async Task<Result> LogoutAsync(CancellationToken ct = default)
     {
+        // Unregister from push notifications
+        var pushResult = await _pushNotificationService.UnregisterAsync(ct);
+        if (!pushResult.Succeeded)
+        {
+            _logger.LogWarning("Failed to unregister push notifications: {ErrorCode}", pushResult.Error?.Code ?? "UNKNOWN");
+        }
+
         // Clear tokens from secure storage
         await _secureStorage.DeleteAsync(TokenKey, ct);
         await _secureStorage.DeleteAsync(RefreshTokenKey, ct);

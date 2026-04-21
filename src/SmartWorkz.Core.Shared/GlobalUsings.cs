@@ -10,7 +10,8 @@ global using SmartWorkz.Core.Shared.Extensions;
 global using SmartWorkz.Core.Shared.Primitives;
 global using SmartWorkz.Core.Shared.Base_Classes;
 global using SmartWorkz.Core.Shared.Response;
-global using SmartWorkz.Core.Shared.Logging;
+// Commented out due to interface collision with Microsoft.Extensions.Logging.ILogger
+// global using SmartWorkz.Core.Shared.Logging;
 global using SmartWorkz.Core.Shared.Mapping;
 global using SmartWorkz.Core.Shared.Constants;
 global using SmartWorkz.Core.Shared.Helpers;

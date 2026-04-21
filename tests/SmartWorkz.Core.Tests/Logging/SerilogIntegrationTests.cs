@@ -90,7 +90,7 @@ public class SerilogIntegrationTests
         // Act
         services.AddStructuredLogging(config);
         var serviceProvider = services.BuildServiceProvider();
-        var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+        var loggerFactory = serviceProvider.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
 
         // Assert
         Assert.NotNull(loggerFactory);
