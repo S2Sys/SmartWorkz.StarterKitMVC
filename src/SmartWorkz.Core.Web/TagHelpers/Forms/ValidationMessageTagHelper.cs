@@ -1,8 +1,8 @@
-namespace SmartWorkz.Core.Web.TagHelpers.Forms;
+namespace SmartWorkz.Web;
 
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using SmartWorkz.Core.Web.Services.Components;
+using SmartWorkz.Web;
 
 [HtmlTargetElement("validation-message", Attributes = nameof(For))]
 public class ValidationMessageTagHelper : TagHelper

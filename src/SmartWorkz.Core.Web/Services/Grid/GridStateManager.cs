@@ -1,6 +1,6 @@
-using SmartWorkz.Core.Shared.Grid;
+using SmartWorkz.Shared.Grid;
 
-namespace SmartWorkz.Core.Web.Services.Grid;
+namespace SmartWorkz.Web;
 
 /// <summary>
 /// Manages grid state (current page, sorting, filters, selected rows).

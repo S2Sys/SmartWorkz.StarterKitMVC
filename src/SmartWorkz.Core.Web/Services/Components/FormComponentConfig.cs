@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Web.Services.Components;
+namespace SmartWorkz.Web;
 
 /// <summary>
 /// Configuration class for form component styling with customizable Bootstrap CSS classes.

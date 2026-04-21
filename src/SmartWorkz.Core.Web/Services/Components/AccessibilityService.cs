@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Web.Services.Components;
+namespace SmartWorkz.Web;
 
 using System.Text.RegularExpressions;
 

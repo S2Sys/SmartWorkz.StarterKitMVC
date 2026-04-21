@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
-using SmartWorkz.Core.Web.Services.DataView;
+using SmartWorkz.Web;
 
-namespace SmartWorkz.Core.Web.Components.ListView;
+namespace SmartWorkz.Web;
 
 public partial class ListViewComponent<T> : ComponentBase, IAsyncDisposable where T : class
 {

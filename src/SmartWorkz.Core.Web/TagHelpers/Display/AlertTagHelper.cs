@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using SmartWorkz.Core.Web.Services.Components;
+using SmartWorkz.Web;
 
-namespace SmartWorkz.Core.Web.TagHelpers.Display;
+namespace SmartWorkz.Web;
 
 [HtmlTargetElement("alert", Attributes = nameof(Type))]
 public class AlertTagHelper : TagHelper

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Web.TagHelpers.Navigation;
+namespace SmartWorkz.Web;
 
 public class BreadcrumbItem
 {

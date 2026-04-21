@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using SmartWorkz.Core.Web.Services.Components;
+using SmartWorkz.Web;
 
-namespace SmartWorkz.Core.Web.TagHelpers.Forms;
+namespace SmartWorkz.Web;
 
 /// <summary>
 /// TagHelper for rendering HTML input elements with Bootstrap styling, optional icons, and form component styling configuration.

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace SmartWorkz.Core.Web.TagHelpers.Display;
+namespace SmartWorkz.Web;
 
 [HtmlTargetElement("badge", Attributes = nameof(Type))]
 public class BadgeTagHelper : TagHelper

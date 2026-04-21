@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Web.Services.Components;
+namespace SmartWorkz.Web;
 
 /// <summary>
 /// Service for generating accessible ARIA IDs and labels for form components.

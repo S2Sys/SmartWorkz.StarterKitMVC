@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using SmartWorkz.Core.Shared.Grid;
+using SmartWorkz.Shared.Grid;
 
-namespace SmartWorkz.Core.Web.TagHelpers;
+namespace SmartWorkz.Web;
 
 /// <summary>
 /// High-level TagHelper for simple grid markup. Generates GridComponent under the hood.

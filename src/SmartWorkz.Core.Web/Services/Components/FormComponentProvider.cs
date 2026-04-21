@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Web.Services.Components;
+namespace SmartWorkz.Web;
 
 /// <summary>
 /// Provides form component styling configuration management.
