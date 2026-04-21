@@ -107,6 +107,13 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IOfflineService, OfflineService>();
         services.AddScoped<IBiometricService, BiometricService>();
 
+        // Step 14: Register Phase 1 library extensions
+        services.AddSingleton<IResponsiveService, ResponsiveService>();
+        services.AddScoped<IMobileCacheService, MobileCacheService>();
+        // INavigationService is app-specific — registered by the consuming app (not the library)
+        // IMobileFormValidator<T> is open-generic — consuming app registers per-DTO:
+        //   services.AddScoped<IMobileFormValidator<LoginDto>, MobileFormValidator<LoginDto>>();
+
         return services;
     }
 }
