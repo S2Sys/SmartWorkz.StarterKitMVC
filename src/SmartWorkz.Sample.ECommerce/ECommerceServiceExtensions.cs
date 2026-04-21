@@ -1,6 +1,11 @@
 ﻿using AutoMapper;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Data;
+using Microsoft.Data.Sqlite;
+using System.Text;
 using SmartWorkz.Core;
 using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Application.Mapping;
@@ -60,6 +65,43 @@ public static class ECommerceServiceExtensions
         services.AddSingleton<RegisterValidator>();
         services.AddSingleton<CheckoutValidator>();
         services.AddSingleton<OrderValidator>();
+        services.AddSingleton<CreateProductValidator>();
+
+        // IDbConnection for CatalogSearchService (Dapper-based searches)
+        services.AddScoped<IDbConnection>(_ =>
+            new SqliteConnection(config.GetConnectionString("Default") ?? "Data Source=ecommerce.db"));
+
+        // Authentication schemes
+        services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = "Cookies";  // MVC controllers use cookie auth
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;  // API uses Bearer
+        })
+        .AddCookie("Cookies", options =>
+        {
+            options.LoginPath = "/Account/Login";
+            options.Cookie.Name = "ecommerce_auth";
+            options.Cookie.HttpOnly = true;
+            options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        })
+        .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+        {
+            options.MapInboundClaims = false;  // Keep "sub" claim name, don't remap to ClaimTypes.NameIdentifier
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = jwtSettings.Issuer,
+                ValidateAudience = true,
+                ValidAudience = jwtSettings.Audience,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(jwtSettings.Secret)),
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+                NameClaimType = "sub",      // JWT "sub" maps to User.Identity.Name
+                RoleClaimType = "roles"     // JWT "roles" are used for [Authorize(Roles = "...")]
+            };
+        });
 
         services.AddHttpContextAccessor();
         services.AddDistributedMemoryCache();
