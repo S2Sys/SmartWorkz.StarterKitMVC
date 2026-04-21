@@ -191,44 +191,22 @@ function initTable() {
     tbody.innerHTML = '';
     for (let i = 0; i < 5; i++) {
         const tr = document.createElement('tr');
-        const descCell = document.createElement('td');
-        const qtyCell = document.createElement('td');
-        const rateCell = document.createElement('td');
-        const amountCell = document.createElement('td');
-
-        const descInput = document.createElement('input');
-        descInput.type = 'text';
-        descInput.className = 'desc';
-        descCell.appendChild(descInput);
-
-        const qtyInput = document.createElement('input');
-        qtyInput.type = 'number';
-        qtyInput.className = 'qty';
-        qtyInput.value = '1';
-        qtyInput.onchange = calc;
-        qtyInput.oninput = debounceCalc;
-        qtyCell.appendChild(qtyInput);
-
-        const rateInput = document.createElement('input');
-        rateInput.type = 'number';
-        rateInput.className = 'rate';
-        rateInput.value = '0';
-        rateInput.onchange = calc;
-        rateInput.oninput = debounceCalc;
-        rateCell.appendChild(rateInput);
-
-        const amountInput = document.createElement('input');
-        amountInput.type = 'number';
-        amountInput.className = 'amount';
-        amountInput.readOnly = true;
-        amountCell.appendChild(amountInput);
-
-        tr.appendChild(descCell);
-        tr.appendChild(qtyCell);
-        tr.appendChild(rateCell);
-        tr.appendChild(amountCell);
+        tr.innerHTML = `
+            <td><input type="text" class="desc"></td>
+            <td><input type="number" class="qty" value="1"></td>
+            <td><input type="number" class="rate" value="0"></td>
+            <td><input type="number" class="amount" readonly></td>
+        `;
         tbody.appendChild(tr);
     }
+    attachEventHandlers();
+}
+
+function attachEventHandlers() {
+    document.querySelectorAll('.qty, .rate').forEach(input => {
+        input.addEventListener('input', () => debounceCalc());
+        input.addEventListener('change', () => calc());
+    });
 }
 
 function debounceCalc() {
@@ -237,22 +215,26 @@ function debounceCalc() {
 }
 
 function calc() {
-    document.querySelectorAll('#services tr').forEach(row => {
-        const qty = parseFloat(row.querySelector('.qty').value) || 0;
-        const rate = parseFloat(row.querySelector('.rate').value) || 0;
-        row.querySelector('.amount').value = (qty * rate).toFixed(2);
-    });
+    try {
+        document.querySelectorAll('#services tr').forEach(row => {
+            const qty = parseFloat(row.querySelector('.qty').value) || 0;
+            const rate = parseFloat(row.querySelector('.rate').value) || 0;
+            row.querySelector('.amount').value = (qty * rate).toFixed(2);
+        });
 
-    let subtotal = Array.from(document.querySelectorAll('.amount')).reduce((sum, el) => sum + (parseFloat(el.value) || 0), 0);
-    let taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
-    let tax = (subtotal * taxRate) / 100;
-    let total = subtotal + tax;
+        let subtotal = Array.from(document.querySelectorAll('.amount')).reduce((sum, el) => sum + (parseFloat(el.value) || 0), 0);
+        let taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+        let tax = (subtotal * taxRate) / 100;
+        let total = subtotal + tax;
 
-    document.getElementById('sub').textContent = '₹' + subtotal.toLocaleString('en-IN', {maximumFractionDigits: 2});
-    document.getElementById('tax').textContent = '₹' + tax.toLocaleString('en-IN', {maximumFractionDigits: 2});
-    document.getElementById('taxPct').textContent = taxRate.toFixed(2);
-    document.getElementById('total').textContent = '₹' + total.toLocaleString('en-IN', {maximumFractionDigits: 2});
-    document.getElementById('words').textContent = 'Rupees ' + numberToWords(Math.round(total));
+        document.getElementById('sub').textContent = '₹' + subtotal.toLocaleString('en-IN', {maximumFractionDigits: 2});
+        document.getElementById('tax').textContent = '₹' + tax.toLocaleString('en-IN', {maximumFractionDigits: 2});
+        document.getElementById('taxPct').textContent = taxRate.toFixed(2);
+        document.getElementById('total').textContent = '₹' + total.toLocaleString('en-IN', {maximumFractionDigits: 2});
+        document.getElementById('words').textContent = 'Rupees ' + numberToWords(Math.round(total));
+    } catch(e) {
+        console.error('Calculation error:', e);
+    }
 }
 
 function getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, client, addr, city, country, pan, words, billPan, gst, billGst) {
