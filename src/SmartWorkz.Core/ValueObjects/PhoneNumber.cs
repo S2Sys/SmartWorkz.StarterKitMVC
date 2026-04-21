@@ -1,6 +1,6 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace SmartWorkz.Core.ValueObjects;
+namespace SmartWorkz.Core;
 
 public sealed class PhoneNumber : ValueObject
 {

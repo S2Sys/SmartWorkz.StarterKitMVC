@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Abstractions;
+﻿namespace SmartWorkz.Core;
 
 public interface IUnitOfWork : IAsyncDisposable
 {

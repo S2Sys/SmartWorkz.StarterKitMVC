@@ -1,6 +1,6 @@
-using SmartWorkz.Core.Shared.Primitives;
+﻿using SmartWorkz.Core.Shared.Primitives;
 
-namespace SmartWorkz.Core.Abstractions;
+namespace SmartWorkz.Core;
 
 /// <summary>
 /// Marks a class as a domain entity with a typed primary key.

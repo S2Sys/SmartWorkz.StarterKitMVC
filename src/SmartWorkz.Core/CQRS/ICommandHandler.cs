@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.CQRS;
+﻿namespace SmartWorkz.Core;
 
 using SmartWorkz.Core.Shared.CQRS;
 

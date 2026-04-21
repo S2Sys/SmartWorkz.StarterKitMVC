@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Entities;
+﻿namespace SmartWorkz.Core;
 
 /// <summary>
 /// Convenience base class for entities with an integer primary key.

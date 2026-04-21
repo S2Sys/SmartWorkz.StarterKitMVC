@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Constants;
+﻿namespace SmartWorkz.Core;
 public static class AppConstants
 {
     public const string DefaultCulture = "en-US";
