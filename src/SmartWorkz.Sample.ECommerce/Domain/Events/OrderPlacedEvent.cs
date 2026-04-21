@@ -1,4 +1,5 @@
 using SmartWorkz.Core;
+using SmartWorkz.Shared;
 
 namespace SmartWorkz.Sample.ECommerce.Domain.Events;
 

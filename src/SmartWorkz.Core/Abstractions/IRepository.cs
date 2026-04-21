@@ -1,6 +1,8 @@
 ﻿namespace SmartWorkz.Core;
 
-public interface IRepository<TEntity, TId> where TEntity : class, IEntity<TId>
+using SmartWorkz.Shared;
+
+public interface IRepository<TEntity, TId> where TEntity : class, SmartWorkz.Shared.IEntity<TId>
 {
     Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken = default);
     Task<IReadOnlyCollection<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);

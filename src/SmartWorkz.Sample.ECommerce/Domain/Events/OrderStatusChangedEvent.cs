@@ -1,4 +1,5 @@
 using SmartWorkz.Core;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Domain.Enums;
 
 namespace SmartWorkz.Sample.ECommerce.Domain.Events;
