@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 /// <summary>
 /// Interceptor that automatically refreshes JWT tokens when 401 Unauthorized responses are encountered.
 /// Prevents multiple concurrent refresh attempts using a SemaphoreSlim for thread-safe mutual exclusion.
+/// Implements IResponseInterceptor via ITokenRefreshInterceptor to handle response processing.
 /// </summary>
 public sealed class TokenRefreshInterceptor : ITokenRefreshInterceptor
 {
