@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 
 public class FirebaseCloudMessagingService : IPushNotificationService
 {
+    private const int DefaultTtlSeconds = 3600;
+    private const string DefaultAndroidPriority = "high";
+
     private readonly FirebaseMessaging _firebaseMessaging;
     private readonly ILogger<FirebaseCloudMessagingService> _logger;
 
@@ -17,6 +20,11 @@ public class FirebaseCloudMessagingService : IPushNotificationService
 
     public Task SendAsync(string userId, string title, string message, CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new ArgumentException("UserId cannot be null or empty", nameof(userId));
+        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(message))
+            throw new ArgumentException("Title and message cannot be empty");
+
         var payload = new PushNotificationPayload
         {
             Title = title,
@@ -27,6 +35,11 @@ public class FirebaseCloudMessagingService : IPushNotificationService
 
     public Task SendAsync(IEnumerable<string> userIds, string title, string message, CancellationToken cancellationToken = default)
     {
+        if (userIds == null)
+            throw new ArgumentNullException(nameof(userIds));
+        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(message))
+            throw new ArgumentException("Title and message cannot be empty");
+
         var payload = new PushNotificationPayload
         {
             Title = title,
@@ -37,6 +50,11 @@ public class FirebaseCloudMessagingService : IPushNotificationService
 
     public async Task SendAsync(string userId, PushNotificationPayload payload, CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new ArgumentException("UserId cannot be null or empty", nameof(userId));
+        if (payload == null)
+            throw new ArgumentNullException(nameof(payload));
+
         try
         {
             var message = BuildMessage(userId, payload);
@@ -52,12 +70,31 @@ public class FirebaseCloudMessagingService : IPushNotificationService
 
     public async Task SendAsync(IEnumerable<string> userIds, PushNotificationPayload payload, CancellationToken cancellationToken = default)
     {
-        var tasks = userIds.Select(userId => SendAsync(userId, payload, cancellationToken));
-        await Task.WhenAll(tasks);
+        if (userIds == null)
+            throw new ArgumentNullException(nameof(userIds));
+        if (payload == null)
+            throw new ArgumentNullException(nameof(payload));
+
+        try
+        {
+            var tasks = userIds.Select(userId => SendAsync(userId, payload, cancellationToken));
+            await Task.WhenAll(tasks);
+            _logger.LogInformation("Batch notifications sent to {Count} users", userIds.Count());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send batch notifications");
+            throw;
+        }
     }
 
     public async Task SendToTopicAsync(string topic, PushNotificationPayload payload, CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(topic))
+            throw new ArgumentException("Topic cannot be null or empty", nameof(topic));
+        if (payload == null)
+            throw new ArgumentNullException(nameof(payload));
+
         try
         {
             var message = new Message
@@ -71,7 +108,7 @@ public class FirebaseCloudMessagingService : IPushNotificationService
                 },
                 Data = payload.Data ?? new Dictionary<string, string>(),
                 Android = new AndroidConfig { Priority = Priority.High },
-                Webpush = new WebpushConfig { Headers = new Dictionary<string, string> { { "TTL", "3600" } } }
+                Webpush = new WebpushConfig { Headers = new Dictionary<string, string> { { "TTL", DefaultTtlSeconds.ToString() } } }
             };
 
             var messageId = await _firebaseMessaging.SendAsync(message, cancellationToken);
@@ -86,6 +123,11 @@ public class FirebaseCloudMessagingService : IPushNotificationService
 
     public async Task SubscribeToTopicAsync(string userId, string topic, CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new ArgumentException("UserId cannot be null or empty", nameof(userId));
+        if (string.IsNullOrWhiteSpace(topic))
+            throw new ArgumentException("Topic cannot be null or empty", nameof(topic));
+
         try
         {
             var tokens = new[] { userId };
@@ -101,6 +143,11 @@ public class FirebaseCloudMessagingService : IPushNotificationService
 
     public async Task UnsubscribeFromTopicAsync(string userId, string topic, CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new ArgumentException("UserId cannot be null or empty", nameof(userId));
+        if (string.IsNullOrWhiteSpace(topic))
+            throw new ArgumentException("Topic cannot be null or empty", nameof(topic));
+
         try
         {
             var tokens = new[] { userId };
@@ -116,6 +163,11 @@ public class FirebaseCloudMessagingService : IPushNotificationService
 
     private Message BuildMessage(string userId, PushNotificationPayload payload)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new ArgumentException("UserId cannot be null or empty", nameof(userId));
+        if (payload == null)
+            throw new ArgumentNullException(nameof(payload));
+
         return new Message
         {
             Token = userId,
@@ -133,7 +185,7 @@ public class FirebaseCloudMessagingService : IPushNotificationService
             },
             Webpush = new WebpushConfig
             {
-                Headers = new Dictionary<string, string> { { "TTL", "3600" } }
+                Headers = new Dictionary<string, string> { { "TTL", DefaultTtlSeconds.ToString() } }
             },
             Apns = new ApnsConfig
             {
