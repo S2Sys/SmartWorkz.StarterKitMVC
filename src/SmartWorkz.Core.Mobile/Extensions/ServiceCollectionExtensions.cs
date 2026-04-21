@@ -66,6 +66,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBiometricService, BiometricService>();
         services.AddScoped<IErrorHandler, ErrorHandler>();
         services.AddScoped<IApiClient, ApiClient>();
+        services.AddScoped(provider => new Lazy<IApiClient>(() => provider.GetRequiredService<IApiClient>()));
 
         // NOTE: IRequestInterceptor is NOT registered by default
         // Applications should implement custom interceptors and register them:
