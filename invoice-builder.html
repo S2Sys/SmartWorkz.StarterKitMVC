@@ -64,7 +64,7 @@ button.secondary:hover { background: #4b5563; }
                     </div>
                     <div class="form-group">
                         <label>Tax Rate (%)</label>
-                        <input type="number" id="taxRate" value="0" onchange="calc()">
+                        <input type="number" id="taxRate" value="0" oninput="debounceCalc()">
                     </div>
                     <div class="form-group">
                         <label>PAN Number</label>
@@ -173,6 +173,8 @@ function numberToWords(n) {
     return parts.join(' ') + ' only';
 }
 
+let calcTimeout;
+
 function initTable() {
     const tbody = document.getElementById('services');
     tbody.innerHTML = '';
@@ -180,12 +182,17 @@ function initTable() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td><input type="text" class="desc"></td>
-            <td><input type="number" class="qty" value="1" onchange="calc()"></td>
-            <td><input type="number" class="rate" value="0" onchange="calc()"></td>
+            <td><input type="number" class="qty" value="1" oninput="debounceCalc()"></td>
+            <td><input type="number" class="rate" value="0" oninput="debounceCalc()"></td>
             <td><input type="number" class="amount" readonly></td>
         `;
         tbody.appendChild(tr);
     }
+}
+
+function debounceCalc() {
+    clearTimeout(calcTimeout);
+    calcTimeout = setTimeout(calc, 300);
 }
 
 function calc() {
