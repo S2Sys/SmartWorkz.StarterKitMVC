@@ -12,6 +12,7 @@
     <PackageReference Include="System.Reactive" Version="6.0.1" />
     <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
+    <PackageReference Include="Xamarin.AndroidX.Biometric" Version="1.1.0.32" Condition="'$(TargetFramework)' == 'net9.0-android'" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../SmartWorkz.Core.Shared/SmartWorkz.Core.Shared.csproj" />
