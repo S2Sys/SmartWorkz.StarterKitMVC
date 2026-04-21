@@ -1,7 +1,13 @@
 namespace SmartWorkz.ECommerce.Mobile;
 
+using Microsoft.Maui;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls.Hosting;
+using Microsoft.Maui.Hosting;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.ECommerce.Mobile.Services;
+using SmartWorkz.ECommerce.Mobile.Repositories;
+using SmartWorkz.Mobile;
 
 public static class MauiProgram
 {
@@ -9,13 +15,14 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
 
-        builder
-            .UseMaui()
-            .ConfigureFonts(fonts =>
-            {
-                fonts.AddFont("OpenSans-Regular.ttf",   "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf",  "OpenSansSemibold");
-            });
+        // NOTE: UseMaui() extension will be called in platform-specific code
+        // builder.UseMaui();
+
+        builder.ConfigureFonts(fonts =>
+        {
+            fonts.AddFont("OpenSans-Regular.ttf",   "OpenSansRegular");
+            fonts.AddFont("OpenSans-Semibold.ttf",  "OpenSansSemibold");
+        });
 
         // Register SmartWorkz.Core.Mobile services
         builder.Services.AddSmartWorkzCoreMobile(cfg =>

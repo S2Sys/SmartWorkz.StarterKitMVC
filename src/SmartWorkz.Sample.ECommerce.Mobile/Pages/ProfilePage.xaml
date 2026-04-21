@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="SmartWorkz.ECommerce.Mobile.Pages.ProfilePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Profile">
+    <VerticalStackLayout Padding="20">
+        <Label Text="Profile Page" FontSize="24" FontAttributes="Bold" />
+    </VerticalStackLayout>
+</ContentPage>
