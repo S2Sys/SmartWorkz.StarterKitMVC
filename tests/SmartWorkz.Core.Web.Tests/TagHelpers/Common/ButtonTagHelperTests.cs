@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using SmartWorkz.Core.Web.TagHelpers.Common;
+using SmartWorkz.Web.TagHelpers.Common;
 using Xunit;
 
 namespace SmartWorkz.Core.Web.Tests.TagHelpers.Common;
@@ -207,3 +207,4 @@ public class ButtonTagHelperTests
         }
     }
 }
+

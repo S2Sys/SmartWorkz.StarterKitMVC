@@ -21,12 +21,12 @@ public sealed class PersonName : ValueObject
     public static Result<PersonName> Create(string? firstName, string? lastName, string? middleName = null)
     {
         if (string.IsNullOrWhiteSpace(firstName))
-            return Result<PersonName>.Failure(new Error("FIRST_NAME_EMPTY", "First name cannot be empty"));
+            return Result.Fail<PersonName>(new Error("FIRST_NAME_EMPTY", "First name cannot be empty"));
 
         if (string.IsNullOrWhiteSpace(lastName))
-            return Result<PersonName>.Failure(new Error("LAST_NAME_EMPTY", "Last name cannot be empty"));
+            return Result.Fail<PersonName>(new Error("LAST_NAME_EMPTY", "Last name cannot be empty"));
 
-        return Result<PersonName>.Success(new PersonName(
+        return Result.Ok<PersonName>(new PersonName(
             firstName.Trim(),
             lastName.Trim(),
             string.IsNullOrWhiteSpace(middleName) ? null : middleName.Trim()
@@ -42,3 +42,5 @@ public sealed class PersonName : ValueObject
 
     public override string ToString() => FullName;
 }
+
+

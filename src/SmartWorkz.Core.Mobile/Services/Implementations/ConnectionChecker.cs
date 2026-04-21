@@ -1,4 +1,6 @@
-namespace SmartWorkz.Mobile;
+﻿namespace SmartWorkz.Mobile;
+
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 #if !WINDOWS
 using System.Reactive.Linq;
@@ -76,3 +78,4 @@ public class ConnectionChecker : IConnectionChecker
     }
 }
 #endif
+

@@ -1,3 +1,5 @@
+﻿using AutoMapper;
+
 using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
@@ -15,3 +17,5 @@ public class CustomerService(IRepository<Customer, int> repo, IMapper mapper)
     protected override Customer MapToEntity(CustomerDto dto) =>
         throw new NotImplementedException("Use domain constructors");
 }
+
+

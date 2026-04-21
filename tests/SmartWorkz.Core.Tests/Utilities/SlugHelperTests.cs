@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Tests.Utilities;
+﻿namespace SmartWorkz.Core.Tests.Utilities;
 
-using SmartWorkz.Core.Shared.Utilities;
+using SmartWorkz.Shared.Utilities;
 
 public class SlugHelperTests
 {
@@ -36,7 +36,7 @@ public class SlugHelperTests
     public void GenerateSlug_WithAccentedCharacters_RemovesAccents()
     {
         // Arrange
-        const string text = "Café résumé naïve";
+        const string text = "CafÃ© rÃ©sumÃ© naÃ¯ve";
 
         // Act
         var result = SlugHelper.GenerateSlug(text);
@@ -124,7 +124,7 @@ public class SlugHelperTests
     public void GenerateSlug_WithAccentRemovalDisabled_PreservesAccents()
     {
         // Arrange
-        const string text = "Café";
+        const string text = "CafÃ©";
         var options = new SlugOptions { RemoveAccents = false };
 
         // Act
@@ -254,7 +254,7 @@ public class SlugHelperTests
     public void GenerateSlug_WithCombinedOptions_WorksTogether()
     {
         // Arrange
-        const string text = "Café & Restaurant #1 - BEST PLACE";
+        const string text = "CafÃ© & Restaurant #1 - BEST PLACE";
         var options = new SlugOptions
         {
             Lowercase = true,
@@ -279,7 +279,7 @@ public class SlugHelperTests
     public void GenerateSlug_WithMixedUnicodeAndAccents_NormalizesCorrectly()
     {
         // Arrange
-        const string text = "Ñoño Señor España";
+        const string text = "Ã‘oÃ±o SeÃ±or EspaÃ±a";
 
         // Act
         var result = SlugHelper.GenerateSlug(text);
@@ -289,3 +289,4 @@ public class SlugHelperTests
         Assert.Equal("nono-senor-espana", result.Data);
     }
 }
+

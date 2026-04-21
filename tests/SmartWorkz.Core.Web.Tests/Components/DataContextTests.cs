@@ -1,6 +1,6 @@
-using Xunit;
-using SmartWorkz.Core.Web.Components.DataContext;
-using SmartWorkz.Core.Shared.Grid;
+﻿using Xunit;
+using SmartWorkz.Web.Components.DataContext;
+using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Web.Tests.Components;
 
@@ -279,3 +279,5 @@ public class DataContextTests
         Assert.Empty(context.CurrentRequest.Filters);
     }
 }
+
+

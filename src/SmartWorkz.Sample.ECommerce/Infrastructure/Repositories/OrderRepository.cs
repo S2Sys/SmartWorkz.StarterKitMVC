@@ -1,5 +1,6 @@
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using SmartWorkz.Core;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 using SmartWorkz.Sample.ECommerce.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -135,3 +136,4 @@ public class OrderRepository(ECommerceDbContext db) : IRepository<Order, int>
         return query;
     }
 }
+

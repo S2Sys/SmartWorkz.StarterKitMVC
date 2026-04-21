@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Tests.Security;
+﻿namespace SmartWorkz.Core.Tests.Security;
 
-using SmartWorkz.Core.Shared.Security;
+using SmartWorkz.Shared;
 
 public class JwtHelperTests
 {
@@ -507,3 +507,5 @@ public class JwtHelperTests
         Assert.Null(value);
     }
 }
+
+

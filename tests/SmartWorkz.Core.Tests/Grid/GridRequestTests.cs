@@ -1,6 +1,6 @@
-using Xunit;
-using SmartWorkz.Core.Shared.Grid;
-using SmartWorkz.Core.Shared.Pagination;
+﻿using Xunit;
+using SmartWorkz.Shared;
+using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Tests.Grid;
 
@@ -48,3 +48,5 @@ public class GridRequestTests
         Assert.Equal(25, request.Take);
     }
 }
+
+

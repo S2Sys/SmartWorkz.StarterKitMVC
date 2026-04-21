@@ -1,8 +1,8 @@
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Text.Json;
-using SmartWorkz.Shared.Grid;
-using SmartWorkz.Shared.Results;
-using SmartWorkz.Shared.Pagination;
+using SmartWorkz.Shared;
+using SmartWorkz.Shared;
+using SmartWorkz.Shared;
 
 namespace SmartWorkz.Web;
 
@@ -158,3 +158,4 @@ public class GridDataProvider : IGridDataProvider
         return lambda.Compile();
     }
 }
+

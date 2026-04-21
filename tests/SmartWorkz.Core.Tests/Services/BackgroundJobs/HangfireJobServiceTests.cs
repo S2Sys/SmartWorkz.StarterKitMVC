@@ -1,11 +1,11 @@
-namespace SmartWorkz.Core.Tests.Services.BackgroundJobs;
+﻿namespace SmartWorkz.Core.Tests.Services.BackgroundJobs;
 
 using Hangfire;
 using Hangfire.Common;
 using Hangfire.States;
 using Moq;
-using SmartWorkz.Core.Services.BackgroundJobs;
-using SmartWorkz.Core.Shared.BackgroundJobs;
+using SmartWorkz.Core.BackgroundJobs;
+using SmartWorkz.Shared.BackgroundJobs;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
@@ -134,3 +134,4 @@ public class HangfireJobServiceTests
         public async Task Execute() => await Task.CompletedTask;
     }
 }
+

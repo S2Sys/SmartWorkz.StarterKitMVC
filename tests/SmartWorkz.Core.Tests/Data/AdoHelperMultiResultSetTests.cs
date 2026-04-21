@@ -1,9 +1,9 @@
-namespace SmartWorkz.Core.Tests.Data;
+﻿namespace SmartWorkz.Core.Tests.Data;
 
 using System.Data;
 using Moq;
-using SmartWorkz.Core.Shared.Data;
-using SmartWorkz.Core.Shared.Results;
+using SmartWorkz.Shared.Data;
+using SmartWorkz.Shared;
 
 public class AdoHelperMultiResultSetTests
 {
@@ -601,3 +601,4 @@ public class AdoHelperMultiResultSetTests
             Times.Once);
     }
 }
+

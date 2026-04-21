@@ -1,4 +1,4 @@
-using SmartWorkz.Core.Shared.MultiTenancy;
+﻿using SmartWorkz.Shared.MultiTenancy;
 
 namespace SmartWorkz.Core.Tests.MultiTenancy;
 
@@ -402,3 +402,4 @@ public class DefaultTenantFeatureFlagsTests : IDisposable
 
     #endregion
 }
+

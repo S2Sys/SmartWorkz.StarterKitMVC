@@ -1,4 +1,4 @@
-using SmartWorkz.Core.Shared.Caching;
+using SmartWorkz.Shared.Caching;
 
 namespace SmartWorkz.Core.Tests.Caching;
 

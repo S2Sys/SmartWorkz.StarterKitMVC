@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Tests.Utilities;
+﻿namespace SmartWorkz.Core.Tests.Utilities;
 
-using SmartWorkz.Core.Shared.Utilities;
+using SmartWorkz.Shared.Utilities;
 
 public class MathHelperTests
 {
@@ -238,3 +238,4 @@ public class MathHelperTests
 
     #endregion
 }
+

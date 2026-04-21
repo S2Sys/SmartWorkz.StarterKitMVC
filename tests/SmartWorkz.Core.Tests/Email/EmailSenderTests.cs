@@ -1,7 +1,7 @@
 namespace SmartWorkz.Core.Tests.Email;
 
 using Xunit;
-using SmartWorkz.Core.Shared.Email;
+using SmartWorkz.Shared.Email;
 using System.Net.Mail;
 
 public class EmailSenderTests

@@ -1,6 +1,6 @@
 namespace SmartWorkz.Core.Tests.Data;
 
-using SmartWorkz.Core.Shared.Data;
+using SmartWorkz.Shared.Data;
 
 public class CsvHelperTests
 {

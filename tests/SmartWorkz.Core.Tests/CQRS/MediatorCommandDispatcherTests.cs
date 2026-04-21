@@ -2,7 +2,7 @@ namespace SmartWorkz.Core.Tests.CQRS;
 
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using SmartWorkz.Core.Shared.CQRS;
+using SmartWorkz.Shared.CQRS;
 using Xunit;
 
 /// <summary>

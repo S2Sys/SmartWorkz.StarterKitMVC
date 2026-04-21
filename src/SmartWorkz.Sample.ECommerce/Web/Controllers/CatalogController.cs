@@ -1,4 +1,5 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Application.Services;
@@ -131,3 +132,4 @@ public class CatalogController(
         return View(viewModel);
     }
 }
+

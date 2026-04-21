@@ -1,8 +1,8 @@
-namespace SmartWorkz.Core.Tests.Services.Notifications;
+﻿namespace SmartWorkz.Core.Tests.Services.Notifications;
 
 using Moq;
-using SmartWorkz.Core.Services.Notifications;
-using SmartWorkz.Core.Shared.Notifications;
+using SmartWorkz.Core.Notifications;
+using SmartWorkz.Shared.Notifications;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
@@ -344,3 +344,5 @@ public class FirebaseCloudMessagingServiceTests
         Assert.Null(payload.Badge);
     }
 }
+
+

@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Tests.Security;
+﻿namespace SmartWorkz.Core.Tests.Security;
 
-using SmartWorkz.Core.Shared.Security;
+using SmartWorkz.Shared;
 
 public class HmacHelperTests
 {
@@ -527,7 +527,7 @@ public class HmacHelperTests
     public void Sign_WithUnicodeCharacters_SucceedsAndVerifies()
     {
         // Arrange
-        var unicodeMessage = "Hello 世界 🌍 مرحبا";
+        var unicodeMessage = "Hello ä¸–ç•Œ ðŸŒ Ù…Ø±Ø­Ø¨Ø§";
 
         // Act
         var signResult = HmacHelper.Sign(unicodeMessage, TestSecret);
@@ -573,3 +573,5 @@ public class HmacHelperTests
 
     #endregion
 }
+
+

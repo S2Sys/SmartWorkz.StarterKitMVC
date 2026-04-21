@@ -1,4 +1,6 @@
-namespace SmartWorkz.Mobile;
+﻿namespace SmartWorkz.Mobile;
+
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 /// <summary>
 /// Provides biometric authentication services (fingerprint, face recognition, etc.).
@@ -113,3 +115,4 @@ public class BiometricService : IBiometricService
     private partial Task<bool> AuthenticateAsyncPlatform(string reason, CancellationToken ct);
     #endif
 }
+

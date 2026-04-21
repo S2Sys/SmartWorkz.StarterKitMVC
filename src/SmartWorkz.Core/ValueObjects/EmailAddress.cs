@@ -13,17 +13,17 @@ public sealed class EmailAddress : ValueObject
     public static Result<EmailAddress> Create(string? email)
     {
         if (string.IsNullOrWhiteSpace(email))
-            return Result<EmailAddress>.Failure(new Error("EMAIL_EMPTY", "Email address cannot be empty"));
+            return Result.Fail<EmailAddress>(new Error("EMAIL_EMPTY", "Email address cannot be empty"));
 
         var trimmed = email.Trim().ToLowerInvariant();
 
         if (!Regex.IsMatch(trimmed, EmailPattern))
-            return Result<EmailAddress>.Failure(new Error("EMAIL_INVALID", "Email address format is invalid"));
+            return Result.Fail<EmailAddress>(new Error("EMAIL_INVALID", "Email address format is invalid"));
 
         if (trimmed.Length > 256)
-            return Result<EmailAddress>.Failure(new Error("EMAIL_TOO_LONG", "Email address must not exceed 256 characters"));
+            return Result.Fail<EmailAddress>(new Error("EMAIL_TOO_LONG", "Email address must not exceed 256 characters"));
 
-        return Result<EmailAddress>.Success(new EmailAddress(trimmed));
+        return Result.Ok<EmailAddress>(new EmailAddress(trimmed));
     }
 
     protected override IEnumerable<object?> GetAtomicValues()
@@ -33,3 +33,5 @@ public sealed class EmailAddress : ValueObject
 
     public override string ToString() => Value;
 }
+
+

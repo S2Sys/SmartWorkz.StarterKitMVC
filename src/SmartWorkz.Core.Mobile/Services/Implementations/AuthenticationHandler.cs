@@ -1,7 +1,9 @@
-namespace SmartWorkz.Mobile;
+﻿namespace SmartWorkz.Mobile;
+
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 using System.Net.Http.Headers;
-using SmartWorkz.Shared.Security;
+using SmartWorkz.Shared;
 
 public class AuthenticationHandler : IAuthenticationHandler
 {
@@ -215,3 +217,5 @@ public class AuthenticationHandler : IAuthenticationHandler
         return Result.Ok();
     }
 }
+
+

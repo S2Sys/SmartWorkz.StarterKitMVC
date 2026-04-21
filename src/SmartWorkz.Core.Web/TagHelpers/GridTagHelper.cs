@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using SmartWorkz.Shared.Grid;
+using SmartWorkz.Shared;
 
 namespace SmartWorkz.Web;
 
@@ -40,3 +40,4 @@ public class GridTagHelper : TagHelper
         output.Content.SetContent($"<!-- Grid: {DataSource} Page Size: {PageSize} -->");
     }
 }
+

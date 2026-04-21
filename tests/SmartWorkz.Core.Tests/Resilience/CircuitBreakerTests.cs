@@ -1,4 +1,4 @@
-using SmartWorkz.Core.Shared.Resilience;
+﻿using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Tests.Resilience;
 
@@ -682,3 +682,5 @@ public class CircuitBreakerTests
 
     #endregion
 }
+
+

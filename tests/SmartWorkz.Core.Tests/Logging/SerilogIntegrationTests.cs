@@ -1,10 +1,10 @@
-namespace SmartWorkz.Core.Tests.Logging;
+﻿namespace SmartWorkz.Core.Tests.Logging;
 
 using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SmartWorkz.Core.Shared.Logging;
+using SmartWorkz.Shared.Logging;
 
 /// <summary>
 /// Integration tests for Serilog structured logging configuration.
@@ -335,3 +335,4 @@ public class SerilogIntegrationTests
 
     #endregion
 }
+

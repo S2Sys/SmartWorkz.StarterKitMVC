@@ -1,4 +1,6 @@
-namespace SmartWorkz.Mobile;
+﻿namespace SmartWorkz.Mobile;
+
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -28,3 +30,4 @@ internal class DeviceInfoInterceptor(
         await Task.CompletedTask;
     }
 }
+

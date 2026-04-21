@@ -1,5 +1,5 @@
-using SmartWorkz.Core.Shared.Caching;
-using SmartWorkz.Core.Shared.Results;
+﻿using SmartWorkz.Shared.Caching;
+using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Tests.Caching;
 
@@ -574,3 +574,4 @@ public class MemoryCacheStoreTests
 
     #endregion
 }
+
