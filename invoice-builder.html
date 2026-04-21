@@ -207,12 +207,12 @@ function calc() {
     document.getElementById('words').textContent = 'Rupees ' + numberToWords(Math.round(total));
 }
 
-function getInvoiceHtml(items, subtotal, taxRate, tax, total) {
+function getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, client, addr, city, country, pan, words) {
     return `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Invoice - ${document.getElementById('invNo').value}</title>
+    <title>Invoice - ${invNo}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: white; padding: 0; }
@@ -269,16 +269,16 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total) {
         </div>
         <div class="content">
             <div class="invoice-info">
-                <p class="inv-no">Invoice #${document.getElementById('invNo').value}</p>
-                <p class="inv-date">Date: ${document.getElementById('invDate').value}</p>
+                <p class="inv-no">Invoice #${invNo}</p>
+                <p class="inv-date">Date: ${invDate}</p>
             </div>
             <div class="billing">
                 <div>
                     <h3>Bill To</h3>
-                    <p><strong>${document.getElementById('client').value}</strong></p>
-                    <p>${document.getElementById('addr').value}</p>
-                    <p>${document.getElementById('city').value}</p>
-                    <p>${document.getElementById('country').value}</p>
+                    <p><strong>${client}</strong></p>
+                    <p>${addr}</p>
+                    <p>${city}</p>
+                    <p>${country}</p>
                 </div>
                 <div>
                     <h3>From</h3>
@@ -326,10 +326,10 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total) {
             </div>
             <div class="amount-words">
                 <p><strong>Amount in Words:</strong></p>
-                <p class="words-value">${document.getElementById('words').textContent}</p>
+                <p class="words-value">${words}</p>
             </div>
             <div class="footer">
-                <p><strong>PAN Number:</strong> ${document.getElementById('pan').value}</p>
+                <p><strong>PAN Number:</strong> ${pan}</p>
                 <p style="margin-top: 8px;"><strong>Place of Supply:</strong> Tamil Nadu</p>
                 <h4 style="margin-top: 15px; margin-bottom: 10px; font-weight: 700;">Our Banker's Details</h4>
                 <div class="bank-details">
@@ -377,7 +377,16 @@ function downloadInvoice() {
     const tax = (subtotal * taxRate) / 100;
     const total = subtotal + tax;
 
-    const html = getInvoiceHtml(items, subtotal, taxRate, tax, total);
+    const invNo = document.getElementById('invNo').value;
+    const invDate = document.getElementById('invDate').value;
+    const client = document.getElementById('client').value;
+    const addr = document.getElementById('addr').value;
+    const city = document.getElementById('city').value;
+    const country = document.getElementById('country').value;
+    const pan = document.getElementById('pan').value;
+    const words = document.getElementById('words').textContent;
+
+    const html = getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, client, addr, city, country, pan, words);
 
     const blob = new Blob([html], {type: 'text/html;charset=utf-8'});
     const url = URL.createObjectURL(blob);
@@ -414,7 +423,16 @@ function printInvoice() {
     const tax = (subtotal * taxRate) / 100;
     const total = subtotal + tax;
 
-    const html = getInvoiceHtml(items, subtotal, taxRate, tax, total);
+    const invNo = document.getElementById('invNo').value;
+    const invDate = document.getElementById('invDate').value;
+    const client = document.getElementById('client').value;
+    const addr = document.getElementById('addr').value;
+    const city = document.getElementById('city').value;
+    const country = document.getElementById('country').value;
+    const pan = document.getElementById('pan').value;
+    const words = document.getElementById('words').textContent;
+
+    const html = getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, client, addr, city, country, pan, words);
 
     const printWindow = window.open('', '', 'width=900,height=700');
     printWindow.document.write(html);
