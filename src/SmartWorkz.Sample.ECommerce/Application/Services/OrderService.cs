@@ -18,18 +18,18 @@ public class OrderService(
 
         var validation = await checkoutValidator.ValidateAsync(checkout);
         if (!validation.IsValid)
-            return Result<int>.Failure(new Error("Validation.Failed", validation.Failures.First().Message));
+            return Result.Fail<int>(new Error("Validation.Failed", validation.Failures.First().Message));
 
         if (!cart.Items.Any())
-            return Result<int>.Failure(new Error("Order.CartEmpty", "Cart is empty"));
+            return Result.Fail<int>(new Error("Order.CartEmpty", "Cart is empty"));
 
         var addressResult = Address.Create(checkout.Street, checkout.City, checkout.State, checkout.PostalCode, checkout.Country);
         if (!addressResult.Succeeded)
-            return Result<int>.Failure(addressResult.Error!);
+            return Result.Fail<int>(addressResult.Error!);
 
         var totalResult = Money.Create(cart.Total, "USD");
         if (!totalResult.Succeeded)
-            return Result<int>.Failure(totalResult.Error!);
+            return Result.Fail<int>(totalResult.Error!);
 
         var order = new Order
         {
@@ -42,7 +42,7 @@ public class OrderService(
         {
             var itemPriceResult = Money.Create(item.UnitPrice, "USD");
             if (!itemPriceResult.Succeeded)
-                return Result<int>.Failure(itemPriceResult.Error!);
+                return Result.Fail<int>(itemPriceResult.Error!);
 
             order.Items.Add(new OrderItem
             {
@@ -60,7 +60,7 @@ public class OrderService(
         // Clear events after handling
         order.ClearDomainEvents();
 
-        return Result<int>.Success(order.Id);
+        return Result.Ok(order.Id);
     }
 }
 

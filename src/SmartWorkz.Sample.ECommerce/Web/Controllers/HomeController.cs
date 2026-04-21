@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartWorkz.Core;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Application.Services;
 
