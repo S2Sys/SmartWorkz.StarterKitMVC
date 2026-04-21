@@ -13,6 +13,7 @@
     <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
     <PackageReference Include="Xamarin.AndroidX.Biometric" Version="1.1.0.32" Condition="'$(TargetFramework)' == 'net9.0-android'" />
+    <PackageReference Include="Xamarin.Firebase.Messaging" Version="125.0.1.2" Condition="'$(TargetFramework)' == 'net9.0-android'" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../SmartWorkz.Core.Shared/SmartWorkz.Core.Shared.csproj" />
