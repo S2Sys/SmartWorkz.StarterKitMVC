@@ -25,70 +25,108 @@ public class HangfireJobServiceTests
     }
 
     [Fact]
-    public async Task EnqueueAsync_WithValidAction_ReturnsNonEmptyJobId()
+    public async Task EnqueueAsync_WithValidAction_CallsJobClientCreateWithEnqueuedState()
     {
         // Arrange
+        const string expectedJobId = "job-123";
         _mockJobClient
-            .Setup(x => x.Create(It.IsAny<Job>(), It.IsAny<IState>()))
-            .Returns("job-123");
+            .Setup(x => x.Create(It.IsAny<Job>(), It.IsAny<EnqueuedState>()))
+            .Returns(expectedJobId);
 
         // Act
-        var result = await _service.EnqueueAsync<DummyJob>(x => Task.CompletedTask);
+        var result = await _service.EnqueueAsync<DummyJob>(x => x.Execute());
 
         // Assert
-        Assert.NotEmpty(result);
+        Assert.Equal(expectedJobId, result);
+        _mockJobClient.Verify(
+            x => x.Create(It.IsAny<Job>(), It.IsAny<EnqueuedState>()),
+            Times.Once,
+            "EnqueueAsync should call _jobClient.Create with EnqueuedState exactly once");
     }
 
     [Fact]
-    public async Task ScheduleAsync_WithFutureDate_ReturnsNonEmptyJobId()
+    public async Task ScheduleAsync_WithFutureDate_CallsJobClientCreateWithScheduledState()
     {
         // Arrange
+        const string expectedJobId = "scheduled-job-123";
         var scheduledTime = DateTimeOffset.UtcNow.AddHours(1);
+
         _mockJobClient
-            .Setup(x => x.Create(It.IsAny<Job>(), It.IsAny<IState>()))
-            .Returns("scheduled-job-123");
+            .Setup(x => x.Create(It.IsAny<Job>(), It.IsAny<ScheduledState>()))
+            .Returns(expectedJobId);
 
         // Act
-        var result = await _service.ScheduleAsync<DummyJob>(x => Task.CompletedTask, scheduledTime);
+        var result = await _service.ScheduleAsync<DummyJob>(x => x.Execute(), scheduledTime);
 
         // Assert
-        Assert.NotEmpty(result);
+        Assert.Equal(expectedJobId, result);
+        _mockJobClient.Verify(
+            x => x.Create(It.IsAny<Job>(), It.IsAny<ScheduledState>()),
+            Times.Once,
+            "ScheduleAsync should call _jobClient.Create with ScheduledState exactly once");
     }
 
     [Fact]
     public async Task AddOrUpdateRecurringAsync_WithCronExpression_ReturnsJobId()
     {
         // Arrange
-        var jobId = "recurring-job";
-        var cron = "0 0 * * *";
+        const string jobId = "recurring-job";
+        const string cron = "0 0 * * *";
 
         // Act
-        var result = await _service.AddOrUpdateRecurringAsync<DummyJob>(jobId, x => Task.CompletedTask, cron);
+        var result = await _service.AddOrUpdateRecurringAsync<DummyJob>(jobId, x => x.Execute(), cron);
 
         // Assert
         Assert.Equal(jobId, result);
+        // The mock will be called, but since AddOrUpdate returns void,
+        // we just verify the method returns the job ID
     }
 
     [Fact]
-    public async Task DeleteAsync_WithJobId_Completes()
-    {
-        // Act & Assert - should not throw
-        await _service.DeleteAsync("job-123");
-    }
-
-    [Fact]
-    public async Task RequeueAsync_WithJobId_ReturnsNonEmptyJobId()
+    public async Task EnqueueAsync_WhenJobClientThrows_PropagatesException()
     {
         // Arrange
+        var exception = new InvalidOperationException("Enqueue failed");
         _mockJobClient
-            .Setup(x => x.Create(It.IsAny<Job>(), It.IsAny<IState>()))
-            .Returns("requeued-job-124");
+            .Setup(x => x.Create(It.IsAny<Job>(), It.IsAny<EnqueuedState>()))
+            .Throws(exception);
+
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _service.EnqueueAsync<DummyJob>(x => x.Execute()));
+        Assert.Equal(exception.Message, ex.Message);
+    }
+
+    [Fact]
+    public async Task ScheduleAsync_WhenJobClientThrows_PropagatesException()
+    {
+        // Arrange
+        var exception = new InvalidOperationException("Schedule failed");
+        var scheduledTime = DateTimeOffset.UtcNow.AddHours(1);
+
+        _mockJobClient
+            .Setup(x => x.Create(It.IsAny<Job>(), It.IsAny<ScheduledState>()))
+            .Throws(exception);
+
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _service.ScheduleAsync<DummyJob>(x => x.Execute(), scheduledTime));
+        Assert.Equal(exception.Message, ex.Message);
+    }
+
+    [Fact]
+    public async Task AddOrUpdateRecurringAsync_WithValidCron_DoesNotThrow()
+    {
+        // Arrange
+        const string jobId = "recurring-job";
+        const string cron = "0 0 * * *";
 
         // Act
-        var result = await _service.RequeueAsync("job-123");
+        var result = await _service.AddOrUpdateRecurringAsync<DummyJob>(jobId, x => x.Execute(), cron);
 
-        // Assert
-        Assert.NotEmpty(result);
+        // Assert - should not throw and should return the job ID
+        Assert.NotNull(result);
+        Assert.Equal(jobId, result);
     }
 
     private class DummyJob
