@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using SmartWorkz.Core.Abstractions;
+using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 
 namespace SmartWorkz.Sample.ECommerce.Web.Controllers;

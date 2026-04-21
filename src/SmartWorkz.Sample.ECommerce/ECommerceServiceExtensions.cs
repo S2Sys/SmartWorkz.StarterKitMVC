@@ -1,9 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using SmartWorkz.Core.Shared.Security;
-using SmartWorkz.Core.Shared.Events;
-using SmartWorkz.Core.Shared.Mapping;
-using SmartWorkz.Core.Shared.Data;
-using SmartWorkz.Core.Abstractions;
+using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.Mapping;
 using SmartWorkz.Sample.ECommerce.Application.Services;
 using SmartWorkz.Sample.ECommerce.Application.Validators;
