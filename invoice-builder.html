@@ -222,17 +222,18 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, cl
     <title>Invoice - ${invNo}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: white; padding: 0; }
+        html { height: 100%; overflow: auto; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: white; padding: 0; min-height: 100%; overflow-x: hidden; }
         @media print { body { background: white; margin: 0; padding: 0; } }
         .toolbar { display: flex; gap: 10px; justify-content: flex-end; margin-bottom: 20px; max-width: 210mm; margin: 0 auto 20px; padding: 20px; background: white; }
         .toolbar button { padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
         .toolbar button.secondary { background: white; color: #2563eb; border: 1px solid #2563eb; }
-        .invoice { width: 210mm; height: auto; background: white; margin: 0 auto; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .header { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d9e75 100%); color: white; padding: 40px 30px; margin: 0 0 30px 0; display: flex; align-items: center; gap: 20px; }
-        .header-logo { width: 100px; height: 80px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .invoice { width: 210mm; min-height: 100vh; background: white; margin: 0 auto; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d9e75 100%); color: white; padding: 25px 30px; margin: 0 0 30px 0; display: flex; align-items: center; gap: 20px; }
+        .header-logo { width: 80px; height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .header-logo img { width: 100%; height: 100%; object-fit: contain; filter: brightness(0) invert(1); }
-        .header-content h1 { margin: 0; font-size: 42px; font-weight: 900; letter-spacing: -1px; }
-        .header-content p { margin: 8px 0 0 0; font-size: 15px; font-weight: 500; }
+        .header-content h1 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -1px; }
+        .header-content p { margin: 6px 0 0 0; font-size: 12px; font-weight: 500; }
         .content { padding: 0 30px; background: white; }
         .invoice-info { text-align: right; margin-bottom: 25px; border-bottom: 2px solid #e5e7eb; padding-bottom: 15px; }
         .invoice-info p { margin: 4px 0; font-size: 13px; }
