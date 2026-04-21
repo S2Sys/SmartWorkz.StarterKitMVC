@@ -12,6 +12,6 @@
     <PackageReference Include="System.Reactive" Version="6.0.1" Condition="'$(TargetFramework)' != 'net9.0-windows10.0.19041.0'" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../SmartWorkz.Core.Shared/SmartWorkz.Core.Shared.csproj" Condition="'$(TargetFramework)' != 'net9.0-windows10.0.19041.0'" />
+    <ProjectReference Include="../SmartWorkz.Core.Shared/SmartWorkz.Core.Shared.csproj" />
   </ItemGroup>
 </Project>
