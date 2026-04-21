@@ -1,5 +1,7 @@
 namespace SmartWorkz.Core.Tests.Fixtures;
 
+using SmartWorkz.Core.Shared.Guards;
+
 /// <summary>
 /// Fluent builder for creating test data with sensible defaults.
 /// Supports building various domain entities for integration tests.
@@ -99,7 +101,7 @@ public class TestDataBuilder
 
         public DomainEventBuilder(TestDataBuilder parent)
         {
-            _parent = parent;
+            _parent = Guard.NotNull(parent, nameof(parent));
         }
 
         public DomainEventBuilder WithId(Guid id) { _id = id; return this; }
@@ -125,7 +127,7 @@ public class TestDataBuilder
 
         public EventStoreRecordBuilder(TestDataBuilder parent)
         {
-            _parent = parent;
+            _parent = Guard.NotNull(parent, nameof(parent));
         }
 
         public EventStoreRecordBuilder WithId(Guid id) { _id = id; return this; }
@@ -149,7 +151,7 @@ public class TestDataBuilder
 
         public BackgroundJobBuilder(TestDataBuilder parent)
         {
-            _parent = parent;
+            _parent = Guard.NotNull(parent, nameof(parent));
         }
 
         public BackgroundJobBuilder WithId(string id) { _id = id; return this; }
@@ -179,7 +181,7 @@ public class TestDataBuilder
 
         public FileMetadataBuilder(TestDataBuilder parent)
         {
-            _parent = parent;
+            _parent = Guard.NotNull(parent, nameof(parent));
         }
 
         public FileMetadataBuilder WithId(Guid id) { _id = id; return this; }
