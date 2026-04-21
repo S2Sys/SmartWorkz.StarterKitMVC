@@ -57,10 +57,20 @@ internal class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
         try
         {
             var httpContext = context.GetHttpContext();
-            return httpContext?.User?.Identity?.IsAuthenticated ?? false;
+            var isAuthenticated = httpContext?.User?.Identity?.IsAuthenticated ?? false;
+
+            if (!isAuthenticated)
+            {
+                // Unauthenticated access attempt
+                System.Diagnostics.Debug.WriteLine("Unauthenticated access to Hangfire dashboard");
+            }
+
+            return isAuthenticated;
         }
-        catch
+        catch (Exception ex)
         {
+            // Authorization check failed - log and deny access
+            System.Diagnostics.Debug.WriteLine($"Failed to authorize dashboard access: {ex.Message}");
             return false;
         }
     }

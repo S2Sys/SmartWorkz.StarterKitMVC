@@ -23,7 +23,8 @@
       "PowerShell($json = Get-Content 'src/SmartWorkz.Sample.ECommerce/Properties/launchSettings.json' | ConvertFrom-Json; $json.profiles.'SmartWorkz.Sample.ECommerce'.applicationUrl = 'http://localhost:5555'; $json | ConvertTo-Json | Set-Content 'src/SmartWorkz.Sample.ECommerce/Properties/launchSettings.json'; Write-Host \"Changed port to 5555\"; Get-Content 'src/SmartWorkz.Sample.ECommerce/Properties/launchSettings.json')",
       "PowerShell(Get-Process | Where-Object {$_.ProcessName -match \"dotnet|SmartWorkz\"}; Write-Host \"---\"; netstat -ano | Select-String \"9000|listening\" | Head -5)",
       "PowerShell(curl -v http://localhost:9000 2>&1)",
-      "Read(//c/Users/tsent/source/repos/S2Sys/SmartWorkz.Core.Shared/Templates/**)"
+      "Read(//c/Users/tsent/source/repos/S2Sys/SmartWorkz.Core.Shared/Templates/**)",
+      "Read(//c/Users/tsent/source/repos/S2Sys/**)"
     ],
     "additionalDirectories": [
       "C:\\Users\\tsent\\.claude\\projects\\c--Users-tsent-source-repos-S2Sys-SmartWorkz-StarterKitMVC\\plans",
