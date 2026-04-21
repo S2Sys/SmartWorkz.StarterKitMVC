@@ -151,7 +151,7 @@ public class ApiClient : IApiClient
     public async Task<Result<T>> GetAsync<T>(string endpoint, int retryCount, TimeSpan timeout, CancellationToken ct = default)
     {
         Guard.NotEmpty(endpoint, nameof(endpoint));
-        Guard.Argument(retryCount > 0, nameof(retryCount), "Retry count must be greater than 0");
+        Guard.Requires(retryCount > 0, nameof(retryCount), "Retry count must be greater than 0");
 
         ct.ThrowIfCancellationRequested();
 
