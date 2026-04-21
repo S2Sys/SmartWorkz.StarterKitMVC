@@ -53,24 +53,32 @@ public partial class BiometricService
             return false;
 
         var promptInfo = new BiometricPrompt.PromptInfo.Builder()
-            .SetTitle("Biometric Authentication")
+            .SetTitle(reason ?? "Biometric Authentication")
             .SetSubtitle("Authenticate to continue")
             .SetNegativeButtonText("Cancel")
             .Build();
 
         var tcs = new TaskCompletionSource<bool>();
-
         var callback = new BiometricAuthCallback(tcs);
+
+        // Register cancellation BEFORE calling Authenticate
+        ct.Register(() => tcs.TrySetCanceled());
 
         MainThread.BeginInvokeOnMainThread(() =>
         {
             var fragmentActivity = Platform.CurrentActivity as FragmentActivity;
-            var executor = new MainThreadExecutor();
+            if (fragmentActivity == null)
+            {
+                _logger.LogError("Platform.CurrentActivity is not a FragmentActivity");
+                tcs.TrySetResult(false);
+                return;
+            }
+
+            var executor = MainThreadExecutor.Instance;
             var biometricPrompt = new BiometricPrompt(fragmentActivity, executor, callback);
             biometricPrompt.Authenticate(promptInfo);
         });
 
-        ct.Register(() => tcs.TrySetCanceled());
         return await tcs.Task;
     }
 
@@ -104,8 +112,13 @@ public partial class BiometricService
 
     private class MainThreadExecutor : Java.Lang.Object, Java.Util.Concurrent.IExecutor
     {
-        public void Execute(IRunnable runnable)
+        public static readonly MainThreadExecutor Instance = new();
+
+        public void Execute(IRunnable? runnable)
         {
+            if (runnable == null)
+                return;
+
             MainThread.BeginInvokeOnMainThread(() => runnable.Run());
         }
     }
