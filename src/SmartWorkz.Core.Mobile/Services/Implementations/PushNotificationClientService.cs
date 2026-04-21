@@ -8,7 +8,7 @@ internal partial class PushNotificationClientService : IPushNotificationClientSe
     private readonly IApiClient _apiClient;
     private readonly ISecureStorageService _secureStorageService;
     private readonly IMobileContext _mobileContext;
-    private readonly ILogger _logger;
+    private readonly ILogger<PushNotificationClientService> _logger;
 
     private const string PushTokenKey = "fcm::device_token";
 
@@ -16,7 +16,7 @@ internal partial class PushNotificationClientService : IPushNotificationClientSe
         IApiClient apiClient,
         ISecureStorageService secureStorageService,
         IMobileContext mobileContext,
-        ILogger logger)
+        ILogger<PushNotificationClientService> logger)
     {
         _apiClient = Guard.NotNull(apiClient, nameof(apiClient));
         _secureStorageService = Guard.NotNull(secureStorageService, nameof(secureStorageService));
@@ -50,7 +50,7 @@ internal partial class PushNotificationClientService : IPushNotificationClientSe
             if (!result.Succeeded)
             {
                 _logger.LogWarning("Failed to register push token with backend: {ErrorCode}", result.Error?.Code ?? "UNKNOWN");
-                return result.AsError();
+                return Result.Fail(result.Error ?? new Error("PUSH.REGISTRATION_FAILED", "Backend registration failed"));
             }
 
             _logger.LogInformation("Push notifications registered");

@@ -60,12 +60,14 @@ public static class ServiceCollectionExtensions
         // - IBiometricService: Handles biometric verification per request
         // - IErrorHandler: Processes errors per request context
         // - IApiClient: Makes HTTP requests with scoped client instance
+        // - IPushNotificationClientService: Handles push notification registration/unregistration
         services.AddScoped<IAuthenticationHandler, AuthenticationHandler>();
         services.AddScoped<ISyncService, SyncService>();
         services.AddScoped<IOfflineService, OfflineService>();
         services.AddScoped<IBiometricService, BiometricService>();
         services.AddScoped<IErrorHandler, ErrorHandler>();
         services.AddScoped<IApiClient, ApiClient>();
+        services.AddScoped<IPushNotificationClientService, PushNotificationClientService>();
         services.AddScoped(provider => new Lazy<IApiClient>(() => provider.GetRequiredService<IApiClient>()));
 
         // NOTE: IRequestInterceptor is NOT registered by default
