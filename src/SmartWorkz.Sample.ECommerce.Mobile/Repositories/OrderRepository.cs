@@ -53,6 +53,9 @@ public class OrderRepository
                 return Result.Fail<int>(result.Error!);
             }
 
+            // API response should always include OrderId > 0 on success.
+            // If missing, log warning but return 0 rather than failing,
+            // allowing client to retry or handle gracefully.
             var orderId = result.Data?.OrderId ?? 0;
             if (orderId > 0)
             {
