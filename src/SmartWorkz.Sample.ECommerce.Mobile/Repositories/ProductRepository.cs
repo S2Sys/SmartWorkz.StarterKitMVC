@@ -82,7 +82,7 @@ public class ProductRepository
                 _logger.LogDebug("Product {ProductId} cached", id);
             }
 
-            return Result.Ok(product!);
+            return Result.Ok(product);
         }
         catch (Exception ex)
         {
