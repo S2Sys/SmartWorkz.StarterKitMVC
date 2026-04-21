@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Mobile;
+namespace SmartWorkz.Mobile;
 
 using Microsoft.Extensions.Logging;
 

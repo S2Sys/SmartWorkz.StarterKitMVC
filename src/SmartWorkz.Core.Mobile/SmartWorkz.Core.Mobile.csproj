@@ -5,6 +5,7 @@
     <SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>SmartWorkz.Mobile</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" Condition="'$(TargetFramework)' != 'net9.0-windows10.0.19041.0'" />

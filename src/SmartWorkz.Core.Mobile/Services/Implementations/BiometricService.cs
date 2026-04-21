@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Mobile;
+namespace SmartWorkz.Mobile;
 
 /// <summary>
 /// Provides biometric authentication services (fingerprint, face recognition, etc.).

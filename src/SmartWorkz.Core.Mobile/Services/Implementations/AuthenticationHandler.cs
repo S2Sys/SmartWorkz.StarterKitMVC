@@ -1,7 +1,7 @@
-namespace SmartWorkz.Core.Mobile;
+namespace SmartWorkz.Mobile;
 
 using System.Net.Http.Headers;
-using SmartWorkz.Core.Shared.Security;
+using SmartWorkz.Shared.Security;
 
 public class AuthenticationHandler : IAuthenticationHandler
 {

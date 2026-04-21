@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Mobile;
+namespace SmartWorkz.Mobile;
 
 using System.Reactive;
 using System.Reactive.Linq;

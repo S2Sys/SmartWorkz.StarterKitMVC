@@ -1,8 +1,8 @@
-namespace SmartWorkz.Core.Mobile;
+namespace SmartWorkz.Mobile;
 
 using System.Net.Http.Json;
 using Microsoft.Extensions.Options;
-using SmartWorkz.Core.Shared.Response;
+using SmartWorkz.Shared.Response;
 
 public class ApiClient : IApiClient
 {

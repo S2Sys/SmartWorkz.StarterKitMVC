@@ -4,7 +4,7 @@ global using System.Text.Json;
 global using System.Reactive;
 #endif
 
-global using SmartWorkz.Core.Shared.Results;
-global using SmartWorkz.Core.Shared.Guards;
-global using SmartWorkz.Core.Shared.Logging;
-global using SmartWorkz.Core.Shared.Http;
+global using SmartWorkz.Shared.Results;
+global using SmartWorkz.Shared.Guards;
+global using SmartWorkz.Shared.Logging;
+global using SmartWorkz.Shared.Http;

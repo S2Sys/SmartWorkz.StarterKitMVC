@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Mobile;
+namespace SmartWorkz.Mobile;
 
 /// <summary>
 /// Provides stable platform and device context information.

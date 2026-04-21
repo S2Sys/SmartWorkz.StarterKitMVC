@@ -1,8 +1,8 @@
-namespace SmartWorkz.Core.Mobile;
+namespace SmartWorkz.Mobile;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SmartWorkz.Core.Shared.Resilience;
+using SmartWorkz.Shared.Resilience;
 using System.Collections.Generic;
 using System.Linq;
 
