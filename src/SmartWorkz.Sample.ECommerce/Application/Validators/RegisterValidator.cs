@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using SmartWorkz.Core;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 
 namespace SmartWorkz.Sample.ECommerce.Application.Validators;
