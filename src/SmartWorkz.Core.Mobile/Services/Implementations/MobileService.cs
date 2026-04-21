@@ -56,7 +56,25 @@ public class MobileService : IMobileService
     /// </summary>
     public string GetDeviceId()
     {
-        return DeviceInfo.Current.Name ?? "unknown";
+        try
+        {
+            // Check if device ID is already stored in Preferences
+            if (Preferences.ContainsKey("device_id"))
+            {
+                return Preferences.Get("device_id", "");
+            }
+
+            // Generate new device ID and store it
+            var deviceId = Guid.NewGuid().ToString();
+            Preferences.Set("device_id", deviceId);
+            return deviceId;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning($"Failed to get/store device ID from preferences: {ex.Message}");
+            // Fallback to machine name if preferences fails
+            return Environment.MachineName;
+        }
     }
 
     /// <summary>
