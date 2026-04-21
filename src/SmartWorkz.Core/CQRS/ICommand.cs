@@ -1,7 +1,5 @@
 ﻿namespace SmartWorkz.Core;
 
-using SmartWorkz.Core.Shared.CQRS;
-
 /// <summary>
 /// Marker interface for command objects representing intent to change state.
 /// </summary>
@@ -9,8 +7,8 @@ using SmartWorkz.Core.Shared.CQRS;
 /// Commands are part of the CQRS pattern and represent operations that modify state.
 /// Each command should be handled by exactly one command handler.
 ///
-/// This interface is re-exported from SmartWorkz.Core.Shared for convenience.
+/// This interface is re-exported from SmartWorkz.Shared for convenience.
 /// </remarks>
-public interface ICommand : SmartWorkz.Core.Shared.CQRS.ICommand
+public interface ICommand : SmartWorkz.Shared.ICommand
 {
 }
