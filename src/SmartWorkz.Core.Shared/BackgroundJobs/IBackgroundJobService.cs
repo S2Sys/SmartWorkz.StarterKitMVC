@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.BackgroundJobs;
+namespace SmartWorkz.Core.Services.BackgroundJobs;
 
 public interface IBackgroundJobService
 {

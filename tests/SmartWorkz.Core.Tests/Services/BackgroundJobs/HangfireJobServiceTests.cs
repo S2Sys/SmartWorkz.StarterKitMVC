@@ -4,7 +4,7 @@ using Hangfire;
 using Hangfire.Common;
 using Hangfire.States;
 using Moq;
-using SmartWorkz.Core.Shared.BackgroundJobs;
+using SmartWorkz.Core.Services.BackgroundJobs;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
