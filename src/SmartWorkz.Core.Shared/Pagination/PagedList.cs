@@ -1,5 +1,7 @@
 namespace SmartWorkz.Shared;
 
+using System.Text.Json.Serialization;
+
 /// <summary>
 /// A page of items with metadata.
 /// Replaces PaginationResponse&lt;T&gt; in StarterKitMVC.Shared.DTOs.
@@ -17,7 +19,8 @@ public sealed class PagedList<T>
     public bool HasNextPage => Page < TotalPages;
     public bool HasPreviousPage => Page > 1;
 
-    private PagedList(IReadOnlyList<T> items, int page, int pageSize, int totalCount)
+    [JsonConstructor]
+    public PagedList(IReadOnlyList<T> items, int page, int pageSize, int totalCount)
     {
         Items = items;
         Page = page;

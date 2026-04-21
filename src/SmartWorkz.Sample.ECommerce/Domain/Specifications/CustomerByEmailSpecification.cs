@@ -8,7 +8,7 @@ public class CustomerByEmailSpecification : Specification<Customer>
 {
     public CustomerByEmailSpecification(string email)
     {
-        AddCriteria(c => c.Email.Value == email);
+        AddCriteria(c => c.EmailValue.ToLower() == email.ToLower());
     }
 }
 

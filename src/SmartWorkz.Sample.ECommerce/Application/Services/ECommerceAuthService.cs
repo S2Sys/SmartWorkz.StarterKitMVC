@@ -28,6 +28,7 @@ public class ECommerceAuthService(
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             Email = emailResult.Data!,
+            EmailValue = emailResult.Data!.Value,
             PasswordHash = EncryptionHelper.HashPassword(dto.Password)
         };
         await customerRepo.AddAsync(customer);
