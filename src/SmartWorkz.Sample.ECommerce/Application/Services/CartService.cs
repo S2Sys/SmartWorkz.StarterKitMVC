@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Http;
-using SmartWorkz.Core.Abstractions;
+using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 using System.Text.Json;

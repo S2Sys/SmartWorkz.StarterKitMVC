@@ -1,4 +1,4 @@
-using SmartWorkz.Core.Shared.Specifications;
+using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 
 namespace SmartWorkz.Sample.ECommerce.Domain.Specifications;

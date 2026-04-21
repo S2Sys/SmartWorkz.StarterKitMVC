@@ -1,8 +1,4 @@
 using SmartWorkz.Core;
-using SmartWorkz.Core.Abstractions;
-using SmartWorkz.Core.Shared.Events;
-using SmartWorkz.Core.Shared.Guards;
-using SmartWorkz.Core.ValueObjects;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Application.Validators;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;

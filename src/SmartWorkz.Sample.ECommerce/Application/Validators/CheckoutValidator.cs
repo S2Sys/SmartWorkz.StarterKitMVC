@@ -1,4 +1,4 @@
-using SmartWorkz.Core.Shared.Validation;
+using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 
 namespace SmartWorkz.Sample.ECommerce.Application.Validators;

@@ -1,4 +1,4 @@
-using SmartWorkz.Core.ValueObjects;
+using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 
 namespace SmartWorkz.Sample.ECommerce.Infrastructure.Data;

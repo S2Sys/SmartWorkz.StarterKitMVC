@@ -1,6 +1,5 @@
 using Dapper;
-using SmartWorkz.Core.Shared.Data;
-using SmartWorkz.Core.Shared.Guards;
+using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using System.Data;
 

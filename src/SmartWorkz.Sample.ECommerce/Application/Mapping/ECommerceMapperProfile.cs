@@ -1,5 +1,4 @@
-using SmartWorkz.Core.Shared.Guards;
-using SmartWorkz.Core.Shared.Mapping;
+using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 

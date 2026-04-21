@@ -1,6 +1,4 @@
-using SmartWorkz.Core.Services;
-using SmartWorkz.Core.Shared.Mapping;
-using SmartWorkz.Core.Abstractions;
+using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 using SmartWorkz.Sample.ECommerce.Domain.Specifications;

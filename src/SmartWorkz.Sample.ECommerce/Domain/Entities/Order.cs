@@ -1,6 +1,4 @@
-using SmartWorkz.Core.Abstractions;
-using SmartWorkz.Core.Shared.Base_Classes;
-using SmartWorkz.Core.ValueObjects;
+using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Domain.Enums;
 using SmartWorkz.Sample.ECommerce.Domain.Events;
 

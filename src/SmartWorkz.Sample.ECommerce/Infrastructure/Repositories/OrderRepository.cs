@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
-using SmartWorkz.Core.Abstractions;
-using SmartWorkz.Core.Shared.Specifications;
+using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 using SmartWorkz.Sample.ECommerce.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;

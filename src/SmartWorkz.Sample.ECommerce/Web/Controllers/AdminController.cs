@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using SmartWorkz.Core.Abstractions;
-using SmartWorkz.Core.Shared.Mapping;
-using SmartWorkz.Core.ValueObjects;
+using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 using SmartWorkz.Sample.ECommerce.Web.Models;

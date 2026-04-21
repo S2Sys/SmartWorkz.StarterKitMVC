@@ -1,6 +1,4 @@
-using SmartWorkz.Core.Entities;
-using SmartWorkz.Core.Abstractions;
-using SmartWorkz.Core.ValueObjects;
+using SmartWorkz.Core;
 
 namespace SmartWorkz.Sample.ECommerce.Domain.Entities;
 
