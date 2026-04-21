@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Tests.Fixtures;
+﻿namespace SmartWorkz.Core.Tests.Fixtures;
 
 using System.Data;
 using Dapper;
@@ -47,10 +47,8 @@ public class DatabaseFixture : IAsyncLifetime
         _connection?.Dispose();
 
         // Drop test database
-        using (var connection = new SqlConnection("Server=(localdb)\\mssqllocaldb;Integrated Security=true;"))
         {
             await connection.OpenAsync();
-            using (var cmd = connection.CreateCommand())
             {
                 cmd.CommandText = $@"
                     ALTER DATABASE [{_testDatabaseName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
@@ -153,7 +151,6 @@ public class DatabaseFixture : IAsyncLifetime
             DELETE FROM [DomainEvents];
         ";
 
-        using (var cmd = _connection!.CreateCommand())
         {
             cmd.CommandText = cleanup;
             await cmd.ExecuteNonQueryAsync();

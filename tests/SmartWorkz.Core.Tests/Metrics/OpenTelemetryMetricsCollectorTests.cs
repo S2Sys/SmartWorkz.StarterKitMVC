@@ -1,9 +1,10 @@
 ﻿namespace SmartWorkz.Core.Tests.Metrics;
 
-using SmartWorkz.Shared.Metrics;
+using SmartWorkz.Shared;
 using Moq;
 using Xunit;
 using Microsoft.Extensions.Logging;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 public class OpenTelemetryMetricsCollectorTests
 {

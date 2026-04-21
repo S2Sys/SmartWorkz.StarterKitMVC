@@ -1,5 +1,4 @@
-using SmartWorkz.Shared.EventSourcing;
-using SmartWorkz.Shared.Events;
+﻿using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Tests.EventSourcing;
 
@@ -17,7 +16,7 @@ internal class InMemoryEventStore : IEventStore
     /// </summary>
     public Task AppendEventsAsync(
         string aggregateId,
-        IEnumerable<SmartWorkz.Core.Shared.Events.IDomainEvent> events,
+        IEnumerable<IDomainEvent> events,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(aggregateId))
@@ -63,7 +62,7 @@ internal class InMemoryEventStore : IEventStore
     /// <summary>
     /// Retrieves all events for an aggregate in chronological order.
     /// </summary>
-    public Task<IEnumerable<SmartWorkz.Core.Shared.Events.IDomainEvent>> GetEventsAsync(
+    public Task<IEnumerable<IDomainEvent>> GetEventsAsync(
         string aggregateId,
         CancellationToken cancellationToken = default)
     {
@@ -74,7 +73,7 @@ internal class InMemoryEventStore : IEventStore
 
         if (!_events.ContainsKey(aggregateId))
         {
-            return Task.FromResult(Enumerable.Empty<SmartWorkz.Core.Shared.Events.IDomainEvent>());
+            return Task.FromResult(Enumerable.Empty<IDomainEvent>());
         }
 
         var events = _events[aggregateId]
@@ -88,7 +87,7 @@ internal class InMemoryEventStore : IEventStore
     /// <summary>
     /// Retrieves events for an aggregate after a specific version.
     /// </summary>
-    public Task<IEnumerable<SmartWorkz.Core.Shared.Events.IDomainEvent>> GetEventsSinceAsync(
+    public Task<IEnumerable<IDomainEvent>> GetEventsSinceAsync(
         string aggregateId,
         int version,
         CancellationToken cancellationToken = default)
@@ -105,7 +104,7 @@ internal class InMemoryEventStore : IEventStore
 
         if (!_events.ContainsKey(aggregateId))
         {
-            return Task.FromResult(Enumerable.Empty<SmartWorkz.Core.Shared.Events.IDomainEvent>());
+            return Task.FromResult(Enumerable.Empty<IDomainEvent>());
         }
 
         var events = _events[aggregateId]
@@ -215,7 +214,7 @@ internal class InMemoryEventStore : IEventStore
     {
         public Guid EventId { get; set; }
         public string AggregateId { get; set; } = string.Empty;
-        public SmartWorkz.Core.Shared.Events.IDomainEvent EventData { get; set; } = default!;
+        public IDomainEvent EventData { get; set; } = default!;
         public int Version { get; set; }
         public DateTimeOffset OccurredAt { get; set; }
         public DateTimeOffset CreatedAt { get; set; }

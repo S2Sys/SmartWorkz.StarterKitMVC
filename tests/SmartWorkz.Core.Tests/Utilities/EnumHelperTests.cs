@@ -1,7 +1,7 @@
 ﻿namespace SmartWorkz.Core.Tests.Utilities;
 
 using System.ComponentModel;
-using SmartWorkz.Shared.Utilities;
+using SmartWorkz.Shared;
 
 public class EnumHelperTests
 {

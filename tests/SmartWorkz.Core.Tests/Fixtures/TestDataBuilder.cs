@@ -1,6 +1,6 @@
-namespace SmartWorkz.Core.Tests.Fixtures;
+﻿namespace SmartWorkz.Core.Tests.Fixtures;
 
-using SmartWorkz.Shared.Guards;
+using SmartWorkz.Shared;
 
 /// <summary>
 /// Fluent builder for creating test data with sensible defaults.

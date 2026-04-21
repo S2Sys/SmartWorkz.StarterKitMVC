@@ -1,7 +1,7 @@
 ﻿namespace SmartWorkz.Core.Tests.Services.FileStorage;
 
-using SmartWorkz.Core.FileStorage;
-using SmartWorkz.Shared.FileStorage;
+using SmartWorkz.Core;
+using SmartWorkz.Shared;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;

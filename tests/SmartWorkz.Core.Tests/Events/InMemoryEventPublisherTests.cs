@@ -1,4 +1,4 @@
-using SmartWorkz.Shared.Events;
+﻿using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Tests.Events;
 

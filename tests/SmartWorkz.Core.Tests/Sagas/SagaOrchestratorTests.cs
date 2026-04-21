@@ -3,8 +3,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using SmartWorkz.Shared.Events;
-using SmartWorkz.Shared.Sagas;
+using SmartWorkz.Shared;
 using Xunit;
 
 /// <summary>
@@ -13,12 +12,12 @@ using Xunit;
 /// </summary>
 public class SagaOrchestratorTests
 {
-    private readonly ILoggerFactory _loggerFactory;
+    private readonly Microsoft.Extensions.Logging.ILoggerFactory _loggerFactory;
     private readonly ILogger<SagaOrchestrator> _logger;
 
     public SagaOrchestratorTests()
     {
-        _loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+        _loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole());
         _logger = _loggerFactory.CreateLogger<SagaOrchestrator>();
     }
 

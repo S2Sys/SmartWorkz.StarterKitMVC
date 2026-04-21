@@ -1,5 +1,4 @@
-using SmartWorkz.Shared.EventSourcing;
-using SmartWorkz.Shared.Events;
+﻿using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Tests.EventSourcing;
 

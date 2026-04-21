@@ -4,7 +4,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SmartWorkz.Shared.Logging;
+using SmartWorkz.Shared;
 
 /// <summary>
 /// Integration tests for Serilog structured logging configuration.

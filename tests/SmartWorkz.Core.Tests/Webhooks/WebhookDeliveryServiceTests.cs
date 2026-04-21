@@ -1,6 +1,6 @@
 ﻿namespace SmartWorkz.Core.Tests.Webhooks;
 
-using SmartWorkz.Shared.Webhooks;
+using SmartWorkz.Shared;
 using Moq;
 using Xunit;
 using Microsoft.Extensions.Logging;

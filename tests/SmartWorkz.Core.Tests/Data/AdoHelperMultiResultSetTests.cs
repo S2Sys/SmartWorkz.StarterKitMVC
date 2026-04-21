@@ -2,7 +2,6 @@
 
 using System.Data;
 using Moq;
-using SmartWorkz.Shared.Data;
 using SmartWorkz.Shared;
 
 public class AdoHelperMultiResultSetTests

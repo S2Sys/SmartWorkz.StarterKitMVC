@@ -1,4 +1,4 @@
-using SmartWorkz.Shared.Diagnostics;
+﻿using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Tests.Diagnostics;
 
