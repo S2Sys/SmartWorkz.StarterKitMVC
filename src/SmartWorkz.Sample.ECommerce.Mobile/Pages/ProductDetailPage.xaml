@@ -3,8 +3,120 @@
     x:Class="SmartWorkz.ECommerce.Mobile.Pages.ProductDetailPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Product Detail">
-    <VerticalStackLayout Padding="20">
-        <Label Text="Product Detail Page" FontSize="24" FontAttributes="Bold" />
-    </VerticalStackLayout>
+    Title="Product Details"
+    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#212121}">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Back Button Header -->
+        <StackLayout Grid.Row="0" Padding="8" Orientation="Horizontal" Spacing="8">
+            <Button
+                Text="← Back"
+                Command="{Binding GoBackCommand}"
+                BackgroundColor="Transparent"
+                TextColor="{StaticResource Primary}"
+                FontAttributes="Bold" />
+        </StackLayout>
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16" Spacing="16">
+
+                <!-- Error Message -->
+                <Label
+                    Text="{Binding ErrorMessage}"
+                    TextColor="Red"
+                    IsVisible="{Binding IsError}"
+                    FontSize="12" />
+
+                <!-- Loading Indicator -->
+                <ActivityIndicator
+                    IsRunning="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}"
+                    Color="{StaticResource Primary}" />
+
+                <!-- Product Content -->
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding Product, Converter={StaticResource IsNotNullConverter}}">
+
+                    <!-- Product Image Placeholder -->
+                    <BoxView
+                        HeightRequest="250"
+                        CornerRadius="12"
+                        BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#333333}" />
+
+                    <!-- Product Name -->
+                    <Label
+                        Text="{Binding Product.Name}"
+                        FontSize="24"
+                        FontAttributes="Bold"
+                        TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+
+                    <!-- Price -->
+                    <Label
+                        Text="{Binding Product.Price, StringFormat='Price: {0:C}'}"
+                        FontSize="18"
+                        TextColor="{StaticResource Primary}"
+                        FontAttributes="Bold" />
+
+                    <!-- Stock -->
+                    <Label
+                        Text="{Binding Product.Stock, StringFormat='Stock: {0} available'}"
+                        FontSize="14"
+                        TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}" />
+
+                    <!-- Description (if exists) -->
+                    <Label
+                        Text="{Binding Product.Description}"
+                        FontSize="14"
+                        LineBreakMode="WordWrap"
+                        TextColor="{AppThemeBinding Light=#333333, Dark=#DDDDDD}"
+                        Margin="0,8,0,0" />
+
+                    <!-- Quantity Selector -->
+                    <StackLayout Orientation="Horizontal" Spacing="8" Margin="0,16,0,0">
+                        <Label
+                            Text="Quantity:"
+                            VerticalOptions="Center"
+                            FontAttributes="Bold"
+                            TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+
+                        <Button
+                            Text="−"
+                            Command="{Binding DecreaseQuantityCommand}"
+                            WidthRequest="40"
+                            HeightRequest="40"
+                            Padding="0"
+                            CornerRadius="20" />
+
+                        <Label
+                            Text="{Binding Quantity}"
+                            VerticalOptions="Center"
+                            HorizontalOptions="FillAndExpand"
+                            HorizontalTextAlignment="Center"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+
+                        <Button
+                            Text="+"
+                            Command="{Binding IncreaseQuantityCommand}"
+                            WidthRequest="40"
+                            HeightRequest="40"
+                            Padding="0"
+                            CornerRadius="20" />
+                    </StackLayout>
+
+                    <!-- Add to Cart Button -->
+                    <Button
+                        Text="Add to Cart"
+                        Command="{Binding AddToCartCommand}"
+                        IsEnabled="{Binding IsNotBusy}"
+                        Padding="16,14"
+                        Margin="0,16,0,0"
+                        CornerRadius="8"
+                        FontAttributes="Bold" />
+
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

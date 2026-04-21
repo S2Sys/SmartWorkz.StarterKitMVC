@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-  <Target Name="WinAppSdkGenerateAppxManifest" />
-  <Target Name="WinAppSdkGenerateAppxManifestInternal" />
-  <Target Name="GenerateAppxManifest" />
+  <!-- Disable MSIX packaging for unpackaged development -->
+  <PropertyGroup>
+    <DisableWinAppSdkMsixProjectValidation>true</DisableWinAppSdkMsixProjectValidation>
+    <GenerateAppxManifestEnabled>false</GenerateAppxManifestEnabled>
+    <CreateAppxPackageOnBuild>false</CreateAppxPackageOnBuild>
+    <MsixPackageType>None</MsixPackageType>
+    <AppxPackageIsForStore>false</AppxPackageIsForStore>
+    <GenerateWindowsAppSDKSelfContainedDeployment>false</GenerateWindowsAppSDKSelfContainedDeployment>
+  </PropertyGroup>
+  <!-- Override all MSIX-related targets to do nothing -->
+  <Target Name="WinAppSdkGenerateAppxManifest" BeforeTargets="Build" />
+  <Target Name="WinAppSdkGenerateAppxManifestInternal" BeforeTargets="Build" />
+  <Target Name="GenerateAppxManifest" BeforeTargets="Build" />
+  <Target Name="WinAppSdkMsixPackageGeneration" BeforeTargets="Build" />
+  <Target Name="WinAppSdkSignPackage" BeforeTargets="Build" />
+  <Target Name="WinAppSdkBuildMsixPackage" BeforeTargets="Build" />
+  <Target Name="_CopyFilesMarkedCopyLocal" BeforeTargets="Build" />
+  <Target Name="_WinAppSdkBuildMsixPackageCheckPrerequisites" BeforeTargets="Build" />
+  <Target Name="_AppxCopyAllFilesMarkedCopyLocal" BeforeTargets="Build" />
+  <Target Name="GetAppxAssemblyManifestListGeneratedFile" BeforeTargets="Build" />
+  <Target Name="_CoreBuildGenerateFiles" BeforeTargets="CoreBuildGenerateFiles" />
+  <!-- Clear the MsixContent item group -->
+  <ItemGroup>
+    <MsixContent Remove="@(MsixContent)" />
+  </ItemGroup>
 </Project>

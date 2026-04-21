@@ -3,8 +3,89 @@
     x:Class="SmartWorkz.ECommerce.Mobile.Pages.LoginPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Login">
-    <VerticalStackLayout Padding="20">
-        <Label Text="Login Page" FontSize="24" FontAttributes="Bold" />
-    </VerticalStackLayout>
+    Title="Login"
+    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#212121}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32,64,32,32" Spacing="20" VerticalOptions="Center">
+
+            <!-- Logo/Title -->
+            <Label
+                Text="SmartWorkz"
+                FontSize="32"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+
+            <Label
+                Text="Login to your account"
+                FontSize="14"
+                HorizontalOptions="Center"
+                TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
+                Margin="0,0,0,20" />
+
+            <!-- Email Entry -->
+            <Label
+                Text="Email Address"
+                FontAttributes="Bold"
+                TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+            <Entry
+                Placeholder="Enter your email"
+                Text="{Binding Email}"
+                Keyboard="Email"
+                Margin="0,4,0,0" />
+
+            <!-- Password Entry -->
+            <Label
+                Text="Password"
+                FontAttributes="Bold"
+                TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}"
+                Margin="0,16,0,0" />
+            <Entry
+                Placeholder="Enter your password"
+                Text="{Binding Password}"
+                IsPassword="True"
+                Margin="0,4,0,0" />
+
+            <!-- Error Message -->
+            <Label
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"
+                IsVisible="{Binding IsError}"
+                FontSize="12"
+                Margin="0,8,0,0" />
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}"
+                Color="{StaticResource Primary}"
+                Margin="0,16,0,0" />
+
+            <!-- Login Button -->
+            <Button
+                Text="Login"
+                Command="{Binding LoginCommand}"
+                IsEnabled="{Binding IsNotBusy}"
+                Padding="16,12"
+                Margin="0,16,0,0"
+                CornerRadius="8" />
+
+            <!-- Register Link -->
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Margin="0,20,0,0" Spacing="4">
+                <Label
+                    Text="Don't have an account?"
+                    VerticalOptions="Center"
+                    TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}" />
+                <Button
+                    Text="Register here"
+                    Command="{Binding GoToRegisterCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource Primary}"
+                    Padding="0"
+                    FontAttributes="Bold" />
+            </StackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

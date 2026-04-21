@@ -2,8 +2,18 @@ namespace SmartWorkz.ECommerce.Mobile.Pages;
 
 public partial class OrdersPage : ContentPage
 {
-    public OrdersPage()
+    private readonly OrdersViewModel _vm;
+
+    public OrdersPage(OrdersViewModel vm)
     {
         InitializeComponent();
+        _vm = vm;
+        BindingContext = vm;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await _vm.InitializeAsync();
     }
 }
