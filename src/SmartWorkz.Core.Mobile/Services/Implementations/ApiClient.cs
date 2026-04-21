@@ -2,6 +2,7 @@ namespace SmartWorkz.Core.Mobile;
 
 using System.Net.Http.Json;
 using Microsoft.Extensions.Options;
+using SmartWorkz.Core.Shared.Response;
 
 public class ApiClient : IApiClient
 {
@@ -89,6 +90,28 @@ public class ApiClient : IApiClient
 
             if (!response.IsSuccessStatusCode)
             {
+                // Attempt to parse error response body
+                try
+                {
+                    var contentStream = await response.Content.ReadAsStreamAsync() as MemoryStream
+                        ?? new MemoryStream(await response.Content.ReadAsByteArrayAsync(ct));
+
+                    contentStream.Seek(0, SeekOrigin.Begin);
+                    var errorEnvelope = await System.Text.Json.JsonSerializer.DeserializeAsync<ApiResponse>(
+                        contentStream,
+                        cancellationToken: ct
+                    );
+
+                    if (errorEnvelope?.Error != null)
+                    {
+                        return Result.Fail(new Error(errorEnvelope.Error.Code, errorEnvelope.Error.Message));
+                    }
+                }
+                catch (System.Text.Json.JsonException)
+                {
+                    // If parsing fails, use generic HTTP error
+                }
+
                 return Result.Fail(new Error($"HTTP.{(int)response.StatusCode}", response.ReasonPhrase ?? "Unknown"));
             }
 
@@ -213,7 +236,41 @@ public class ApiClient : IApiClient
                 return Result.Fail<T>(new Error($"HTTP.{(int)response.StatusCode}", response.ReasonPhrase ?? "Unknown"));
             }
 
-            var contentStream = await response.Content.ReadAsStreamAsync();
+            var contentStream = await response.Content.ReadAsStreamAsync() as MemoryStream
+                ?? new MemoryStream(await response.Content.ReadAsByteArrayAsync(ct));
+
+            // Phase 1: Try to deserialize as ApiResponse<T> envelope
+            try
+            {
+                contentStream.Seek(0, SeekOrigin.Begin);
+                var envelope = await System.Text.Json.JsonSerializer.DeserializeAsync<ApiResponse<T>>(
+                    contentStream,
+                    cancellationToken: ct
+                );
+
+                if (envelope != null)
+                {
+                    if (envelope.Success)
+                    {
+                        return Result.Ok(envelope.Data!);
+                    }
+                    else if (envelope.Error != null)
+                    {
+                        return Result.Fail<T>(new Error(envelope.Error.Code, envelope.Error.Message));
+                    }
+                    else
+                    {
+                        return Result.Fail<T>(new Error("UNKNOWN_ERROR", "API returned failure without error details"));
+                    }
+                }
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                // Phase 1 failed; proceed to Phase 2 fallback
+            }
+
+            // Phase 2: Fallback to direct T deserialization for backward compatibility
+            contentStream.Seek(0, SeekOrigin.Begin);
             var deserializedData = await System.Text.Json.JsonSerializer.DeserializeAsync<T>(
                 contentStream,
                 cancellationToken: ct
