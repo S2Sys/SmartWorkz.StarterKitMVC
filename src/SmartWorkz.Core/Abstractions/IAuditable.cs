@@ -1,4 +1,4 @@
-﻿namespace SmartWorkz.Core;
+namespace SmartWorkz.Core;
 
 /// <summary>
 /// Marks an entity that tracks who created and last modified it.
@@ -6,8 +6,9 @@
 /// </summary>
 public interface IAuditable
 {
+    //T Id { get; set; }
     DateTime CreatedAt { get; set; }
-    string? CreatedBy { get; set; }
+    int? CreatedBy { get; set; }
     DateTime? UpdatedAt { get; set; }
-    string? UpdatedBy { get; set; }
+    int? UpdatedBy { get; set; }
 }
