@@ -4,6 +4,10 @@ using FirebaseAdmin.Messaging;
 using SmartWorkz.Core.Services.Notifications;
 using Microsoft.Extensions.Logging;
 
+/// <summary>
+/// Firebase Cloud Messaging service implementation for sending push notifications.
+/// Supports single/batch user notifications, topic-based broadcasting, and multi-platform delivery (Android, iOS, Web).
+/// </summary>
 public class FirebaseCloudMessagingService : IPushNotificationService
 {
     private const int DefaultTtlSeconds = 3600;
@@ -12,12 +16,21 @@ public class FirebaseCloudMessagingService : IPushNotificationService
     private readonly FirebaseMessaging _firebaseMessaging;
     private readonly ILogger<FirebaseCloudMessagingService> _logger;
 
+    /// <summary>Initializes a new instance of the FirebaseCloudMessagingService.</summary>
+    /// <param name="logger">Logger for diagnostic and error information.</param>
+    /// <exception cref="ArgumentNullException">Thrown when logger is null.</exception>
     public FirebaseCloudMessagingService(ILogger<FirebaseCloudMessagingService> logger)
     {
         _firebaseMessaging = FirebaseMessaging.DefaultInstance;
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>Sends a simple push notification to a single user.</summary>
+    /// <param name="userId">User identifier (Firebase device token).</param>
+    /// <param name="title">Notification title.</param>
+    /// <param name="message">Notification body text.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <exception cref="ArgumentException">Thrown when userId, title, or message is null/empty.</exception>
     public Task SendAsync(string userId, string title, string message, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(userId))
@@ -33,6 +46,13 @@ public class FirebaseCloudMessagingService : IPushNotificationService
         return SendAsync(userId, payload, cancellationToken);
     }
 
+    /// <summary>Sends simple push notifications to multiple users.</summary>
+    /// <param name="userIds">Collection of user identifiers (Firebase device tokens).</param>
+    /// <param name="title">Notification title.</param>
+    /// <param name="message">Notification body text.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <exception cref="ArgumentNullException">Thrown when userIds is null.</exception>
+    /// <exception cref="ArgumentException">Thrown when title or message is null/empty.</exception>
     public Task SendAsync(IEnumerable<string> userIds, string title, string message, CancellationToken cancellationToken = default)
     {
         if (userIds == null)
@@ -48,6 +68,12 @@ public class FirebaseCloudMessagingService : IPushNotificationService
         return SendAsync(userIds, payload, cancellationToken);
     }
 
+    /// <summary>Sends a rich push notification with metadata to a single user.</summary>
+    /// <param name="userId">User identifier (Firebase device token).</param>
+    /// <param name="payload">Notification payload with title, body, images, data, and actions.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <exception cref="ArgumentException">Thrown when userId is null/empty.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when payload is null.</exception>
     public async Task SendAsync(string userId, PushNotificationPayload payload, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(userId))
@@ -68,6 +94,11 @@ public class FirebaseCloudMessagingService : IPushNotificationService
         }
     }
 
+    /// <summary>Sends a rich push notification to multiple users.</summary>
+    /// <param name="userIds">Collection of user identifiers (Firebase device tokens).</param>
+    /// <param name="payload">Notification payload with title, body, images, data, and actions.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <exception cref="ArgumentNullException">Thrown when userIds or payload is null.</exception>
     public async Task SendAsync(IEnumerable<string> userIds, PushNotificationPayload payload, CancellationToken cancellationToken = default)
     {
         if (userIds == null)
@@ -88,6 +119,12 @@ public class FirebaseCloudMessagingService : IPushNotificationService
         }
     }
 
+    /// <summary>Sends a rich push notification to all users subscribed to a topic (broadcast).</summary>
+    /// <param name="topic">Topic name (e.g., "news", "promotions").</param>
+    /// <param name="payload">Notification payload with title, body, images, data, and actions.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <exception cref="ArgumentException">Thrown when topic is null/empty.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when payload is null.</exception>
     public async Task SendToTopicAsync(string topic, PushNotificationPayload payload, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(topic))
@@ -121,6 +158,11 @@ public class FirebaseCloudMessagingService : IPushNotificationService
         }
     }
 
+    /// <summary>Subscribes a user to a topic for broadcast notifications.</summary>
+    /// <param name="userId">User identifier (Firebase device token).</param>
+    /// <param name="topic">Topic name to subscribe to.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <exception cref="ArgumentException">Thrown when userId or topic is null/empty.</exception>
     public async Task SubscribeToTopicAsync(string userId, string topic, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(userId))
@@ -141,6 +183,11 @@ public class FirebaseCloudMessagingService : IPushNotificationService
         }
     }
 
+    /// <summary>Unsubscribes a user from a topic.</summary>
+    /// <param name="userId">User identifier (Firebase device token).</param>
+    /// <param name="topic">Topic name to unsubscribe from.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <exception cref="ArgumentException">Thrown when userId or topic is null/empty.</exception>
     public async Task UnsubscribeFromTopicAsync(string userId, string topic, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(userId))
