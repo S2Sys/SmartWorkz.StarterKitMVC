@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
+using SmartWorkz.Core.Shared.Logging;
 using SmartWorkz.StarterKitMVC.Application.Abstractions;
 using SmartWorkz.StarterKitMVC.Application.Authorization;
 using SmartWorkz.StarterKitMVC.Application.Localization;
@@ -33,6 +34,9 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        // Configure structured logging with Serilog
+        services.AddStructuredLogging(configuration);
+
         // DbContext registration
         services.AddDbContext<MasterDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
