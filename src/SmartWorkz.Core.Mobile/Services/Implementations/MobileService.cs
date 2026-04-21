@@ -5,11 +5,19 @@ public class MobileService : IMobileService
 {
     private readonly IPermissionService _permissionService;
     private readonly ILogger _logger;
+    private readonly string _sessionDeviceId;
+    private readonly IMobileContext _mobileContext;
 
-    public MobileService(IPermissionService permissionService, ILogger logger)
+    public MobileService(IPermissionService permissionService, IMobileContext mobileContext, ILogger logger)
     {
         _permissionService = Guard.NotNull(permissionService, nameof(permissionService));
+        _mobileContext = Guard.NotNull(mobileContext, nameof(mobileContext));
         _logger = Guard.NotNull(logger, nameof(logger));
+        _sessionDeviceId = Guid.NewGuid().ToString();
+
+        // Populate context once during initialization
+        _mobileContext.Platform = GetPlatformInternal();
+        _mobileContext.DeviceId = GetDeviceIdInternal();
     }
 
     /// <summary>
@@ -56,6 +64,14 @@ public class MobileService : IMobileService
     /// </summary>
     public string GetDeviceId()
     {
+        return GetDeviceIdInternal();
+    }
+
+    /// <summary>
+    /// Gets the device ID, preferring persistent storage with session-scoped fallback.
+    /// </summary>
+    private string GetDeviceIdInternal()
+    {
         try
         {
             // Check if device ID is already stored in Preferences
@@ -71,9 +87,10 @@ public class MobileService : IMobileService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning($"Failed to get/store device ID from preferences: {ex.Message}");
-            // Fallback to machine name if preferences fails
-            return Environment.MachineName;
+            _logger.LogWarning($"Failed to access device preferences; using session ID: {ex.Message}");
+            // Fallback to session-scoped GUID if Preferences fails
+            // This ensures no user-visible device name is leaked
+            return _sessionDeviceId;
         }
     }
 
@@ -89,6 +106,14 @@ public class MobileService : IMobileService
     /// Gets the platform name (iOS, Android, macOS, Windows).
     /// </summary>
     public string GetPlatform()
+    {
+        return GetPlatformInternal();
+    }
+
+    /// <summary>
+    /// Gets the platform identifier without logging.
+    /// </summary>
+    private string GetPlatformInternal()
     {
         #if __IOS__
         return "iOS";
@@ -142,11 +167,19 @@ public class MobileService : IMobileService
 {
     private readonly IPermissionService _permissionService;
     private readonly ILogger _logger;
+    private readonly string _sessionDeviceId;
+    private readonly IMobileContext _mobileContext;
 
-    public MobileService(IPermissionService permissionService, ILogger logger)
+    public MobileService(IPermissionService permissionService, IMobileContext mobileContext, ILogger logger)
     {
         _permissionService = Guard.NotNull(permissionService, nameof(permissionService));
+        _mobileContext = Guard.NotNull(mobileContext, nameof(mobileContext));
         _logger = Guard.NotNull(logger, nameof(logger));
+        _sessionDeviceId = Guid.NewGuid().ToString();
+
+        // Populate context once during initialization
+        _mobileContext.Platform = GetPlatformInternal();
+        _mobileContext.DeviceId = GetDeviceIdInternal();
     }
 
     public DeviceType GetDeviceType()
@@ -161,7 +194,17 @@ public class MobileService : IMobileService
 
     public string GetDeviceId()
     {
-        return Environment.MachineName;
+        return GetDeviceIdInternal();
+    }
+
+    /// <summary>
+    /// Gets the device ID, using session-scoped GUID to avoid leaking device names.
+    /// </summary>
+    private string GetDeviceIdInternal()
+    {
+        // Use session-scoped GUID instead of Environment.MachineName to avoid
+        // leaking user-visible device names in error reports
+        return _sessionDeviceId;
     }
 
     public bool IsTablet()
@@ -170,6 +213,14 @@ public class MobileService : IMobileService
     }
 
     public string GetPlatform()
+    {
+        return GetPlatformInternal();
+    }
+
+    /// <summary>
+    /// Gets the platform identifier.
+    /// </summary>
+    private string GetPlatformInternal()
     {
         return "Windows";
     }
