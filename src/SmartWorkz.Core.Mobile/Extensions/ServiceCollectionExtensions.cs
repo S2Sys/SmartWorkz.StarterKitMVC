@@ -1,6 +1,9 @@
 namespace SmartWorkz.Core.Mobile;
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using SmartWorkz.Core.Shared.Resilience;
+using SmartWorkz.Core.Shared.Security;
 
 /// <summary>
 /// Extension methods for configuring SmartWorkz.Core.Mobile services in the dependency injection container.
@@ -8,79 +11,96 @@ using Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds SmartWorkz.Core.Mobile services to the dependency injection container.
+    /// Adds SmartWorkz.Core.Mobile services to the dependency injection container with Phase B configuration.
     ///
     /// Registers platform services, connectivity checks, storage, authentication, and synchronization capabilities.
+    /// Supports configurable interceptors, analytics, and rate limiting.
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
     /// <param name="configureApi">Optional action to configure mobile API settings.</param>
+    /// <param name="enableBuiltinInterceptors">Whether to register built-in interceptors (CorrelationInterceptor and DeviceInfoInterceptor). Default: true.</param>
+    /// <param name="enableRealAnalytics">Whether to register BackendAnalyticsService. If false, registers stub AnalyticsService. Default: false.</param>
     /// <returns>The service collection for method chaining.</returns>
     /// <exception cref="ArgumentNullException">Thrown when services is null.</exception>
     public static IServiceCollection AddSmartWorkzCoreMobile(
         this IServiceCollection services,
-        Action<MobileApiConfig>? configureApi = null)
+        Action<MobileApiConfig>? configureApi = null,
+        bool enableBuiltinInterceptors = true,
+        bool enableRealAnalytics = false)
     {
         Guard.NotNull(services, nameof(services));
 
-        // Create and register MobileApiConfig
-        var mobileApiConfig = new MobileApiConfig { BaseUrl = "https://localhost" };
-        configureApi?.Invoke(mobileApiConfig);
-        services.AddSingleton(mobileApiConfig);
-
-        // Configure HttpClient factory for mobile API
-        services.AddHttpClient("MobileApiClient", client =>
+        // Register configuration using IOptions pattern
+        var config = new MobileApiConfig { BaseUrl = "https://localhost" };
+        configureApi?.Invoke(config);
+        services.Configure<MobileApiConfig>(options =>
         {
-            client.BaseAddress = new Uri(mobileApiConfig.BaseUrl);
-            client.Timeout = mobileApiConfig.Timeout;
-            client.DefaultRequestHeaders.Add("User-Agent", mobileApiConfig.UserAgent);
+            options.BaseUrl = config.BaseUrl;
+            options.UserAgent = config.UserAgent;
+            options.Timeout = config.Timeout;
+            options.RetryCount = config.RetryCount;
+            options.RetryStrategy = config.RetryStrategy;
+            options.EnableCompression = config.EnableCompression;
         });
 
-        // Register Singleton Services
-        // These services are stateless or maintain platform-level state
-        // - IConnectionChecker: Monitors network connectivity (platform event-driven)
-        // - IPermissionService: Manages device permissions (platform integration)
-        // - ILocalStorageService: Provides file-based storage (single instance shared)
-        // - ISecureStorageService: Provides encrypted storage (single instance)
-        // - IAnalyticsService: Collects telemetry (stateless, single track)
-        // - IMobileService: Coordinates platform capabilities (stateless)
-        // - IMobileContext: Provides app-wide context (single app instance)
+        // Register platform-neutral services
+        services.AddScoped<IMobileContext, MobileContext>();
+        services.AddSingleton<IRateLimiter, RateLimiter>(provider =>
+            new RateLimiter(new RateLimiterOptions { MaxRequests = 100, WindowMilliseconds = 60000 }));
+        services.AddScoped<ISecureStorageService, SecureStorageService>();
+        services.AddScoped<IAuthenticationHandler, AuthenticationHandler>();
+
+        // Register ApiClient with interceptor support
+        services.AddScoped<IApiClient, ApiClient>();
+
+        // Register built-in interceptors (if enabled)
+        if (enableBuiltinInterceptors)
+        {
+            services.AddScoped<IRequestInterceptor, CorrelationInterceptor>();
+            services.AddScoped<IRequestInterceptor, DeviceInfoInterceptor>();
+        }
+
+        // Register analytics service
+        if (enableRealAnalytics)
+        {
+            services.AddSingleton<IAnalyticsService, BackendAnalyticsService>();
+        }
+        else
+        {
+            // Fallback to stub implementation if real analytics not enabled
+            services.AddSingleton<IAnalyticsService, AnalyticsService>();
+        }
+
+        // Register push notifications
+        services.AddScoped<IPushNotificationClientService, PushNotificationClientService>();
+
+        // Register Lazy<IApiClient> to break circular dependencies
+        services.AddScoped(provider => new Lazy<IApiClient>(() => provider.GetRequiredService<IApiClient>()));
+
+        // Register JWT settings (if not already present)
+        if (!services.Any(x => x.ServiceType == typeof(JwtSettings)))
+        {
+            services.AddSingleton<JwtSettings>(new JwtSettings
+            {
+                Secret = "SmartWorkz-Mobile-Default-Secret-Must-Be-Changed-In-Production-At-Least-32-Chars",
+                Issuer = "SmartWorkz.Mobile",
+                Audience = "SmartWorkz.Mobile.Users",
+                ExpiryMinutes = 60,
+                RefreshTokenExpiryDays = 7
+            });
+        }
+
+        // Keep existing singleton services for backward compatibility
         services.AddSingleton<IConnectionChecker, ConnectionChecker>();
         services.AddSingleton<IPermissionService, PermissionService>();
         services.AddSingleton<ILocalStorageService, LocalStorageService>();
-        services.AddSingleton<ISecureStorageService, SecureStorageService>();
-        services.AddSingleton<IAnalyticsService, BackendAnalyticsService>();
         services.AddSingleton<IMobileService, MobileService>();
-        services.AddSingleton<IMobileContext, MobileContext>();
 
-        // Register Scoped Services
-        // These services have per-page/screen or per-request lifetime
-        // - IAuthenticationHandler: Manages auth state per user session
-        // - ISyncService: Handles data synchronization per operation
-        // - IOfflineService: Manages offline behavior per context
-        // - IBiometricService: Handles biometric verification per request
-        // - IErrorHandler: Processes errors per request context
-        // - IApiClient: Makes HTTP requests with scoped client instance
-        // - IPushNotificationClientService: Handles push notification registration/unregistration
-        services.AddScoped<IAuthenticationHandler, AuthenticationHandler>();
+        // Keep existing scoped services for backward compatibility
         services.AddScoped<ISyncService, SyncService>();
         services.AddScoped<IOfflineService, OfflineService>();
         services.AddScoped<IBiometricService, BiometricService>();
         services.AddScoped<IErrorHandler, ErrorHandler>();
-        services.AddScoped<IApiClient, ApiClient>();
-        services.AddScoped<IPushNotificationClientService, PushNotificationClientService>();
-        services.AddScoped(provider => new Lazy<IApiClient>(() => provider.GetRequiredService<IApiClient>()));
-
-        // NOTE: IRequestInterceptor is NOT registered by default
-        // Applications should implement custom interceptors and register them:
-        //
-        //   var customInterceptor = new AuthenticationInterceptor(authService);
-        //   services.AddScoped<IRequestInterceptor>(_ => customInterceptor);
-        //
-        // Or use a factory for dependency injection:
-        //
-        //   services.AddScoped<IRequestInterceptor, CustomRequestInterceptor>();
-        //
-        // The ApiClient will use any registered IRequestInterceptor if available
 
         return services;
     }
