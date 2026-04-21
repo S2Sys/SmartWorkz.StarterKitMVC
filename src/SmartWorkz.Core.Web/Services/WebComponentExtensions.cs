@@ -4,12 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using SmartWorkz.Web;
 
 /// <summary>
-/// Extension methods for registering SmartWorkz.Core.Web services with dependency injection.
+/// Extension methods for registering SmartWorkz.Web services with dependency injection.
 /// </summary>
 public static class WebComponentExtensions
 {
     /// <summary>
-    /// Register all SmartWorkz.Core.Web services and TagHelpers with the dependency injection container.
+    /// Register all SmartWorkz.Web services and TagHelpers with the dependency injection container.
     /// Registers component services as singletons for optimal performance.
     /// Note: TagHelpers are auto-discovered by ASP.NET Core and do not require explicit registration.
     /// </summary>
@@ -28,7 +28,7 @@ public static class WebComponentExtensions
     }
 
     /// <summary>
-    /// Register all SmartWorkz.Core.Web data view components and services.
+    /// Register all SmartWorkz.Web data view components and services.
     /// </summary>
     /// <param name="services">The IServiceCollection to register services with.</param>
     /// <returns>The IServiceCollection for method chaining.</returns>

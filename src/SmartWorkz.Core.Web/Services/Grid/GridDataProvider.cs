@@ -23,7 +23,7 @@ public class GridDataProvider : IGridDataProvider
     /// <summary>
     /// Fetch data from HTTP API endpoint.
     /// </summary>
-    public async Task<SmartWorkz.Core.Shared.Results.Result<GridResponse<T>>> GetDataAsync<T>(GridRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result<GridResponse<T>>> GetDataAsync<T>(GridRequest request, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -34,26 +34,26 @@ public class GridDataProvider : IGridDataProvider
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = new SmartWorkz.Core.Shared.Results.Error(
+                var error = new Error(
                     "GridDataFetchFailed",
                     $"API returned status {response.StatusCode}");
-                return SmartWorkz.Core.Shared.Results.Result<GridResponse<T>>.Fail<GridResponse<T>>(error);
+                return Result<GridResponse<T>>.Fail<GridResponse<T>>(error);
             }
 
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
             var result = JsonSerializer.Deserialize<GridResponse<T>>(responseContent, _jsonOptions);
 
             return result != null
-                ? SmartWorkz.Core.Shared.Results.Result<GridResponse<T>>.Ok<GridResponse<T>>(result)
-                : SmartWorkz.Core.Shared.Results.Result<GridResponse<T>>.Fail<GridResponse<T>>(new SmartWorkz.Core.Shared.Results.Error("DeserializationFailed", "Could not parse grid response"));
+                ? Result<GridResponse<T>>.Ok<GridResponse<T>>(result)
+                : Result<GridResponse<T>>.Fail<GridResponse<T>>(new Error("DeserializationFailed", "Could not parse grid response"));
         }
         catch (HttpRequestException ex)
         {
-            return SmartWorkz.Core.Shared.Results.Result<GridResponse<T>>.Fail<GridResponse<T>>(new SmartWorkz.Core.Shared.Results.Error("HttpError", ex.Message));
+            return Result<GridResponse<T>>.Fail<GridResponse<T>>(new Error("HttpError", ex.Message));
         }
         catch (Exception ex)
         {
-            return SmartWorkz.Core.Shared.Results.Result<GridResponse<T>>.Fail<GridResponse<T>>(new SmartWorkz.Core.Shared.Results.Error("UnexpectedError", ex.Message));
+            return Result<GridResponse<T>>.Fail<GridResponse<T>>(new Error("UnexpectedError", ex.Message));
         }
     }
 
