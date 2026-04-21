@@ -1,7 +1,5 @@
 ﻿namespace SmartWorkz.Core;
 
-using SmartWorkz.Core.Shared.CQRS;
-
 /// <summary>
 /// Handler for processing a specific query type and returning results.
 /// </summary>
@@ -12,8 +10,8 @@ using SmartWorkz.Core.Shared.CQRS;
 /// Each query type should have exactly one handler, but handlers can be registered
 /// multiple times in the dependency injection container if needed for different scenarios.
 ///
-/// This interface is re-exported from SmartWorkz.Core.Shared for convenience.
+/// This interface is re-exported from SmartWorkz.Shared for convenience.
 /// </remarks>
-public interface IQueryHandler<in TQuery, TResult> : SmartWorkz.Core.Shared.CQRS.IQueryHandler<TQuery, TResult> where TQuery : IQuery<TResult>
+public interface IQueryHandler<in TQuery, TResult> : SmartWorkz.Shared.IQueryHandler<TQuery, TResult> where TQuery : IQuery<TResult>
 {
 }

@@ -1,6 +1,4 @@
 ﻿using System.Linq.Expressions;
-using SmartWorkz.Core.Shared.Results;
-using SmartWorkz.Core.Shared.Guards;
 
 namespace SmartWorkz.Core;
 
@@ -25,35 +23,35 @@ public abstract class ServiceBase<TEntity, TDto> : IService<TEntity, TDto>
         Repository = Guard.NotNull(repository, nameof(repository));
     }
 
-    public virtual async Task<SmartWorkz.Core.Shared.Results.Result<TDto>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public virtual async Task<SmartWorkz.Core.Result<TDto>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         Guard.NotDefault(id, nameof(id));
 
         var entity = await Repository.GetByIdAsync(id, cancellationToken);
         if (entity is null)
-            return Result.Fail<TDto>(new SmartWorkz.Core.Shared.Results.Error("ENTITY_NOT_FOUND", $"{typeof(TEntity).Name} not found"));
+            return SmartWorkz.Core.Result.Failure<TDto>(new Error("ENTITY_NOT_FOUND", $"{typeof(TEntity).Name} not found"));
 
-        return Result.Ok(Map(entity));
+        return SmartWorkz.Core.Result.Success(Map(entity));
     }
 
-    public virtual async Task<SmartWorkz.Core.Shared.Results.Result<IReadOnlyCollection<TDto>>> GetAllAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<SmartWorkz.Core.Result<IReadOnlyCollection<TDto>>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var entities = await Repository.GetAllAsync(cancellationToken);
         var dtos = entities.Select(Map).ToList().AsReadOnly();
-        return Result.Ok<IReadOnlyCollection<TDto>>(dtos);
+        return SmartWorkz.Core.Result.Success<IReadOnlyCollection<TDto>>(dtos);
     }
 
-    public virtual async Task<SmartWorkz.Core.Shared.Results.Result<TDto>> CreateAsync(TDto dto, CancellationToken cancellationToken = default)
+    public virtual async Task<SmartWorkz.Core.Result<TDto>> CreateAsync(TDto dto, CancellationToken cancellationToken = default)
     {
         if (dto == null)
             throw new ArgumentNullException(nameof(dto));
 
         var entity = MapToEntity(dto);
         await Repository.AddAsync(entity, cancellationToken);
-        return Result.Ok(Map(entity));
+        return SmartWorkz.Core.Result.Success(Map(entity));
     }
 
-    public virtual async Task<SmartWorkz.Core.Shared.Results.Result<TDto>> UpdateAsync(int id, TDto dto, CancellationToken cancellationToken = default)
+    public virtual async Task<SmartWorkz.Core.Result<TDto>> UpdateAsync(int id, TDto dto, CancellationToken cancellationToken = default)
     {
         Guard.NotDefault(id, nameof(id));
         if (dto == null)
@@ -61,23 +59,23 @@ public abstract class ServiceBase<TEntity, TDto> : IService<TEntity, TDto>
 
         var entity = await Repository.GetByIdAsync(id, cancellationToken);
         if (entity is null)
-            return Result.Fail<TDto>(new SmartWorkz.Core.Shared.Results.Error("ENTITY_NOT_FOUND", $"{typeof(TEntity).Name} not found"));
+            return SmartWorkz.Core.Result.Failure<TDto>(new Error("ENTITY_NOT_FOUND", $"{typeof(TEntity).Name} not found"));
 
         ApplyUpdates(entity, dto);
         await Repository.UpdateAsync(entity, cancellationToken);
-        return Result.Ok(Map(entity));
+        return SmartWorkz.Core.Result.Success(Map(entity));
     }
 
-    public virtual async Task<SmartWorkz.Core.Shared.Results.Result> DeleteAsync(int id, CancellationToken cancellationToken = default)
+    public virtual async Task<SmartWorkz.Core.Result<bool>> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
         Guard.NotDefault(id, nameof(id));
 
         var entity = await Repository.GetByIdAsync(id, cancellationToken);
         if (entity is null)
-            return Result.Fail(new SmartWorkz.Core.Shared.Results.Error("ENTITY_NOT_FOUND", $"{typeof(TEntity).Name} not found"));
+            return SmartWorkz.Core.Result.Failure<bool>(new Error("ENTITY_NOT_FOUND", $"{typeof(TEntity).Name} not found"));
 
         await Repository.DeleteAsync(id, cancellationToken);
-        return Result.Ok();
+        return SmartWorkz.Core.Result.Success(true);
     }
 
     protected abstract TDto Map(TEntity entity);
