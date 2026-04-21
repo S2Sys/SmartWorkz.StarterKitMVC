@@ -124,15 +124,19 @@ public class ApiClient : IApiClient
             await ApplyRequestInterceptorsAsync(request, ct);
             await _authenticationHandler.InjectHeadersAsync(request, ct);
 
-            var response = await client.SendAsync(request, ct);
-
-            if (!response.IsSuccessStatusCode)
+            using (var response = await client.SendAsync(request, ct))
             {
-                return Result.Fail<Stream>(new Error($"HTTP.{(int)response.StatusCode}", response.ReasonPhrase ?? "Unknown"));
-            }
+                if (!response.IsSuccessStatusCode)
+                {
+                    return Result.Fail<Stream>(new Error($"HTTP.{(int)response.StatusCode}", response.ReasonPhrase ?? "Unknown"));
+                }
 
-            var stream = await response.Content.ReadAsStreamAsync();
-            return Result.Ok(stream);
+                // Copy the response stream to a MemoryStream so the HttpResponseMessage can be disposed
+                var memoryStream = new MemoryStream();
+                await response.Content.CopyToAsync(memoryStream, ct);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                return Result.Ok<Stream>(memoryStream);
+            }
         }
         catch (Exception ex)
         {
@@ -147,8 +151,7 @@ public class ApiClient : IApiClient
     public async Task<Result<T>> GetAsync<T>(string endpoint, int retryCount, TimeSpan timeout, CancellationToken ct = default)
     {
         Guard.NotEmpty(endpoint, nameof(endpoint));
-        if (retryCount <= 0)
-            throw new ArgumentException("Retry count must be greater than 0", nameof(retryCount));
+        Guard.Argument(retryCount > 0, nameof(retryCount), "Retry count must be greater than 0");
 
         ct.ThrowIfCancellationRequested();
 

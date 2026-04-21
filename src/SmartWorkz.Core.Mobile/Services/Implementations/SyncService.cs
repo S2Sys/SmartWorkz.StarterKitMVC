@@ -5,14 +5,15 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text.Json;
 
-public class SyncService : ISyncService
+public class SyncService : ISyncService, IDisposable
 {
     private readonly IApiClient _apiClient;
     private readonly ILocalStorageService _localStorageService;
     private readonly IConnectionChecker _connectionChecker;
     private readonly ILogger _logger;
     private readonly Subject<SyncProgress> _syncProgress;
-    private ConflictStrategy _conflictStrategy = ConflictStrategy.ServerWins;
+    private volatile ConflictStrategy _conflictStrategy = ConflictStrategy.ServerWins;
+    private bool _disposed = false;
     private const string SyncQueueKeyPrefix = "sync::op::";
 
     public SyncService(
@@ -34,6 +35,10 @@ public class SyncService : ISyncService
     public async Task<Result<SyncResult>> SyncAsync(CancellationToken ct = default)
     {
         ct.ThrowIfCancellationRequested();
+
+        // Check if online first
+        if (!await _connectionChecker.IsOnlineAsync())
+            return Result.Fail<SyncResult>(new Error("MOBILE.OFFLINE", "Cannot sync when offline"));
 
         try
         {
@@ -222,6 +227,18 @@ public class SyncService : ISyncService
     public IObservable<SyncProgress> OnSyncProgress()
     {
         return _syncProgress.AsObservable();
+    }
+
+    /// <summary>
+    /// Disposes the sync service and completes the progress subject.
+    /// </summary>
+    public void Dispose()
+    {
+        if (_disposed) return;
+
+        _syncProgress?.OnCompleted();
+        _syncProgress?.Dispose();
+        _disposed = true;
     }
 
     private async Task<bool> HandleConflictAsync(SyncOperation operation, CancellationToken ct)

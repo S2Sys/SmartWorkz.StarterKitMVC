@@ -33,12 +33,14 @@ public class LocalStorageService : ILocalStorageService
 
     public async Task<Result> SaveAsync<T>(string key, T value, CancellationToken ct = default)
     {
+        Guard.NotEmpty(key, nameof(key));
+        ct.ThrowIfCancellationRequested();
+
+        if (value == null)
+            return Result.Fail(new Error("VALIDATION.NULL_VALUE", $"{nameof(value)} cannot be null"));
+
         try
         {
-            Guard.NotEmpty(key, nameof(key));
-            if (value == null)
-                return Result.Fail(new Error("VALIDATION.NULL_VALUE", $"{nameof(value)} cannot be null"));
-
             var db = await _database.Value;
             var json = JsonSerializer.Serialize(value);
             var entry = new StorageEntry
@@ -59,9 +61,11 @@ public class LocalStorageService : ILocalStorageService
 
     public async Task<Result<T>> GetAsync<T>(string key, CancellationToken ct = default)
     {
+        Guard.NotEmpty(key, nameof(key));
+        ct.ThrowIfCancellationRequested();
+
         try
         {
-            Guard.NotEmpty(key, nameof(key));
 
             var db = await _database.Value;
             var entry = await db.FindAsync<StorageEntry>(key);
@@ -89,9 +93,11 @@ public class LocalStorageService : ILocalStorageService
 
     public async Task<Result> DeleteAsync(string key, CancellationToken ct = default)
     {
+        Guard.NotEmpty(key, nameof(key));
+        ct.ThrowIfCancellationRequested();
+
         try
         {
-            Guard.NotEmpty(key, nameof(key));
 
             var db = await _database.Value;
             await db.DeleteAsync<StorageEntry>(key);
@@ -106,6 +112,8 @@ public class LocalStorageService : ILocalStorageService
 
     public async Task<Result<IEnumerable<T>>> GetAllAsync<T>(CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
+
         try
         {
             var db = await _database.Value;
@@ -137,6 +145,8 @@ public class LocalStorageService : ILocalStorageService
 
     public async Task<Result<IEnumerable<T>>> GetAllByPrefixAsync<T>(string keyPrefix, CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
+
         try
         {
             Guard.NotEmpty(keyPrefix, nameof(keyPrefix));
@@ -174,6 +184,8 @@ public class LocalStorageService : ILocalStorageService
 
     public async Task<Result> ClearAsync(CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
+
         try
         {
             var db = await _database.Value;
@@ -212,32 +224,38 @@ public class LocalStorageService : ILocalStorageService
 
     public async Task<Result> SaveAsync<T>(string key, T value, CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
         _logger.LogWarning("LocalStorage not available on Windows platform");
         return Result.Fail(new Error("STORAGE.PLATFORM_UNSUPPORTED", "LocalStorage not available on Windows"));
     }
 
     public async Task<Result<T>> GetAsync<T>(string key, CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
         return Result.Fail<T>(new Error("STORAGE.PLATFORM_UNSUPPORTED", "LocalStorage not available on Windows"));
     }
 
     public async Task<Result> DeleteAsync(string key, CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
         return Result.Fail(new Error("STORAGE.PLATFORM_UNSUPPORTED", "LocalStorage not available on Windows"));
     }
 
     public async Task<Result<IEnumerable<T>>> GetAllAsync<T>(CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
         return Result.Fail<IEnumerable<T>>(new Error("STORAGE.PLATFORM_UNSUPPORTED", "LocalStorage not available on Windows"));
     }
 
     public async Task<Result<IEnumerable<T>>> GetAllByPrefixAsync<T>(string keyPrefix, CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
         return Result.Fail<IEnumerable<T>>(new Error("STORAGE.PLATFORM_UNSUPPORTED", "LocalStorage not available on Windows"));
     }
 
     public async Task<Result> ClearAsync(CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
         return Result.Fail(new Error("STORAGE.PLATFORM_UNSUPPORTED", "LocalStorage not available on Windows"));
     }
 }
