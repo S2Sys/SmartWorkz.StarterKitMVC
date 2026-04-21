@@ -7,7 +7,7 @@ using System.Diagnostics;
 /// Interceptor that logs HTTP request and response details including method, URI, status code, and elapsed time.
 /// Optional body logging is disabled by default and should only be enabled in Development environment.
 /// </summary>
-public sealed class RequestLoggingInterceptor : IRequestInterceptor
+public sealed class RequestLoggingInterceptor : IResponseInterceptor
 {
     private readonly ILogger<RequestLoggingInterceptor> _logger;
     private readonly bool _enableBodyLogging;

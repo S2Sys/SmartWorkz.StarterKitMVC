@@ -50,8 +50,10 @@ public static class ServiceCollectionExtensions
         {
             services.AddScoped<IRequestInterceptor, CorrelationInterceptor>();
             services.AddScoped<IRequestInterceptor, DeviceInfoInterceptor>();
+            services.AddSingleton<IResponseInterceptor, RequestLoggingInterceptor>();
+            services.AddSingleton<IRequestInterceptor>(sp => sp.GetRequiredService<IResponseInterceptor>());
             services.AddSingleton<ITokenRefreshInterceptor, TokenRefreshInterceptor>();
-            services.AddSingleton<IRequestInterceptor>(sp => sp.GetRequiredService<ITokenRefreshInterceptor>());
+            services.AddSingleton<IResponseInterceptor>(sp => sp.GetRequiredService<ITokenRefreshInterceptor>());
         }
 
         // Step 5: Register error handler (needed by ApiClient)
