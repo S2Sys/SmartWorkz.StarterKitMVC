@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.ValueObjects;
+﻿namespace SmartWorkz.Core;
 
 public sealed class Money : ValueObject
 {

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Services.Globalization;
+﻿namespace SmartWorkz.Core;
 
 public interface ILocalizationService
 {

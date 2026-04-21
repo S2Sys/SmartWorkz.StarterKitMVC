@@ -1,6 +1,6 @@
-using SmartWorkz.Core.Shared.Specifications;
+﻿using SmartWorkz.Core.Shared.Specifications;
 
-namespace SmartWorkz.Core.Abstractions;
+namespace SmartWorkz.Core;
 
 public interface IRepository<TEntity, TId> where TEntity : class, IEntity<TId>
 {

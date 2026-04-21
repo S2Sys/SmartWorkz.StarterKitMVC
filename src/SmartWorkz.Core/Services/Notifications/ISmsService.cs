@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Services.Notifications;
+﻿namespace SmartWorkz.Core;
 
 public interface ISmsService
 {

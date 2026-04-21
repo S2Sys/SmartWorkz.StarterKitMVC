@@ -1,9 +1,8 @@
-using System.Linq.Expressions;
-using SmartWorkz.Core.Abstractions;
+﻿using System.Linq.Expressions;
 using SmartWorkz.Core.Shared.Results;
 using SmartWorkz.Core.Shared.Guards;
 
-namespace SmartWorkz.Core.Services;
+namespace SmartWorkz.Core;
 
 /// <summary>
 /// Base class for all domain services

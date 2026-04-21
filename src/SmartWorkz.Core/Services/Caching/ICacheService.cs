@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Services.Caching;
+﻿namespace SmartWorkz.Core;
 
 public interface ICacheService
 {

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Entities;
+﻿namespace SmartWorkz.Core;
 
 /// <summary>
 /// Generic base class for all auditable, soft-deletable, tenant-scoped entities.

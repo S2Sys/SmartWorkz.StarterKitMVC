@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Enums;
+﻿namespace SmartWorkz.Core;
 public enum ResultStatus
 {
     [System.ComponentModel.DataAnnotations.Display(Name = "Success")]

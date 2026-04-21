@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.ValueObjects;
+﻿namespace SmartWorkz.Core;
 
 /// <summary>
 /// Base class for immutable value objects.

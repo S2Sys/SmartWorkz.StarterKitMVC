@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Abstractions;
+﻿namespace SmartWorkz.Core;
 
 /// <summary>
 /// Marker interface for all service classes

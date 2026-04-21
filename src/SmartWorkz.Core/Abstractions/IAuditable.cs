@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Abstractions;
+﻿namespace SmartWorkz.Core;
 
 /// <summary>
 /// Marks an entity that tracks who created and last modified it.
