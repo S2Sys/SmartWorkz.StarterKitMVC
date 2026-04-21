@@ -142,44 +142,41 @@ public class ApiClient : IApiClient
 
     /// <summary>
     /// Gets data with retry, timeout, and optional cancellation.
+    /// Delegates to error handler's centralized retry policy.
     /// </summary>
     public async Task<Result<T>> GetAsync<T>(string endpoint, int retryCount, TimeSpan timeout, CancellationToken ct = default)
     {
         Guard.NotEmpty(endpoint, nameof(endpoint));
-        if (retryCount < 0)
-            throw new ArgumentException("retryCount must be non-negative", nameof(retryCount));
+        if (retryCount <= 0)
+            throw new ArgumentException("Retry count must be greater than 0", nameof(retryCount));
 
-        using var timeoutCts = new CancellationTokenSource(timeout);
-        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCts.Token);
+        ct.ThrowIfCancellationRequested();
 
-        var result = Result.Fail<T>(new Error("HTTP.RETRY_FAILED", "Retries not attempted"));
+        // Create a linked CancellationTokenSource for the timeout
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        cts.CancelAfter(timeout);
 
-        for (int attempt = 0; attempt <= retryCount; attempt++)
+        // Use errorHandler.HandleWithRetryAsync to execute the request with retries
+        // The handler will apply exponential backoff: 100 * 2^attempt ms
+        Result<T> finalResult = null!;
+        var retryResult = await _errorHandler.HandleWithRetryAsync(
+            async () =>
+            {
+                finalResult = await GetAsync<T>(endpoint, cts.Token);
+                if (!finalResult.Succeeded)
+                    throw new HttpRequestException(finalResult.Error?.Message ?? "Request failed");
+            },
+            retryCount,
+            cts.Token
+        );
+
+        // Return the result from the retry handler, or use the final result if retry succeeded
+        if (!retryResult.Succeeded)
         {
-            result = await ExecuteRequestAsync<T>(HttpMethod.Get, endpoint, null, linkedCts.Token);
-
-            if (result.Succeeded)
-            {
-                return result;
-            }
-
-            if (attempt < retryCount)
-            {
-                var delayMs = (int)(100 * Math.Pow(2, attempt));
-                _logger.LogDebug($"Request failed, retrying in {delayMs}ms (attempt {attempt + 1}/{retryCount})");
-
-                try
-                {
-                    await Task.Delay(delayMs, linkedCts.Token);
-                }
-                catch (OperationCanceledException)
-                {
-                    return Result.Fail<T>(new Error("HTTP.TIMEOUT", "Operation cancelled during retry delay"));
-                }
-            }
+            return Result.Fail<T>(retryResult.Error ?? new Error("HTTP.RETRY_FAILED", "Request failed after retries"));
         }
 
-        return result;
+        return finalResult ?? Result.Fail<T>(new Error("HTTP.RETRY_FAILED", "Request failed after retries"));
     }
 
     private async Task<Result<T>> ExecuteRequestAsync<T>(HttpMethod method, string endpoint, object? data, CancellationToken ct)
