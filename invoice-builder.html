@@ -101,9 +101,8 @@ button.secondary:hover { background: #4b5563; }
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 40%;">Service Description</th>
-                        <th style="width: 15%;">Code</th>
-                        <th style="width: 10%;">Qty</th>
+                        <th style="width: 50%;">Service Description</th>
+                        <th style="width: 15%;">Qty</th>
                         <th style="width: 15%;">Rate</th>
                         <th style="width: 20%;">Amount</th>
                     </tr>
@@ -181,7 +180,6 @@ function initTable() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td><input type="text" class="desc"></td>
-            <td><input type="text" class="code"></td>
             <td><input type="number" class="qty" value="1" onchange="calc()"></td>
             <td><input type="number" class="rate" value="0" onchange="calc()"></td>
             <td><input type="number" class="amount" readonly></td>
@@ -217,17 +215,18 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total) {
     <title>Invoice - ${document.getElementById('invNo').value}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; padding: 20px; }
-        .toolbar { display: flex; gap: 10px; justify-content: flex-end; margin-bottom: 20px; max-width: 210mm; margin: 0 auto 20px; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: white; padding: 0; }
+        @media print { body { background: white; margin: 0; padding: 0; } }
+        .toolbar { display: flex; gap: 10px; justify-content: flex-end; margin-bottom: 20px; max-width: 210mm; margin: 0 auto 20px; padding: 20px; background: white; }
         .toolbar button { padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
         .toolbar button.secondary { background: white; color: #2563eb; border: 1px solid #2563eb; }
-        .invoice { width: 210mm; background: white; margin: 0 auto; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .invoice { width: 210mm; height: auto; background: white; margin: 0 auto; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .header { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d9e75 100%); color: white; padding: 40px 30px; margin: 0 0 30px 0; display: flex; align-items: center; gap: 20px; }
         .header-logo { width: 100px; height: 80px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .header-logo img { width: 100%; height: 100%; object-fit: contain; filter: brightness(0) invert(1); }
         .header-content h1 { margin: 0; font-size: 42px; font-weight: 900; letter-spacing: -1px; }
         .header-content p { margin: 8px 0 0 0; font-size: 15px; font-weight: 500; }
-        .content { padding: 0 30px; }
+        .content { padding: 0 30px; background: white; }
         .invoice-info { text-align: right; margin-bottom: 25px; border-bottom: 2px solid #e5e7eb; padding-bottom: 15px; }
         .invoice-info p { margin: 4px 0; font-size: 13px; }
         .invoice-info .inv-no { font-size: 16px; font-weight: 700; color: #2563eb; }
@@ -239,7 +238,7 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total) {
         thead { background: #f3f4f6; border-bottom: 2px solid #2563eb; }
         th { padding: 12px; text-align: left; font-weight: bold; font-size: 12px; text-transform: uppercase; }
         td { padding: 12px; border-bottom: 1px solid #eee; font-size: 12px; }
-        td:nth-child(n+3) { text-align: right; }
+        td:nth-child(n+2) { text-align: right; }
         .summary { background: #f3f4f6; padding: 20px; border-radius: 6px; margin: 25px 0; }
         .summary-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; }
         .summary-item.total { font-weight: bold; color: #2563eb; font-size: 18px; border-top: 2px solid #2563eb; padding-top: 12px; margin-top: 12px; }
@@ -250,8 +249,8 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total) {
         .bank-details { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 15px 0; }
         .bank-details p { margin: 2px 0; font-size: 11px; }
         .bank-details .label { font-weight: bold; margin-bottom: 4px; }
-        @media print { body { background: white; padding: 0; } .toolbar { display: none; } }
         @page { margin: 0; size: A4; }
+        @media print { .toolbar { display: none; } body { background: white; } .invoice { box-shadow: none; } }
     </style>
 </head>
 <body>
@@ -292,9 +291,8 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total) {
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 40%;">Service / Item</th>
-                        <th style="width: 15%;">Code</th>
-                        <th style="width: 10%;">Qty</th>
+                        <th style="width: 50%;">Service / Item</th>
+                        <th style="width: 15%;">Qty</th>
                         <th style="width: 15%;">Unit Rate</th>
                         <th style="width: 20%;">Amount</th>
                     </tr>
@@ -304,7 +302,6 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total) {
     items.forEach(item => {
         html += `<tr>
                     <td>${item.desc}</td>
-                    <td>${item.code}</td>
                     <td style="text-align: right;">${item.qty}</td>
                     <td style="text-align: right;">₹${item.rate.toLocaleString('en-IN', {maximumFractionDigits: 2})}</td>
                     <td style="text-align: right;">₹${item.amount.toLocaleString('en-IN', {maximumFractionDigits: 2})}</td>
@@ -361,13 +358,12 @@ function downloadInvoice() {
     const items = [];
     document.querySelectorAll('#services tr').forEach(row => {
         const desc = row.querySelector('.desc').value || '';
-        const code = row.querySelector('.code').value || '';
         const qty = parseFloat(row.querySelector('.qty').value) || 0;
         const rate = parseFloat(row.querySelector('.rate').value) || 0;
         const amount = parseFloat(row.querySelector('.amount').value) || 0;
 
-        if (desc || code || amount > 0) {
-            items.push({desc, code, qty, rate, amount});
+        if (desc || amount > 0) {
+            items.push({desc, qty, rate, amount});
         }
     });
 
@@ -399,13 +395,12 @@ function printInvoice() {
     const items = [];
     document.querySelectorAll('#services tr').forEach(row => {
         const desc = row.querySelector('.desc').value || '';
-        const code = row.querySelector('.code').value || '';
         const qty = parseFloat(row.querySelector('.qty').value) || 0;
         const rate = parseFloat(row.querySelector('.rate').value) || 0;
         const amount = parseFloat(row.querySelector('.amount').value) || 0;
 
-        if (desc || code || amount > 0) {
-            items.push({desc, code, qty, rate, amount});
+        if (desc || amount > 0) {
+            items.push({desc, qty, rate, amount});
         }
     });
 
@@ -424,7 +419,10 @@ function printInvoice() {
     const printWindow = window.open('', '', 'width=900,height=700');
     printWindow.document.write(html);
     printWindow.document.close();
-    setTimeout(() => printWindow.print(), 250);
+    setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+    }, 500);
 }
 
 window.addEventListener('DOMContentLoaded', initTable);
