@@ -21,17 +21,17 @@ public sealed class InMemoryEventPublisher : IEventPublisher
     }
 
     /// <summary>
-    /// Publishes an event to all registered handlers.
+    /// Publishes a single domain event to all registered handlers.
     /// Handlers are invoked sequentially in registration order.
     /// If any handler throws an exception, it is caught and a failure Result is returned.
     /// Other handlers will attempt to execute even if a previous handler fails.
     /// </summary>
-    /// <typeparam name="TEvent">The event type being published.</typeparam>
+    /// <typeparam name="TEvent">The event type implementing IDomainEvent.</typeparam>
     /// <param name="event">The event instance to publish.</param>
     /// <param name="cancellationToken">Cancellation token to cancel handler execution.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
-        where TEvent : class, new()
+        where TEvent : class, IDomainEvent
     {
         var eventType = typeof(TEvent);
         var handlers = _subscriber.GetHandlers(eventType);
@@ -77,6 +77,46 @@ public sealed class InMemoryEventPublisher : IEventPublisher
         {
             throw new InvalidOperationException(
                 $"One or more event handlers failed: {string.Join("; ", errors)}");
+        }
+    }
+
+    /// <summary>
+    /// Publishes multiple domain events to all registered handlers.
+    /// Events are published sequentially in the order provided.
+    /// </summary>
+    /// <typeparam name="TEvent">The event type implementing IDomainEvent.</typeparam>
+    /// <param name="events">Collection of events to publish.</param>
+    /// <param name="cancellationToken">Cancellation token to cancel handler execution.</param>
+    /// <returns>A task representing the asynchronous batch operation.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when any event handler fails.</exception>
+    public async Task PublishAsync<TEvent>(IEnumerable<TEvent> events, CancellationToken cancellationToken = default)
+        where TEvent : class, IDomainEvent
+    {
+        var eventList = events?.ToList() ?? new List<TEvent>();
+
+        if (eventList.Count == 0)
+        {
+            return; // No events to publish
+        }
+
+        var errors = new List<string>();
+
+        foreach (var @event in eventList)
+        {
+            try
+            {
+                await PublishAsync(@event, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"Failed to publish event: {ex.Message}");
+            }
+        }
+
+        if (errors.Count > 0)
+        {
+            throw new InvalidOperationException(
+                $"Failed to publish {errors.Count} out of {eventList.Count} events: {string.Join("; ", errors)}");
         }
     }
 }

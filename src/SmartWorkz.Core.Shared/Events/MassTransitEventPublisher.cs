@@ -8,7 +8,7 @@ namespace SmartWorkz.Core.Shared.Events;
 /// Supports both single and batch event publishing with async/await patterns.
 /// Suitable for production environments with message broker backend (RabbitMQ, Azure Service Bus, etc).
 /// </summary>
-public sealed class MassTransitEventPublisher
+public sealed class MassTransitEventPublisher : IEventPublisher
 {
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly ILogger<MassTransitEventPublisher> _logger;
