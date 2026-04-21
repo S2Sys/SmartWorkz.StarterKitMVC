@@ -1,40 +1,23 @@
 namespace SmartWorkz.Core.Mobile;
 
 #if __ANDROID__
-using Android.Hardware.Fingerprints;
+using AndroidX.Biometric;
 using Android.Content;
+using AndroidX.Fragment.App;
+using Java.Lang;
+using Java.Util.Concurrent;
 
 public partial class BiometricService
 {
-    private FingerprintManager? _fingerprintManager;
-
-    private FingerprintManager GetFingerprintManager()
-    {
-        if (_fingerprintManager == null)
-        {
-            var context = Android.App.Application.Context;
-            _fingerprintManager = context?.GetSystemService(Context.FingerprintService) as FingerprintManager;
-        }
-        return _fingerprintManager!;
-    }
-
     private partial async Task<bool> IsAvailableAsyncPlatform(CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
 
         try
         {
-            var fingerprintManager = GetFingerprintManager();
-            if (fingerprintManager == null)
-            {
-                return false;
-            }
-
-            // Check if device has fingerprint hardware and enrolled fingerprints
-            var hasHardware = fingerprintManager.IsHardwareDetected;
-            var hasEnrolled = fingerprintManager.HasEnrolledFingerprints;
-
-            return hasHardware && hasEnrolled;
+            var biometricManager = BiometricManager.From(Android.App.Application.Context);
+            var result = biometricManager.CanAuthenticate(BiometricManager.Authenticators.BiometricStrong);
+            return result == BiometricManager.BiometricSuccess;
         }
         catch (Exception ex)
         {
@@ -49,19 +32,10 @@ public partial class BiometricService
 
         try
         {
-            var fingerprintManager = GetFingerprintManager();
-            if (fingerprintManager == null)
-            {
-                return BiometricType.None;
-            }
-
-            // Check for fingerprint hardware
-            if (fingerprintManager.IsHardwareDetected && fingerprintManager.HasEnrolledFingerprints)
-            {
-                return BiometricType.Fingerprint;
-            }
-
-            return BiometricType.None;
+            // Android API doesn't expose specific biometric type at manager level
+            // Return Fingerprint when available
+            var isAvailable = await IsAvailableAsyncPlatform(ct);
+            return isAvailable ? BiometricType.Fingerprint : BiometricType.None;
         }
         catch (Exception ex)
         {
@@ -74,9 +48,66 @@ public partial class BiometricService
     {
         ct.ThrowIfCancellationRequested();
 
-        // Android biometric prompt not yet implemented
-        // TODO: Integrate with AndroidX.Biometric.BiometricPrompt for production
-        throw new NotImplementedException("Android biometric authentication not yet implemented. Use biometric context API instead.");
+        var isAvailable = await IsAvailableAsyncPlatform(ct);
+        if (!isAvailable)
+            return false;
+
+        var promptInfo = new BiometricPrompt.PromptInfo.Builder()
+            .SetTitle("Biometric Authentication")
+            .SetSubtitle("Authenticate to continue")
+            .SetNegativeButtonText("Cancel")
+            .Build();
+
+        var tcs = new TaskCompletionSource<bool>();
+
+        var callback = new BiometricAuthCallback(tcs);
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            var fragmentActivity = Platform.CurrentActivity as FragmentActivity;
+            var executor = new MainThreadExecutor();
+            var biometricPrompt = new BiometricPrompt(fragmentActivity, executor, callback);
+            biometricPrompt.Authenticate(promptInfo);
+        });
+
+        ct.Register(() => tcs.TrySetCanceled());
+        return await tcs.Task;
+    }
+
+    private class BiometricAuthCallback : BiometricPrompt.AuthenticationCallback
+    {
+        private readonly TaskCompletionSource<bool> _tcs;
+
+        public BiometricAuthCallback(TaskCompletionSource<bool> tcs)
+        {
+            _tcs = tcs;
+        }
+
+        public override void OnAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result)
+        {
+            base.OnAuthenticationSucceeded(result);
+            _tcs.TrySetResult(true);
+        }
+
+        public override void OnAuthenticationError(int errorCode, ICharSequence errString)
+        {
+            base.OnAuthenticationError(errorCode, errString);
+            _tcs.TrySetResult(false);
+        }
+
+        public override void OnAuthenticationFailed()
+        {
+            base.OnAuthenticationFailed();
+            // No-op per spec: attempt counter incremented by framework
+        }
+    }
+
+    private class MainThreadExecutor : Java.Lang.Object, Java.Util.Concurrent.IExecutor
+    {
+        public void Execute(IRunnable runnable)
+        {
+            MainThread.BeginInvokeOnMainThread(() => runnable.Run());
+        }
     }
 }
 #endif
