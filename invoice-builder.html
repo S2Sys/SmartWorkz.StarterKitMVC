@@ -92,12 +92,15 @@ button.secondary:hover { background: #4b5563; }
                         <label>Country</label>
                         <input type="text" id="country" value="">
                     </div>
+                    <div class="form-group">
+                        <label>PAN Number</label>
+                        <input type="text" id="billPan" value="">
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="form-section">
-            <h3>Services / Items</h3>
             <table>
                 <thead>
                     <tr>
@@ -214,7 +217,7 @@ function calc() {
     document.getElementById('words').textContent = 'Rupees ' + numberToWords(Math.round(total));
 }
 
-function getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, client, addr, city, country, pan, words) {
+function getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, client, addr, city, country, pan, words, billPan) {
     return `<!DOCTYPE html>
 <html>
 <head>
@@ -287,6 +290,7 @@ function getInvoiceHtml(items, subtotal, taxRate, tax, total, invNo, invDate, cl
                     <p>${addr}</p>
                     <p>${city}</p>
                     <p>${country}</p>
+                    ${billPan ? `<p><strong>PAN:</strong> ${billPan}</p>` : ''}
                 </div>
                 <div>
                     <h3>From</h3>

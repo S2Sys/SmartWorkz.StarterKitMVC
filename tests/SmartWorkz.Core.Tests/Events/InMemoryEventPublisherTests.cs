@@ -436,13 +436,19 @@ public class InMemoryEventPublisherTests
 }
 
 /// <summary>Test event for use in tests.</summary>
-public sealed class TestEvent
+public sealed class TestEvent : IDomainEvent
 {
     public string? Value { get; set; }
+    public Guid EventId { get; } = Guid.NewGuid();
+    public DateTimeOffset OccurredAt { get; } = DateTimeOffset.UtcNow;
+    public string AggregateId { get; } = "test-aggregate";
 }
 
 /// <summary>Alternative test event for use in tests.</summary>
-public sealed class OtherTestEvent
+public sealed class OtherTestEvent : IDomainEvent
 {
     public string? Data { get; set; }
+    public Guid EventId { get; } = Guid.NewGuid();
+    public DateTimeOffset OccurredAt { get; } = DateTimeOffset.UtcNow;
+    public string AggregateId { get; } = "other-aggregate";
 }
