@@ -6,6 +6,7 @@ global using System.Threading.Tasks;
 global using SmartWorkz.Core.Shared.Results;
 global using SmartWorkz.Core.Shared.Pagination;
 global using SmartWorkz.Core.Shared.Guards;
+global using SmartWorkz.Core.Shared.Audit;
 global using SmartWorkz.Core.Shared.Extensions;
 global using SmartWorkz.Core.Shared.Primitives;
 global using SmartWorkz.Core.Shared.Base_Classes;
