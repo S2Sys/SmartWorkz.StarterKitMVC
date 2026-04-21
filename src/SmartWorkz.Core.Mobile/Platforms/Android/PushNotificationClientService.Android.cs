@@ -1,5 +1,6 @@
 #if __ANDROID__
 using Firebase.Messaging;
+using Microsoft.Extensions.Logging;
 
 namespace SmartWorkz.Core.Mobile;
 
@@ -9,7 +10,8 @@ internal partial class PushNotificationClientService
     {
         try
         {
-            var token = await FirebaseMessaging.Instance.GetToken();
+            var task = FirebaseMessaging.Instance.GetToken();
+            var token = (await (Task<string>)(object)task);
             return token;
         }
         catch (Exception ex)

@@ -1,4 +1,6 @@
 #if __IOS__
+using Microsoft.Extensions.Logging;
+
 namespace SmartWorkz.Core.Mobile;
 
 internal partial class PushNotificationClientService
