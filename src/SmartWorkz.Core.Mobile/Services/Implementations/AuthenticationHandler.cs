@@ -1,17 +1,20 @@
 namespace SmartWorkz.Core.Mobile;
 
 using System.Net.Http.Headers;
+using SmartWorkz.Core.Shared.Security;
 
 public class AuthenticationHandler : IAuthenticationHandler
 {
     private readonly ISecureStorageService _secureStorage;
     private readonly ILogger _logger;
+    private readonly JwtSettings _jwtSettings;
     private const string TokenKey = "auth::token";
 
-    public AuthenticationHandler(ISecureStorageService secureStorage, ILogger logger)
+    public AuthenticationHandler(ISecureStorageService secureStorage, ILogger logger, JwtSettings jwtSettings)
     {
         _secureStorage = Guard.NotNull(secureStorage, nameof(secureStorage));
         _logger = Guard.NotNull(logger, nameof(logger));
+        _jwtSettings = Guard.NotNull(jwtSettings, nameof(jwtSettings));
     }
 
     /// <summary>
@@ -81,7 +84,8 @@ public class AuthenticationHandler : IAuthenticationHandler
             return false;
         }
 
-        return ValidateToken(token);
+        var result = JwtHelper.ValidateToken(token, _jwtSettings);
+        return result.Succeeded && result.Data?.IsValid == true;
     }
 
     /// <summary>
@@ -94,61 +98,13 @@ public class AuthenticationHandler : IAuthenticationHandler
 
         var token = await GetTokenAsync(ct);
 
-        if (!string.IsNullOrWhiteSpace(token) && ValidateToken(token))
+        if (!string.IsNullOrWhiteSpace(token))
         {
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
-    }
-
-    /// <summary>
-    /// Validates a JWT token (basic validation).
-    /// </summary>
-    private bool ValidateToken(string token)
-    {
-        try
-        {
-            // Basic JWT validation: check format (3 parts separated by dots)
-            var parts = token.Split('.');
-            if (parts.Length != 3)
+            var result = JwtHelper.ValidateToken(token, _jwtSettings);
+            if (result.Succeeded && result.Data?.IsValid == true)
             {
-                _logger.LogWarning("Invalid token format");
-                return false;
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
-
-            // Decode payload to check expiration
-            var payload = parts[1];
-            // Add padding if needed
-            payload += new string('=', (4 - payload.Length % 4) % 4);
-
-            var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(payload));
-            using var doc = JsonDocument.Parse(json);
-
-            if (doc.RootElement.TryGetProperty("exp", out var expElement) && expElement.TryGetInt64(out var exp))
-            {
-                var expirationTime = UnixTimeStampToDateTime(exp);
-                if (expirationTime < DateTime.UtcNow)
-                {
-                    _logger.LogDebug("Token has expired");
-                    return false;
-                }
-            }
-
-            return true;
         }
-        catch (Exception ex)
-        {
-            _logger.LogDebug($"Token validation error: {ex.Message}");
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// Converts Unix timestamp to DateTime.
-    /// </summary>
-    private static DateTime UnixTimeStampToDateTime(long unixTimestamp)
-    {
-        var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        dateTime = dateTime.AddSeconds(unixTimestamp).ToUniversalTime();
-        return dateTime;
     }
 }
