@@ -180,8 +180,8 @@ function initTable() {
     for (let i = 0; i < 5; i++) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><input type="text" class="desc" placeholder="Service description"></td>
-            <td><input type="text" class="code" placeholder="Code"></td>
+            <td><input type="text" class="desc"></td>
+            <td><input type="text" class="code"></td>
             <td><input type="number" class="qty" value="1" onchange="calc()"></td>
             <td><input type="number" class="rate" value="0" onchange="calc()"></td>
             <td><input type="number" class="amount" readonly></td>
