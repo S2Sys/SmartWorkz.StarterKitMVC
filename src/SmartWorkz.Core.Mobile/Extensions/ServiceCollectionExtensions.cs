@@ -30,54 +30,61 @@ public static class ServiceCollectionExtensions
     {
         Guard.NotNull(services, nameof(services));
 
-        // Register configuration using IOptions pattern
-        var config = new MobileApiConfig { BaseUrl = "https://localhost" };
-        configureApi?.Invoke(config);
+        // Step 1: Register configuration using simplified IOptions pattern
         services.Configure<MobileApiConfig>(options =>
         {
-            options.BaseUrl = config.BaseUrl;
-            options.UserAgent = config.UserAgent;
-            options.Timeout = config.Timeout;
-            options.RetryCount = config.RetryCount;
-            options.RetryStrategy = config.RetryStrategy;
-            options.EnableCompression = config.EnableCompression;
+            options.BaseUrl ??= "https://api.example.com";
+            configureApi?.Invoke(options);
         });
 
-        // Register platform-neutral services
+        // Step 2: Register platform-neutral base services
         services.AddScoped<IMobileContext, MobileContext>();
         services.AddSingleton<IRateLimiter, RateLimiter>(provider =>
             new RateLimiter(new RateLimiterOptions { MaxRequests = 100, WindowMilliseconds = 60000 }));
         services.AddScoped<ISecureStorageService, SecureStorageService>();
+
+        // Step 3: Register authentication handler (needed by ApiClient)
         services.AddScoped<IAuthenticationHandler, AuthenticationHandler>();
 
-        // Register ApiClient with interceptor support
-        services.AddScoped<IApiClient, ApiClient>();
-
-        // Register built-in interceptors (if enabled)
+        // Step 4: Register built-in interceptors (if enabled) - needed by ApiClient
         if (enableBuiltinInterceptors)
         {
             services.AddScoped<IRequestInterceptor, CorrelationInterceptor>();
             services.AddScoped<IRequestInterceptor, DeviceInfoInterceptor>();
         }
 
-        // Register analytics service
+        // Step 5: Register error handler (needed by ApiClient)
+        services.AddScoped<IErrorHandler, ErrorHandler>();
+
+        // Step 6: Register HttpClientFactory (required by ApiClient)
+        services.AddHttpClient("MobileApiClient")
+            .ConfigureHttpClient((sp, client) =>
+            {
+                var config = sp.GetRequiredService<IOptions<MobileApiConfig>>();
+                client.BaseAddress = new Uri(config.Value.BaseUrl);
+                client.Timeout = config.Value.Timeout;
+            });
+
+        // Step 7: Register analytics service
         if (enableRealAnalytics)
         {
             services.AddSingleton<IAnalyticsService, BackendAnalyticsService>();
         }
         else
         {
-            // Fallback to stub implementation if real analytics not enabled
             services.AddSingleton<IAnalyticsService, AnalyticsService>();
         }
 
-        // Register push notifications
+        // Step 8: Register push notifications service
         services.AddScoped<IPushNotificationClientService, PushNotificationClientService>();
 
-        // Register Lazy<IApiClient> to break circular dependencies
+        // Step 9: Register ApiClient LAST (after all dependencies are registered)
+        services.AddScoped<IApiClient, ApiClient>();
+
+        // Step 10: Register Lazy<IApiClient> wrapper to break circular dependencies
         services.AddScoped(provider => new Lazy<IApiClient>(() => provider.GetRequiredService<IApiClient>()));
 
-        // Register JWT settings (if not already present)
+        // Step 11: Register JWT settings (if not already present)
         if (!services.Any(x => x.ServiceType == typeof(JwtSettings)))
         {
             services.AddSingleton<JwtSettings>(new JwtSettings
@@ -90,17 +97,16 @@ public static class ServiceCollectionExtensions
             });
         }
 
-        // Keep existing singleton services for backward compatibility
+        // Step 12: Register backward compatibility singleton services
         services.AddSingleton<IConnectionChecker, ConnectionChecker>();
         services.AddSingleton<IPermissionService, PermissionService>();
         services.AddSingleton<ILocalStorageService, LocalStorageService>();
         services.AddSingleton<IMobileService, MobileService>();
 
-        // Keep existing scoped services for backward compatibility
+        // Step 13: Register backward compatibility scoped services
         services.AddScoped<ISyncService, SyncService>();
         services.AddScoped<IOfflineService, OfflineService>();
         services.AddScoped<IBiometricService, BiometricService>();
-        services.AddScoped<IErrorHandler, ErrorHandler>();
 
         return services;
     }
