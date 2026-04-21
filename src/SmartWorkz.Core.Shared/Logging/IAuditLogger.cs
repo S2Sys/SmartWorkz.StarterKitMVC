@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Logging;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Interface for structured audit logging with metadata support.

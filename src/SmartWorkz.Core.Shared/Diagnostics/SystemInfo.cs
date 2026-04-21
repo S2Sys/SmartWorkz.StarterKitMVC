@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Diagnostics;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Represents system information including CPU, memory, and disk details.

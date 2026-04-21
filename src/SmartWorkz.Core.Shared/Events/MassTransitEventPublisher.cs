@@ -1,7 +1,7 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace SmartWorkz.Core.Shared.Events;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Distributed event publisher using MassTransit message bus.

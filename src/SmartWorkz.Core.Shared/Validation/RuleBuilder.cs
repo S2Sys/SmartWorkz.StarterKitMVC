@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace SmartWorkz.Core.Shared.Validation;
+namespace SmartWorkz.Shared;
 
 public sealed class RuleBuilder<T, TProperty>
 {

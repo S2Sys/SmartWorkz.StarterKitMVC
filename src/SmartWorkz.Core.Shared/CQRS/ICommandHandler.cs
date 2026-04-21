@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.CQRS;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Handler for processing a specific command type.

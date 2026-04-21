@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Sagas;
+namespace SmartWorkz.Shared;
 
 using Microsoft.Extensions.Logging;
 using SmartWorkz.Core.Shared.Events;

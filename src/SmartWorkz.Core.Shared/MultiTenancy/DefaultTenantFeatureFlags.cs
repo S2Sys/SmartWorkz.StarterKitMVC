@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace SmartWorkz.Core.Shared.MultiTenancy;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// In-memory feature flag provider for tenant-scoped feature control.

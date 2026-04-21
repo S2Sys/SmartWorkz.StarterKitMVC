@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Pagination;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Standard request parameters for any paginated query.

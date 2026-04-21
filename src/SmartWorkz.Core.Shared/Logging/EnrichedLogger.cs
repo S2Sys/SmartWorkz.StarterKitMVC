@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Logging;
+namespace SmartWorkz.Shared;
 
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;

@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace SmartWorkz.Core.Shared.Resilience;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Thread-safe token bucket rate limiter implementation.

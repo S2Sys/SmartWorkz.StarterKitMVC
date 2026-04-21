@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Utilities;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Options for configuring slug generation behavior in <see cref="SlugHelper"/>.

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Caching;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Abstraction for a cache store with support for various operations including TTL and expiration strategies.

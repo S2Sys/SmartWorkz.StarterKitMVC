@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.FileStorage;
+namespace SmartWorkz.Shared;
 
 using SmartWorkz.Core.Services.FileStorage;
 using Microsoft.Extensions.Logging;

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Exceptions;
+namespace SmartWorkz.Shared;
 
 public class NotFoundException : ApplicationException
 {

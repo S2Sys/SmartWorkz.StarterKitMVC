@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Security;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Specifies the HMAC algorithm to use for message signing and verification.

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Helpers;
+namespace SmartWorkz.Shared;
 
 using System.Security.Cryptography;
 using System.Text;

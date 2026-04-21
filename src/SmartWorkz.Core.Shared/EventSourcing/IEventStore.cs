@@ -1,6 +1,6 @@
 using SmartWorkz.Core.Shared.Events;
 
-namespace SmartWorkz.Core.Shared.EventSourcing;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Abstraction for an immutable event store that persists domain events.

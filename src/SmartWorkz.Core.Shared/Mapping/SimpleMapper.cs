@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace SmartWorkz.Core.Shared.Mapping;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// A simple in-memory mapper that supports registering and executing mapping profiles.

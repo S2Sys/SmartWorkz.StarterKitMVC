@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Sagas;
+namespace SmartWorkz.Shared;
 
 using SmartWorkz.Core.Shared.Events;
 

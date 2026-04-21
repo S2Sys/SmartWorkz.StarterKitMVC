@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace SmartWorkz.Core.Shared.Validation;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Single validation rule for a property.

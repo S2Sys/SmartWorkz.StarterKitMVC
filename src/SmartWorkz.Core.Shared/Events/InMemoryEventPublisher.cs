@@ -1,6 +1,6 @@
 using SmartWorkz.Core.Shared.Guards;
 
-namespace SmartWorkz.Core.Shared.Events;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// In-memory event publisher that executes all registered handlers sequentially.

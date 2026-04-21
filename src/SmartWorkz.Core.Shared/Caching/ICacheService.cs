@@ -1,6 +1,6 @@
 using SmartWorkz.Core.Shared.Results;
 
-namespace SmartWorkz.Core.Shared.Caching;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Service for caching with tenant isolation and L1/L2 hybrid support.

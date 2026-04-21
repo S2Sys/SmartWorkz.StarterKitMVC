@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Features;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Global feature flag service for cross-tenant feature control.

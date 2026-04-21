@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.CQRS;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Marker interface for command objects representing intent to change state.

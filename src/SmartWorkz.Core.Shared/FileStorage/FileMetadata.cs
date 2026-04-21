@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Services.FileStorage;
+namespace SmartWorkz.Shared;
 
 public class FileMetadata
 {

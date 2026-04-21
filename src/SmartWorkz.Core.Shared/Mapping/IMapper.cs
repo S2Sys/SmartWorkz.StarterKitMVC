@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Mapping;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Mapping service abstraction for transforming objects between types.

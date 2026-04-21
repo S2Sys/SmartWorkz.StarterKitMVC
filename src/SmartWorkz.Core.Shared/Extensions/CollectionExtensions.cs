@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace SmartWorkz.Core.Shared.Extensions;
+namespace SmartWorkz.Shared;
 
 public static class CollectionExtensions
 {

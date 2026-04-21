@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Events;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Publishes domain events for event-driven architecture.

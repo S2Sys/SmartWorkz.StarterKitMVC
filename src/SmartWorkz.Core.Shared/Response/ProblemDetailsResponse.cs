@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Response;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Implements RFC 7807 Problem Details for HTTP APIs standard response format.

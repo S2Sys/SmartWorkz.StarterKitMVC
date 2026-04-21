@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Notifications;
+namespace SmartWorkz.Shared;
 
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Metrics;
+namespace SmartWorkz.Shared;
 
 using SmartWorkz.Core.Shared.Guards;
 using Microsoft.Extensions.DependencyInjection;

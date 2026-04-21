@@ -1,6 +1,6 @@
 using SmartWorkz.Core.Shared.Guards;
 
-namespace SmartWorkz.Core.Shared.MultiTenancy;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Scoped tenant context using AsyncLocal for proper isolation across async boundaries.

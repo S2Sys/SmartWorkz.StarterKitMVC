@@ -1,7 +1,7 @@
 using SmartWorkz.Core.Shared.Guards;
 using System.Collections.Concurrent;
 
-namespace SmartWorkz.Core.Shared.Features;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Global (non-tenant) feature flag service with in-memory storage.

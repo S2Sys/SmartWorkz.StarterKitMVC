@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.CQRS;
+namespace SmartWorkz.Shared;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

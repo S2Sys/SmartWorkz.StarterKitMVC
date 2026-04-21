@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Response;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Structured error representation for API responses.

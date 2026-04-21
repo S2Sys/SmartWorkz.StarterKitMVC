@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Utilities;
+namespace SmartWorkz.Shared;
 
 using System.Text;
 using System.Text.RegularExpressions;

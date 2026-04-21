@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace SmartWorkz.Core.Shared.Specifications;
+namespace SmartWorkz.Shared;
 
 public abstract class Specification<T> where T : class
 {

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Metrics;
+namespace SmartWorkz.Shared;
 
 using System.Diagnostics.Metrics;
 using SmartWorkz.Core.Shared.Guards;

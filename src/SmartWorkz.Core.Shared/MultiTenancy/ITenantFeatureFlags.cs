@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.MultiTenancy;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Feature flag provider scoped to a specific tenant.

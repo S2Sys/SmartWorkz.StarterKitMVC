@@ -1,6 +1,6 @@
 using SmartWorkz.Core.Shared.Results;
 
-namespace SmartWorkz.Core.Shared.Grid;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Abstraction for grid data fetching. Implementations handle API calls or in-memory queries.

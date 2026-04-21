@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Sagas;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Represents the status of a saga execution.

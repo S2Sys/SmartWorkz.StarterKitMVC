@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Services.BackgroundJobs;
+namespace SmartWorkz.Shared;
 
 [AttributeUsage(AttributeTargets.Method)]
 public class BackgroundJobAttribute : Attribute

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Sagas;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Represents the result of executing a single saga step.

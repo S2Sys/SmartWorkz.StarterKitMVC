@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Http;
+namespace SmartWorkz.Shared;
 
 using System.Net;
 using System.Net.Http;

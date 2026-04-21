@@ -1,6 +1,6 @@
 using SmartWorkz.Core.Shared.Pagination;
 
-namespace SmartWorkz.Core.Shared.Grid;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Request parameters for grid data fetching, extending PagedQuery with filtering support.

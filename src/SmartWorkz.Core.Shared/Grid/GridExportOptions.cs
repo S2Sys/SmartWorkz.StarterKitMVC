@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Grid;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Configuration for grid data export (CSV, Excel).

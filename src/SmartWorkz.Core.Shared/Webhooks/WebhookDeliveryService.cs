@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Webhooks;
+namespace SmartWorkz.Shared;
 
 using System.Security.Cryptography;
 using System.Text;

@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Utilities;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Provides utilities for date and time operations.

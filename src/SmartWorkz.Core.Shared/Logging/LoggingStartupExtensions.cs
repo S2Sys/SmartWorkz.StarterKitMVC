@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Logging;
+namespace SmartWorkz.Shared;
 
 using Serilog;
 using Serilog.Core;

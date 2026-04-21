@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Services.Notifications;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Service for sending push notifications using Firebase Cloud Messaging.

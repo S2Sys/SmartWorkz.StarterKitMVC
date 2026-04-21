@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Webhooks;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Represents a registered webhook subscription for event notifications.

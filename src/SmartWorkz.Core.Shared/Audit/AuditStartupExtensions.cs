@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Audit;
+namespace SmartWorkz.Shared;
 
 using System.Data;
 using SmartWorkz.Core;

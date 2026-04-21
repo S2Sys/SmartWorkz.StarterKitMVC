@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Templates;
+namespace SmartWorkz.Shared;
 
 /// <summary>Defines operations for rendering templates with placeholder substitution.</summary>
 public interface ITemplateEngine

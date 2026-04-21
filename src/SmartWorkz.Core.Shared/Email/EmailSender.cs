@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Shared.Email;
+namespace SmartWorkz.Shared;
 
 using System.Net.Mail;
 using System.Net;

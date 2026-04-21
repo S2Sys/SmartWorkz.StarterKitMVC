@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Services.Notifications;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// Represents the payload data for a push notification.

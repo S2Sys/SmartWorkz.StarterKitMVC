@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using SmartWorkz.Core.Shared.Results;
 
-namespace SmartWorkz.Core.Shared.Caching;
+namespace SmartWorkz.Shared;
 
 /// <summary>
 /// In-memory L1 cache service implementation with thread-safe operations and tenant isolation.
