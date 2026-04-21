@@ -15,7 +15,8 @@ internal class BackendAnalyticsService : IAnalyticsService
     private readonly ILogger _logger;
 
     private string? _userId;
-    private Dictionary<string, string> _userProperties = [];
+    private readonly object _lockObject = new();
+    private readonly Dictionary<string, string> _userProperties = [];
 
     public BackendAnalyticsService(
         IServiceScopeFactory scopeFactory,
@@ -43,12 +44,21 @@ internal class BackendAnalyticsService : IAnalyticsService
                 return;
             }
 
+            object? userIdToUse;
+            Dictionary<string, string>? userPropsToUse;
+
+            lock (_lockObject)
+            {
+                userIdToUse = _userId;
+                userPropsToUse = _userProperties.Count > 0 ? new Dictionary<string, string>(_userProperties) : null;
+            }
+
             var payload = new TelemetryEventPayload(
                 EventName: eventName,
                 EventType: "Event",
-                UserId: _userId,
+                UserId: userIdToUse,
                 Properties: properties,
-                UserProperties: _userProperties.Count > 0 ? _userProperties : null,
+                UserProperties: userPropsToUse,
                 Platform: _mobileContext.Platform,
                 DeviceId: _mobileContext.DeviceId,
                 OccurredAt: DateTimeOffset.UtcNow);
@@ -83,6 +93,15 @@ internal class BackendAnalyticsService : IAnalyticsService
                 return;
             }
 
+            object? userIdToUse;
+            Dictionary<string, string>? userPropsToUse;
+
+            lock (_lockObject)
+            {
+                userIdToUse = _userId;
+                userPropsToUse = _userProperties.Count > 0 ? new Dictionary<string, string>(_userProperties) : null;
+            }
+
             var pageProperties = new Dictionary<string, object>(properties ?? [])
             {
                 { "pageName", pageName }
@@ -91,9 +110,9 @@ internal class BackendAnalyticsService : IAnalyticsService
             var payload = new TelemetryEventPayload(
                 EventName: $"PageView_{pageName}",
                 EventType: "PageView",
-                UserId: _userId,
+                UserId: userIdToUse,
                 Properties: pageProperties,
-                UserProperties: _userProperties.Count > 0 ? _userProperties : null,
+                UserProperties: userPropsToUse,
                 Platform: _mobileContext.Platform,
                 DeviceId: _mobileContext.DeviceId,
                 OccurredAt: DateTimeOffset.UtcNow);
@@ -128,6 +147,15 @@ internal class BackendAnalyticsService : IAnalyticsService
                 return;
             }
 
+            object? userIdToUse;
+            Dictionary<string, string>? userPropsToUse;
+
+            lock (_lockObject)
+            {
+                userIdToUse = _userId;
+                userPropsToUse = _userProperties.Count > 0 ? new Dictionary<string, string>(_userProperties) : null;
+            }
+
             var errorProperties = new Dictionary<string, object>(properties ?? [])
             {
                 { "exceptionType", ex.GetType().FullName ?? "Unknown" },
@@ -138,9 +166,9 @@ internal class BackendAnalyticsService : IAnalyticsService
             var payload = new TelemetryEventPayload(
                 EventName: $"Error_{ex.GetType().Name}",
                 EventType: "Error",
-                UserId: _userId,
+                UserId: userIdToUse,
                 Properties: errorProperties,
-                UserProperties: _userProperties.Count > 0 ? _userProperties : null,
+                UserProperties: userPropsToUse,
                 Platform: _mobileContext.Platform,
                 DeviceId: _mobileContext.DeviceId,
                 OccurredAt: DateTimeOffset.UtcNow);
@@ -163,24 +191,36 @@ internal class BackendAnalyticsService : IAnalyticsService
 
     public void SetUserId(string userId)
     {
-        _userId = userId;
+        lock (_lockObject)
+        {
+            _userId = userId;
+        }
     }
 
     public void SetUserProperty(string key, string value)
     {
-        _userProperties[key] = value;
+        lock (_lockObject)
+        {
+            _userProperties[key] = value;
+        }
     }
 
     public async Task ClearUserPropertiesAsync(CancellationToken ct = default)
     {
-        _userProperties.Clear();
+        lock (_lockObject)
+        {
+            _userProperties.Clear();
+        }
         await Task.CompletedTask;
     }
 
     public async Task ResetAsync(CancellationToken ct = default)
     {
-        _userId = null;
-        _userProperties.Clear();
+        lock (_lockObject)
+        {
+            _userId = null;
+            _userProperties.Clear();
+        }
         await Task.CompletedTask;
     }
 }

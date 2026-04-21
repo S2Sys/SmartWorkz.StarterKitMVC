@@ -33,7 +33,8 @@
       "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Web",
       "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.External",
       "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Shared\\Caching",
-      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Shared\\CQRS"
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Shared\\CQRS",
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Shared\\Logging"
     ]
   }
 }

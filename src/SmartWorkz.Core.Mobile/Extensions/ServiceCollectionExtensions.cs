@@ -48,7 +48,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IPermissionService, PermissionService>();
         services.AddSingleton<ILocalStorageService, LocalStorageService>();
         services.AddSingleton<ISecureStorageService, SecureStorageService>();
-        services.AddSingleton<IAnalyticsService, AnalyticsService>();
+        services.AddSingleton<IAnalyticsService, BackendAnalyticsService>();
         services.AddSingleton<IMobileService, MobileService>();
         services.AddSingleton<IMobileContext, MobileContext>();
 
