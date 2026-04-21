@@ -10,11 +10,11 @@ namespace SmartWorkz.Core.Mobile;
 public class SyncOperation
 {
 #if !WINDOWS
-    [PrimaryKey]
+    [PrimaryKey, Column("id")]
 #endif
     public Guid Id { get; set; } = Guid.NewGuid();
-    public required string OperationType { get; set; }
-    public required string Endpoint { get; set; }
+    public string OperationType { get; set; } = "";
+    public string Endpoint { get; set; } = "";
     public string? PayloadJson { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LastAttemptAt { get; set; }
