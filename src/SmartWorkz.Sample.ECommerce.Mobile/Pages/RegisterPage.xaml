@@ -3,8 +3,86 @@
     x:Class="SmartWorkz.ECommerce.Mobile.Pages.RegisterPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Register">
-    <VerticalStackLayout Padding="20">
-        <Label Text="Register Page" FontSize="24" FontAttributes="Bold" />
-    </VerticalStackLayout>
+    Title="Create Account"
+    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#212121}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32,32,32,32" Spacing="16">
+
+            <!-- Title -->
+            <Label
+                Text="Create Account"
+                FontSize="28"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+
+            <Label
+                Text="Join us today"
+                FontSize="14"
+                HorizontalOptions="Center"
+                TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}"
+                Margin="0,0,0,12" />
+
+            <!-- First Name -->
+            <Label Text="First Name" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" />
+            <Entry Placeholder="Enter your first name" Text="{Binding FirstName}" Margin="0,4,0,0" />
+
+            <!-- Last Name -->
+            <Label Text="Last Name" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" Margin="0,12,0,0" />
+            <Entry Placeholder="Enter your last name (optional)" Text="{Binding LastName}" Margin="0,4,0,0" />
+
+            <!-- Email -->
+            <Label Text="Email Address" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" Margin="0,12,0,0" />
+            <Entry Placeholder="Enter your email" Text="{Binding Email}" Keyboard="Email" Margin="0,4,0,0" />
+
+            <!-- Password -->
+            <Label Text="Password" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" Margin="0,12,0,0" />
+            <Entry Placeholder="Enter password (min 8 characters)" Text="{Binding Password}" IsPassword="True" Margin="0,4,0,0" />
+
+            <!-- Confirm Password -->
+            <Label Text="Confirm Password" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#000000, Dark=#FFFFFF}" Margin="0,12,0,0" />
+            <Entry Placeholder="Confirm password" Text="{Binding ConfirmPassword}" IsPassword="True" Margin="0,4,0,0" />
+
+            <!-- Error Message -->
+            <Label
+                Text="{Binding ErrorMessage}"
+                TextColor="Red"
+                IsVisible="{Binding IsError}"
+                FontSize="12"
+                Margin="0,8,0,0" />
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}"
+                Color="{StaticResource Primary}"
+                Margin="0,12,0,0" />
+
+            <!-- Register Button -->
+            <Button
+                Text="Create Account"
+                Command="{Binding RegisterCommand}"
+                IsEnabled="{Binding IsNotBusy}"
+                Padding="16,12"
+                Margin="0,12,0,0"
+                CornerRadius="8" />
+
+            <!-- Login Link -->
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Margin="0,16,0,0" Spacing="4">
+                <Label
+                    Text="Already have an account?"
+                    VerticalOptions="Center"
+                    TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}" />
+                <Button
+                    Text="Login"
+                    Command="{Binding GoToLoginCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource Primary}"
+                    Padding="0"
+                    FontAttributes="Bold" />
+            </StackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

@@ -46,7 +46,7 @@ public class OrderRepository
         {
             Guard.NotNull(checkout, nameof(checkout));
 
-            var result = await _api.PostAsync<PlaceOrderResponse>("/api/orders", checkout, ct);
+            var result = await _api.PostAsync<PlaceOrderResponseDto>("/api/orders", checkout, ct);
             if (!result.Succeeded)
             {
                 _logger.LogError("Failed to place order: {Error}", result.Error?.Message);
@@ -76,4 +76,4 @@ public class OrderRepository
     }
 }
 
-internal sealed record PlaceOrderResponse(int OrderId);
+internal sealed record PlaceOrderResponseDto(int OrderId);

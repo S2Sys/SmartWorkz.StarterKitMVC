@@ -2,8 +2,18 @@ namespace SmartWorkz.ECommerce.Mobile.Pages;
 
 public partial class HomePage : ContentPage
 {
-    public HomePage()
+    private readonly HomeViewModel _vm;
+
+    public HomePage(HomeViewModel vm)
     {
         InitializeComponent();
+        _vm = vm;
+        BindingContext = vm;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await _vm.InitializeAsync();
     }
 }

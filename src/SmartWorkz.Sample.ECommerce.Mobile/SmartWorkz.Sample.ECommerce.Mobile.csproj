@@ -17,13 +17,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.Contains('windows'))">
     <WindowsAppSdkUseUnpackagedRuntime>true</WindowsAppSdkUseUnpackagedRuntime>
+    <WindowsPackageType>None</WindowsPackageType>
+    <UseWindowsAppSDK>false</UseWindowsAppSDK>
+  </PropertyGroup>
+  <PropertyGroup>
+    <CreateAppxPackageOnBuild>false</CreateAppxPackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
-    <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
-  </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.Contains('windows'))">
-    <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../SmartWorkz.Core.Mobile/SmartWorkz.Core.Mobile.csproj" />

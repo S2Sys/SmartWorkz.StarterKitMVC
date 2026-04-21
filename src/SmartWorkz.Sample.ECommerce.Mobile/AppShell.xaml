@@ -5,12 +5,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:pages="clr-namespace:SmartWorkz.ECommerce.Mobile.Pages">
 
-    <ShellContent Route="login" ContentTemplate="{DataTemplate pages:LoginPage}" Shell.NavBarIsVisible="False" />
+    <!-- Auth Routes (not in navigation bar) -->
+    <ShellContent Title="Login" Route="login" ContentTemplate="{DataTemplate pages:LoginPage}" Shell.NavBarIsVisible="False" />
+    <ShellContent Title="Register" Route="register" ContentTemplate="{DataTemplate pages:RegisterPage}" Shell.NavBarIsVisible="False" />
 
+    <!-- Main Navigation Tabs -->
     <TabBar>
-        <ShellContent Title="Home" Route="home" ContentTemplate="{DataTemplate pages:HomePage}" />
-        <ShellContent Title="Cart" Route="cart" ContentTemplate="{DataTemplate pages:CartPage}" />
-        <ShellContent Title="Orders" Route="orders" ContentTemplate="{DataTemplate pages:OrdersPage}" />
-        <ShellContent Title="Profile" Route="profile" ContentTemplate="{DataTemplate pages:ProfilePage}" />
+        <ShellContent Title="Home" Route="home" Icon="tab_home.png" ContentTemplate="{DataTemplate pages:HomePage}" />
+        <ShellContent Title="Cart" Route="cart" Icon="tab_cart.png" ContentTemplate="{DataTemplate pages:CartPage}" />
+        <ShellContent Title="Orders" Route="orders" Icon="tab_orders.png" ContentTemplate="{DataTemplate pages:OrdersPage}" />
+        <ShellContent Title="Profile" Route="profile" Icon="tab_profile.png" ContentTemplate="{DataTemplate pages:ProfilePage}" />
     </TabBar>
 </Shell>
