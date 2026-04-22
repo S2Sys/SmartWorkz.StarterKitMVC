@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../src/SmartWorkz.Core/SmartWorkz.Core.csproj" />
     <ProjectReference Include="../../src/SmartWorkz.Core.Shared/SmartWorkz.Core.Shared.csproj" />
   </ItemGroup>
 

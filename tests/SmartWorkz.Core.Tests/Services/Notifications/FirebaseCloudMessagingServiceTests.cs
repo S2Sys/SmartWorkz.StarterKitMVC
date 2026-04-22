@@ -1,10 +1,12 @@
 ﻿namespace SmartWorkz.Core.Tests.Services.Notifications;
 
 using Moq;
-using SmartWorkz.Core;
 using SmartWorkz.Shared;
 using Microsoft.Extensions.Logging;
 using Xunit;
+using SmartWorkz.Core;
+using PushNotificationPayload = SmartWorkz.Shared.PushNotificationPayload;
+using PushNotificationAction = SmartWorkz.Shared.PushNotificationAction;
 
 public class FirebaseCloudMessagingServiceTests
 {
