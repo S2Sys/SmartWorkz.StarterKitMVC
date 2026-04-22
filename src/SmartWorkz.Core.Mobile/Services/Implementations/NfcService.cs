@@ -2,6 +2,10 @@ namespace SmartWorkz.Mobile;
 
 using Microsoft.Extensions.Logging;
 
+/// <summary>
+/// Provides NFC (Near Field Communication) services for reading NFC tags and messages.
+/// Supports Android and iOS platforms; other platforms gracefully degrade.
+/// </summary>
 public sealed partial class NfcService : INfcService
 {
     private readonly IPermissionService _permissions;
@@ -9,10 +13,15 @@ public sealed partial class NfcService : INfcService
 
     public NfcService(IPermissionService permissions, ILogger<NfcService> logger)
     {
-        _permissions = permissions ?? throw new ArgumentNullException(nameof(permissions));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _permissions = Guard.NotNull(permissions, nameof(permissions));
+        _logger = Guard.NotNull(logger, nameof(logger));
     }
 
+    /// <summary>
+    /// Reads a message from an NFC tag asynchronously.
+    /// Requires NFC hardware availability and user permission.
+    /// </summary>
+    /// <returns>A Result containing the NFC message if successful, or an error if reading failed, permission denied, or NFC unavailable.</returns>
     public async Task<Result<NfcMessage>> ReadAsync(CancellationToken ct = default)
     {
         ct.ThrowIfCancellationRequested();
@@ -22,10 +31,10 @@ public sealed partial class NfcService : INfcService
             return Result.Fail<NfcMessage>(new Error("NFC.UNAVAILABLE", "NFC is not available on this device"));
 
         // Check permission, then request if needed
-        var permissionStatus = await _permissions.CheckAsync(MobilePermission.Bluetooth, ct);
+        var permissionStatus = await _permissions.CheckAsync(MobilePermission.Nfc, ct);
         if (permissionStatus != PermissionStatus.Granted)
         {
-            permissionStatus = await _permissions.RequestAsync(MobilePermission.Bluetooth, ct);
+            permissionStatus = await _permissions.RequestAsync(MobilePermission.Nfc, ct);
         }
 
         if (permissionStatus != PermissionStatus.Granted)
@@ -47,9 +56,17 @@ public sealed partial class NfcService : INfcService
         }
     }
 
+    /// <summary>
+    /// Checks if NFC hardware is available on the device.
+    /// </summary>
+    /// <returns>True if NFC hardware exists; false if not supported by platform.</returns>
     public Task<bool> IsAvailableAsync(CancellationToken ct = default) =>
         IsAvailableAsyncPlatform(ct);
 
+    /// <summary>
+    /// Checks if NFC is enabled by the user in device settings.
+    /// </summary>
+    /// <returns>True if NFC is enabled; false if disabled or unavailable.</returns>
     public Task<bool> IsEnabledAsync(CancellationToken ct = default) =>
         IsEnabledAsyncPlatform(ct);
 

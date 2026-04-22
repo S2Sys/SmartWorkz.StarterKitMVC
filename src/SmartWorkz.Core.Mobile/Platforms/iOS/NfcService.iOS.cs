@@ -16,15 +16,15 @@ public sealed partial class NfcService
     private partial Task<bool> IsAvailableAsyncPlatform(CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
-        // Stub: Check NFC hardware availability
-        return Task.FromResult(true);
+        // Stub: Check NFC hardware availability - iOS NFC not yet fully implemented
+        return Task.FromResult(false);
     }
 
     private partial Task<bool> IsEnabledAsyncPlatform(CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
-        // Stub: Check NFC enabled state
-        return Task.FromResult(true);
+        // Stub: Check NFC enabled state - iOS NFC not yet fully implemented
+        return Task.FromResult(false);
     }
 }
 #endif

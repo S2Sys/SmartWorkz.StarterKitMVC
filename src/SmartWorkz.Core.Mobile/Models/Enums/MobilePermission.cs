@@ -11,6 +11,7 @@ public enum MobilePermission
     Notifications,
     Storage,
     Bluetooth,
+    Nfc,
     CalendarRead,
     CalendarWrite
 }
