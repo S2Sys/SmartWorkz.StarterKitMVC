@@ -1,14 +1,14 @@
-namespace SmartWorkz.Core.Enums;
+namespace SmartWorkz.Core;
 
 /// <summary>
 /// Enumeration representing various state transitions and conditions for domain entities across multiple operational categories.
 /// </summary>
 /// <remarks>
 /// EntityState Categorization Framework:
-/// The EntityState enum provides comprehensive state management across 13 major categories, enabling fine-grained
+/// The EntityState enum provides comprehensive state management across 15 major categories, enabling fine-grained
 /// entity lifecycle tracking throughout their operational lifetime. This enum extends the basic EntityStatus lifecycle
 /// with additional states for specialized operational contexts (verification, approval, documents, security, payments, orders,
-/// inventory, communication, subscription, user account, returns/refunds, task/jobs, and reviews/ratings).
+/// inventory, communication, subscription, user account, returns/refunds, task/jobs, reviews/ratings, and shipping).
 ///
 /// Category Organization:
 ///
@@ -1032,7 +1032,7 @@ public enum EntityState
     ///
     /// Integration: Grant full access; enable all features; track renewal.
     /// </remarks>
-    [System.ComponentModel.DataAnnotations.Display(Name = "Active")]
+    [System.ComponentModel.DataAnnotations.Display(Name = "Subscription Active")]
     SubscriptionActive = 37,
 
     /// <summary>
@@ -1659,7 +1659,7 @@ public enum EntityState
     ///
     /// Integration: Confirm delivery; start return window; request feedback; archive order.
     /// </remarks>
-    [System.ComponentModel.DataAnnotations.Display(Name = "Delivered")]
+    [System.ComponentModel.DataAnnotations.Display(Name = "Delivered (Shipping)")]
     DeliveredShipping = 63
 
     #endregion
