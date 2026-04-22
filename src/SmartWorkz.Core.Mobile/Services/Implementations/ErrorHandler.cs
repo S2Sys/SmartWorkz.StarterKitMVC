@@ -70,7 +70,7 @@ public class ErrorHandler : IErrorHandler
             }
             catch (Exception ex)
             {
-                _logger.LogError("Operation failed after retries", ex);
+                _logger.LogError(ex, "Operation failed after retries");
                 return HandleException(ex);
             }
         }
