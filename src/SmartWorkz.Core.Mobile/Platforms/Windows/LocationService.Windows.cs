@@ -4,7 +4,7 @@ namespace SmartWorkz.Mobile;
 
 public partial class LocationService
 {
-    private partial async Task<Location?> GetCurrentLocationAsyncPlatform(CancellationToken ct)
+    private partial async Task<GpsLocation?> GetCurrentLocationAsyncPlatform(CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
         // Stub implementation - will be completed in Phase 3
@@ -12,18 +12,14 @@ public partial class LocationService
         return null;
     }
 
-    private partial async Task StartTrackingAsyncPlatform(CancellationToken ct)
+    private partial void StartTrackingPlatform(LocationTrackingOptions? options)
     {
-        ct.ThrowIfCancellationRequested();
         // Stub implementation - will be completed in Phase 3
-        await Task.Delay(0, ct);
     }
 
-    private partial async Task StopTrackingAsyncPlatform(CancellationToken ct)
+    private partial void StopTrackingPlatform()
     {
-        ct.ThrowIfCancellationRequested();
         // Stub implementation - will be completed in Phase 3
-        await Task.Delay(0, ct);
     }
 
     private partial async Task<bool> IsAvailableAsyncPlatform(CancellationToken ct)

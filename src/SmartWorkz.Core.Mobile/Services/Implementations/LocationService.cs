@@ -1,5 +1,6 @@
 namespace SmartWorkz.Mobile;
 
+using System.Reactive.Subjects;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 /// <summary>
@@ -9,8 +10,10 @@ public partial class LocationService : ILocationService
 {
     private readonly ILogger _logger;
     private readonly IPermissionService _permissions;
+    private readonly Subject<GpsLocation> _locationSubject = new();
+    private bool _isTracking;
 
-    public event EventHandler<Location>? LocationChanged;
+    public bool IsTracking => _isTracking;
 
     public LocationService(ILogger logger, IPermissionService permissions)
     {
@@ -22,7 +25,7 @@ public partial class LocationService : ILocationService
     /// Gets the current device location.
     /// Permission must be granted before calling.
     /// </summary>
-    public async Task<Location?> GetCurrentLocationAsync(CancellationToken ct = default)
+    public async Task<GpsLocation?> GetCurrentLocationAsync(CancellationToken ct = default)
     {
         ct.ThrowIfCancellationRequested();
 
@@ -50,45 +53,43 @@ public partial class LocationService : ILocationService
     }
 
     /// <summary>
-    /// Starts continuous location tracking with periodic updates.
-    /// Permission must be granted before calling.
+    /// Starts continuous location tracking.
+    /// Returns an observable stream of location updates.
     /// </summary>
-    public async Task StartTrackingAsync(CancellationToken ct = default)
+    public IObservable<GpsLocation> StartTracking(LocationTrackingOptions? options = null)
     {
-        ct.ThrowIfCancellationRequested();
-
         try
         {
-            var permissionStatus = await _permissions.CheckAsync(MobilePermission.Location, ct);
-            if (permissionStatus != PermissionStatus.Granted)
+            if (_isTracking)
             {
-                permissionStatus = await _permissions.RequestAsync(MobilePermission.Location, ct);
+                return _locationSubject;
             }
 
-            if (permissionStatus != PermissionStatus.Granted)
-            {
-                _logger.LogWarning("Location permission denied for tracking");
-                return;
-            }
-
-            await StartTrackingAsyncPlatform(ct);
+            _isTracking = true;
+            StartTrackingPlatform(options);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to start location tracking");
         }
+
+        return _locationSubject;
     }
 
     /// <summary>
     /// Stops continuous location tracking.
     /// </summary>
-    public async Task StopTrackingAsync(CancellationToken ct = default)
+    public void StopTracking()
     {
-        ct.ThrowIfCancellationRequested();
-
         try
         {
-            await StopTrackingAsyncPlatform(ct);
+            if (!_isTracking)
+            {
+                return;
+            }
+
+            _isTracking = false;
+            StopTrackingPlatform();
         }
         catch (Exception ex)
         {
@@ -99,13 +100,11 @@ public partial class LocationService : ILocationService
     /// <summary>
     /// Checks if location services are available and enabled on the device.
     /// </summary>
-    public async Task<bool> IsAvailableAsync(CancellationToken ct = default)
+    public async Task<bool> IsAvailableAsync()
     {
-        ct.ThrowIfCancellationRequested();
-
         try
         {
-            return await IsAvailableAsyncPlatform(ct);
+            return await IsAvailableAsyncPlatform(CancellationToken.None);
         }
         catch (Exception ex)
         {
@@ -117,14 +116,17 @@ public partial class LocationService : ILocationService
     /// <summary>
     /// Raises the LocationChanged event when a location update occurs.
     /// </summary>
-    protected virtual void OnLocationChanged(Location location)
+    protected virtual void OnLocationChanged(GpsLocation location)
     {
-        LocationChanged?.Invoke(this, location);
+        if (_isTracking)
+        {
+            _locationSubject.OnNext(location);
+        }
     }
 
     // Platform-specific partial methods - implementation in platform-specific files
-    private partial Task<Location?> GetCurrentLocationAsyncPlatform(CancellationToken ct);
-    private partial Task StartTrackingAsyncPlatform(CancellationToken ct);
-    private partial Task StopTrackingAsyncPlatform(CancellationToken ct);
+    private partial Task<GpsLocation?> GetCurrentLocationAsyncPlatform(CancellationToken ct);
+    private partial void StartTrackingPlatform(LocationTrackingOptions? options);
+    private partial void StopTrackingPlatform();
     private partial Task<bool> IsAvailableAsyncPlatform(CancellationToken ct);
 }
