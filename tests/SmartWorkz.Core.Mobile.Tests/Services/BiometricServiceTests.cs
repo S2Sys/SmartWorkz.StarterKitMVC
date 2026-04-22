@@ -71,7 +71,7 @@ public class BiometricServiceTests
         );
     }
 
-    [Fact]
+    [Fact(Skip = "Requires Android device with biometric hardware")]
     public async Task GetBiometricTypeAsync_Android_ReturnsFaceOrFingerprint()
     {
         // Platform-specific test: on Android, verify Face/Fingerprint detection works
@@ -85,7 +85,7 @@ public class BiometricServiceTests
         Assert.True(bioType == BiometricType.Face || bioType == BiometricType.Fingerprint || bioType == BiometricType.None);
     }
 
-    [Fact]
+    [Fact(Skip = "Requires iOS device with biometric hardware")]
     public async Task GetBiometricTypeAsync_iOS_ReturnsFaceOrIris()
     {
         // Platform-specific test: on iOS, verify Face/Iris detection works
