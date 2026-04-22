@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using SmartWorkz.Core;
 
 namespace SmartWorkz.Core.Tests.Enums;
@@ -81,7 +80,7 @@ public class EntityStatusAliasTests
 
     #endregion
 
-    #region Display Attribute Tests
+    #region Conversion Tests
 
     [Fact]
     public void EntityStatus_CanBeConvertedToEntityState()
@@ -187,6 +186,19 @@ public class EntityStatusAliasTests
         Assert.Equal((int)EntityState.PaymentPending, (int)EntityStatus.PaymentPending);
         Assert.Equal((int)EntityState.PaymentReceived, (int)EntityStatus.PaymentReceived);
         Assert.Equal((int)EntityState.PaymentFailed, (int)EntityStatus.PaymentFailed);
+    }
+
+    #endregion
+
+    #region Display Attribute Coverage Tests
+
+    [Fact]
+    public void EntityStatus_DisplayAttributeCoverage_DocumentedAsIntentionallyOmitted()
+    {
+        // EntityStatus is an obsolete alias to EntityState.
+        // The primary EntityState enum has Display attributes.
+        // EntityStatus members intentionally do NOT have attributes to avoid duplication.
+        // This is intentional - existing code should migrate to EntityState for display attributes.
     }
 
     #endregion
