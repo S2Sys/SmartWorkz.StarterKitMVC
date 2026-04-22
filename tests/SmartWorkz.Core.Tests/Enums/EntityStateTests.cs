@@ -556,7 +556,7 @@ public class EntityStateTests
     [InlineData(EntityState.Forwarded, "Forwarded")]
     [InlineData(EntityState.Replied, "Replied")]
     [InlineData(EntityState.Trial, "Trial")]
-    [InlineData(EntityState.SubscriptionActive, "Active")]
+    [InlineData(EntityState.SubscriptionActive, "Subscription Active")]
     [InlineData(EntityState.Paused, "Paused")]
     [InlineData(EntityState.SubscriptionCancelled, "Subscription Cancelled")]
     [InlineData(EntityState.Expired, "Expired")]
