@@ -91,17 +91,21 @@ partial class GeofencingService
                 }
             }
 
+            // Only dispose observers if no more regions are being monitored
+            if (_locationManager.MonitoredRegions.Count == 0)
+            {
+                _didEnterRegionObserver?.Dispose();
+                _didExitRegionObserver?.Dispose();
+                _didEnterRegionObserver = null;
+                _didExitRegionObserver = null;
+            }
+
             return await Task.FromResult(Result.Ok(true));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "iOS geofence stop failed");
             return Result.Fail<bool>(Error.FromException(ex));
-        }
-        finally
-        {
-            _didEnterRegionObserver?.Dispose();
-            _didExitRegionObserver?.Dispose();
         }
     }
 

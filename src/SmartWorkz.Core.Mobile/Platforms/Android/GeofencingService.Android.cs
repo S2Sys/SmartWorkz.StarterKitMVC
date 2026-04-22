@@ -14,6 +14,11 @@ partial class GeofencingService
     private LocationManager? _locationManager;
     private GeofenceProximityAlertReceiver? _proximityAlertReceiver;
 
+    /// <summary>
+    /// Static event for broadcast receiver to raise geofence events.
+    /// </summary>
+    private static event Action<GeofenceEvent>? _staticGeofenceEventHandler;
+
     private partial async Task<Result<bool>> StartMonitoringAsyncPlatform(GeofenceRegion region, CancellationToken ct)
     {
         try
@@ -37,6 +42,10 @@ partial class GeofencingService
                 return Result.Fail<bool>(Error.Validation("LOCATION.GPS_DISABLED",
                     "GPS location provider is disabled"));
             }
+
+            // Subscribe to static event if not already subscribed
+            _staticGeofenceEventHandler -= RaiseGeofenceEvent;
+            _staticGeofenceEventHandler += RaiseGeofenceEvent;
 
             var pendingIntent = CreateProximityAlertIntent(context, region);
             _locationManager.AddProximityAlert(
@@ -109,8 +118,18 @@ public class GeofenceProximityAlertReceiver : BroadcastReceiver
         if (context == null || intent == null) return;
 
         var regionId = intent.GetStringExtra("region_id") ?? "";
+        if (string.IsNullOrEmpty(regionId)) return;
+
         var isEnteringKey = LocationManager.KeyProximityEntering;
         var entering = intent.GetBooleanExtra(isEnteringKey, false);
+
+        // Raise the geofence event through the static event handler
+        var geofenceEvent = new GeofenceEvent(
+            RegionId: regionId,
+            EventType: entering ? 1 : 0,
+            DetectedAt: DateTime.UtcNow);
+
+        GeofencingService._staticGeofenceEventHandler?.Invoke(geofenceEvent);
     }
 }
 #endif

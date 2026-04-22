@@ -3,6 +3,7 @@ namespace SmartWorkz.Mobile;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.Shared;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -19,7 +20,7 @@ public partial class GeofencingService : IGeofencingService
     private readonly ILogger<GeofencingService> _logger;
     private readonly IPermissionService _permissionService;
     private readonly Subject<GeofenceEvent> _geofenceEventSubject = new();
-    private readonly Dictionary<string, GeofenceRegion> _monitoredRegions = new();
+    private readonly ConcurrentDictionary<string, GeofenceRegion> _monitoredRegions = new();
 
     public GeofencingService(
         ILogger<GeofencingService> logger,
@@ -55,7 +56,7 @@ public partial class GeofencingService : IGeofencingService
         var result = await StartMonitoringAsyncPlatform(region, ct);
         if (result.Succeeded)
         {
-            _monitoredRegions[region.Id] = region;
+            _monitoredRegions.TryAdd(region.Id, region);
             _logger.LogInformation("Started monitoring geofence: {RegionId}", region.Id);
         }
 
@@ -69,17 +70,17 @@ public partial class GeofencingService : IGeofencingService
         var result = await StopMonitoringAsyncPlatform(regionId, ct);
         if (result.Succeeded)
         {
-            _monitoredRegions.Remove(regionId);
+            _monitoredRegions.TryRemove(regionId, out _);
             _logger.LogInformation("Stopped monitoring geofence: {RegionId}", regionId);
         }
 
         return result;
     }
 
-    public async Task<Result<IReadOnlyList<GeofenceRegion>>> GetMonitoredRegionsAsync(CancellationToken ct = default)
+    public Task<Result<IReadOnlyList<GeofenceRegion>>> GetMonitoredRegionsAsync(CancellationToken ct = default)
     {
         var regions = _monitoredRegions.Values.ToList();
-        return await Task.FromResult(Result.Ok<IReadOnlyList<GeofenceRegion>>(regions));
+        return Task.FromResult(Result.Ok<IReadOnlyList<GeofenceRegion>>(regions));
     }
 
     public async Task<Result<bool>> IsAvailableAsync(CancellationToken ct = default)
