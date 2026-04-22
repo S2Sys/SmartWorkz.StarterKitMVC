@@ -1,30 +1,66 @@
 #if __IOS__
 namespace SmartWorkz.Mobile;
 
+using CoreNFC;
+using Foundation;
+
 public sealed partial class NfcService
 {
+    private NFCNDEFReaderSession? _nfcSession;
+    private TaskCompletionSource<NfcMessage>? _readTcs;
+
     private partial async Task<NfcMessage?> ReadAsyncPlatform(CancellationToken ct)
     {
-        ct.ThrowIfCancellationRequested();
+        if (!NFCNDEFReaderSession.ReadingAvailable)
+            throw new InvalidOperationException("NFC reading not available on this device");
 
-        // Stub: Full implementation requires NFCNDEFReaderSession with delegate pattern
-        // Real impl would create session and wait for tag detection
-        await Task.Delay(100, ct);
-        return null;  // Return null to indicate pending/not-ready
+        try
+        {
+            _readTcs = new TaskCompletionSource<NfcMessage>();
+            _nfcSession = new NFCNDEFReaderSession(this, null, true);
+            _nfcSession.BeginSession();
+
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            cts.CancelAfter(TimeSpan.FromSeconds(30));
+
+            var message = await _readTcs.Task.ConfigureAwait(false);
+            return message;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "iOS NFC read failed");
+            throw;
+        }
+        finally
+        {
+            _nfcSession?.InvalidateSession();
+            _nfcSession = null;
+        }
     }
 
-    private partial Task<bool> IsAvailableAsyncPlatform(CancellationToken ct)
+    public void DidDetect(NFCNDEFReaderSession session, NFCNdefMessage[] messages)
     {
-        ct.ThrowIfCancellationRequested();
-        // Stub: Check NFC hardware availability - iOS NFC not yet fully implemented
-        return Task.FromResult(false);
+        if (messages.Length == 0) return;
+        var firstRecord = messages[0].Records[0];
+        var payload = firstRecord.Payload.ToString();
+        var message = new NfcMessage(firstRecord.TypeNameFormat.ToString(), payload, DateTime.UtcNow,
+            Uri.TryCreate(payload, UriKind.Absolute, out var uri) ? payload : null, null);
+        _readTcs?.SetResult(message);
     }
 
-    private partial Task<bool> IsEnabledAsyncPlatform(CancellationToken ct)
+    public void DidInvalidate(NFCNDEFReaderSession session, NSError error)
     {
-        ct.ThrowIfCancellationRequested();
-        // Stub: Check NFC enabled state - iOS NFC not yet fully implemented
-        return Task.FromResult(false);
+        if (error != null) _readTcs?.SetException(new InvalidOperationException(error.LocalizedDescription));
     }
+
+    private partial Task<bool> IsAvailableAsyncPlatform(CancellationToken ct) =>
+        Task.FromResult(NFCNDEFReaderSession.ReadingAvailable);
+
+    private partial Task<bool> IsEnabledAsyncPlatform(CancellationToken ct) =>
+        Task.FromResult(NFCNDEFReaderSession.ReadingAvailable);
 }
 #endif
