@@ -73,6 +73,10 @@ public class ValidationMessageTagHelper : TagHelper
 
     private readonly IAccessibilityService _accessibilityService;
 
+    /// <summary>
+    /// Creates a new ValidationMessageTagHelper with dependency injection.
+    /// </summary>
+    /// <param name="accessibilityService">Service for generating accessible error message IDs and ARIA support.</param>
     public ValidationMessageTagHelper(IAccessibilityService accessibilityService)
     {
         _accessibilityService = accessibilityService;

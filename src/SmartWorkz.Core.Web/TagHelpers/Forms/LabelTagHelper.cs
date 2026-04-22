@@ -66,6 +66,11 @@ public class LabelTagHelper : TagHelper
     private readonly IFormComponentProvider _formComponentProvider;
     private readonly IAccessibilityService _accessibilityService;
 
+    /// <summary>
+    /// Creates a new LabelTagHelper with dependency injection.
+    /// </summary>
+    /// <param name="formComponentProvider">Service for form component styling and configuration.</param>
+    /// <param name="accessibilityService">Service for accessibility attributes and ARIA support.</param>
     public LabelTagHelper(IFormComponentProvider formComponentProvider, IAccessibilityService accessibilityService)
     {
         _formComponentProvider = formComponentProvider;

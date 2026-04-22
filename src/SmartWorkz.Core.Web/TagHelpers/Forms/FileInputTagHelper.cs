@@ -69,6 +69,10 @@ public class FileInputTagHelper : TagHelper
 
     private readonly IFormComponentProvider _formComponentProvider;
 
+    /// <summary>
+    /// Creates a new FileInputTagHelper with dependency injection.
+    /// </summary>
+    /// <param name="formComponentProvider">Service for form component styling and configuration.</param>
     public FileInputTagHelper(IFormComponentProvider formComponentProvider)
     {
         _formComponentProvider = formComponentProvider;

@@ -74,6 +74,10 @@ public class TextAreaTagHelper : TagHelper
 
     private readonly IFormComponentProvider _formComponentProvider;
 
+    /// <summary>
+    /// Creates a new TextAreaTagHelper with dependency injection.
+    /// </summary>
+    /// <param name="formComponentProvider">Service for form component styling and configuration.</param>
     public TextAreaTagHelper(IFormComponentProvider formComponentProvider)
     {
         _formComponentProvider = formComponentProvider;
