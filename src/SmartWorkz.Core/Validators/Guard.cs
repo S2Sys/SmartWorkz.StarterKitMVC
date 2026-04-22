@@ -75,6 +75,9 @@ public static class Guard
     private static readonly Regex CurrencyPattern = new(@"^[A-Z]{3}$", RegexOptions.Compiled);
     private static readonly Regex AlphanumericPattern = new(@"^[a-zA-Z0-9]+$", RegexOptions.Compiled);
     private static readonly Regex AlphanumericWithHyphensPattern = new(@"^[a-zA-Z0-9\-]+$", RegexOptions.Compiled);
+    private static readonly Regex PhoneNormalizePattern = new(@"[\s\-\(\)]", RegexOptions.Compiled);
+    private static readonly Regex MultiWhitespacePattern = new(@"\s{2,}", RegexOptions.Compiled);
+    private static readonly Regex AnyWhitespacePattern = new(@"\s+", RegexOptions.Compiled);
 
     #region Task 10 - Email, URL, Phone Validation
 
@@ -169,12 +172,17 @@ public static class Guard
     /// </remarks>
     public static string ValidHttpsUrl(string url, string paramName)
     {
-        var validUrl = ValidUrl(url, paramName);
+        var trimmed = url.Trim();
+        if (string.IsNullOrWhiteSpace(trimmed))
+            throw new ArgumentException($"{paramName} cannot be null or empty.", paramName);
 
-        if (!validUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        if (!Uri.TryCreate(trimmed, UriKind.Absolute, out var uri))
+            throw new ArgumentException($"{paramName} is not a valid URL format.", paramName);
+
+        if (!uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException($"{paramName} must use HTTPS scheme.", paramName);
 
-        return validUrl;
+        return trimmed;
     }
 
     /// <summary>
@@ -182,7 +190,7 @@ public static class Guard
     /// </summary>
     /// <param name="phone">The phone number to validate.</param>
     /// <param name="paramName">The parameter name for exception messages.</param>
-    /// <returns>The validated phone number.</returns>
+    /// <returns>The validated phone number in normalized form (digits and + only).</returns>
     /// <exception cref="ArgumentException">Thrown if the phone number is invalid.</exception>
     /// <remarks>
     /// Phone Number Validation:
@@ -197,7 +205,7 @@ public static class Guard
     /// Practical Considerations:
     /// - 10 digits covers North America (US/Canada)
     /// - 11-15 digits covers international numbers
-    /// - Allows flexible formatting (spaces, dashes removed by caller if needed)
+    /// - Returns normalized form: spaces, dashes, and parentheses are removed
     ///
     /// Use Cases: User registration, contact information, SMS notifications, 2FA setup
     /// </remarks>
@@ -206,12 +214,12 @@ public static class Guard
         if (string.IsNullOrWhiteSpace(phone))
             throw new ArgumentException($"{paramName} cannot be null or empty.", paramName);
 
-        var normalizedPhone = Regex.Replace(phone.Trim(), @"[\s\-\(\)]", "");
+        var normalizedPhone = PhoneNormalizePattern.Replace(phone.Trim(), "");
 
         if (!PhonePattern.IsMatch(normalizedPhone))
             throw new ArgumentException($"{paramName} must contain 10-15 digits, optionally prefixed with +.", paramName);
 
-        return phone.Trim();
+        return normalizedPhone;
     }
 
     /// <summary>
@@ -219,7 +227,7 @@ public static class Guard
     /// </summary>
     /// <param name="phone">The phone number to validate in E.164 format.</param>
     /// <param name="paramName">The parameter name for exception messages.</param>
-    /// <returns>The validated E.164 phone number.</returns>
+    /// <returns>The validated E.164 phone number in normalized form (digits and + only).</returns>
     /// <exception cref="ArgumentException">Thrown if the phone number is not in E.164 format.</exception>
     /// <remarks>
     /// E.164 Format:
@@ -234,6 +242,7 @@ public static class Guard
     /// Invalid Examples: +0555123456 (country code starts with 0), 14155552671 (no +), +1 (too short)
     ///
     /// Use Cases: International SMS, WhatsApp, Twilio, international 2FA, global contact storage
+    /// Returns normalized form: spaces, dashes, and parentheses are removed
     /// Reference: https://en.wikipedia.org/wiki/E.164
     /// </remarks>
     public static string ValidPhoneE164(string phone, string paramName)
@@ -241,12 +250,12 @@ public static class Guard
         if (string.IsNullOrWhiteSpace(phone))
             throw new ArgumentException($"{paramName} cannot be null or empty.", paramName);
 
-        var normalizedPhone = Regex.Replace(phone.Trim(), @"[\s\-\(\)]", "");
+        var normalizedPhone = PhoneNormalizePattern.Replace(phone.Trim(), "");
 
         if (!PhoneE164Pattern.IsMatch(normalizedPhone))
             throw new ArgumentException($"{paramName} must be in E.164 format (+country_code + digits, max 15 total).", paramName);
 
-        return phone.Trim();
+        return normalizedPhone;
     }
 
     /// <summary>
@@ -273,12 +282,11 @@ public static class Guard
     public static string PhoneInList(string phone, IEnumerable<string> allowedPhones, string paramName)
     {
         var validPhone = ValidPhone(phone, paramName);
-        var normalizedPhone = Regex.Replace(validPhone, @"[\s\-\(\)]", "");
         var normalizedAllowed = allowedPhones
-            .Select(p => Regex.Replace(p, @"[\s\-\(\)]", ""))
+            .Select(p => PhoneNormalizePattern.Replace(p, ""))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        if (!normalizedAllowed.Contains(normalizedPhone))
+        if (!normalizedAllowed.Contains(validPhone))
             throw new ArgumentException($"{paramName} is not in the allowed phone list.", paramName);
 
         return validPhone;
@@ -687,7 +695,7 @@ public static class Guard
 
         var trimmed = value.Trim();
 
-        if (Regex.IsMatch(trimmed, @"\s{2,}"))
+        if (MultiWhitespacePattern.IsMatch(trimmed))
             throw new ArgumentException($"{paramName} cannot contain multiple consecutive spaces.", paramName);
 
         return trimmed;
@@ -786,7 +794,7 @@ public static class Guard
             return string.Empty;
 
         var trimmed = value.Trim();
-        return Regex.Replace(trimmed, @"\s+", " ");
+        return AnyWhitespacePattern.Replace(trimmed, " ");
     }
 
     #endregion
