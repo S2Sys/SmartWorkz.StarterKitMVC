@@ -172,9 +172,10 @@ public static class Guard
     /// </remarks>
     public static string ValidHttpsUrl(string url, string paramName)
     {
-        var trimmed = url.Trim();
-        if (string.IsNullOrWhiteSpace(trimmed))
+        if (string.IsNullOrWhiteSpace(url))
             throw new ArgumentException($"{paramName} cannot be null or empty.", paramName);
+
+        var trimmed = url.Trim();
 
         if (!Uri.TryCreate(trimmed, UriKind.Absolute, out var uri))
             throw new ArgumentException($"{paramName} is not a valid URL format.", paramName);

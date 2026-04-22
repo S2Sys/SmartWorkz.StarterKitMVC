@@ -1,5 +1,6 @@
 namespace SmartWorkz.Core.Tests.Validators;
 
+using SmartWorkz.Core;
 using SmartWorkz.Core.Validators;
 
 public class GuardTests
