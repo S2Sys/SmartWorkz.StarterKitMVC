@@ -1,31 +1,39 @@
 ﻿namespace SmartWorkz.Core;
 
 /// <summary>
-/// Convenience base class for entities with an integer primary key.
+/// DEPRECATED: Use AuditEntity instead.
+/// Convenience base class for auditable entities with an integer primary key.
 /// </summary>
 /// <remarks>
-/// This is a non-generic convenience class equivalent to AuditableEntity&lt;int&gt;.
-/// Use this class for entities that use an integer primary key, such as Master, Report, Shared,
-/// or Transaction entities (e.g., CountryId, ProductId, CategoryId).
+/// This is a non-generic convenience class equivalent to AuditableEntity{int}.
+/// DEPRECATED: Use AuditEntity (without type parameter) for the same functionality with a cleaner design.
 ///
-/// Inherits From: AuditableEntity&lt;int&gt;, providing audit tracking (CreatedAt, CreatedBy,
-/// UpdatedAt, UpdatedBy), soft delete support (IsDeleted, DeletedAt, DeletedBy), and tenant
-/// scoping (TenantId) out of the box.
+/// This class remains for backward compatibility but is marked as obsolete.
+/// All existing functionality is preserved through inheritance from AuditableEntity{int}.
 ///
-/// Usage:
+/// Old code:
 /// <code>
 /// public class Product : AuditableEntity
 /// {
 ///     public string Name { get; set; }
 ///     public decimal Price { get; set; }
-///     public int CategoryId { get; set; }
+/// }
+/// </code>
+///
+/// New code (recommended):
+/// <code>
+/// public class Product : AuditEntity
+/// {
+///     public string Name { get; set; }
+///     public decimal Price { get; set; }
 /// }
 /// </code>
 ///
 /// Primary Key: The Id property is an integer that maps to the database primary key column.
-/// Entity Framework Core will automatically detect this as the primary key during model
-/// configuration.
+/// Entity Framework Core will automatically detect this as the primary key.
 /// </remarks>
+[Obsolete("Use AuditEntity instead. AuditableEntity has been refactored to align with the new standalone entity design. " +
+          "See ARCHITECTURE.md for migration guidelines.", false)]
 public abstract class AuditableEntity : AuditableEntity<int>
 {
 }
