@@ -44,7 +44,11 @@
       "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Sample.ECommerce.Mobile",
       "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Core.Mobile\\Extensions",
       "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Core.Mobile\\Services\\Interceptors",
-      "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Core\\ValueObjects"
+      "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Core\\ValueObjects",
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Core\\Enums",
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Core\\Constants",
+      "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Core\\Services",
+      "c:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.StarterKitMVC\\src\\SmartWorkz.Core\\Entities"
     ]
   }
 }
