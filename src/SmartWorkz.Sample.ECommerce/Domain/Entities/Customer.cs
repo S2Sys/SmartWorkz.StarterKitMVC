@@ -2,7 +2,7 @@ using SmartWorkz.Core;
 
 namespace SmartWorkz.Sample.ECommerce.Domain.Entities;
 
-public class Customer : AuditableEntity<int>, IEntity<int>
+public class Customer : AuditEntity<int>
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
