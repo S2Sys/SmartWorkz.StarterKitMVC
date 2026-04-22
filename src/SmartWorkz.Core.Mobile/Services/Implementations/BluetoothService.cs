@@ -108,7 +108,7 @@ public sealed partial class BluetoothService : IBluetoothService
             _logger.LogInformation("Attempting to connect to Bluetooth device {Device}", deviceAddress);
             await ConnectAsyncPlatform(deviceAddress, ct);
             _connectedDeviceAddress = deviceAddress;
-            var connectionState = new BluetoothConnectionState(deviceAddress, IsConnected: true, ConnectedSince: DateTime.UtcNow);
+            var connectionState = new BluetoothConnectionState(deviceAddress, ConnectionStatus.Connected, DateTime.UtcNow, -50);
             _connectionStates[deviceAddress] = connectionState;
             _connectionStateChanged.OnNext(connectionState);
             _logger.LogInformation("Successfully connected to Bluetooth device {Device}", deviceAddress);
@@ -144,7 +144,7 @@ public sealed partial class BluetoothService : IBluetoothService
             {
                 _connectedDeviceAddress = null;
             }
-            var connectionState = new BluetoothConnectionState(deviceAddress, IsConnected: false, ConnectedSince: DateTime.UtcNow.AddSeconds(-1));
+            var connectionState = new BluetoothConnectionState(deviceAddress, ConnectionStatus.Disconnected, DateTime.UtcNow.AddSeconds(-1), -100);
             _connectionStates[deviceAddress] = connectionState;
             _connectionStateChanged.OnNext(connectionState);
             _logger.LogInformation("Successfully disconnected from Bluetooth device {Device}", deviceAddress);
