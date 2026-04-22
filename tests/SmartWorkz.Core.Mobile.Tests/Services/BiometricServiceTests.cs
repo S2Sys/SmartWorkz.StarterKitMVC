@@ -9,29 +9,31 @@ using SmartWorkz.Shared;
 /// Tests validate the Result{T} error handling pattern, Guard assertions, and cross-platform behavior.
 ///
 /// Test Coverage:
-/// 1. AuthenticateAsync with valid biometric type (successful authentication)
+/// 1. AuthenticateAsync on Windows platform (returns unavailable result)
 /// 2. AuthenticateAsync failure when biometric unavailable (error handling)
 /// 3. IsAvailableAsync returns correct boolean (availability check)
-/// 4. GetBiometricTypeAsync detects Face/Fingerprint (type detection across platforms)
+/// 4. GetBiometricTypeAsync detects platform-specific types (type detection)
 ///
 /// Patterns:
-/// - Per-test mock creation (Phase 3 isolation pattern)
+/// - Per-test service creation (BiometricService has no injectable dependencies requiring mocking)
 /// - Result{T} error handling with structured Error objects
 /// - Guard assertions for parameter validation
 /// - Comprehensive XML documentation for each test
 /// </summary>
 public class BiometricServiceTests
 {
+    private const string BiometricUnavailableErrorCode = "BIOMETRIC.UNAVAILABLE";
+
     /// <summary>
-    /// Tests successful authentication when biometric is available and user authenticates.
-    /// Validates that AuthenticateAsync returns Result{bool}.Success with Value=true
-    /// when IsAvailableAsync returns true and the platform authentication succeeds.
+    /// Tests that AuthenticateAsync returns a result on Windows platform (no biometric support).
+    /// Validates that AuthenticateAsync returns Result{bool} with BIOMETRIC.UNAVAILABLE error
+    /// on Windows platform where biometric hardware is not available.
     ///
-    /// This test validates the happy path: device has biometric capability, permission granted,
-    /// and user completes biometric authentication successfully.
+    /// On actual mobile platforms with biometric support, this would return success.
+    /// This test confirms the service behaves correctly on non-mobile platforms.
     /// </summary>
     [Fact]
-    public async Task AuthenticateAsync_WithValidBiometricType_ReturnsSuccessfulResult()
+    public async Task AuthenticateAsync_OnWindows_ReturnsResult()
     {
         // Arrange - Per-test mock creation (Phase 3 isolation pattern)
         var service = new BiometricService(NullLogger<BiometricService>.Instance);
@@ -48,23 +50,20 @@ public class BiometricServiceTests
         Assert.IsType<Result<bool>>(result);
 
         // For non-mobile platforms, verify unavailable state
-        if (!result.Succeeded)
-        {
-            Assert.NotNull(result.Error);
-            Assert.StartsWith("BIOMETRIC.", result.Error.Code);
-        }
+        Assert.False(result.Succeeded, "Windows platform should return unavailable");
+        Assert.NotNull(result.Error);
+        Assert.Equal(BiometricUnavailableErrorCode, result.Error.Code);
     }
 
     /// <summary>
     /// Tests authentication failure when biometric is unavailable on the device.
-    /// Validates that AuthenticateAsync returns a failure Result{T} with BIOMETRIC.UNAVAILABLE error
-    /// when IsAvailableAsync returns false, preventing unnecessary authentication attempts.
+    /// Validates that AuthenticateAsync returns a failure Result{T} with BIOMETRIC.UNAVAILABLE error.
     ///
     /// This test covers the error handling path when biometric hardware or permissions are absent.
     /// Ensures proper error codes and structured Error object usage.
     /// </summary>
     [Fact]
-    public async Task AuthenticateAsync_WhenBiometricUnavailable_ReturnsBiometricUnavailableError()
+    public async Task AuthenticateAsync_Unavailable_ReturnsError()
     {
         // Arrange - Per-test mock creation
         var service = new BiometricService(NullLogger<BiometricService>.Instance);
@@ -80,11 +79,8 @@ public class BiometricServiceTests
         Assert.False(result.Succeeded);
         Assert.NotNull(result.Error);
 
-        // Validate error code follows BIOMETRIC.* pattern
-        Assert.True(
-            result.Error.Code == "BIOMETRIC.UNAVAILABLE" || result.Error.Code.StartsWith("BIOMETRIC."),
-            $"Expected BIOMETRIC.* error code, got: {result.Error.Code}"
-        );
+        // Validate error code is BIOMETRIC.UNAVAILABLE
+        Assert.Equal(BiometricUnavailableErrorCode, result.Error.Code);
 
         // Validate error message is not empty (user-facing description)
         Assert.False(string.IsNullOrWhiteSpace(result.Error.Message),
@@ -100,7 +96,7 @@ public class BiometricServiceTests
     /// attempts on devices without biometric support.
     /// </summary>
     [Fact]
-    public async Task IsAvailableAsync_ReturnsCorrectBoolean_IndicatesAvailability()
+    public async Task IsAvailableAsync_ReturnsBoolean()
     {
         // Arrange - Per-test mock creation
         var service = new BiometricService(NullLogger<BiometricService>.Instance);
@@ -121,7 +117,7 @@ public class BiometricServiceTests
             Assert.False(authResult.Succeeded,
                 "Authentication should fail when IsAvailableAsync returns false");
             Assert.NotNull(authResult.Error);
-            Assert.Equal("BIOMETRIC.UNAVAILABLE", authResult.Error.Code);
+            Assert.Equal(BiometricUnavailableErrorCode, authResult.Error.Code);
         }
     }
 
@@ -136,7 +132,7 @@ public class BiometricServiceTests
     /// and platform-specific partial method implementations.
     /// </summary>
     [Fact]
-    public async Task GetBiometricTypeAsync_DetectsBiometricType_ReturnsValidEnumValue()
+    public async Task GetBiometricTypeAsync_ReturnsValidType()
     {
         // Arrange - Per-test mock creation
         var service = new BiometricService(NullLogger<BiometricService>.Instance);
