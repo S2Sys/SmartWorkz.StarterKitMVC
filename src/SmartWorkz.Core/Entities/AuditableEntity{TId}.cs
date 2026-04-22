@@ -77,7 +77,7 @@ namespace SmartWorkz.Core;
 /// - Indexes on IsDeleted for efficient soft delete queries.
 /// - Indexes on TenantId for multi-tenant queries.
 /// </remarks>
-public abstract class AuditableEntity<TId> : IAuditable, ISoftDeletable, ITenantScoped
+public abstract class AuditableEntity<TId> : IAuditable, ISoftDeletable
 {
     /// <summary>
     /// The primary key identifier for this entity.
@@ -363,78 +363,5 @@ public abstract class AuditableEntity<TId> : IAuditable, ISoftDeletable, ITenant
     /// an entity, typically from the current user ID.
     /// </remarks>
     public int? DeletedBy { get; set; }
-
-    // --- ITenantScoped ---
-
-    /// <summary>
-    /// The tenant identifier for multi-tenancy support.
-    /// </summary>
-    /// <remarks>
-    /// Unique identifier of the tenant (organization/customer) that owns this entity.
-    /// Used in Software-as-a-Service (SaaS) applications to isolate data between tenants.
-    ///
-    /// Nullable: int? to support:
-    /// - Shared/global entities that belong to the entire system (TenantId = null)
-    /// - Entities created before tenant context is established
-    /// - Test data or system-generated entities
-    ///
-    /// Multi-Tenancy Pattern:
-    /// 1. Every entity that is tenant-specific must have a TenantId
-    /// 2. Repository queries must filter by TenantId to prevent cross-tenant data leaks
-    /// 3. The application layer must ensure TenantId is set before persisting an entity
-    /// 4. Implement automatic TenantId filtering in the repository or via query interceptors
-    ///
-    /// Repository Implementation:
-    /// <code>
-    /// public class TenantScopedRepository&lt;TEntity&gt; : IRepository&lt;TEntity, int&gt;
-    ///     where TEntity : AuditableEntity&lt;int&gt;, ITenantScoped
-    /// {
-    ///     private readonly int _tenantId;
-    ///
-    ///     public async Task&lt;IEnumerable&lt;TEntity&gt;&gt; GetAllAsync()
-    ///     {
-    ///         return await context.Set&lt;TEntity&gt;()
-    ///             .Where(e => e.TenantId == _tenantId && !e.IsDeleted)
-    ///             .ToListAsync();
-    ///     }
-    /// }
-    /// </code>
-    ///
-    /// Security Consideration: Forgetting to filter by TenantId is a critical security bug
-    /// that exposes other tenants' data. Always verify that:
-    /// - Repository queries filter by TenantId
-    /// - New entities have TenantId set before insertion
-    /// - Tests verify tenant isolation
-    ///
-    /// Shared (Tenant-Neutral) Entities:
-    /// For entities that are shared across all tenants (e.g., countries, currencies), set
-    /// TenantId = null and ensure repositories handle both tenant-specific and shared queries:
-    /// <code>
-    /// // Get tenant-specific products + shared products (TenantId = null)
-    /// var products = await context.Products
-    ///     .Where(p => (p.TenantId == _tenantId || p.TenantId == null) && !p.IsDeleted)
-    ///     .ToListAsync();
-    /// </code>
-    ///
-    /// Example Query:
-    /// <code>
-    /// // Get all products for the current tenant
-    /// var tenantProducts = await repository.GetAllAsync(p => p.TenantId == currentTenantId);
-    ///
-    /// // Soft delete all products for a tenant
-    /// var tenantData = await context.Products
-    ///     .Where(p => p.TenantId == tenantId && !p.IsDeleted)
-    ///     .ToListAsync();
-    /// foreach (var entity in tenantData)
-    /// {
-    ///     entity.IsDeleted = true;
-    ///     entity.DeletedAt = DateTime.UtcNow;
-    /// }
-    /// await context.SaveChangesAsync();
-    /// </code>
-    ///
-    /// Application Layer Setting: The service layer must set TenantId before persisting
-    /// an entity, typically from the current user's tenant context.
-    /// </remarks>
-    public int? TenantId { get; set; }
 }
+
