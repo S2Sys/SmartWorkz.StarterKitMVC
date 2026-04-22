@@ -6,6 +6,8 @@ using Android.Content;
 using Android.Locations;
 using Android.OS;
 using SmartWorkz.Shared;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,6 +15,7 @@ partial class GeofencingService
 {
     private LocationManager? _locationManager;
     private GeofenceProximityAlertReceiver? _proximityAlertReceiver;
+    private readonly Dictionary<string, PendingIntent> _pendingIntentsByRegion = new();
 
     /// <summary>
     /// Static event for broadcast receiver to raise geofence events.
@@ -48,6 +51,15 @@ partial class GeofencingService
             _staticGeofenceEventHandler += RaiseGeofenceEvent;
 
             var pendingIntent = CreateProximityAlertIntent(context, region);
+            if (pendingIntent == null)
+            {
+                return Result.Fail<bool>(Error.Validation("LOCATION.PENDING_INTENT_FAILED",
+                    "Failed to create pending intent for proximity alert"));
+            }
+
+            // Track the pending intent by region ID for later removal
+            _pendingIntentsByRegion[region.Id] = pendingIntent;
+
             _locationManager.AddProximityAlert(
                 region.Latitude,
                 region.Longitude,
@@ -68,11 +80,17 @@ partial class GeofencingService
     {
         try
         {
+            // Unsubscribe from static event handler
+            _staticGeofenceEventHandler -= RaiseGeofenceEvent;
+
             var context = Microsoft.Maui.Controls.Application.Current?.MainPage?.Handler?.MauiContext?.Context;
             if (context != null && _locationManager != null)
             {
-                var pendingIntent = CreateProximityAlertIntent(context, null);
-                _locationManager.RemoveProximityAlert(pendingIntent);
+                // Remove the specific pending intent for this region
+                if (_pendingIntentsByRegion.TryRemove(regionId, out var pendingIntent))
+                {
+                    _locationManager.RemoveProximityAlert(pendingIntent);
+                }
             }
 
             return await Task.FromResult(Result.Ok(true));
@@ -95,15 +113,24 @@ partial class GeofencingService
 
     private PendingIntent? CreateProximityAlertIntent(Context context, GeofenceRegion? region)
     {
-        var intent = new Intent(context, typeof(GeofenceProximityAlertReceiver));
-        if (region != null)
+        try
         {
-            intent.PutExtra("region_id", region.Id);
-            intent.PutExtra("region_name", region.Name);
-        }
+            var intent = new Intent(context, typeof(GeofenceProximityAlertReceiver));
+            if (region != null)
+            {
+                intent.PutExtra("region_id", region.Id);
+                intent.PutExtra("region_name", region.Name);
+            }
 
-        return PendingIntent.GetBroadcast(context, region?.Id.GetHashCode() ?? 0,
-            intent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
+            int requestCode = region?.Id.GetHashCode() ?? 0;
+            return PendingIntent.GetBroadcast(context, requestCode,
+                intent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create proximity alert intent");
+            return null;
+        }
     }
 }
 
