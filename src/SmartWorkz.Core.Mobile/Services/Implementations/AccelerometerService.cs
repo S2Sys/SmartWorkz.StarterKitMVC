@@ -1,5 +1,6 @@
 namespace SmartWorkz.Mobile;
 
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Microsoft.Extensions.Logging;
 
@@ -63,7 +64,7 @@ public sealed partial class AccelerometerService : IAccelerometerService
     /// <summary>Returns observable stream of accelerometer readings.</summary>
     public IObservable<AccelerometerReading> OnReadingChanged() => _readings.AsObservable();
 
-    protected void PublishReading(AccelerometerReading reading) =>
+    private void PublishReading(AccelerometerReading reading) =>
         _readings.OnNext(reading);
 
     // Platform-specific partial methods
