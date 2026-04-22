@@ -582,7 +582,7 @@ public class EntityStateTests
     [InlineData(EntityState.ReviewRejected, "Review Rejected")]
     [InlineData(EntityState.InTransit, "In Transit")]
     [InlineData(EntityState.OutForDelivery, "Out For Delivery")]
-    [InlineData(EntityState.DeliveredShipping, "Delivered")]
+    [InlineData(EntityState.DeliveredShipping, "Delivered (Shipping)")]
     public void DisplayAttribute_ReturnsCorrectFriendlyName(EntityState state, string expectedName)
     {
         // Act
