@@ -43,6 +43,9 @@ namespace SmartWorkz.Web;
 ///
 /// &lt;!-- Default secondary badge --&gt;
 /// &lt;badge text="Badge" /&gt;
+///
+/// &lt;!-- Pill-shaped badge --&gt;
+/// &lt;span class="badge bg-primary rounded-pill"&gt;@notificationCount&lt;/span&gt;
 /// </example>
 [HtmlTargetElement("badge", Attributes = nameof(Type))]
 public class BadgeTagHelper : TagHelper
