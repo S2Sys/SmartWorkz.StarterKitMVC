@@ -52,9 +52,21 @@ public interface IBluetoothService
     Task<Result<bool>> DisconnectAsync(string deviceAddress, CancellationToken ct = default);
 
     /// <summary>
-    /// Returns an observable stream of connection state changes.
-    /// Emits true when connection is established, false when disconnected.
+    /// Returns current connection state for a device.
     /// </summary>
-    /// <returns>An observable that emits boolean values indicating connection state.</returns>
-    IObservable<bool> OnConnectionStateChanged();
+    /// <param name="deviceAddress">The address (MAC on Android, UUID on iOS) of the device.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>The current connection state, or null if the device is not found.</returns>
+    Task<BluetoothConnectionState?> GetConnectionStateAsync(string deviceAddress, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns an observable stream of connection state changes for any device.
+    /// </summary>
+    /// <returns>An observable that emits BluetoothConnectionState values as connection states change.</returns>
+    IObservable<BluetoothConnectionState> OnConnectionStateChanged();
+
+    /// <summary>
+    /// Gets the currently connected device address, if any.
+    /// </summary>
+    string? ConnectedDeviceAddress { get; }
 }
