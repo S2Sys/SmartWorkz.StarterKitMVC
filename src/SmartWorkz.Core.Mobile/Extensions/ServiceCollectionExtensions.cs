@@ -130,6 +130,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBluetoothService, BluetoothService>();
         services.AddScoped<IAccelerometerService, AccelerometerService>();
 
+        // Step 17: Register Phase 4.5 Bluetooth pairing service
+        services.AddScoped<IBluetoothPairingService, BluetoothPairingService>();
+
         return services;
     }
 }
