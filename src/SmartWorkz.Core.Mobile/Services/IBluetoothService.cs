@@ -56,8 +56,8 @@ public interface IBluetoothService
     /// </summary>
     /// <param name="deviceAddress">The address (MAC on Android, UUID on iOS) of the device.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>The current connection state, or null if the device is not found.</returns>
-    Task<BluetoothConnectionState?> GetConnectionStateAsync(string deviceAddress, CancellationToken ct = default);
+    /// <returns>A Result containing the current connection state, or null if the device is not found.</returns>
+    Task<Result<BluetoothConnectionState?>> GetConnectionStateAsync(string deviceAddress, CancellationToken ct = default);
 
     /// <summary>
     /// Returns an observable stream of connection state changes for any device.
