@@ -21,16 +21,18 @@ public partial class ContactsService
                 ContactsContract.Contacts.InterfaceConsts.HasPhoneNumber
             };
 
-            using var cursor = Android.App.Application.Context.ContentResolver.Query(uri, projection, null, null, null);
+            using var cursor = Android.App.Application.Context.ContentResolver?.Query(uri, projection, null, null, null);
             if (cursor == null) return contacts;
 
             var idIndex = cursor.GetColumnIndex(ContactsContract.Contacts.InterfaceConsts.Id);
             var nameIndex = cursor.GetColumnIndex(ContactsContract.Contacts.InterfaceConsts.DisplayName);
 
+            if (idIndex < 0 || nameIndex < 0) return contacts;
+
             while (cursor.MoveToNext())
             {
-                var id = cursor.GetString(idIndex);
-                var name = cursor.GetString(nameIndex);
+                var id = cursor.GetString(idIndex) ?? string.Empty;
+                var name = cursor.GetString(nameIndex) ?? "Unknown";
 
                 var (firstName, lastName) = ParseName(name);
                 var email = GetContactEmail(id);
@@ -62,16 +64,18 @@ public partial class ContactsService
             var selection = $"{ContactsContract.Contacts.InterfaceConsts.DisplayName} LIKE ?";
             var selectionArgs = new[] { $"%{query}%" };
 
-            using var cursor = Android.App.Application.Context.ContentResolver.Query(uri, projection, selection, selectionArgs, null);
+            using var cursor = Android.App.Application.Context.ContentResolver?.Query(uri, projection, selection, selectionArgs, null);
             if (cursor == null) return contacts;
 
             var idIndex = cursor.GetColumnIndex(ContactsContract.Contacts.InterfaceConsts.Id);
             var nameIndex = cursor.GetColumnIndex(ContactsContract.Contacts.InterfaceConsts.DisplayName);
 
+            if (idIndex < 0 || nameIndex < 0) return contacts;
+
             while (cursor.MoveToNext())
             {
-                var id = cursor.GetString(idIndex);
-                var name = cursor.GetString(nameIndex);
+                var id = cursor.GetString(idIndex) ?? string.Empty;
+                var name = cursor.GetString(nameIndex) ?? "Unknown";
 
                 var (firstName, lastName) = ParseName(name);
                 var email = GetContactEmail(id);
@@ -94,7 +98,7 @@ public partial class ContactsService
         return Task.FromResult<Contact?>(null);
     }
 
-    private partial Task<bool> IsAvailableAsyncPlatform() => Task.FromResult(true);
+    private partial Task<bool> IsAvailableAsyncPlatform(CancellationToken ct) => Task.FromResult(true);
 
     private static (string firstName, string? lastName) ParseName(string fullName)
     {
@@ -105,6 +109,8 @@ public partial class ContactsService
 
     private static string? GetContactEmail(string contactId)
     {
+        if (string.IsNullOrEmpty(contactId)) return null;
+
         try
         {
             var uri = ContactsContract.CommonDataKinds.Email.ContentUri;
@@ -112,7 +118,7 @@ public partial class ContactsService
             var selection = $"{ContactsContract.CommonDataKinds.Email.InterfaceConsts.ContactId} = ?";
             var selectionArgs = new[] { contactId };
 
-            using var cursor = Android.App.Application.Context.ContentResolver.Query(uri, projection, selection, selectionArgs, null);
+            using var cursor = Android.App.Application.Context.ContentResolver?.Query(uri, projection, selection, selectionArgs, null);
             if (cursor?.MoveToFirst() == true)
                 return cursor.GetString(0);
         }
@@ -126,6 +132,8 @@ public partial class ContactsService
 
     private static string? GetContactPhone(string contactId)
     {
+        if (string.IsNullOrEmpty(contactId)) return null;
+
         try
         {
             var uri = ContactsContract.CommonDataKinds.Phone.ContentUri;
@@ -133,7 +141,7 @@ public partial class ContactsService
             var selection = $"{ContactsContract.CommonDataKinds.Phone.InterfaceConsts.ContactId} = ?";
             var selectionArgs = new[] { contactId };
 
-            using var cursor = Android.App.Application.Context.ContentResolver.Query(uri, projection, selection, selectionArgs, null);
+            using var cursor = Android.App.Application.Context.ContentResolver?.Query(uri, projection, selection, selectionArgs, null);
             if (cursor?.MoveToFirst() == true)
                 return cursor.GetString(0);
         }

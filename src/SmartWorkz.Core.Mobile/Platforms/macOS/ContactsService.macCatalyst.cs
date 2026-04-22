@@ -90,7 +90,7 @@ public partial class ContactsService
         return Task.FromResult<Contact?>(null);
     }
 
-    private partial Task<bool> IsAvailableAsyncPlatform() => Task.FromResult(true);
+    private partial Task<bool> IsAvailableAsyncPlatform(CancellationToken ct) => Task.FromResult(true);
 }
 
 #endif

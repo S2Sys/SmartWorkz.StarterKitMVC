@@ -5,13 +5,15 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 /// <summary>
 /// Provides contact access services for retrieving and searching device contacts.
 /// </summary>
-public partial class ContactsService
+public partial class ContactsService : IContactsService
 {
     private readonly ILogger _logger;
+    private readonly IPermissionService _permissions;
 
-    public ContactsService(ILogger logger)
+    public ContactsService(ILogger logger, IPermissionService permissions)
     {
         _logger = Guard.NotNull(logger, nameof(logger));
+        _permissions = Guard.NotNull(permissions, nameof(permissions));
     }
 
     /// <summary>
@@ -27,6 +29,18 @@ public partial class ContactsService
         #else
         try
         {
+            var permissionStatus = await _permissions.CheckAsync(MobilePermission.Contacts, ct);
+            if (permissionStatus != PermissionStatus.Granted)
+            {
+                permissionStatus = await _permissions.RequestAsync(MobilePermission.Contacts, ct);
+            }
+
+            if (permissionStatus != PermissionStatus.Granted)
+            {
+                _logger.LogWarning("Contacts permission denied");
+                return [];
+            }
+
             return await GetAllContactsAsyncPlatform(ct);
         }
         catch (Exception ex)
@@ -51,6 +65,18 @@ public partial class ContactsService
         #else
         try
         {
+            var permissionStatus = await _permissions.CheckAsync(MobilePermission.Contacts, ct);
+            if (permissionStatus != PermissionStatus.Granted)
+            {
+                permissionStatus = await _permissions.RequestAsync(MobilePermission.Contacts, ct);
+            }
+
+            if (permissionStatus != PermissionStatus.Granted)
+            {
+                _logger.LogWarning("Contacts permission denied for search");
+                return [];
+            }
+
             return await SearchContactsAsyncPlatform(query, ct);
         }
         catch (Exception ex)
@@ -74,6 +100,18 @@ public partial class ContactsService
         #else
         try
         {
+            var permissionStatus = await _permissions.CheckAsync(MobilePermission.Contacts, ct);
+            if (permissionStatus != PermissionStatus.Granted)
+            {
+                permissionStatus = await _permissions.RequestAsync(MobilePermission.Contacts, ct);
+            }
+
+            if (permissionStatus != PermissionStatus.Granted)
+            {
+                _logger.LogWarning("Contacts permission denied for picker");
+                return null;
+            }
+
             return await PickContactAsyncPlatform(ct);
         }
         catch (Exception ex)
@@ -96,7 +134,7 @@ public partial class ContactsService
         #else
         try
         {
-            return await IsAvailableAsyncPlatform();
+            return await IsAvailableAsyncPlatform(ct);
         }
         catch (Exception ex)
         {
@@ -111,22 +149,6 @@ public partial class ContactsService
     private partial Task<IReadOnlyList<Contact>> GetAllContactsAsyncPlatform(CancellationToken ct);
     private partial Task<IReadOnlyList<Contact>> SearchContactsAsyncPlatform(string query, CancellationToken ct);
     private partial Task<Contact?> PickContactAsyncPlatform(CancellationToken ct);
-    private partial Task<bool> IsAvailableAsyncPlatform();
+    private partial Task<bool> IsAvailableAsyncPlatform(CancellationToken ct);
     #endif
-}
-
-/// <summary>
-/// Represents a contact from the device's contacts database.
-/// </summary>
-public record Contact(
-    string Id,
-    string FirstName,
-    string? LastName,
-    string? Email,
-    string? PhoneNumber,
-    string? PhotoPath)
-{
-    public string FullName => string.IsNullOrEmpty(LastName)
-        ? FirstName
-        : $"{FirstName} {LastName}";
 }
