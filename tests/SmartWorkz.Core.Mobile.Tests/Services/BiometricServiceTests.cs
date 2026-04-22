@@ -7,10 +7,9 @@ using SmartWorkz.Shared;
 public class BiometricServiceTests
 {
     [Fact]
-    public async Task AuthenticateAsync_BiometricAvailable_ReturnsSuccess()
+    public async Task AuthenticateAsync_WindowsPlatform_ReturnsResult()
     {
         // Arrange - per-test mock creation (Phase 3 isolation pattern)
-        var mockPermissions = new Mock<IPermissionService>();
         var service = new BiometricService(NullLogger<BiometricService>.Instance);
 
         // Act
@@ -23,10 +22,9 @@ public class BiometricServiceTests
     }
 
     [Fact]
-    public async Task AuthenticateAsync_PermissionDenied_ReturnsFail()
+    public async Task AuthenticateAsync_WindowsPlatform_ReturnsFailure()
     {
         // Arrange - per-test mock creation
-        var mockPermissions = new Mock<IPermissionService>();
         var service = new BiometricService(NullLogger<BiometricService>.Instance);
 
         // Act
@@ -44,7 +42,6 @@ public class BiometricServiceTests
     public async Task IsAvailableAsync_ReturnsBoolean()
     {
         // Arrange - per-test mock creation
-        var mockPermissions = new Mock<IPermissionService>();
         var service = new BiometricService(NullLogger<BiometricService>.Instance);
 
         // Act
@@ -58,7 +55,6 @@ public class BiometricServiceTests
     public async Task GetBiometricTypeAsync_ReturnsTypeOrNone()
     {
         // Arrange - per-test mock creation
-        var mockPermissions = new Mock<IPermissionService>();
         var service = new BiometricService(NullLogger<BiometricService>.Instance);
 
         // Act
