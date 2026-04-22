@@ -600,8 +600,8 @@ public class StateGroupsTests
     [Fact]
     public void GetValidStatesFor_UserType_ReturnsUserAccountStates()
     {
-        // Arrange - use mock User type (name matches the mapping in StateGroups)
-        var userType = typeof(MockUser);
+        // Arrange - use User type (name matches the mapping in StateGroups)
+        var userType = typeof(User);
 
         // Act
         var result = StateGroups.GetValidStatesFor(userType);
@@ -615,8 +615,8 @@ public class StateGroupsTests
     [Fact]
     public void GetValidStatesFor_OrderType_ReturnsOrderStates()
     {
-        // Arrange - use mock Order type (name matches the mapping in StateGroups)
-        var orderType = typeof(MockOrder);
+        // Arrange - use Order type (name matches the mapping in StateGroups)
+        var orderType = typeof(Order);
 
         // Act
         var result = StateGroups.GetValidStatesFor(orderType);
@@ -630,8 +630,8 @@ public class StateGroupsTests
     [Fact]
     public void GetValidStatesFor_ProductType_ReturnsInventoryStates()
     {
-        // Arrange - use mock Product type (name matches the mapping in StateGroups)
-        var productType = typeof(MockProduct);
+        // Arrange - use Product type (name matches the mapping in StateGroups)
+        var productType = typeof(Product);
 
         // Act
         var result = StateGroups.GetValidStatesFor(productType);
@@ -662,8 +662,8 @@ public class StateGroupsTests
     [Fact]
     public void GetValidStatesFor_TypeWithTaskInName_ReturnsTaskJobStates()
     {
-        // Arrange - use MockTask type which has "Task" in its name
-        var taskType = typeof(MockTask);
+        // Arrange - use TaskEntity type which has "Task" in its name
+        var taskType = typeof(TaskEntity);
 
         // Act
         var result = StateGroups.GetValidStatesFor(taskType);
@@ -763,27 +763,27 @@ public class StateGroupsTests
 /// <summary>
 /// Mock type with name "User" for testing User -> UserAccountStates mapping.
 /// </summary>
-internal class MockUser
+internal class User
 {
 }
 
 /// <summary>
 /// Mock type with name "Order" for testing Order -> OrderStates mapping.
 /// </summary>
-internal class MockOrder
+internal class Order
 {
 }
 
 /// <summary>
 /// Mock type with name "Product" for testing Product -> InventoryStates mapping.
 /// </summary>
-internal class MockProduct
+internal class Product
 {
 }
 
 /// <summary>
 /// Mock type with "Task" in name for testing type-based state mapping.
 /// </summary>
-internal class MockTask
+internal class TaskEntity
 {
 }
