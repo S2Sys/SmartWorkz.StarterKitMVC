@@ -111,7 +111,13 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IOfflineService, OfflineService>();
         services.AddScoped<IBiometricService, BiometricService>();
 
-        // Step 14: Register Phase 1 library extensions
+        // Step 14: Register Phase 3 device services
+        services.AddScoped<ICameraService, CameraService>();
+        services.AddScoped<IMediaPickerService, MediaPickerService>();
+        services.AddScoped<IContactsService, ContactsService>();
+        services.AddScoped<ILocationService, LocationService>();
+
+        // Step 15: Register Phase 1 library extensions
         services.AddSingleton<IResponsiveService, ResponsiveService>();
         services.AddScoped<IMobileCacheService, MobileCacheService>();
         services.AddSingleton<IRequestDeduplicationService, RequestDeduplicationService>();
