@@ -23,9 +23,10 @@ public class BluetoothConnectionTests
         var mockPermissions = new Mock<IPermissionService>();
         var service = new BluetoothService(mockPermissions.Object, NullLogger<BluetoothService>.Instance);
 
-        var state = await service.GetConnectionStateAsync("AA:BB:CC:DD:EE:FF");
+        var result = await service.GetConnectionStateAsync("AA:BB:CC:DD:EE:FF");
 
-        Assert.Null(state);
+        Assert.True(result.Succeeded);
+        Assert.Null(result.Data);
     }
 
     [Fact]

@@ -172,11 +172,11 @@ public sealed partial class BluetoothService : IBluetoothService
     /// <summary>
     /// Returns the current connection state for a device.
     /// </summary>
-    public async Task<BluetoothConnectionState?> GetConnectionStateAsync(string deviceAddress, CancellationToken ct = default)
+    public async Task<Result<BluetoothConnectionState?>> GetConnectionStateAsync(string deviceAddress, CancellationToken ct = default)
     {
         ct.ThrowIfCancellationRequested();
         _connectionStates.TryGetValue(deviceAddress, out var state);
-        return state;
+        return Result.Ok(state);
     }
 
     /// <summary>
