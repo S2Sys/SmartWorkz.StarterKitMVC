@@ -126,31 +126,28 @@ public abstract class AuditableEntity<TId> : IAuditable, ISoftDeletable, ITenant
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
-    /// The user identifier (ID) of the user who created the entity.
+    /// The user identifier of the user who created the entity.
     /// </summary>
     /// <remarks>
-    /// Typically set to the current user's ID (int) when the entity is created.
+    /// Typically set to the current user's ID (as string) when the entity is created.
     /// This field allows tracking which user created the entity, useful for audit trails
-    /// and accountability.
+    /// and accountability. Can be a numeric ID, username, email, or other user identifier
+    /// depending on the authentication scheme.
     ///
-    /// Nullable: This field is nullable (int?) to support scenarios where entity creation
-    /// occurs without a user context (e.g., system-generated entities, imports).
-    ///
-    /// Type: int by convention, matching typical user ID types. If using string-based user IDs
-    /// (e.g., from ASP.NET Identity), consider creating a separate audit property or extending
-    /// this property type if needed.
+    /// Default: Empty string to support scenarios where entity creation occurs without
+    /// explicit user context (e.g., system-generated entities, imports).
     ///
     /// Usage: Join with a User/Account table to retrieve the creator's name, email, etc.
     ///
     /// Example Query:
     /// <code>
-    /// // Find products created by user 42
-    /// var productsByUser = await repository.GetAllAsync(p => p.CreatedBy == 42);
+    /// // Find products created by user "user123"
+    /// var productsByUser = await repository.GetAllAsync(p => p.CreatedBy == "user123");
     ///
     /// // Find products and include creator details
     /// var productsWithCreators = await context.Products
     ///     .Include(p => p.Creator)  // Assuming navigation property
-    ///     .Where(p => p.CreatedBy.HasValue)
+    ///     .Where(p => p.CreatedBy != string.Empty)
     ///     .ToListAsync();
     /// </code>
     ///
@@ -158,7 +155,7 @@ public abstract class AuditableEntity<TId> : IAuditable, ISoftDeletable, ITenant
     /// this field before persisting a new entity, typically from HttpContext.User or
     /// a current user service.
     /// </remarks>
-    public int? CreatedBy { get; set; }
+    public string CreatedBy { get; set; } = string.Empty;
 
     /// <summary>
     /// The date and time (UTC) when the entity was last updated.
@@ -199,29 +196,28 @@ public abstract class AuditableEntity<TId> : IAuditable, ISoftDeletable, ITenant
     public DateTime? UpdatedAt { get; set; }
 
     /// <summary>
-    /// The user identifier (ID) of the user who last updated the entity.
+    /// The user identifier of the user who last updated the entity.
     /// </summary>
     /// <remarks>
-    /// Set each time the entity is modified to the current user's ID.
+    /// Set each time the entity is modified to the current user's ID (as string).
     /// This field allows tracking which user made the most recent changes, useful for
     /// collaboration tracking, accountability, and edit history.
     ///
-    /// Nullable: This field is nullable (int?) because:
+    /// Nullable: This field is nullable (string?) because:
     /// - The entity may never be updated after creation (UpdatedAt is null, UpdatedBy is null)
     /// - System-generated updates without a user context (e.g., automated imports, cleanup jobs)
     ///
-    /// Type: int by convention, matching typical user ID types. If using string-based user IDs,
-    /// consider extending this property type if needed.
+    /// Type: string to support various user identifier formats (numeric ID, username, email, etc.).
     ///
     /// Usage: Join with a User/Account table to retrieve the modifier's name, email, etc.
     ///
     /// Example Query:
     /// <code>
-    /// // Find products modified by user 42
-    /// var productsByUser = await repository.GetAllAsync(p => p.UpdatedBy == 42);
+    /// // Find products modified by user "user456"
+    /// var productsByUser = await repository.GetAllAsync(p => p.UpdatedBy == "user456");
     ///
     /// // Find products modified by any user (UpdatedBy is not null)
-    /// var modified = await repository.GetAllAsync(p => p.UpdatedBy.HasValue);
+    /// var modified = await repository.GetAllAsync(p => p.UpdatedBy != null);
     ///
     /// // Order by most recently modified, including creator if never updated
     /// var latest = await context.Products
@@ -235,7 +231,7 @@ public abstract class AuditableEntity<TId> : IAuditable, ISoftDeletable, ITenant
     /// Audit Trail: For a complete audit trail, consider storing all changes (not just the
     /// last modifier). This single field only tracks the most recent modifier.
     /// </remarks>
-    public int? UpdatedBy { get; set; }
+    public string? UpdatedBy { get; set; }
 
     // --- ISoftDeletable ---
 
