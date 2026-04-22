@@ -106,7 +106,8 @@ public sealed partial class BluetoothService
 
     /// <summary>
     /// Connects to a Bluetooth LE device on iOS using CBCentralManager.
-    /// Implements 30-second connection timeout and checks CBPeripheralState.Connected.
+    /// Retrieves the peripheral using RetrievePeripheralsWithIdentifiers and implements
+    /// 30-second connection timeout with CBPeripheralState.Connected verification.
     /// </summary>
     private partial async Task ConnectAsyncPlatform(string deviceAddress, CancellationToken ct)
     {
@@ -122,42 +123,46 @@ public sealed partial class BluetoothService
             // Parse device address as UUID (iOS uses UUID instead of MAC address)
             var uuid = new NSUuid(deviceAddress);
 
-            // In production, the peripheral would come from:
-            // 1. Prior ScanForPeripherals discovery via CBCentralManagerDelegate
-            // 2. RetrievePeripheralsWithIdentifiers using stored UUIDs
-            // For now, store the UUID reference for connection
-            _logger.LogDebug("iOS: Attempting to connect to peripheral with UUID {UUID}", deviceAddress);
+            _logger.LogDebug("iOS: Retrieving peripheral with UUID {UUID}", deviceAddress);
+
+            // Retrieve previously known peripheral using UUID
+            // This works for devices that have been previously discovered by iOS
+            var peripherals = _centralManager.RetrievePeripheralsWithIdentifiers(new NSUuid[] { uuid });
+
+            if (peripherals.Length == 0)
+            {
+                _logger.LogError("iOS: No peripheral found with UUID {UUID}", deviceAddress);
+                throw new InvalidOperationException($"Peripheral not found for device: {deviceAddress}");
+            }
+
+            _connectedPeripheral = peripherals[0];
+            _logger.LogDebug("iOS: Retrieved peripheral {Peripheral}, initiating connection", _connectedPeripheral.Name);
 
             // Initiate connection request
-            // Note: CBCentralManager.ConnectPeripheral requires a valid CBPeripheral reference
-            // In a real implementation, this would come from the discovery/retrieval above
-            if (_connectedPeripheral is not null)
+            _centralManager.ConnectPeripheral(_connectedPeripheral);
+
+            // Wait for connection with 30-second timeout using simple polling
+            const int connectionTimeoutMs = 30000;
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+
+            while (_connectedPeripheral.State != CBPeripheralState.Connected && sw.ElapsedMilliseconds < connectionTimeoutMs)
             {
-                _centralManager.ConnectPeripheral(_connectedPeripheral);
-
-                // Wait for connection with 30-second timeout
-                const int connectionTimeoutMs = 30000;
-                var connectionTask = WaitForConnectionAsync(_connectedPeripheral, ct);
-                var delayTask = Task.Delay(connectionTimeoutMs, ct);
-
-                var completedTask = await Task.WhenAny(connectionTask, delayTask);
-
-                // Check if connection succeeded or timed out
-                if (completedTask == delayTask || _connectedPeripheral.State != CBPeripheralState.Connected)
-                {
-                    _logger.LogError("iOS: Connection timeout or failed for device {Device}", deviceAddress);
-                    _centralManager.CancelPeripheralConnection(_connectedPeripheral);
-                    _connectedPeripheral = null;
-                    throw new TimeoutException($"Connection timeout or failed for device: {deviceAddress}");
-                }
-
-                _logger.LogInformation("iOS: Successfully connected to Bluetooth device {Device}", deviceAddress);
+                ct.ThrowIfCancellationRequested();
+                await Task.Delay(100, ct);
             }
-            else
+
+            sw.Stop();
+
+            // Check if connection succeeded or timed out
+            if (_connectedPeripheral.State != CBPeripheralState.Connected)
             {
-                _logger.LogError("iOS: No peripheral reference available for device {Device}", deviceAddress);
-                throw new InvalidOperationException($"Peripheral reference not available for device: {deviceAddress}");
+                _logger.LogError("iOS: Connection timeout or failed for device {Device} after {ElapsedMs}ms", deviceAddress, sw.ElapsedMilliseconds);
+                _centralManager.CancelPeripheralConnection(_connectedPeripheral);
+                _connectedPeripheral = null;
+                throw new TimeoutException($"Connection timeout or failed for device: {deviceAddress}");
             }
+
+            _logger.LogInformation("iOS: Successfully connected to Bluetooth device {Device} in {ElapsedMs}ms", deviceAddress, sw.ElapsedMilliseconds);
         }
         catch (OperationCanceledException)
         {
@@ -179,21 +184,6 @@ public sealed partial class BluetoothService
             }
             throw;
         }
-    }
-
-    /// <summary>
-    /// Waits for a peripheral to establish a connection.
-    /// In production, this would use CBCentralManagerDelegate callbacks.
-    /// </summary>
-    private Task WaitForConnectionAsync(CBPeripheral peripheral, CancellationToken ct)
-    {
-        return Task.Run(async () =>
-        {
-            while (peripheral.State != CBPeripheralState.Connected && !ct.IsCancellationRequested)
-            {
-                await Task.Delay(100, ct);
-            }
-        }, ct);
     }
 
     /// <summary>
