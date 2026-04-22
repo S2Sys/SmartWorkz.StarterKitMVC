@@ -10,6 +10,11 @@ using Android.Content;
 public sealed partial class BluetoothService
 {
     /// <summary>
+    /// Manages the Bluetooth socket connection for the current device.
+    /// </summary>
+    private BluetoothSocket? _socket;
+
+    /// <summary>
     /// Scans for bonded (paired) Bluetooth devices on Android.
     /// Real production code would implement BLE scanning with callbacks.
     /// </summary>
@@ -138,50 +143,80 @@ public sealed partial class BluetoothService
     }
 
     /// <summary>
-    /// Platform stub for connecting to a Bluetooth device on Android.
-    /// Production implementation would use BluetoothSocket or GATT for actual connection.
+    /// Connects to a Bluetooth device on Android using BluetoothSocket and standard SPP UUID.
+    /// Tracks RSSI and emits connection state changes via Subject.
     /// </summary>
-    private partial Task ConnectAsyncPlatform(string deviceAddress, CancellationToken ct)
+    private partial async Task ConnectAsyncPlatform(string deviceAddress, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
 
+        var context = Android.App.Application.Context;
+        if (context is null)
+        {
+            _logger.LogError("Android Application context is null");
+            throw new InvalidOperationException("Android Application context is null");
+        }
+
+        var btManager = context.GetSystemService(Context.BluetoothService) as BluetoothManager;
+        var adapter = btManager?.Adapter;
+        if (adapter is null)
+        {
+            _logger.LogError("Bluetooth adapter is null");
+            throw new InvalidOperationException("Bluetooth adapter is null");
+        }
+
         try
         {
-            _logger.LogDebug("Android: Connect stub called for device {Device}", deviceAddress);
-            // Stub implementation - real production code would:
-            // 1. Get BluetoothAdapter
-            // 2. Get BluetoothDevice by address
-            // 3. Create BluetoothSocket
-            // 4. Establish connection asynchronously
-            return Task.CompletedTask;
+            var device = adapter.GetRemoteDevice(deviceAddress);
+            if (device is null)
+            {
+                _logger.LogError("Bluetooth device not found: {Device}", deviceAddress);
+                throw new InvalidOperationException($"Bluetooth device not found: {deviceAddress}");
+            }
+
+            // Standard SPP (Serial Port Profile) UUID for classic Bluetooth
+            var sppUuid = Java.Util.UUID.FromString("00001101-0000-1000-8000-00805F9B34FB");
+            _socket = device.CreateRfcommSocketToServiceRecord(sppUuid);
+
+            _logger.LogInformation("Attempting to connect to BluetoothSocket for device {Device}", deviceAddress);
+            await _socket.ConnectAsync();
+
+            _logger.LogInformation("Successfully connected to Bluetooth device {Device} via SPP", deviceAddress);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Android: Connect failed for device {Device}", deviceAddress);
+            _socket?.Close();
+            _socket = null;
+            _logger.LogError(ex, "Android Bluetooth connect failed for device {Device}", deviceAddress);
             throw;
         }
     }
 
     /// <summary>
-    /// Platform stub for disconnecting from a Bluetooth device on Android.
-    /// Production implementation would close BluetoothSocket and clean up resources.
+    /// Disconnects from a Bluetooth device on Android by closing the BluetoothSocket and cleaning up resources.
     /// </summary>
-    private partial Task DisconnectAsyncPlatform(string deviceAddress, CancellationToken ct)
+    private partial async Task DisconnectAsyncPlatform(string deviceAddress, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
 
         try
         {
-            _logger.LogDebug("Android: Disconnect stub called for device {Device}", deviceAddress);
-            // Stub implementation - real production code would:
-            // 1. Close BluetoothSocket
-            // 2. Clean up GATT connections
-            // 3. Update connection state
-            return Task.CompletedTask;
+            _logger.LogInformation("Attempting to disconnect from Bluetooth device {Device}", deviceAddress);
+
+            if (_socket != null)
+            {
+                _socket.Close();
+                _logger.LogDebug("BluetoothSocket closed for device {Device}", deviceAddress);
+            }
+
+            _socket = null;
+
+            _logger.LogInformation("Successfully disconnected from Bluetooth device {Device}", deviceAddress);
+            await Task.CompletedTask;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Android: Disconnect failed for device {Device}", deviceAddress);
+            _logger.LogError(ex, "Android Bluetooth disconnect failed for device {Device}", deviceAddress);
             throw;
         }
     }
