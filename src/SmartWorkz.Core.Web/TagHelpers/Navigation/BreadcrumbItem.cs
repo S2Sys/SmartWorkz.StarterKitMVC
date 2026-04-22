@@ -19,7 +19,7 @@ namespace SmartWorkz.Web;
 /// 5. Last item is automatically marked as active (no link, .active class)
 ///
 /// Example Hierarchy:
-/// Home (Url="/") > Products (Url="/products") > Category (Url="/category/electronics") > Item (Url=null)
+/// Home (Url="/") &gt; Products (Url="/products") &gt; Category (Url="/category/electronics") &gt; Item (Url=null)
 /// The Item would be the current page with no link, others are clickable.
 ///
 /// Creating Breadcrumbs:

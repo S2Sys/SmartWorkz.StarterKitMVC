@@ -20,9 +20,9 @@ namespace SmartWorkz.Web;
 /// The TagHelper calculates which page numbers to display using a windowing algorithm:
 /// 1. Center the current page within the visible range: CurrentPage - (MaxVisible / 2)
 /// 2. Adjust window bounds to never exceed 1 or TotalPages
-/// 3. If window doesn't start at page 1, show link to page 1 with ellipsis gap
+/// 3. If window doesn't start at page 1, show direct link to page 1
 /// 4. Display page numbers in the calculated window range
-/// 5. If window doesn't end at TotalPages, show link to last page with ellipsis gap
+/// 5. If window doesn't end at TotalPages, show direct link to last page
 ///
 /// Link Generation:
 /// - Each page number is linked using the PageUrl template with string.Format(pageUrl, pageNumber)
@@ -41,7 +41,7 @@ namespace SmartWorkz.Web;
 /// - No click handlers are attached to disabled items
 ///
 /// Output Suppression:
-/// - If TotalPages &lt;= 1, pagination is not rendered (suppressed)
+/// - If TotalPages &lt;= 1, the pagination is not rendered
 /// </remarks>
 /// <example>
 /// &lt;!-- Basic pagination with defaults (shows 5 pages max) --&gt;
