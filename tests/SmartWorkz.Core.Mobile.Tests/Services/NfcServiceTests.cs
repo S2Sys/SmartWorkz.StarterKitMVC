@@ -6,57 +6,66 @@ using SmartWorkz.Shared;
 
 public class NfcServiceTests
 {
-    private readonly Mock<IPermissionService> _mockPermissions = new();
-    private readonly NfcService _sut;
-
-    public NfcServiceTests()
-    {
-        _sut = new NfcService(_mockPermissions.Object, NullLogger<NfcService>.Instance);
-    }
-
     [Fact]
     public async Task ReadAsync_PermissionDenied_ReturnsFail()
     {
-        // Arrange - this test runs on non-mobile platforms where NFC is unavailable,
-        // so ReadAsync will return NFC.UNAVAILABLE error, which is the correct graceful behavior
-        _mockPermissions.Setup(p => p.CheckAsync(MobilePermission.Nfc, default))
+        // Arrange
+        var mockPermissions = new Mock<IPermissionService>();
+        mockPermissions.Setup(p => p.CheckAsync(MobilePermission.Nfc, default))
                        .ReturnsAsync(PermissionStatus.Denied);
+        var service = new NfcService(mockPermissions.Object, NullLogger<NfcService>.Instance);
 
         // Act
-        var result = await _sut.ReadAsync();
+        var result = await service.ReadAsync();
 
-        // Assert - either permission denied or unavailable (platform-dependent)
+        // Assert
+        // On non-mobile platforms, NFC is unavailable, so check for either unavailable or permission denied error
         Assert.False(result.Succeeded);
         Assert.NotNull(result.Error);
     }
 
     [Fact]
-    public async Task IsAvailableAsync_ReturnsBoolean()
+    public async Task IsAvailableAsync_Always_ReturnsBooleanType()
     {
-        // Act & Assert — platform-dependent, just verify it returns Task<bool>
-        var result = await _sut.IsAvailableAsync();
+        // Arrange
+        var mockPermissions = new Mock<IPermissionService>();
+        var service = new NfcService(mockPermissions.Object, NullLogger<NfcService>.Instance);
+
+        // Act
+        var result = await service.IsAvailableAsync();
+
+        // Assert
         Assert.IsType<bool>(result);
     }
 
     [Fact]
-    public async Task IsEnabledAsync_ReturnsBoolean()
+    public async Task IsEnabledAsync_Always_ReturnsBooleanType()
     {
-        // Act & Assert
-        var result = await _sut.IsEnabledAsync();
+        // Arrange
+        var mockPermissions = new Mock<IPermissionService>();
+        var service = new NfcService(mockPermissions.Object, NullLogger<NfcService>.Instance);
+
+        // Act
+        var result = await service.IsEnabledAsync();
+
+        // Assert
         Assert.IsType<bool>(result);
     }
 
     [Fact]
     public async Task ReadAsync_SuccessfulRead_ReturnsMessage()
     {
-        // Arrange — on non-mobile platforms this fails gracefully
-        _mockPermissions.Setup(p => p.CheckAsync(MobilePermission.Nfc, default))
+        // Arrange
+        var mockPermissions = new Mock<IPermissionService>();
+        mockPermissions.Setup(p => p.CheckAsync(MobilePermission.Nfc, default))
                        .ReturnsAsync(PermissionStatus.Granted);
+        var service = new NfcService(mockPermissions.Object, NullLogger<NfcService>.Instance);
 
         // Act
-        var result = await _sut.ReadAsync();
+        var result = await service.ReadAsync();
 
-        // Assert — either succeeds or returns graceful error on non-Android/iOS
+        // Assert
+        // On non-mobile platforms, NFC is unavailable, so gracefully returns error
         Assert.IsType<Result<NfcMessage>>(result);
     }
 }
