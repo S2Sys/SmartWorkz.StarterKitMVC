@@ -50,98 +50,85 @@ partial class GeofencingService
             clRegion.NotifyOnEntry = true;
             clRegion.NotifyOnExit = true;
 
-            // Issue 3: Try-finally for exception handling and cleanup
+            // Issue 3: Thread-safe observer registration with exception handling in outer try-catch
             NSObject? enterObserver = null;
             NSObject? exitObserver = null;
 
-            try
+            // Issue 2 & 4: Thread-safe registration, only register once
+            lock (_lockObject)
             {
-                // Issue 2 & 4: Thread-safe registration, only register once
-                lock (_lockObject)
+                if (!_observersByRegion.ContainsKey(region.Id))
                 {
-                    if (!_observersByRegion.ContainsKey(region.Id))
+                    // Register observers only once, on first region
+                    if (_observersByRegion.Count == 0)
                     {
-                        // Register observers only once, on first region
-                        if (_observersByRegion.Count == 0)
-                        {
-                            enterObserver = NSNotificationCenter.DefaultCenter.AddObserver(
-                                new NSString("CLRegionDidEnterNotification"),
-                                (notification) =>
-                                {
-                                    if (notification?.Object is CLRegion clr)
-                                    {
-                                        var latitude = _locationManager?.Location?.Coordinate.Latitude ?? 0;
-                                        var longitude = _locationManager?.Location?.Coordinate.Longitude ?? 0;
-
-                                        // Issue 5: Log if location is unavailable
-                                        if (_locationManager?.Location == null)
-                                        {
-                                            _logger.LogWarning(
-                                                "Location unavailable for enter geofence event on region {RegionId}",
-                                                clr.Identifier);
-                                        }
-
-                                        RaiseGeofenceEvent(new GeofenceEvent(
-                                            RegionId: clr.Identifier,
-                                            EventType: EventTypeEnter, // Issue 7: Use constant
-                                            DetectedAt: DateTime.UtcNow,
-                                            CurrentLatitude: latitude,
-                                            CurrentLongitude: longitude));
-                                    }
-                                });
-
-                            exitObserver = NSNotificationCenter.DefaultCenter.AddObserver(
-                                new NSString("CLRegionDidExitNotification"),
-                                (notification) =>
-                                {
-                                    if (notification?.Object is CLRegion clr)
-                                    {
-                                        var latitude = _locationManager?.Location?.Coordinate.Latitude ?? 0;
-                                        var longitude = _locationManager?.Location?.Coordinate.Longitude ?? 0;
-
-                                        // Issue 5: Log if location is unavailable
-                                        if (_locationManager?.Location == null)
-                                        {
-                                            _logger.LogWarning(
-                                                "Location unavailable for exit geofence event on region {RegionId}",
-                                                clr.Identifier);
-                                        }
-
-                                        RaiseGeofenceEvent(new GeofenceEvent(
-                                            RegionId: clr.Identifier,
-                                            EventType: EventTypeExit, // Issue 7: Use constant
-                                            DetectedAt: DateTime.UtcNow,
-                                            CurrentLatitude: latitude,
-                                            CurrentLongitude: longitude));
-                                    }
-                                });
-
-                            if (enterObserver != null && exitObserver != null)
+                        enterObserver = NSNotificationCenter.DefaultCenter.AddObserver(
+                            new NSString("CLRegionDidEnterNotification"),
+                            (notification) =>
                             {
-                                _observersByRegion[region.Id] = (enterObserver, exitObserver);
-                            }
-                        }
-                        else
+                                if (notification?.Object is CLRegion clr)
+                                {
+                                    var latitude = _locationManager?.Location?.Coordinate.Latitude ?? 0;
+                                    var longitude = _locationManager?.Location?.Coordinate.Longitude ?? 0;
+
+                                    // Issue 5: Log if location is unavailable
+                                    if (_locationManager?.Location == null)
+                                    {
+                                        _logger.LogWarning(
+                                            "Location unavailable for enter geofence event on region {RegionId}",
+                                            clr.Identifier);
+                                    }
+
+                                    RaiseGeofenceEvent(new GeofenceEvent(
+                                        RegionId: clr.Identifier,
+                                        EventType: EventTypeEnter, // Issue 7: Use constant
+                                        DetectedAt: DateTime.UtcNow,
+                                        CurrentLatitude: latitude,
+                                        CurrentLongitude: longitude));
+                                }
+                            });
+
+                        exitObserver = NSNotificationCenter.DefaultCenter.AddObserver(
+                            new NSString("CLRegionDidExitNotification"),
+                            (notification) =>
+                            {
+                                if (notification?.Object is CLRegion clr)
+                                {
+                                    var latitude = _locationManager?.Location?.Coordinate.Latitude ?? 0;
+                                    var longitude = _locationManager?.Location?.Coordinate.Longitude ?? 0;
+
+                                    // Issue 5: Log if location is unavailable
+                                    if (_locationManager?.Location == null)
+                                    {
+                                        _logger.LogWarning(
+                                            "Location unavailable for exit geofence event on region {RegionId}",
+                                            clr.Identifier);
+                                    }
+
+                                    RaiseGeofenceEvent(new GeofenceEvent(
+                                        RegionId: clr.Identifier,
+                                        EventType: EventTypeExit, // Issue 7: Use constant
+                                        DetectedAt: DateTime.UtcNow,
+                                        CurrentLatitude: latitude,
+                                        CurrentLongitude: longitude));
+                                }
+                            });
+
+                        if (enterObserver != null && exitObserver != null)
                         {
-                            // Region already has an observer pair from the global registration
-                            var existingPair = _observersByRegion.Values.First();
-                            _observersByRegion[region.Id] = existingPair;
+                            _observersByRegion[region.Id] = (enterObserver, exitObserver);
                         }
                     }
+                    else
+                    {
+                        // Region already has an observer pair from the global registration
+                        var existingPair = _observersByRegion.Values.First();
+                        _observersByRegion[region.Id] = existingPair;
+                    }
                 }
+            }
 
-                _locationManager.StartMonitoring(clRegion);
-            }
-            finally
-            {
-                // Issue 3: Cleanup on exception
-                if (enterObserver == null && exitObserver == null)
-                {
-                    // Observers were not successfully registered
-                    enterObserver?.Dispose();
-                    exitObserver?.Dispose();
-                }
-            }
+            _locationManager.StartMonitoring(clRegion);
 
             return await Task.FromResult(Result.Ok(true));
         }
