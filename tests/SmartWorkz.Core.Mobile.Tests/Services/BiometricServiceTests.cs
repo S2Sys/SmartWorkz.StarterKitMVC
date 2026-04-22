@@ -11,45 +11,39 @@ using SmartWorkz.Shared;
 public class BiometricServiceTests
 {
     /// <summary>
-    /// Tests that AuthenticateAsync returns successful result when biometric authentication succeeds.
-    /// This test validates the happy path where the device supports biometrics and user authenticates successfully.
+    /// Tests that AuthenticateAsync returns UNAVAILABLE error on Windows platform.
+    /// Windows lacks biometric hardware, so this validates the platform-specific error handling.
     /// </summary>
     [Fact]
-    public async Task AuthenticateAsync_SuccessPath_ReturnsSuccessResult()
+    public async Task AuthenticateAsync_OnWindows_ReturnsUnavailable()
     {
         // Arrange - per-test mock creation (Phase 3 isolation pattern)
         var service = new BiometricService(NullLogger<BiometricService>.Instance);
 
         // Act
         // On non-mobile platforms (Windows), this returns UNAVAILABLE error
-        // On mobile platforms with biometric support, this would return success
         var result = await service.AuthenticateAsync("Test authentication");
 
-        // Assert - Validate Result<bool> pattern
+        // Assert - Validate Result<bool> pattern and Windows-specific unavailability
         Assert.NotNull(result);
         Assert.IsType<Result<bool>>(result);
-
-        // On Windows (test platform), biometric is unavailable
-        // This test validates the Result<T> pattern structure is correct
-        if (!result.Succeeded)
-        {
-            Assert.NotNull(result.Error);
-            Assert.StartsWith("BIOMETRIC.", result.Error.Code);
-        }
+        Assert.False(result.Succeeded);
+        Assert.NotNull(result.Error);
+        Assert.Equal("BIOMETRIC.UNAVAILABLE", result.Error.Code);
     }
 
     /// <summary>
-    /// Tests that AuthenticateAsync returns failure result when biometric permission is denied.
-    /// Validates error handling for permission denial scenarios across platforms.
+    /// Tests that AuthenticateAsync returns BIOMETRIC error code on Windows platform.
+    /// Windows lacks biometric support, so this validates the error code pattern is BIOMETRIC.*.
     /// </summary>
     [Fact]
-    public async Task AuthenticateAsync_PermissionDenied_ReturnsFailureResult()
+    public async Task AuthenticateAsync_OnWindows_ReturnsUnavailableCode()
     {
         // Arrange - per-test mock creation
         var service = new BiometricService(NullLogger<BiometricService>.Instance);
 
         // Act
-        // On non-mobile platforms, permission is always denied implicitly
+        // On non-mobile platforms, biometric is always unavailable
         var result = await service.AuthenticateAsync("Authenticate to continue");
 
         // Assert - Validate failure Result<T> with proper error code
@@ -57,41 +51,7 @@ public class BiometricServiceTests
         Assert.IsType<Result<bool>>(result);
         Assert.False(result.Succeeded);
         Assert.NotNull(result.Error);
-
-        // Error code should indicate biometric issue (unavailable or denied)
-        Assert.True(
-            result.Error.Code == "BIOMETRIC.UNAVAILABLE" ||
-            result.Error.Code == "BIOMETRIC.DENIED" ||
-            result.Error.Code == "BIOMETRIC.FAILED",
-            $"Expected BIOMETRIC error code, got: {result.Error.Code}"
-        );
-    }
-
-    /// <summary>
-    /// Tests that AuthenticateAsync fails appropriately when biometric authentication is not available on the device.
-    /// Validates that the service checks availability before attempting authentication.
-    /// </summary>
-    [Fact]
-    public async Task AuthenticateAsync_BiometricNotAvailable_ReturnsUnavailableError()
-    {
-        // Arrange - per-test mock creation
-        // On non-Windows platforms, this test validates the platform-specific behavior
-        var service = new BiometricService(NullLogger<BiometricService>.Instance);
-
-        // Act
-        var result = await service.AuthenticateAsync("Authenticate to proceed");
-
-        // Assert - Validate availability check result
-        Assert.NotNull(result);
-        Assert.IsType<Result<bool>>(result);
-
-        // On test platform (Windows), biometric is not available
-        if (!result.Succeeded && result.Error != null && result.Error.Code == "BIOMETRIC.UNAVAILABLE")
-        {
-            // Availability check prevented authentication attempt
-            Assert.Equal("BIOMETRIC.UNAVAILABLE", result.Error.Code);
-            Assert.Contains("available", result.Error.Message, StringComparison.OrdinalIgnoreCase);
-        }
+        Assert.StartsWith("BIOMETRIC.", result.Error.Code);
     }
 
     /// <summary>
@@ -163,31 +123,4 @@ public class BiometricServiceTests
         await Assert.ThrowsAsync<ArgumentException>(() => service.AuthenticateAsync(string.Empty));
     }
 
-    [Fact(Skip = "Requires Android device with biometric hardware")]
-    public async Task GetBiometricTypeAsync_Android_ReturnsFaceOrFingerprint()
-    {
-        // Platform-specific test: on Android, verify Face/Fingerprint detection works
-        var service = new BiometricService(NullLogger<BiometricService>.Instance);
-
-        // Act
-        var bioType = await service.GetBiometricTypeAsync();
-
-        // Assert
-        // On Android: should return Face, Fingerprint, or None depending on hardware
-        Assert.True(bioType == BiometricType.Face || bioType == BiometricType.Fingerprint || bioType == BiometricType.None);
-    }
-
-    [Fact(Skip = "Requires iOS device with biometric hardware")]
-    public async Task GetBiometricTypeAsync_iOS_ReturnsFaceOrIris()
-    {
-        // Platform-specific test: on iOS, verify Face/Iris detection works
-        var service = new BiometricService(NullLogger<BiometricService>.Instance);
-
-        // Act
-        var bioType = await service.GetBiometricTypeAsync();
-
-        // Assert
-        // On iOS: should return Face, Iris, or None depending on hardware
-        Assert.True(bioType == BiometricType.Face || bioType == BiometricType.Iris || bioType == BiometricType.None);
-    }
 }
