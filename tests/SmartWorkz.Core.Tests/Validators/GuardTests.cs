@@ -364,42 +364,45 @@ public class GuardTests
     }
 
     [Fact]
-    public void ValidPhone_WithPhoneContainingSpaces_ReturnsPhone()
+    public void ValidPhone_WithPhoneContainingSpaces_ReturnsNormalizedPhone()
     {
         // Arrange
         var phone = "+1 415 555 2671";
+        var expected = "+14155552671";
 
         // Act
         var result = Guard.ValidPhone(phone, nameof(phone));
 
         // Assert
-        Assert.Equal(phone, result);
+        Assert.Equal(expected, result);
     }
 
     [Fact]
-    public void ValidPhone_WithPhoneContainingDashes_ReturnsPhone()
+    public void ValidPhone_WithPhoneContainingDashes_ReturnsNormalizedPhone()
     {
         // Arrange
         var phone = "+1-415-555-2671";
+        var expected = "+14155552671";
 
         // Act
         var result = Guard.ValidPhone(phone, nameof(phone));
 
         // Assert
-        Assert.Equal(phone, result);
+        Assert.Equal(expected, result);
     }
 
     [Fact]
-    public void ValidPhone_WithPhoneContainingParentheses_ReturnsPhone()
+    public void ValidPhone_WithPhoneContainingParentheses_ReturnsNormalizedPhone()
     {
         // Arrange
         var phone = "+1 (415) 555-2671";
+        var expected = "+14155552671";
 
         // Act
         var result = Guard.ValidPhone(phone, nameof(phone));
 
         // Assert
-        Assert.Equal(phone, result);
+        Assert.Equal(expected, result);
     }
 
     [Fact]
@@ -530,16 +533,17 @@ public class GuardTests
     }
 
     [Fact]
-    public void ValidPhoneE164_WithFormattingChars_ReturnsPhone()
+    public void ValidPhoneE164_WithFormattingChars_ReturnsNormalizedPhone()
     {
         // Arrange
         var phone = "+1 (415) 555-2671";
+        var expected = "+14155552671";
 
         // Act
         var result = Guard.ValidPhoneE164(phone, nameof(phone));
 
         // Assert
-        Assert.Equal(phone, result);
+        Assert.Equal(expected, result);
     }
 
     [Fact]
@@ -568,17 +572,18 @@ public class GuardTests
     }
 
     [Fact]
-    public void PhoneInList_WithNormalizedPhone_ReturnsPhone()
+    public void PhoneInList_WithFormattedPhone_ReturnsNormalizedPhone()
     {
         // Arrange
         var phone = "+1 (415) 555-2671";
+        var expected = "+14155552671";
         var allowedPhones = new[] { "+14155552671", "+442071838750" };
 
         // Act
         var result = Guard.PhoneInList(phone, allowedPhones, nameof(phone));
 
         // Assert
-        Assert.Equal(phone, result);
+        Assert.Equal(expected, result);
     }
 
     [Fact]
