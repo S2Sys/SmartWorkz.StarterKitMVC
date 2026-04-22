@@ -12,6 +12,8 @@ public sealed partial class NfcService
         ct.ThrowIfCancellationRequested();
 
         var context = Android.App.Application.Context;
+        if (context is null)
+            return null;
         var nfcManager = context?.GetSystemService(Context.NfcService) as NfcManager;
         if (nfcManager?.DefaultAdapter is null)
             return null;
