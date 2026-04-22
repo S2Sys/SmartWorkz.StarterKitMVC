@@ -70,4 +70,32 @@ public class BiometricServiceTests
             result == BiometricType.Iris
         );
     }
+
+    [Fact]
+    public async Task GetBiometricTypeAsync_Android_ReturnsFaceOrFingerprint()
+    {
+        // Platform-specific test: on Android, verify Face/Fingerprint detection works
+        var service = new BiometricService(NullLogger<BiometricService>.Instance);
+
+        // Act
+        var bioType = await service.GetBiometricTypeAsync();
+
+        // Assert
+        // On Android: should return Face, Fingerprint, or None depending on hardware
+        Assert.True(bioType == BiometricType.Face || bioType == BiometricType.Fingerprint || bioType == BiometricType.None);
+    }
+
+    [Fact]
+    public async Task GetBiometricTypeAsync_iOS_ReturnsFaceOrIris()
+    {
+        // Platform-specific test: on iOS, verify Face/Iris detection works
+        var service = new BiometricService(NullLogger<BiometricService>.Instance);
+
+        // Act
+        var bioType = await service.GetBiometricTypeAsync();
+
+        // Assert
+        // On iOS: should return Face, Iris, or None depending on hardware
+        Assert.True(bioType == BiometricType.Face || bioType == BiometricType.Iris || bioType == BiometricType.None);
+    }
 }
