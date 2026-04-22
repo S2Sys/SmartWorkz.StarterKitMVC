@@ -125,6 +125,11 @@ public static class ServiceCollectionExtensions
         // IMobileFormValidator<T> is open-generic — consuming app registers per-DTO:
         //   services.AddScoped<IMobileFormValidator<LoginDto>, MobileFormValidator<LoginDto>>();
 
+        // Step 16: Register Phase 4 advanced device services
+        services.AddScoped<INfcService, NfcService>();
+        services.AddScoped<IBluetoothService, BluetoothService>();
+        services.AddScoped<IAccelerometerService, AccelerometerService>();
+
         return services;
     }
 }
