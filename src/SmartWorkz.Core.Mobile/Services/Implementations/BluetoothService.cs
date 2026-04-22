@@ -13,7 +13,9 @@ public sealed partial class BluetoothService : IBluetoothService
     private readonly IPermissionService _permissions;
     private readonly ILogger<BluetoothService> _logger;
     private readonly Subject<BluetoothDevice> _deviceDiscovered = new();
-    private readonly Subject<bool> _connectionStateChanged = new();
+    private string? _connectedDeviceAddress;
+    private readonly Dictionary<string, BluetoothConnectionState> _connectionStates = new();
+    private readonly Subject<BluetoothConnectionState> _connectionStateChanged = new();
 
     public BluetoothService(IPermissionService permissions, ILogger<BluetoothService> logger)
     {
@@ -105,7 +107,10 @@ public sealed partial class BluetoothService : IBluetoothService
         {
             _logger.LogInformation("Attempting to connect to Bluetooth device {Device}", deviceAddress);
             await ConnectAsyncPlatform(deviceAddress, ct);
-            _connectionStateChanged.OnNext(true);
+            _connectedDeviceAddress = deviceAddress;
+            var connectionState = new BluetoothConnectionState(deviceAddress, IsConnected: true, ConnectedSince: DateTime.UtcNow);
+            _connectionStates[deviceAddress] = connectionState;
+            _connectionStateChanged.OnNext(connectionState);
             _logger.LogInformation("Successfully connected to Bluetooth device {Device}", deviceAddress);
             return Result.Ok(true);
         }
@@ -135,7 +140,13 @@ public sealed partial class BluetoothService : IBluetoothService
         {
             _logger.LogInformation("Attempting to disconnect from Bluetooth device {Device}", deviceAddress);
             await DisconnectAsyncPlatform(deviceAddress, ct);
-            _connectionStateChanged.OnNext(false);
+            if (_connectedDeviceAddress == deviceAddress)
+            {
+                _connectedDeviceAddress = null;
+            }
+            var connectionState = new BluetoothConnectionState(deviceAddress, IsConnected: false, ConnectedSince: DateTime.UtcNow.AddSeconds(-1));
+            _connectionStates[deviceAddress] = connectionState;
+            _connectionStateChanged.OnNext(connectionState);
             _logger.LogInformation("Successfully disconnected from Bluetooth device {Device}", deviceAddress);
             return Result.Ok(true);
         }
@@ -154,10 +165,24 @@ public sealed partial class BluetoothService : IBluetoothService
     }
 
     /// <summary>
-    /// Returns an observable stream of connection state changes.
-    /// Emits true when connected, false when disconnected.
+    /// Gets the currently connected device address, if any.
     /// </summary>
-    public IObservable<bool> OnConnectionStateChanged() =>
+    public string? ConnectedDeviceAddress => _connectedDeviceAddress;
+
+    /// <summary>
+    /// Returns the current connection state for a device.
+    /// </summary>
+    public async Task<BluetoothConnectionState?> GetConnectionStateAsync(string deviceAddress, CancellationToken ct = default)
+    {
+        ct.ThrowIfCancellationRequested();
+        _connectionStates.TryGetValue(deviceAddress, out var state);
+        return state;
+    }
+
+    /// <summary>
+    /// Returns an observable stream of connection state changes for any device.
+    /// </summary>
+    public IObservable<BluetoothConnectionState> OnConnectionStateChanged() =>
         _connectionStateChanged.AsObservable();
 
     /// <summary>
