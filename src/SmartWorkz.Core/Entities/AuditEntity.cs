@@ -5,10 +5,22 @@ namespace SmartWorkz.Core;
 /// </summary>
 /// <typeparam name="TId">The type of the primary key identifier. Must be a non-nullable, equatable type.</typeparam>
 /// <remarks>
-/// This abstract class extends Entity&lt;TId&gt; with built-in audit trail functionality. It provides:
+/// This abstract class is a standalone, self-contained entity that combines Entity&lt;TId&gt; functionality
+/// with audit trail tracking via IAuditable implementation. It provides:
+/// - Identity-based equality semantics from Entity&lt;TId&gt;
 /// - Immutable creation timestamp and user tracking
 /// - Mutable last-modified timestamp and user tracking
-/// - Identity-based equality semantics inherited from Entity&lt;TId&gt;
+/// - Direct implementation of IAuditable interface (no inheritance chain)
+///
+/// Design Philosophy:
+/// Unlike hierarchical entity design where DeletableEntity and TenantEntity inherit from AuditEntity,
+/// this standalone design makes AuditEntity self-contained and independent. Each specialized entity
+/// (AuditDeletableEntity, AuditDeletableTenantEntity) is also standalone, implementing both Entity&lt;TId&gt;
+/// and IAuditable directly. This approach:
+/// - Eliminates forced inheritance chains
+/// - Makes entity responsibilities explicit
+/// - Improves code clarity: "this is an audited entity"
+/// - Simplifies refactoring and maintenance
 ///
 /// Audit Trail Behavior:
 /// - CreatedAt: Set to the creation timestamp (typically DateTime.UtcNow). Should not be modified after creation.
@@ -237,8 +249,8 @@ public abstract class AuditEntity<TId> : Entity<TId>, IAuditable where TId : not
 /// The Id property is an integer that maps to the database primary key column.
 /// Entity Framework Core automatically detects this as the primary key.
 ///
-/// Inheritance Chain:
-/// AuditEntity → AuditEntity&lt;int&gt; → Entity&lt;int&gt; → Entity&lt;int&gt;
+/// Inheritance:
+/// AuditEntity → AuditEntity&lt;int&gt; → Entity&lt;int&gt;
 /// </remarks>
 public abstract class AuditEntity : AuditEntity<int>
 {

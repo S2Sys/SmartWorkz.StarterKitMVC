@@ -3,8 +3,13 @@ using SmartWorkz.Core;
 namespace SmartWorkz.Core.Tests.Entities;
 
 /// <summary>
-/// Unit tests for the AuditEntity&lt;TId&gt; and AuditEntity base classes.
-/// Tests audit tracking functionality built on top of Entity.
+/// Unit tests for the standalone AuditEntity&lt;TId&gt; and AuditEntity base classes.
+/// Tests audit tracking functionality and IAuditable implementation.
+///
+/// Standalone Design:
+/// AuditEntity is now a self-contained class that inherits from Entity&lt;TId&gt; and
+/// implements IAuditable directly, rather than as part of a hierarchical inheritance chain.
+/// This design provides clarity and independence for auditable entities.
 /// </summary>
 public class AuditEntityTests
 {
