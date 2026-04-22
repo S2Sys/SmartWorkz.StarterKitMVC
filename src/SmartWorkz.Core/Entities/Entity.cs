@@ -78,7 +78,7 @@ namespace SmartWorkz.Core;
 /// In most scenarios, the Id is assigned by the persistence layer (e.g., Entity Framework Core,
 /// custom ORM, or database triggers) rather than manually.
 /// </remarks>
-public abstract class Entity<TId> where TId : notnull, IEquatable<TId>
+public abstract class Entity<TId> : IEntity<TId> where TId : notnull, IEquatable<TId>
 {
     /// <summary>
     /// Gets or sets the primary key identifier for this entity.

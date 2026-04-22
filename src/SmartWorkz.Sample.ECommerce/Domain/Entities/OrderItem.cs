@@ -2,7 +2,7 @@ using SmartWorkz.Core;
 
 namespace SmartWorkz.Sample.ECommerce.Domain.Entities;
 
-public class OrderItem : AuditableEntity<int>, IEntity<int>
+public class OrderItem : AuditEntity<int>
 {
     public int OrderId { get; set; }
     public int ProductId { get; set; }
