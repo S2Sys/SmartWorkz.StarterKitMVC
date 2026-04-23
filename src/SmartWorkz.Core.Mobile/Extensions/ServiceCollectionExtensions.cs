@@ -1,7 +1,9 @@
 ﻿namespace SmartWorkz.Mobile;
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SmartWorkz.Mobile.Services.Implementations;
 using SmartWorkz.Shared;
 
 /// <summary>
@@ -132,6 +134,14 @@ public static class ServiceCollectionExtensions
 
         // Step 17: Register Phase 4.5 Bluetooth pairing service
         services.AddScoped<IBluetoothPairingService, BluetoothPairingService>();
+
+        // Step 18: Register Phase 5 real-time communication service (Task 3)
+        services.AddSingleton<IRealtimeService>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILogger<RealtimeService>>();
+            const string realtimeHubUrl = "https://api.smartworkz.com/realtimehub";
+            return new RealtimeService(realtimeHubUrl, logger);
+        });
 
         return services;
     }
