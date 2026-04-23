@@ -1,6 +1,7 @@
 namespace SmartWorkz.Mobile.Models;
 
 using System;
+using System.Text.Json;
 using SmartWorkz.Mobile.Services;
 
 /// <summary>
