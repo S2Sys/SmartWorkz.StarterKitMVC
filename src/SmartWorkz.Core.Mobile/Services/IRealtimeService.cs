@@ -1,4 +1,4 @@
-namespace SmartWorkz.Mobile.Services;
+namespace SmartWorkz.Mobile;
 
 using System;
 using System.Threading.Tasks;

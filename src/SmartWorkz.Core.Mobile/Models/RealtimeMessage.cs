@@ -2,7 +2,6 @@ namespace SmartWorkz.Mobile.Models;
 
 using System;
 using System.Text.Json;
-using SmartWorkz.Mobile.Services;
 
 /// <summary>
 /// Data transfer object for real-time messages from SignalR.
