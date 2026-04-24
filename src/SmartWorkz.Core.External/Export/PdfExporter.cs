@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 
@@ -9,14 +10,17 @@ namespace SmartWorkz.Core.External.Export;
 public sealed class PdfExporter : IPdfExporter
 {
     private readonly PdfOptions _options;
+    private readonly ILogger<PdfExporter>? _logger;
 
     /// <summary>
     /// Initializes a new instance of the PdfExporter class.
     /// </summary>
     /// <param name="options">Configuration options for PDF export. If null, default options are used.</param>
-    public PdfExporter(PdfOptions? options = null)
+    /// <param name="logger">Optional logger for error tracking.</param>
+    public PdfExporter(PdfOptions? options = null, ILogger<PdfExporter>? logger = null)
     {
         _options = options ?? new PdfOptions();
+        _logger = logger;
     }
 
     /// <summary>
@@ -53,8 +57,10 @@ public sealed class PdfExporter : IPdfExporter
                         .Page(page =>
                         {
                             page.Size(pageSize);
-                            page.MarginVertical(_options.TopMargin);
-                            page.MarginHorizontal(_options.LeftMargin);
+                            page.MarginTop(_options.TopMargin);
+                            page.MarginRight(_options.RightMargin);
+                            page.MarginBottom(_options.BottomMargin);
+                            page.MarginLeft(_options.LeftMargin);
 
                             page.Header().Element(header =>
                             {
@@ -80,10 +86,11 @@ public sealed class PdfExporter : IPdfExporter
 
                                     table.Header(header =>
                                     {
+                                        var headerColor = (_options.HeaderBackgroundColor as QuestPDF.Infrastructure.Color?) ?? Colors.Grey.Lighten2;
                                         foreach (var property in properties)
                                         {
                                             header.Cell()
-                                                .Background(Colors.Blue.Medium)
+                                                .Background(headerColor)
                                                 .Padding(5)
                                                 .Text(property.Name)
                                                 .FontSize(10)
@@ -127,6 +134,7 @@ public sealed class PdfExporter : IPdfExporter
                 }
                 catch (Exception genEx)
                 {
+                    _logger?.LogError(genEx, "Error generating PDF");
                     var errMsg = $"PDF generation error: {genEx.Message}";
                     if (genEx.InnerException != null)
                         errMsg += $" | Inner: {genEx.InnerException.Message}";
@@ -137,6 +145,7 @@ public sealed class PdfExporter : IPdfExporter
             }
             catch (Exception ex)
             {
+                _logger?.LogError(ex, "Error exporting PDF");
                 return Result<byte[]>.Fail<byte[]>("Error.PdfExportFailed", $"PDF export failed: {ex.Message}");
             }
         }, ct);
