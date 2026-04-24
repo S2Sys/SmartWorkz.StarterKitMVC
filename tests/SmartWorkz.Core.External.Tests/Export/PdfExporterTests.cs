@@ -1,31 +1,8 @@
 namespace SmartWorkz.Core.External.Tests.Export;
 
 /// <summary>
-/// Common test helper for PDF exporter tests.
-/// Since xUnit doesn't support dynamic Skip conditions at runtime,
-/// we check architecture on each test's first execution.
-/// </summary>
-internal static class PdfExporterTestHelper
-{
-    private static readonly bool IsArchitectureSupported =
-        RuntimeInformation.ProcessArchitecture is Architecture.X86 or Architecture.X64;
-
-    private const string SkipMessage =
-        "QuestPDF does not support ARM64 architecture. Supported architectures: win-x86, win-x64";
-
-    public static void SkipIfUnsupportedArchitecture()
-    {
-        if (!IsArchitectureSupported)
-        {
-            throw new OperationCanceledException(SkipMessage);
-        }
-    }
-}
-
-/// <summary>
 /// Tests for PdfExporter class.
-/// Note: QuestPDF requires x86 or x64 architecture and does not support ARM64.
-/// Tests will skip on unsupported architectures.
+/// PdfSharp is free, open-source, and supports all platforms and architectures.
 /// </summary>
 [Collection("PDF Exporter Tests")]
 [Trait("Category", "Export")]
@@ -35,7 +12,6 @@ public class PdfExporterTests
 
     public PdfExporterTests()
     {
-        PdfExporterTestHelper.SkipIfUnsupportedArchitecture();
         _exporter = new PdfExporter();
     }
 

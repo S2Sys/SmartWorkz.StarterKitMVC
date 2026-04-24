@@ -5,6 +5,5 @@ global using System.Threading;
 global using System.Threading.Tasks;
 global using SmartWorkz.Shared;
 global using ClosedXML.Excel;
-global using QuestPDF.Fluent;
-global using QuestPDF.Helpers;
-global using QuestPDF.Infrastructure;
+global using PdfSharp.Drawing;
+global using PdfSharp.Pdf;
