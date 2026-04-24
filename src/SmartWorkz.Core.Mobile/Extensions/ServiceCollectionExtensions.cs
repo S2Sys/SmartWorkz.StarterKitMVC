@@ -232,6 +232,13 @@ public static class ServiceCollectionExtensions
             return new AutoReconnectService(realtimeService, messageQueue, logger);
         });
 
+        // Step 29: Register Phase 5.1 Deduplication Service (Task 11)
+        services.AddSingleton<IDeduplicationService>(sp =>
+        {
+            var logger = sp.GetService<ILogger<DeduplicationService>>();
+            return new DeduplicationService(TimeSpan.FromMinutes(5), logger);
+        });
+
         return services;
     }
 }
