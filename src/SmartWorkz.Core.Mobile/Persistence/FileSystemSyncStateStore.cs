@@ -29,14 +29,10 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
     private readonly object _initLock = new();
     private readonly object _fileLock = new();
 
-    private class SyncStateDocument
+    private static readonly JsonSerializerOptions _jsonSettings = new()
     {
-        public string EntityType { get; set; } = "";
-        public string LastSyncTime { get; set; } = "";
-        public int PendingChangesCount { get; set; }
-        public int ResolvedConflictsCount { get; set; }
-        public string? LastErrorMessage { get; set; }
-    }
+        WriteIndented = true,
+    };
 
     public string DatabasePath => _databasePath;
 
@@ -65,7 +61,7 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
         _stateFile = Path.Combine(storeDir, "state.json");
     }
 
-    public async Task<Result> InitializeAsync()
+    public Task<Result> InitializeAsync()
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
@@ -73,12 +69,9 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
         {
             if (_initialized)
             {
-                return Result.Ok();
+                return Task.FromResult(Result.Ok());
             }
-        }
 
-        return await Task.Run(() =>
-        {
             try
             {
                 // Ensure directories exist
@@ -104,26 +97,22 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
                     File.WriteAllText(_stateFile, "{}");
                 }
 
-                lock (_initLock)
-                {
-                    _initialized = true;
-                }
-
+                _initialized = true;
                 _logger?.LogInformation("File-based sync state store initialized at {DbPath}", _databasePath);
-                return Result.Ok();
+                return Task.FromResult(Result.Ok());
             }
             catch (Exception ex)
             {
                 _logger?.LogError(ex, "Failed to initialize sync state store");
-                return Result.Fail("SyncStateStore.InitFailed", "Store initialization failed");
+                return Task.FromResult(Result.Fail("SyncStateStore.InitFailed", "Store initialization failed"));
             }
-        });
+        }
     }
 
     public async Task<Result> SavePendingChangesAsync(string entityType, IReadOnlyList<SyncChange> changes)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        Guard.NotNull(entityType, nameof(entityType));
+        Guard.NotEmpty(entityType, nameof(entityType));
         Guard.NotNull(changes, nameof(changes));
         EnsureInitialized();
 
@@ -134,8 +123,7 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
                 lock (_fileLock)
                 {
                     var changesFile = Path.Combine(_changesDir, $"{entityType}.json");
-                    var options = new JsonSerializerOptions { WriteIndented = true };
-                    var json = JsonSerializer.Serialize(changes.ToList(), options);
+                    var json = JsonSerializer.Serialize(changes.ToList(), _jsonSettings);
                     File.WriteAllText(changesFile, json);
 
                     // Update state file
@@ -160,7 +148,7 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
     public async Task<Result<IReadOnlyList<SyncChange>>> LoadPendingChangesAsync(string entityType)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        Guard.NotNull(entityType, nameof(entityType));
+        Guard.NotEmpty(entityType, nameof(entityType));
         EnsureInitialized();
 
         return await Task.Run(() =>
@@ -195,7 +183,7 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
     public async Task<Result> ClearPendingChangesAsync(string entityType)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        Guard.NotNull(entityType, nameof(entityType));
+        Guard.NotEmpty(entityType, nameof(entityType));
         EnsureInitialized();
 
         return await Task.Run(() =>
@@ -249,7 +237,7 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
                     sessions.Add(session);
 
                     // Save sessions
-                    var sessionsJson = JsonSerializer.Serialize(sessions, new JsonSerializerOptions { WriteIndented = true });
+                    var sessionsJson = JsonSerializer.Serialize(sessions, _jsonSettings);
                     File.WriteAllText(_sessionsFile, sessionsJson);
 
                     // Update state file
@@ -257,7 +245,8 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
                         session.EntityType,
                         lastSyncTime: session.EndTime ?? DateTime.UtcNow,
                         errorMessage: session.IsSuccessful ? null : session.ErrorMessage,
-                        conflictsResolved: session.ConflictsResolved);
+                        conflictsResolved: session.ConflictsResolved,
+                        clearError: session.IsSuccessful);
                 }
 
                 _logger?.LogInformation(
@@ -279,7 +268,7 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
     public async Task<Result<PersistentSyncState>> GetSyncStateAsync(string entityType)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        Guard.NotNull(entityType, nameof(entityType));
+        Guard.NotEmpty(entityType, nameof(entityType));
         EnsureInitialized();
 
         return await Task.Run(() =>
@@ -378,8 +367,7 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
 
                     var deletedCount = sessions.Count - filtered.Count;
 
-                    var options = new JsonSerializerOptions { WriteIndented = true };
-                    var updatedJson = JsonSerializer.Serialize(filtered, options);
+                    var updatedJson = JsonSerializer.Serialize(filtered, _jsonSettings);
                     File.WriteAllText(_sessionsFile, updatedJson);
 
                     _logger?.LogInformation("Deleted {DeletedCount} old sync sessions before {Before}", deletedCount, before);
@@ -394,25 +382,14 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
         });
     }
 
-    public async Task<Result<bool>> IsInitializedAsync()
+    public Task<Result<bool>> IsInitializedAsync()
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        return await Task.Run(() =>
+        lock (_initLock)
         {
-            try
-            {
-                lock (_initLock)
-                {
-                    return Result.Ok(_initialized);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "Failed to check initialization status");
-                return Result.Fail<bool>("SyncStateStore.CheckInitFailed", "Failed to check initialization");
-            }
-        });
+            return Task.FromResult(Result.Ok(_initialized));
+        }
     }
 
     private void UpdateSyncState(
@@ -420,7 +397,8 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
         int? pending = null,
         DateTime? lastSyncTime = null,
         string? errorMessage = null,
-        int? conflictsResolved = null)
+        int? conflictsResolved = null,
+        bool clearError = false)
     {
         try
         {
@@ -434,7 +412,7 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
                     LastSyncTime: lastSyncTime ?? existing.LastSyncTime,
                     PendingChangesCount: pending ?? existing.PendingChangesCount,
                     ResolvedConflictsCount: (conflictsResolved ?? 0) + existing.ResolvedConflictsCount,
-                    LastErrorMessage: errorMessage);
+                    LastErrorMessage: clearError ? null : (errorMessage ?? existing.LastErrorMessage));
 
                 states[entityType] = updated;
             }
@@ -446,7 +424,7 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
                     LastSyncTime: lastSyncTime ?? DateTime.UtcNow,
                     PendingChangesCount: pending ?? 0,
                     ResolvedConflictsCount: conflictsResolved ?? 0,
-                    LastErrorMessage: errorMessage);
+                    LastErrorMessage: clearError ? null : errorMessage);
             }
 
             SaveAllStates(states);
@@ -488,8 +466,7 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
         try
         {
             var items = states.Values.ToList();
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            var json = JsonSerializer.Serialize(items, options);
+            var json = JsonSerializer.Serialize(items, _jsonSettings);
             File.WriteAllText(_stateFile, json);
         }
         catch (Exception ex)
@@ -512,21 +489,6 @@ public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
 
     public void Dispose()
     {
-        if (_disposed)
-        {
-            return;
-        }
-
-        try
-        {
-            // No resources to clean up - using file-based storage
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error disposing store");
-        }
-
         _disposed = true;
-        GC.SuppressFinalize(this);
     }
 }
