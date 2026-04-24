@@ -198,6 +198,15 @@ public static class ServiceCollectionExtensions
             return new RealtimeSubscriptionManager(logger);
         });
 
+        // Step 25: Register Phase 5.1 Android Background Task Manager (Task 7)
+#if __ANDROID__
+        services.AddSingleton<IBackgroundTaskManager>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILogger<AndroidBackgroundTaskManager>>();
+            return new AndroidBackgroundTaskManager(logger);
+        });
+#endif
+
         return services;
     }
 }
