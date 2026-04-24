@@ -1,19 +1,24 @@
 namespace SmartWorkz.Core.External.Export;
 
+using Microsoft.Extensions.Logging;
+
 /// <summary>
 /// Sealed implementation of IExcelExporter for exporting data to Excel format using ClosedXML.
 /// </summary>
 public sealed class ExcelExporter : IExcelExporter
 {
     private readonly ExcelOptions _options;
+    private readonly ILogger<ExcelExporter>? _logger;
 
     /// <summary>
     /// Initializes a new instance of the ExcelExporter class.
     /// </summary>
     /// <param name="options">Configuration options for Excel export. If null, default options are used.</param>
-    public ExcelExporter(ExcelOptions? options = null)
+    /// <param name="logger">Optional logger for diagnostic information.</param>
+    public ExcelExporter(ExcelOptions? options = null, ILogger<ExcelExporter>? logger = null)
     {
         _options = options ?? new ExcelOptions();
+        _logger = logger;
     }
 
     /// <summary>
