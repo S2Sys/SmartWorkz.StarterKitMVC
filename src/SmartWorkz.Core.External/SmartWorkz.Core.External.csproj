@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.101.0" />
-    <PackageReference Include="PDFsharp" Version="6.2.0" />
+    <PackageReference Include="itext7" Version="7.2.5" />
   </ItemGroup>
 
 </Project>

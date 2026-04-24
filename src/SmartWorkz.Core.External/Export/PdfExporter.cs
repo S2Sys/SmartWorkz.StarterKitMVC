@@ -1,14 +1,52 @@
 using System.Collections.Concurrent;
 using System.Reflection;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
 using Microsoft.Extensions.Logging;
-using PdfSharp.Drawing;
-using PdfSharp.Pdf;
 
 namespace SmartWorkz.Core.External.Export;
 
 /// <summary>
-/// Sealed implementation of IPdfExporter for exporting data to PDF format using PdfSharp.
-/// Provides free, open-source PDF export without platform limitations.
+/// Event handler for adding page numbers to PDF pages.
+/// </summary>
+internal class PageNumberEventHandler : iText.Kernel.Events.IEventHandler
+{
+    private readonly float _bottomMargin;
+
+    public PageNumberEventHandler(float bottomMargin)
+    {
+        _bottomMargin = bottomMargin;
+    }
+
+    public void HandleEvent(iText.Kernel.Events.Event @event)
+    {
+        var docEvent = (iText.Kernel.Events.PdfDocumentEvent)@event;
+        var pdf = docEvent.GetDocument();
+        var page = docEvent.GetPage();
+        var pageSize = page.GetPageSize();
+        var pageNumber = pdf.GetPageNumber(page);
+
+        var canvas = new iText.Kernel.Pdf.Canvas.PdfCanvas(page);
+        var font = iText.Kernel.Font.PdfFontFactory.CreateFont();
+
+        var pageText = $"Page {pageNumber}";
+        var textWidth = 50f; // Approximate width for page number text
+        var centerX = pageSize.GetWidth() / 2 - textWidth / 2;
+        var bottomY = _bottomMargin / 2;
+
+        canvas.BeginText()
+            .MoveText(centerX, bottomY)
+            .SetFontAndSize(font, 9)
+            .ShowText(pageText)
+            .EndText();
+    }
+}
+
+/// <summary>
+/// Sealed implementation of IPdfExporter for exporting data to PDF format using iText 7.
+/// Provides free, open-source PDF export without platform limitations or font configuration requirements.
 /// </summary>
 public sealed class PdfExporter : IPdfExporter
 {
@@ -16,14 +54,14 @@ public sealed class PdfExporter : IPdfExporter
     private readonly ILogger<PdfExporter>? _logger;
     private static readonly ConcurrentDictionary<Type, PropertyInfo[]> PropertyCache = new();
 
-    // PdfSharp page dimensions (in points)
-    private static readonly Dictionary<string, (double Width, double Height)> PageSizes = new()
+    // iText page dimensions (in points)
+    private static readonly Dictionary<string, (float Width, float Height)> PageSizes = new()
     {
-        { "A4", (595.28, 841.89) },
-        { "LETTER", (612, 792) },
-        { "A3", (841.89, 1190.55) },
-        { "A5", (419.53, 595.28) },
-        { "LEGAL", (612, 1008) }
+        { "A4", (595.28f, 841.89f) },
+        { "LETTER", (612f, 792f) },
+        { "A3", (841.89f, 1190.55f) },
+        { "A5", (419.53f, 595.28f) },
+        { "LEGAL", (612f, 1008f) }
     };
 
     /// <summary>
@@ -49,7 +87,7 @@ public sealed class PdfExporter : IPdfExporter
     }
 
     /// <summary>
-    /// Exports enumerable data to a PDF document with table layout using PdfSharp.
+    /// Exports enumerable data to a PDF document with table layout using iText 7.
     /// </summary>
     public async Task<Result<byte[]>> ExportAsync<T>(IEnumerable<T> data, string title, CancellationToken ct = default)
     {
@@ -82,6 +120,8 @@ public sealed class PdfExporter : IPdfExporter
                     var errMsg = $"PDF generation error: {genEx.Message}";
                     if (genEx.InnerException != null)
                         errMsg += $" | Inner: {genEx.InnerException.Message}";
+                    if (genEx.StackTrace != null)
+                        errMsg += $" | Stack: {genEx.StackTrace}";
                     return Result<byte[]>.Fail<byte[]>("Error.PdfGenerationFailed", errMsg);
                 }
 
@@ -96,143 +136,82 @@ public sealed class PdfExporter : IPdfExporter
     }
 
     /// <summary>
-    /// Generates a PDF document from the provided data.
+    /// Generates a PDF document from the provided data using iText 7.
     /// </summary>
     private byte[] GeneratePdf<T>(List<T> dataList, List<PropertyInfo> properties, string title)
     {
-        var document = new PdfDocument();
+        using var memoryStream = new MemoryStream();
+
         var (pageWidth, pageHeight) = GetPageDimensions();
+        var pageSize = new iText.Kernel.Geom.PageSize(pageWidth, pageHeight);
 
-        var rowsPerPage = _options.RowsPerPage;
-        var totalPages = (int)Math.Ceiling((double)dataList.Count / rowsPerPage);
-        var topMargin = _options.TopMargin;
-        var leftMargin = _options.LeftMargin;
-        var rightMargin = _options.RightMargin;
-        var bottomMargin = _options.BottomMargin;
+        var writer = new PdfWriter(memoryStream);
+        var pdf = new PdfDocument(writer);
 
-        var pageNum = 0;
-        for (int pageIndex = 0; pageIndex < totalPages; pageIndex++)
+        // Add event handler for page numbers before creating the document
+        if (_options.IncludePageNumbers)
         {
-            pageNum++;
-            var page = document.AddPage();
-            page.Width = XUnit.FromPoint(pageWidth);
-            page.Height = XUnit.FromPoint(pageHeight);
+            pdf.AddEventHandler(iText.Kernel.Events.PdfDocumentEvent.END_PAGE, new PageNumberEventHandler((float)_options.BottomMargin));
+        }
 
-            var gfx = XGraphics.FromPdfPage(page);
-            var yPos = (float)topMargin;
+        var document = new Document(pdf, pageSize);
 
-            // Draw title on first page only
-            if (pageIndex == 0 && !string.IsNullOrEmpty(title))
+        // Set margins
+        document.SetMargins(
+            (float)_options.TopMargin,
+            (float)_options.RightMargin,
+            (float)_options.BottomMargin,
+            (float)_options.LeftMargin);
+
+        // Add title if provided
+        if (!string.IsNullOrEmpty(title))
+        {
+            var titleParagraph = new Paragraph(title)
+                .SetFontSize(14)
+                .SetBold()
+                .SetMarginBottom(10);
+            document.Add(titleParagraph);
+        }
+
+        // Create table with header and data rows
+        var table = new Table(properties.Count);
+        table.SetWidth(UnitValue.CreatePercentValue(100));
+
+        // Add header row
+        foreach (var prop in properties)
+        {
+            var headerCell = new Cell()
+                .Add(new Paragraph(prop.Name))
+                .SetBackgroundColor(new iText.Kernel.Colors.DeviceGray(0.85f))
+                .SetBold();
+            table.AddHeaderCell(headerCell);
+        }
+
+        // Add data rows
+        foreach (var row in dataList)
+        {
+            foreach (var prop in properties)
             {
-                var titleFont = new XFont("Arial", 14);
-                gfx.DrawString(title, titleFont, XBrushes.Black,
-                    new XRect((float)leftMargin, yPos, (float)(pageWidth - leftMargin - rightMargin), 20),
-                    XStringFormats.TopLeft);
-                yPos += 25;
-            }
-
-            // Draw table header
-            var headerFont = new XFont("Arial", 10);
-            yPos = DrawTableHeader(gfx, headerFont, properties, pageWidth, leftMargin, rightMargin, yPos);
-
-            // Draw table rows for this page
-            var startIndex = pageIndex * rowsPerPage;
-            var endIndex = Math.Min(startIndex + rowsPerPage, dataList.Count);
-
-            var dataFont = new XFont("Arial", 9);
-            for (int i = startIndex; i < endIndex; i++)
-            {
-                if (yPos > (pageHeight - bottomMargin - 20))
-                {
-                    // Move to next page if not enough space
-                    break;
-                }
-
-                var row = dataList[i];
-                yPos = DrawTableRow(gfx, dataFont, row, properties, pageWidth, leftMargin, rightMargin, yPos);
-            }
-
-            // Draw page numbers if enabled
-            if (_options.IncludePageNumbers)
-            {
-                var footerFont = new XFont("Arial", 9);
-                var pageText = $"Page {pageNum}";
-                var textSize = gfx.MeasureString(pageText, footerFont);
-                var pageX = (pageWidth - textSize.Width) / 2;
-                gfx.DrawString(pageText, footerFont, XBrushes.Black,
-                    new XPoint(pageX, pageHeight - bottomMargin + 10));
+                var value = prop.GetValue(row);
+                var formattedValue = FormatCellValue(value, prop);
+                var cell = new Cell()
+                    .Add(new Paragraph(formattedValue))
+                    .SetTextAlignment(GetCellTextAlignment(value));
+                table.AddCell(cell);
             }
         }
 
-        // Save to memory stream
-        using (var memoryStream = new MemoryStream())
-        {
-            document.Save(memoryStream, false);
-            return memoryStream.ToArray();
-        }
+        document.Add(table);
+        document.Close();
+
+        return memoryStream.ToArray();
     }
 
-    /// <summary>
-    /// Draws the table header row.
-    /// </summary>
-    private float DrawTableHeader(XGraphics gfx, XFont font, List<PropertyInfo> properties,
-        double pageWidth, double leftMargin, double rightMargin, float yPos)
-    {
-        var contentWidth = pageWidth - leftMargin - rightMargin;
-        var cellWidth = contentWidth / properties.Count;
-        const float rowHeight = 20;
-
-        // Draw header background and text
-        var brush = new XSolidBrush(XColor.FromArgb(211, 211, 211));
-        for (int i = 0; i < properties.Count; i++)
-        {
-            var xPos = (float)(leftMargin + (i * cellWidth));
-
-            // Draw header cell background
-            gfx.DrawRectangle(brush, xPos, yPos, (float)cellWidth, rowHeight);
-            gfx.DrawRectangle(XPens.Black, xPos, yPos, (float)cellWidth, rowHeight);
-
-            // Draw header text
-            var textRect = new XRect(xPos + 2, yPos + 2, (float)(cellWidth - 4), rowHeight - 4);
-            gfx.DrawString(properties[i].Name, font, XBrushes.Black, textRect, XStringFormats.TopLeft);
-        }
-
-        return yPos + rowHeight;
-    }
-
-    /// <summary>
-    /// Draws a single table data row.
-    /// </summary>
-    private float DrawTableRow<T>(XGraphics gfx, XFont font, T row, List<PropertyInfo> properties,
-        double pageWidth, double leftMargin, double rightMargin, float yPos)
-    {
-        var contentWidth = pageWidth - leftMargin - rightMargin;
-        var cellWidth = contentWidth / properties.Count;
-        const float rowHeight = 18;
-
-        for (int i = 0; i < properties.Count; i++)
-        {
-            var xPos = (float)(leftMargin + (i * cellWidth));
-            var prop = properties[i];
-            var value = prop.GetValue(row);
-            var formattedValue = FormatCellValue(value, prop);
-            var alignment = GetCellAlignment(value) == "right" ? XStringFormats.TopRight : XStringFormats.TopLeft;
-
-            // Draw cell border
-            gfx.DrawRectangle(XPens.Black, xPos, yPos, (float)cellWidth, rowHeight);
-
-            // Draw cell text
-            var textRect = new XRect(xPos + 2, yPos + 2, (float)(cellWidth - 4), rowHeight - 4);
-            gfx.DrawString(formattedValue, font, XBrushes.Black, textRect, alignment);
-        }
-
-        return yPos + rowHeight;
-    }
 
     /// <summary>
     /// Gets page dimensions based on configured page size and orientation.
     /// </summary>
-    private (double Width, double Height) GetPageDimensions()
+    private (float Width, float Height) GetPageDimensions()
     {
         var pageSize = _options.PageSize.ToUpper();
         var isLandscape = _options.Orientation.ToLower() == "landscape";
@@ -291,13 +270,13 @@ public sealed class PdfExporter : IPdfExporter
     }
 
     /// <summary>
-    /// Gets the appropriate horizontal alignment for a cell based on its value type.
+    /// Gets the appropriate text alignment for a cell based on its value type.
     /// </summary>
-    private string GetCellAlignment(object? value)
+    private TextAlignment GetCellTextAlignment(object? value)
     {
         if (value == null)
         {
-            return "left";
+            return TextAlignment.LEFT;
         }
 
         var type = value.GetType();
@@ -311,9 +290,9 @@ public sealed class PdfExporter : IPdfExporter
             underlyingType == typeof(long) ||
             underlyingType == typeof(short))
         {
-            return "right";
+            return TextAlignment.RIGHT;
         }
 
-        return "left";
+        return TextAlignment.LEFT;
     }
 }

@@ -5,5 +5,5 @@ global using System.Threading;
 global using System.Threading.Tasks;
 global using SmartWorkz.Shared;
 global using ClosedXML.Excel;
-global using PdfSharp.Drawing;
-global using PdfSharp.Pdf;
+global using iText.Kernel.Pdf;
+global using iText.Layout;
