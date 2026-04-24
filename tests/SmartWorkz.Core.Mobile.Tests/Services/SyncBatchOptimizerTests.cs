@@ -371,4 +371,41 @@ public class SyncBatchOptimizerTests
         Assert.Single(result.Data);
         Assert.Empty(result.Data[0].Changes);
     }
+
+    [Fact]
+    public async Task CreateBatchAsync_WithIdenticalPropertyMultipleUpdates_DeduplicatesKeepingLatestValue()
+    {
+        // Arrange
+        var optimizer = new SyncBatchOptimizer();
+        var entityId = "Order123";
+        var property = "Status";
+        var oldChange = new SyncChange(
+            EntityId: entityId,
+            EntityType: "Order",
+            Property: property,
+            OldValue: "Pending",
+            NewValue: "Processing",
+            Timestamp: DateTime.UtcNow.AddMinutes(-5),
+            UserId: "user1");
+        var newChange = new SyncChange(
+            EntityId: entityId,
+            EntityType: "Order",
+            Property: property,
+            OldValue: "Processing",
+            NewValue: "Confirmed",
+            Timestamp: DateTime.UtcNow,
+            UserId: "user1");
+
+        // Act
+        var result = await optimizer.CreateBatchAsync(new[] { oldChange, newChange });
+
+        // Assert
+        Assert.True(result.Succeeded);
+        Assert.Single(result.Data.Changes);
+        var dedupedChange = result.Data.Changes[0];
+        Assert.Equal("Pending", dedupedChange.OldValue);
+        Assert.Equal("Confirmed", dedupedChange.NewValue);
+        Assert.Equal(2, result.Data.ChangeCount);
+        Assert.Equal(1, result.Data.DeduplicatedCount);
+    }
 }

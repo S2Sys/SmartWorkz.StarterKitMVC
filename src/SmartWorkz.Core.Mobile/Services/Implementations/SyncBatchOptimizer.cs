@@ -148,7 +148,10 @@ public class SyncBatchOptimizer : ISyncBatchOptimizer
 
         if (maxChangesPerBatch <= 0)
         {
-            maxChangesPerBatch = 100;
+            _logger?.LogWarning("Invalid maxChangesPerBatch {MaxChangesPerBatch}", maxChangesPerBatch);
+            return Result.Fail<IReadOnlyList<SyncBatch>>(
+                "SyncBatch.InvalidMaxCount",
+                "maxChangesPerBatch must be greater than 0");
         }
 
         try
@@ -195,7 +198,7 @@ public class SyncBatchOptimizer : ISyncBatchOptimizer
                 var batch = new SyncBatch(
                     BatchId: Guid.NewGuid().ToString(),
                     Changes: grouped,
-                    ChangeCount: changes.Count,
+                    ChangeCount: chunk.Length,
                     DeduplicatedCount: grouped.Count,
                     CreatedAt: DateTime.UtcNow,
                     ApproximateSizeBytes: sizeBytes);
