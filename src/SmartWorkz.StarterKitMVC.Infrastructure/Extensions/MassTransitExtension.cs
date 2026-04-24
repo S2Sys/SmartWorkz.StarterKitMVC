@@ -80,25 +80,14 @@ public static class MassTransitExtension
     /// <summary>
     /// Configures Azure Service Bus transport for MassTransit.
     /// Note: Requires MassTransit.AzureServiceBus package to be installed.
-    /// Currently uses InMemory as fallback.
     /// </summary>
     private static void ConfigureAzureServiceBus(
         IBusRegistrationConfigurator x,
         IConfiguration messageBrokerConfig)
     {
-        // TODO: Implement Azure Service Bus when package is available
-        // var connectionString = messageBrokerConfig.GetValue<string>("ConnectionString")
-        //     ?? throw new InvalidOperationException("Azure Service Bus connection string not configured.");
-        // x.UsingAzureServiceBus((context, cfg) =>
-        // {
-        //     cfg.ConnectionString(connectionString);
-        //     cfg.ConfigureEndpoints(context);
-        // });
-
-        // Fallback to InMemory for now
-        x.UsingInMemory((context, cfg) =>
-        {
-            cfg.ConfigureEndpoints(context);
-        });
+        throw new NotImplementedException(
+            "Azure Service Bus transport not configured. " +
+            "Install 'MassTransit.Azure.ServiceBus.Core' NuGet package and update the ConfigureAzureServiceBus method. " +
+            "Or set MessageBroker:Type to 'InMemory' or 'RabbitMQ' in configuration.");
     }
 }

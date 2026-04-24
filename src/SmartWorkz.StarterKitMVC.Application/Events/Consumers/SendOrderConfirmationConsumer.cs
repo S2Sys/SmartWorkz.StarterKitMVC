@@ -46,7 +46,7 @@ public class SendOrderConfirmationConsumer : IConsumer<OrderProcessedEvent>
                     "User {UserId} not found for order {OrderId}",
                     @event.UserId,
                     @event.OrderId);
-                return;
+                throw new InvalidOperationException($"User {(@event.UserId)} not found for order {(@event.OrderId)}");
             }
 
             // Send order confirmation email

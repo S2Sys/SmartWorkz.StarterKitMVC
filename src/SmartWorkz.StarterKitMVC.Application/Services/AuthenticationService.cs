@@ -187,7 +187,7 @@ public class AuthenticationService : IAuthenticationService
                 user.UserId,
                 user.Email,
                 user.Username,
-                user.DisplayName,
+                user.DisplayName ?? user.Email,
                 null,
                 request.TenantId,
                 false,

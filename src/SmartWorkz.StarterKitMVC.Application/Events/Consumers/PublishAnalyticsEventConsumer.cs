@@ -16,8 +16,8 @@ public class PublishAnalyticsEventConsumer : IConsumer<UserRegisteredEvent>
         IAnalyticsService analyticsService,
         ILogger<PublishAnalyticsEventConsumer> logger)
     {
-        _analyticsService = analyticsService;
-        _logger = logger;
+        _analyticsService = analyticsService ?? throw new ArgumentNullException(nameof(analyticsService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task Consume(ConsumeContext<UserRegisteredEvent> context)
