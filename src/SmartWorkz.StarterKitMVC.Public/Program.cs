@@ -12,6 +12,8 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog();
 
 // ─── Services ─────────────────────────────────────────────────────────────
+builder.Services.AddControllers();
+
 builder.Services.AddRazorPages(options =>
 {
     // Default: authorize all pages
@@ -101,4 +103,5 @@ app.UseAuthorization();
 app.UseMiddleware<PermissionMiddleware>();
 
 app.MapRazorPages();
+app.MapControllers();
 app.Run();
