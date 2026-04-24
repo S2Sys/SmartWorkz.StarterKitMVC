@@ -15,6 +15,10 @@
 		00B1A8E62D120A0200123456 /* SmartWorkz_Core_MacOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A8E52D120A0200123456 /* SmartWorkz_Core_MacOSUITests.swift */; };
 		00B1A8F32D120A0F00123456 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A8F22D120A0F00123456 /* AppState.swift */; };
 		00B1A8F42D120A1500123456 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A8F22D120A1500123456 /* AppDelegate.swift */; };
+		00B1A9001D120B0300123456 /* RealtimeMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A8FF1D120B0300123456 /* RealtimeMessage.swift */; };
+		00B1A9011D120B0400123456 /* SyncChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A9001D120B0400123456 /* SyncChange.swift */; };
+		00B1A9021D120B0500123456 /* NetworkState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A9011D120B0500123456 /* NetworkState.swift */; };
+		00B1A9031D120B0600123456 /* SharedModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A9021D120B0600123456 /* SharedModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +51,10 @@
 		00B1A8E52D120A0200123456 /* SmartWorkz_Core_MacOSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartWorkz_Core_MacOSUITests.swift; sourceTree = "<group>"; };
 		00B1A8F22D120A0F00123456 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		00B1A8F22D120A1500123456 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		00B1A8FF1D120B0300123456 /* RealtimeMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeMessage.swift; sourceTree = "<group>"; };
+		00B1A9001D120B0400123456 /* SyncChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncChange.swift; sourceTree = "<group>"; };
+		00B1A9011D120B0500123456 /* NetworkState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkState.swift; sourceTree = "<group>"; };
+		00B1A9021D120B0600123456 /* SharedModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +125,7 @@
 		00B1A8D52D120A0200123456 /* SmartWorkz.Core.MacOS.Tests */ = {
 			isa = PBXGroup;
 			children = (
+				00B1A9021D120B0600123456 /* SharedModelTests.swift */,
 				00B1A8D62D120A0200123456 /* AppStateTests.swift */,
 			);
 			path = SmartWorkz.Core.MacOS.Tests;
@@ -144,8 +153,19 @@
 				00B1A8C52D120A0000123456 /* SmartWorkzApp.swift */,
 				00B1A8F22D120A0F00123456 /* AppState.swift */,
 				00B1A8F22D120A1500123456 /* AppDelegate.swift */,
+				00B1A8F52D120A2000123456 /* Models */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		00B1A8F52D120A2000123456 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				00B1A8FF1D120B0300123456 /* RealtimeMessage.swift */,
+				00B1A9001D120B0400123456 /* SyncChange.swift */,
+				00B1A9011D120B0500123456 /* NetworkState.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -278,6 +298,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00B1A9001D120B0300123456 /* RealtimeMessage.swift in Sources */,
+				00B1A9011D120B0400123456 /* SyncChange.swift in Sources */,
+				00B1A9021D120B0500123456 /* NetworkState.swift in Sources */,
 				00B1A8F32D120A0F00123456 /* AppState.swift in Sources */,
 				00B1A8F42D120A1500123456 /* AppDelegate.swift in Sources */,
 				00B1A8C82D120A0000123456 /* ContentView.swift in Sources */,
@@ -289,6 +312,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00B1A9031D120B0600123456 /* SharedModelTests.swift in Sources */,
 				00B1A8D72D120A0200123456 /* AppStateTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
