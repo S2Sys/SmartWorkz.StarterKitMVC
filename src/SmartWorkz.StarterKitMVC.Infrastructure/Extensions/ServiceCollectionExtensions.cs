@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
-using SmartWorkz.Core;
 using SmartWorkz.StarterKitMVC.Application.Abstractions;
 using SmartWorkz.StarterKitMVC.Application.Authorization;
 using SmartWorkz.StarterKitMVC.Application.Localization;
