@@ -246,4 +246,57 @@ public sealed class ExcelExporter : IExcelExporter
         cell.Style.Border.LeftBorder = borderStyle;
         cell.Style.Border.RightBorder = borderStyle;
     }
+
+    /// <summary>
+    /// Formats a cell value based on its type and property information.
+    /// </summary>
+    private object FormatCellValue(object? value, System.Reflection.PropertyInfo property)
+    {
+        if (value == null)
+        {
+            return string.Empty;
+        }
+
+        var type = value.GetType();
+        var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
+
+        if (underlyingType == typeof(DateTime))
+        {
+            return ((DateTime)value).ToString(_options.DateFormat);
+        }
+        else if (underlyingType == typeof(decimal) || underlyingType == typeof(double))
+        {
+            var columnNameLower = property.Name.ToLower();
+            if (columnNameLower.Contains("price") || columnNameLower.Contains("amount") || columnNameLower.Contains("currency"))
+            {
+                return value;
+            }
+            return value;
+        }
+
+        return value.ToString() ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Gets the appropriate cell alignment based on the value type.
+    /// </summary>
+    private XLAlignmentHorizontalValues GetCellAlignment(object? value)
+    {
+        if (value == null)
+        {
+            return XLAlignmentHorizontalValues.Left;
+        }
+
+        var type = value.GetType();
+        var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
+
+        if (underlyingType == typeof(decimal) || underlyingType == typeof(double) ||
+            underlyingType == typeof(int) || underlyingType == typeof(long) ||
+            underlyingType == typeof(short))
+        {
+            return XLAlignmentHorizontalValues.Right;
+        }
+
+        return XLAlignmentHorizontalValues.Left;
+    }
 }
