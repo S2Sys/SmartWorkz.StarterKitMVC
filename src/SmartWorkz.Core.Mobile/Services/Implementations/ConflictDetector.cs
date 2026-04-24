@@ -43,7 +43,7 @@ public class ConflictDetector : IConflictDetector
     /// <param name="localChanges">Changes made locally</param>
     /// <param name="remoteChanges">Changes received from server</param>
     /// <returns>Result with list of detected conflicts, empty if none</returns>
-    public async Task<Result<IReadOnlyList<SyncConflict>>> DetectConflictsAsync(
+    public Task<Result<IReadOnlyList<SyncConflict>>> DetectConflictsAsync(
         IReadOnlyList<SyncChange> localChanges,
         IReadOnlyList<SyncChange> remoteChanges)
     {
@@ -112,14 +112,14 @@ public class ConflictDetector : IConflictDetector
                 localChanges.Count,
                 remoteChanges.Count);
 
-            return Result.Ok<IReadOnlyList<SyncConflict>>(conflicts.AsReadOnly());
+            return Task.FromResult(Result.Ok<IReadOnlyList<SyncConflict>>(conflicts.AsReadOnly()));
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error during conflict detection");
-            return Result.Fail<IReadOnlyList<SyncConflict>>(
+            return Task.FromResult(Result.Fail<IReadOnlyList<SyncConflict>>(
                 "ConflictDetection.Error",
-                $"Failed to detect conflicts: {ex.Message}");
+                $"Failed to detect conflicts: {ex.Message}"));
         }
     }
 
@@ -131,7 +131,7 @@ public class ConflictDetector : IConflictDetector
     /// <param name="local">Local change to check</param>
     /// <param name="remote">Remote change to check</param>
     /// <returns>Result with boolean indicating if conflict exists</returns>
-    public async Task<Result<bool>> ConflictExistsAsync(SyncChange local, SyncChange remote)
+    public Task<Result<bool>> ConflictExistsAsync(SyncChange local, SyncChange remote)
     {
         Guard.NotNull(local, nameof(local));
         Guard.NotNull(remote, nameof(remote));
@@ -141,19 +141,19 @@ public class ConflictDetector : IConflictDetector
             // Check if same EntityId, EntityType, and Property
             if (local.EntityId != remote.EntityId || local.EntityType != remote.EntityType || local.Property != remote.Property)
             {
-                return Result.Ok(false);
+                return Task.FromResult(Result.Ok(false));
             }
 
             // Check if values conflict
             bool hasConflict = ValuesConflict(local, remote);
-            return Result.Ok(hasConflict);
+            return Task.FromResult(Result.Ok(hasConflict));
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error checking if conflict exists");
-            return Result.Fail<bool>(
+            return Task.FromResult(Result.Fail<bool>(
                 "ConflictExists.Error",
-                $"Failed to check conflict: {ex.Message}");
+                $"Failed to check conflict: {ex.Message}"));
         }
     }
 
@@ -161,7 +161,7 @@ public class ConflictDetector : IConflictDetector
     /// Get conflict detection statistics.
     /// </summary>
     /// <returns>Result with current conflict detection statistics</returns>
-    public async Task<Result<ConflictDetectionStats>> GetStatisticsAsync()
+    public Task<Result<ConflictDetectionStats>> GetStatisticsAsync()
     {
         try
         {
@@ -179,15 +179,15 @@ public class ConflictDetector : IConflictDetector
                     AverageConflictsPerRun: averageConflicts);
 
                 _logger?.LogDebug("Conflict detection statistics: {Stats}", stats.DisplaySummary);
-                return Result.Ok(stats);
+                return Task.FromResult(Result.Ok(stats));
             }
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error retrieving conflict detection statistics");
-            return Result.Fail<ConflictDetectionStats>(
+            return Task.FromResult(Result.Fail<ConflictDetectionStats>(
                 "Statistics.Error",
-                $"Failed to retrieve statistics: {ex.Message}");
+                $"Failed to retrieve statistics: {ex.Message}"));
         }
     }
 
