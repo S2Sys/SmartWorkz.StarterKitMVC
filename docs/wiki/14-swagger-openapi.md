@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `SwaggerServiceExtension` provides automatic API documentation through Swagger/OpenAPI, making your REST endpoints discoverable and testable without manual documentation. It integrates JWT Bearer authentication, automatically hides internal/health endpoints, and includes XML doc comment support for rich endpoint descriptions. Use Swagger when you want to expose interactive API documentation to frontend teams, API consumers, or for internal testing of API contracts.
+The `SwaggerServiceExtension` provides automatic API documentation through Swagger/OpenAPI, making your REST endpoints discoverable and testable without manual documentation. It integrates JWT Bearer authentication, automatically hides internal (paths containing `/internal/`) and health check endpoints, and includes XML doc comment support for rich endpoint descriptions. Use Swagger when you want to expose interactive API documentation to frontend teams, API consumers, or for internal testing of API contracts.
 
 ---
 
@@ -132,7 +132,7 @@ builder.Services.AddSwaggerDocumentation(builder.Configuration);
 var app = builder.Build();
 
 // Use Swagger middleware (guards on Enabled config)
-if (app.Environment.IsDevelopment() || builder.Configuration.GetValue<bool>("Features:Swagger:Enabled"))
+if (app.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("Features:Swagger:Enabled"))
 {
     app.UseSwaggerDocumentation(app.Configuration);
 }
@@ -291,6 +291,7 @@ if (builder.Configuration.GetValue<bool>("Features:Swagger:Enabled"))
         });
         
         // Consider adding a custom middleware to require API key for /api-docs access
+        // NOTE: Add "Security:ApiDocKey" to your appsettings.Production.json configuration
         app.UseWhen(
             context => context.Request.Path.StartsWithSegments("/api-docs"),
             appBuilder => appBuilder.Use(async (httpContext, next) =>
@@ -302,6 +303,7 @@ if (builder.Configuration.GetValue<bool>("Features:Swagger:Enabled"))
                     await httpContext.Response.WriteAsync("Unauthorized");
                     return;
                 }
+                // Allow request to continue to actual endpoint
                 await next();
             })
         );
@@ -501,7 +503,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 ```
 
-3. In Swagger UI, enter token with the prefix format expected by your authentication scheme. The UI automatically adds "Bearer " if configured correctly.
+3. In Swagger UI, enter token with the prefix format expected by your authentication scheme. The Swagger UI automatically adds the "Bearer " prefix based on the security scheme definition in the OpenAPI document (see Configuration section above), so you should enter only the token value without the prefix.
 
 ---
 
