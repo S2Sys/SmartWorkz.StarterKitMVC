@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -11,6 +12,7 @@ public sealed class PdfExporter : IPdfExporter
 {
     private readonly PdfOptions _options;
     private readonly ILogger<PdfExporter>? _logger;
+    private static readonly ConcurrentDictionary<Type, System.Reflection.PropertyInfo[]> PropertyCache = new();
 
     /// <summary>
     /// Initializes a new instance of the PdfExporter class.
@@ -21,6 +23,18 @@ public sealed class PdfExporter : IPdfExporter
     {
         _options = options ?? new PdfOptions();
         _logger = logger;
+    }
+
+    /// <summary>
+    /// Gets cached property metadata for a type to avoid repeated reflection calls.
+    /// </summary>
+    private System.Reflection.PropertyInfo[] GetCachedProperties(Type type)
+    {
+        return PropertyCache.GetOrAdd(type, t =>
+            t.GetProperties(System.Reflection.BindingFlags.Public |
+                          System.Reflection.BindingFlags.Instance)
+             .Where(p => p.CanRead)
+             .ToArray());
     }
 
     /// <summary>
@@ -40,9 +54,7 @@ public sealed class PdfExporter : IPdfExporter
                     return Result<byte[]>.Fail<byte[]>("Error.NoDataToExport", "No data to export.");
                 }
 
-                var properties = typeof(T).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Instance)
-                    .Where(p => p.CanRead)
-                    .ToList();
+                var properties = GetCachedProperties(typeof(T)).ToList();
 
                 if (properties.Count == 0)
                 {
@@ -106,10 +118,10 @@ public sealed class PdfExporter : IPdfExporter
                                             var formattedValue = FormatCellValue(value, property);
                                             var alignment = GetCellAlignment(value);
 
-                                            var cell = table.Cell().Padding(5).Text(formattedValue).FontSize(9);
+                                            var cellBuilder = table.Cell().Padding(5).Text(formattedValue).FontSize(9);
                                             if (alignment == "right")
                                             {
-                                                cell.AlignRight();
+                                                cellBuilder.AlignRight();
                                             }
                                         }
                                     }
