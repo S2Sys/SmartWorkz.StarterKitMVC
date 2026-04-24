@@ -151,6 +151,13 @@ public static class ServiceCollectionExtensions
             return (IChangeDataCapture)new ChangeDataCapture(logger);
         });
 
+        // Step 20: Register Phase 5.2 Sync Batch Optimizer service (Task 17)
+        services.AddSingleton<ISyncBatchOptimizer>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILogger<SyncBatchOptimizer>>();
+            return (ISyncBatchOptimizer)new SyncBatchOptimizer(logger);
+        });
+
         return services;
     }
 }
