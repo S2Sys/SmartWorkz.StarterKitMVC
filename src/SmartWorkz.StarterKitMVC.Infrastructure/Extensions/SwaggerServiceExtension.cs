@@ -65,7 +65,7 @@ public static class SwaggerServiceExtension
                 }
             });
 
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlFile = $"{Assembly.GetEntryAssembly()?.GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             if (File.Exists(xmlPath))
                 options.IncludeXmlComments(xmlPath);
@@ -94,7 +94,7 @@ public static class SwaggerServiceExtension
         app.UseSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "SmartWorkz API v1");
-            options.RoutePrefix = string.Empty;
+            options.RoutePrefix = "api-docs";
             options.DocumentTitle = "SmartWorkz API Documentation";
         });
 
@@ -105,7 +105,7 @@ public static class SwaggerServiceExtension
 /// <summary>
 /// Configuration options for Swagger/OpenAPI documentation
 /// </summary>
-public class SwaggerFeatureOptions
+internal class SwaggerFeatureOptions
 {
     public bool Enabled { get; set; } = true;
     public string Title { get; set; } = "SmartWorkz API";

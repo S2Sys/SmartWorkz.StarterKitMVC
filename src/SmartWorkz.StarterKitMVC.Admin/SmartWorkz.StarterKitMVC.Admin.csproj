@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>SmartWorkz.StarterKitMVC.Admin</RootNamespace>
     <UserSecretsId>SmartWorkz.StarterKitMVC.Admin</UserSecretsId>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\SmartWorkz.StarterKitMVC.Admin.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
