@@ -277,13 +277,13 @@ See [HTMX List Pattern](./05-htmx-list-pattern.md) — ensure `Request.IsHtmx()`
 See [EF Core Multi-Context Migrations](./15-ef-core-migrations.md) — identify which DbContext owns the table and use MigrationManager.
 
 ### "My PDF exports show numbers as text in formulas"
-See [PDF/Excel Export - Gotcha 1](./19-pdf-excel-export.md#gotcha-1-excelexporter-converts-values-to-tostring) — use typed properties, not ToString().
+See [PDF/Excel Export](./19-pdf-excel-export.md) (Gotcha 1) — use typed properties, not ToString().
 
 ### "How do I export multiple sheets in Excel?"
-See [PDF/Excel Export - Example 2](./19-pdf-excel-export.md#example-2-multi-sheet-excel-with-exportmultipleasync) — use `ExportMultipleAsync()` with sheet dictionary.
+See [PDF/Excel Export](./19-pdf-excel-export.md) (Example 2) — use `ExportMultipleAsync()` with sheet dictionary.
 
 ### "Password reset emails aren't being sent"
-See [Password Reset Flow - Troubleshooting](./06-password-reset-flow.md#troubleshooting) — emails are queued asynchronously; check MassTransit status.
+See [Password Reset Flow](./06-password-reset-flow.md) (Troubleshooting section) — emails are queued asynchronously; check MassTransit status.
 
 ### "My mobile app can't get tenant data"
 See [Multi-Tenant Architecture](./11-multi-tenant-architecture.md) — ensure tenant context is passed in API calls and validated server-side.
@@ -398,4 +398,4 @@ When adding or updating wiki pages:
 3. **Refer to troubleshooting:** If you hit issues, search this master guide or jump to specific pages
 4. **Contribute:** Update docs when you discover new patterns or gotchas
 
-Happy building! 🚀
+Happy building!
