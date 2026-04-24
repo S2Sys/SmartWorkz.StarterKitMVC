@@ -3,6 +3,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SmartWorkz.Mobile.Services;
 using SmartWorkz.Mobile.Services.Implementations;
 using SmartWorkz.Shared;
 
@@ -141,6 +142,13 @@ public static class ServiceCollectionExtensions
             var logger = sp.GetRequiredService<ILogger<RealtimeService>>();
             const string realtimeHubUrl = "https://api.smartworkz.com/realtimehub";
             return new RealtimeService(realtimeHubUrl, logger);
+        });
+
+        // Step 19: Register Phase 5.2 Change Data Capture service (Task 16)
+        services.AddSingleton<IChangeDataCapture>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILogger<ChangeDataCapture>>();
+            return (IChangeDataCapture)new ChangeDataCapture(logger);
         });
 
         return services;
