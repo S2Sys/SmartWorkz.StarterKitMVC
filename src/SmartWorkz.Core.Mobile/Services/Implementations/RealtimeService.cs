@@ -40,8 +40,11 @@ public partial class RealtimeService : IRealtimeService, IDisposable
 
             _currentUserId = userId;
 
+            // Enforce HTTPS/WSS for secure connections
+            var secureUrl = EnforceSecureUrl(_hubUrl);
+
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl(_hubUrl)
+                .WithUrl(secureUrl)
                 .WithAutomaticReconnect(new[]
                 {
                     TimeSpan.Zero,
@@ -217,6 +220,43 @@ public partial class RealtimeService : IRealtimeService, IDisposable
             _connectionStateSubject.OnNext(state);
             await Task.CompletedTask;
         }
+    }
+
+    /// <summary>
+    /// Enforces HTTPS/WSS protocol for secure connections.
+    /// Replaces http:// with https:// and ws:// with wss://.
+    /// </summary>
+    /// <param name="url">The URL to enforce HTTPS/WSS for.</param>
+    /// <returns>The URL with HTTPS/WSS protocol enforced.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if URL cannot be secured.</exception>
+    private static string EnforceSecureUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            throw new InvalidOperationException("Hub URL cannot be null or empty");
+
+        var secureUrl = url;
+
+        // Replace http:// with https://
+        if (secureUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+        {
+            secureUrl = "https://" + secureUrl.Substring("http://".Length);
+        }
+
+        // Replace ws:// with wss://
+        if (secureUrl.StartsWith("ws://", StringComparison.OrdinalIgnoreCase))
+        {
+            secureUrl = "wss://" + secureUrl.Substring("ws://".Length);
+        }
+
+        // Ensure URL is using secure protocol
+        if (!secureUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
+            !secureUrl.StartsWith("wss://", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                $"Hub URL must use HTTPS or WSS protocol for secure connections. Provided: {url}");
+        }
+
+        return secureUrl;
     }
 
     public void Dispose()
