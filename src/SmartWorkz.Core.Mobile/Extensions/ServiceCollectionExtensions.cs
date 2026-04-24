@@ -216,6 +216,13 @@ public static class ServiceCollectionExtensions
         });
 #endif
 
+        // Step 27: Register Phase 5.1 Offline Message Queue (Task 9)
+        services.AddSingleton<IOfflineMessageQueue>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILogger<OfflineMessageQueue>>();
+            return new OfflineMessageQueue(logger);
+        });
+
         return services;
     }
 }
