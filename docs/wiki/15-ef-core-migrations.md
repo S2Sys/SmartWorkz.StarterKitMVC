@@ -123,8 +123,13 @@ This is the standard startup pattern shown in the actual application:
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Serilog;
 using SmartWorkz.StarterKitMVC.Infrastructure.Extensions;
+using SmartWorkz.StarterKitMVC.Infrastructure.Data.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure logging FIRST (immediately after CreateBuilder)
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog();
 
 // Services setup
 builder.Services.AddControllers();
@@ -136,10 +141,6 @@ builder.Services.AddRazorPages(options =>
 
 // Register all DbContexts and migration manager
 builder.Services.AddApplicationStack(builder.Configuration);
-
-// Configure logging
-builder.Logging.ClearProviders();
-builder.Logging.AddSerilog();
 
 // ─────────────────────────────────────────────────────────────
 // CRITICAL: Run migrations immediately after app.Build()
@@ -430,7 +431,79 @@ public class MigrationManager : IMigrationManager
         }
     }
 
-    // Similar changes for RollbackAsync() and GetPendingMigrationsAsync()...
+    public async Task RollbackAsync(string migrationName)
+    {
+        try
+        {
+            _logger.LogWarning($"Rolling back to migration: {migrationName}");
+
+            await _authDb.Database.ExecuteSqlRawAsync(
+                "DELETE FROM [dbo].[__EFMigrationsHistory] WHERE MigrationId > {0}", migrationName);
+            _logger.LogInformation("✓ AuthDbContext rolled back");
+
+            await _masterDb.Database.ExecuteSqlRawAsync(
+                "DELETE FROM [dbo].[__EFMigrationsHistory] WHERE MigrationId > {0}", migrationName);
+            _logger.LogInformation("✓ MasterDbContext rolled back");
+
+            await _sharedDb.Database.ExecuteSqlRawAsync(
+                "DELETE FROM [dbo].[__EFMigrationsHistory] WHERE MigrationId > {0}", migrationName);
+            _logger.LogInformation("✓ SharedDbContext rolled back");
+
+            await _transactionDb.Database.ExecuteSqlRawAsync(
+                "DELETE FROM [dbo].[__EFMigrationsHistory] WHERE MigrationId > {0}", migrationName);
+            _logger.LogInformation("✓ TransactionDbContext rolled back");
+
+            await _reportDb.Database.ExecuteSqlRawAsync(
+                "DELETE FROM [dbo].[__EFMigrationsHistory] WHERE MigrationId > {0}", migrationName);
+            _logger.LogInformation("✓ ReportDbContext rolled back");
+
+            await _analyticsDb.Database.ExecuteSqlRawAsync(  // ← Add rollback call
+                "DELETE FROM [dbo].[__EFMigrationsHistory] WHERE MigrationId > {0}", migrationName);
+            _logger.LogInformation("✓ AnalyticsDbContext rolled back");
+
+            _logger.LogInformation($"Rollback to {migrationName} completed successfully");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Database rollback failed");
+            throw;
+        }
+    }
+
+    public async Task GetPendingMigrationsAsync()
+    {
+        try
+        {
+            _logger.LogInformation("Checking pending migrations...");
+
+            var authPending = await _authDb.Database.GetPendingMigrationsAsync();
+            _logger.LogInformation($"AuthDbContext pending migrations: {authPending.Count()}");
+
+            var masterPending = await _masterDb.Database.GetPendingMigrationsAsync();
+            _logger.LogInformation($"MasterDbContext pending migrations: {masterPending.Count()}");
+
+            var sharedPending = await _sharedDb.Database.GetPendingMigrationsAsync();
+            _logger.LogInformation($"SharedDbContext pending migrations: {sharedPending.Count()}");
+
+            var transactionPending = await _transactionDb.Database.GetPendingMigrationsAsync();
+            _logger.LogInformation($"TransactionDbContext pending migrations: {transactionPending.Count()}");
+
+            var reportPending = await _reportDb.Database.GetPendingMigrationsAsync();
+            _logger.LogInformation($"ReportDbContext pending migrations: {reportPending.Count()}");
+
+            var analyticsPending = await _analyticsDb.Database.GetPendingMigrationsAsync();  // ← Add check
+            _logger.LogInformation($"AnalyticsDbContext pending migrations: {analyticsPending.Count()}");
+
+            int totalPending = authPending.Count() + masterPending.Count() + sharedPending.Count() +
+                               transactionPending.Count() + reportPending.Count() + analyticsPending.Count();
+            _logger.LogInformation($"Total pending migrations across all contexts: {totalPending}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to check pending migrations");
+            throw;
+        }
+    }
 }
 ```
 
