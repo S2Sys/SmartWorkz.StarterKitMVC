@@ -27,6 +27,9 @@ builder.Services.AddRazorPages(options =>
 // Infrastructure stack: DbContexts, repositories, application services, JWT auth
 builder.Services.AddApplicationStack(builder.Configuration);
 
+// Swagger/OpenAPI documentation
+builder.Services.AddSwaggerDocumentation(builder.Configuration);
+
 // Override authentication scheme: use Cookie instead of Bearer for UI
 builder.Services.AddAuthentication(options =>
 {
@@ -60,6 +63,9 @@ builder.Services.AddHttpContextAccessor();
 
 // ─── App Pipeline ─────────────────────────────────────────────────────────
 var app = builder.Build();
+
+// Swagger/OpenAPI documentation middleware
+app.UseSwaggerDocumentation(app.Configuration);
 
 if (!app.Environment.IsDevelopment())
 {
