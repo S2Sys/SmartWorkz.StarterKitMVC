@@ -1,5 +1,6 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using SmartWorkz.StarterKitMVC.Application.Services;
 
 namespace SmartWorkz.StarterKitMVC.Application.Events.Consumers;
 
@@ -8,11 +9,14 @@ namespace SmartWorkz.StarterKitMVC.Application.Events.Consumers;
 /// </summary>
 public class PublishAnalyticsEventConsumer : IConsumer<UserRegisteredEvent>
 {
+    private readonly IAnalyticsService _analyticsService;
     private readonly ILogger<PublishAnalyticsEventConsumer> _logger;
 
     public PublishAnalyticsEventConsumer(
+        IAnalyticsService analyticsService,
         ILogger<PublishAnalyticsEventConsumer> logger)
     {
+        _analyticsService = analyticsService;
         _logger = logger;
     }
 
@@ -21,22 +25,18 @@ public class PublishAnalyticsEventConsumer : IConsumer<UserRegisteredEvent>
         try
         {
             var message = context.Message;
+            await _analyticsService.TrackEventAsync("UserRegistered", new
+            {
+                UserId = message.UserId,
+                Email = message.Email,
+                RegisteredAt = message.RegisteredAt
+            });
 
-            // Track analytics event for user registration
-            _logger.LogInformation(
-                "Analytics event: UserRegistered - UserId: {UserId}, Email: {Email}, RegisteredAt: {RegisteredAt}",
-                message.UserId,
-                message.Email,
-                message.RegisteredAt);
-
-            // In a production system, this would send data to an analytics service
-            // (e.g., Mixpanel, Segment, Google Analytics, etc.)
-
-            await Task.CompletedTask;
+            _logger.LogInformation($"✓ Analytics event published for user {message.UserId}");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to process analytics event");
+            _logger.LogError(ex, "Failed to publish analytics event");
             // Don't throw - analytics should not block main flow
         }
     }
