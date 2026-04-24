@@ -15,6 +15,12 @@ NC='\033[0m' # No Color
 # Change to src directory
 cd "$(dirname "$0")/../src/SmartWorkz.StarterKitMVC.Infrastructure"
 
+# Check that the project is built
+if [ ! -f "bin/Release/net9.0/SmartWorkz.StarterKitMVC.Infrastructure.dll" ]; then
+    echo -e "${RED}Error: Project not built. Run 'dotnet build -c Release' first.${NC}"
+    exit 1
+fi
+
 echo -e "${YELLOW}Running EF Core migrations for all DbContexts...${NC}"
 echo ""
 

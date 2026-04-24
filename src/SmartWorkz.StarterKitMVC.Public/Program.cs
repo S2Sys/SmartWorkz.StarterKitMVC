@@ -80,8 +80,11 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Swagger/OpenAPI documentation middleware
-app.UseSwaggerDocumentation(app.Configuration);
+// Swagger/OpenAPI documentation middleware (development only)
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Features:Swagger:Enabled"))
+{
+    app.UseSwaggerDocumentation(app.Configuration);
+}
 
 if (!app.Environment.IsDevelopment())
 {

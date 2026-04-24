@@ -1,5 +1,7 @@
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using SmartWorkz.StarterKitMVC.Application.Events;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Domain.Entities.Auth;
 using SmartWorkz.StarterKitMVC.Shared.DTOs;
@@ -18,6 +20,7 @@ public class AuthenticationService : IAuthenticationService
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenService _tokenService;
+    private readonly IPublishEndpoint _publishEndpoint;
     private readonly ILogger<AuthenticationService> _logger;
     private readonly string _jwtSecret;
     private readonly string _jwtIssuer;
@@ -29,6 +32,7 @@ public class AuthenticationService : IAuthenticationService
         IUserRepository userRepository,
         IPasswordHasher passwordHasher,
         ITokenService tokenService,
+        IPublishEndpoint publishEndpoint,
         ILogger<AuthenticationService> logger,
         string jwtSecret,
         string jwtIssuer,
@@ -39,6 +43,7 @@ public class AuthenticationService : IAuthenticationService
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
         _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+        _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _jwtSecret = jwtSecret ?? throw new ArgumentNullException(nameof(jwtSecret));
         _jwtIssuer = jwtIssuer ?? throw new ArgumentNullException(nameof(jwtIssuer));
@@ -158,6 +163,24 @@ public class AuthenticationService : IAuthenticationService
             };
 
             await _userRepository.UpsertUserAsync(user);
+
+            // Publish user registration event for async processing
+            try
+            {
+                var registrationEvent = new UserRegisteredEvent(
+                    user.UserId,
+                    user.Email,
+                    request.DisplayName?.Split(' ').FirstOrDefault() ?? request.Username,
+                    request.DisplayName?.Split(' ').Skip(1).FirstOrDefault() ?? "");
+
+                await _publishEndpoint.Publish(registrationEvent);
+                _logger.LogInformation("UserRegisteredEvent published for user {UserId}", user.UserId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to publish UserRegisteredEvent for user {UserId}, but registration succeeded", user.UserId);
+                // Don't fail registration if event publishing fails
+            }
 
             // Generate tokens
             var userProfile = new UserProfileDto(
