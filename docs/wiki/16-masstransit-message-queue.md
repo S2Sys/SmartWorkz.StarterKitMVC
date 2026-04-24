@@ -153,37 +153,79 @@ public class UserAuthService
 }
 ```
 
-### Example 2: Consumer for PaymentCompletedEvent
+**Note:** `SendWelcomeEmailConsumer` throws if email sending fails, which sends the message to the dead-letter queue. See Example 3 for the non-throwing analytics pattern alternative.
+
+### Example 2: Consumer for OrderProcessedEvent
+
+Real implementation from the codebase:
 
 ```csharp
-public class UpdateOrderStatusConsumer : IConsumer<PaymentCompletedEvent>
+public class SendOrderConfirmationConsumer : IConsumer<OrderProcessedEvent>
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly ILogger<UpdateOrderStatusConsumer> _logger;
+    private readonly IEmailSender _emailSender;
+    private readonly IUserRepository _userRepository;
+    private readonly ILogger<SendOrderConfirmationConsumer> _logger;
 
-    public async Task Consume(ConsumeContext<PaymentCompletedEvent> context)
+    public SendOrderConfirmationConsumer(
+        IEmailSender emailSender,
+        IUserRepository userRepository,
+        ILogger<SendOrderConfirmationConsumer> logger)
+    {
+        _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task Consume(ConsumeContext<OrderProcessedEvent> context)
     {
         var @event = context.Message;
-        var order = await _orderRepository.GetByIdAsync(@event.OrderId);
-        
-        if (order == null)
-            throw new InvalidOperationException($"Order {@event.OrderId} not found");
 
-        order.Status = OrderStatus.Paid;
-        order.TransactionId = @event.TransactionId;
-        await _orderRepository.UpdateAsync(order);
+        try
+        {
+            _logger.LogInformation(
+                "Processing order processed event - OrderId: {OrderId}, UserId: {UserId}",
+                @event.OrderId,
+                @event.UserId);
 
-        _logger.LogInformation("Order {OrderId} marked as paid", @event.OrderId);
+            // Fetch user details for email
+            var user = await _userRepository.GetByIdAsync(@event.UserId);
+            if (user == null)
+                throw new InvalidOperationException($"User {(@event.UserId)} not found");
+
+            // Send order confirmation email
+            var subject = $"Order Confirmation - Order #{@event.OrderId}";
+            var body = $@"<h2>Order Confirmation</h2>
+                <p>Dear {user.DisplayName ?? user.Username},</p>
+                <p>Thank you for your order!</p>
+                <p><strong>Order ID:</strong> {@event.OrderId}</p>
+                <p><strong>Amount:</strong> ${@event.Amount:F2}</p>";
+
+            var result = await _emailSender.SendAsync(user.Email, subject, body, isHtml: true);
+
+            if (!result.Succeeded)
+                throw new InvalidOperationException($"Email sending failed: {result.MessageKey}");
+
+            _logger.LogInformation("Order confirmation sent for order {OrderId}", @event.OrderId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing order created event - OrderId: {OrderId}", @event.OrderId);
+            throw;
+        }
     }
 }
 ```
 
 Register consumer:
 ```csharp
-x.AddConsumer<UpdateOrderStatusConsumer>();
+x.AddConsumer<SendOrderConfirmationConsumer>();
 ```
 
 ### Example 3: Non-Throwing Analytics Pattern
+
+**Note:** Consumer exception handling strategy depends on criticality:
+- Critical path consumers (`SendWelcomeEmailConsumer`, `SendOrderConfirmationConsumer`): Throw exceptions on failure
+- Side-effect consumers (`PublishAnalyticsEventConsumer`): Swallow exceptions to prevent blocking
 
 Analytics failures must not block main workflows:
 
