@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using SmartWorkz.Shared;
 using System;
 using System.Collections.Generic;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,7 +64,7 @@ public partial class WifiService : IWifiService
         var result = await ScanForNetworksAsyncPlatform(ct);
         if (result.Succeeded)
         {
-            _logger.LogInformation("WiFi scan completed: {Count} networks found", result.Value?.Count ?? 0);
+            _logger.LogInformation("WiFi scan completed: {Count} networks found", result.Data?.Count ?? 0);
         }
         else
         {
@@ -84,10 +86,10 @@ public partial class WifiService : IWifiService
         var result = await GetConnectedNetworkAsyncPlatform(ct);
         if (result.Succeeded)
         {
-            _currentNetwork = result.Value;
-            if (result.Value != null)
+            _currentNetwork = result.Data;
+            if (result.Data != null)
             {
-                _logger.LogInformation("Retrieved connected network: {SSID}", result.Value.SSID);
+                _logger.LogInformation("Retrieved connected network: {SSID}", result.Data.SSID);
             }
             else
             {
