@@ -1,0 +1,177 @@
+@namespace SmartWorkz.Core.Web.Components.FormBuilder
+@using SmartWorkz.Web.Models
+
+<div class="form-group mb-3 @(Field?.CssClass ?? "") @(Field?.IsVisible == false ? "d-none" : "")">
+    @if (!string.IsNullOrEmpty(Field?.Label))
+    {
+        <label for="field-@Field.Name" class="form-label">
+            @Field.Label
+            @if (Field?.IsRequired == true)
+            {
+                <span class="text-danger" title="Required">*</span>
+            }
+        </label>
+    }
+
+    @switch (Field?.Type?.ToLower())
+    {
+        case "text":
+        case "email":
+        case "password":
+        case "number":
+            <input type="@Field.Type"
+                   id="field-@Field.Name"
+                   class="form-control @GetErrorClass()"
+                   placeholder="@(Field?.Placeholder ?? "")"
+                   value="@(Field?.Value ?? "")"
+                   disabled="@(Field?.IsDisabled == true)"
+                   @onchange="OnValueChanged" />
+            break;
+
+        case "textarea":
+            <textarea id="field-@Field.Name"
+                      class="form-control @GetErrorClass()"
+                      placeholder="@(Field?.Placeholder ?? "")"
+                      disabled="@(Field?.IsDisabled == true)"
+                      @onchange="OnValueChanged">@(Field?.Value ?? "")</textarea>
+            break;
+
+        case "select":
+            <select id="field-@Field.Name"
+                    class="form-select @GetErrorClass()"
+                    disabled="@(Field?.IsDisabled == true)"
+                    @onchange="OnValueChanged">
+                <option value="">-- Select --</option>
+                @if (Field?.Options?.Any() == true)
+                {
+                    @foreach (var option in Field.Options)
+                    {
+                        <option value="@option.Value" disabled="@option.IsDisabled">
+                            @option.Label
+                        </option>
+                    }
+                }
+            </select>
+            break;
+
+        case "checkbox":
+            <div class="form-check">
+                <input type="checkbox"
+                       id="field-@Field.Name"
+                       class="form-check-input @GetErrorClass()"
+                       checked="@(IsCheckboxChecked())"
+                       disabled="@(Field?.IsDisabled == true)"
+                       @onchange="OnValueChanged" />
+                @if (!string.IsNullOrEmpty(Field?.Label))
+                {
+                    <label class="form-check-label" for="field-@Field.Name">
+                        @Field.Label
+                    </label>
+                }
+            </div>
+            break;
+
+        case "date":
+            <input type="date"
+                   id="field-@Field.Name"
+                   class="form-control @GetErrorClass()"
+                   value="@GetDateValue()"
+                   disabled="@(Field?.IsDisabled == true)"
+                   @onchange="OnValueChanged" />
+            break;
+
+        default:
+            <input type="text"
+                   id="field-@Field.Name"
+                   class="form-control @GetErrorClass()"
+                   placeholder="@(Field?.Placeholder ?? "")"
+                   value="@(Field?.Value ?? "")"
+                   disabled="@(Field?.IsDisabled == true)"
+                   @onchange="OnValueChanged" />
+            break;
+    }
+
+    @if (!string.IsNullOrEmpty(Field?.HelpText))
+    {
+        <small class="form-text text-muted d-block mt-1">
+            @Field.HelpText
+        </small>
+    }
+
+    @if (Errors?.Any() == true)
+    {
+        <div class="invalid-feedback d-block mt-1">
+            @foreach (var error in Errors)
+            {
+                <div>@error</div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public FormField? Field { get; set; }
+
+    [Parameter]
+    public EventCallback<FormFieldValueChangedArgs> OnFieldValueChanged { get; set; }
+
+    [Parameter]
+    public List<string> Errors { get; set; } = [];
+
+    private async Task OnValueChanged(ChangeEventArgs e)
+    {
+        if (Field == null) return;
+
+        object? newValue = e.Value;
+
+        if (Field.Type?.ToLower() == "checkbox")
+        {
+            newValue = e.Value is bool boolValue ? boolValue : false;
+        }
+
+        Field.Value = newValue;
+
+        if (OnFieldValueChanged.HasDelegate)
+        {
+            await OnFieldValueChanged.InvokeAsync(new FormFieldValueChangedArgs
+            {
+                FieldName = Field.Name,
+                NewValue = newValue
+            });
+        }
+    }
+
+    private string GetErrorClass()
+    {
+        return Errors?.Any() == true ? "is-invalid" : "";
+    }
+
+    private bool IsCheckboxChecked()
+    {
+        return Field?.Value switch
+        {
+            bool b => b,
+            string s => s?.Equals("on", StringComparison.OrdinalIgnoreCase) == true || s?.Equals("true", StringComparison.OrdinalIgnoreCase) == true,
+            _ => false
+        };
+    }
+
+    private string GetDateValue()
+    {
+        if (Field?.Value == null) return "";
+
+        return Field.Value switch
+        {
+            DateTime dt => dt.ToString("yyyy-MM-dd"),
+            string s => s,
+            _ => Field.Value.ToString() ?? ""
+        };
+    }
+}
+
+public class FormFieldValueChangedArgs
+{
+    public string FieldName { get; set; } = string.Empty;
+    public object? NewValue { get; set; }
+}

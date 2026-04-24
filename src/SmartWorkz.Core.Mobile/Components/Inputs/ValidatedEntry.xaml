@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="SmartWorkz.Mobile.Components.ValidatedEntry"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <VerticalStackLayout Spacing="4">
+        <Label
+            x:Name="LabelLabel"
+            FontAttributes="Bold"
+            FontSize="14"
+            Text="{Binding Label, Source={RelativeSource AncestorType={x:Type ContentView}}}"
+            TextColor="#333333" />
+        <Border
+            x:Name="BorderFrame"
+            Padding="0"
+            StrokeThickness="1"
+            Stroke="#D3D3D3"
+            StrokeShape="RoundRectangle 6">
+            <Entry
+                x:Name="EntryControl"
+                Padding="12,8"
+                BackgroundColor="White"
+                FontSize="14"
+                Keyboard="{Binding KeyboardType, Source={RelativeSource AncestorType={x:Type ContentView}}}"
+                Placeholder="{Binding Placeholder, Source={RelativeSource AncestorType={x:Type ContentView}}}"
+                Text="{Binding Text, Source={RelativeSource AncestorType={x:Type ContentView}}, Mode=OneWay}"
+                TextColor="#333333" />
+        </Border>
+        <Label
+            x:Name="ErrorLabel"
+            FontSize="12"
+            IsVisible="False"
+            Text="{Binding ErrorText, Source={RelativeSource AncestorType={x:Type ContentView}}}"
+            TextColor="#FF3B30" />
+    </VerticalStackLayout>
+</ContentView>
