@@ -158,6 +158,13 @@ public static class ServiceCollectionExtensions
             return (ISyncBatchOptimizer)new SyncBatchOptimizer(logger);
         });
 
+        // Step 21: Register Phase 5.2 Conflict Detector service (Task 18)
+        services.AddSingleton<IConflictDetector>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILogger<ConflictDetector>>();
+            return (IConflictDetector)new ConflictDetector(logger);
+        });
+
         return services;
     }
 }
