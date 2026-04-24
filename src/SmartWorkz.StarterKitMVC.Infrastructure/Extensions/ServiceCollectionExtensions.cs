@@ -196,6 +196,7 @@ public static class ServiceCollectionExtensions
         services.AddDomainServices();
         services.AddCacheServices(configuration);
         services.AddJwtAuthentication(configuration);
+        services.AddEventBus(configuration);
 
         // Translation cache warm-up at startup
         services.AddHostedService<TranslationCacheWarmupService>();
