@@ -1,5 +1,6 @@
 namespace SmartWorkz.Core.Web.Middleware;
 
+using Microsoft.AspNetCore.Http;
 using SmartWorkz.Shared.Security.RateLimit;
 
 /// <summary>
