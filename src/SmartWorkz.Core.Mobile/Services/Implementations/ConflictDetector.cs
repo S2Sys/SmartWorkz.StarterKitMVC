@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using SmartWorkz.Mobile.Models;
 using SmartWorkz.Mobile.Services;
 using SmartWorkz.Shared;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 /// <summary>
 /// Service for detecting conflicts between local and remote changes.
@@ -16,7 +15,8 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 /// </summary>
 public class ConflictDetector : IConflictDetector
 {
-    private readonly ILogger? _logger;
+    private readonly ILogger<ConflictDetector>? _logger;
+    private readonly object _lockObject = new();
     private int _totalDetectionRuns;
     private int _totalConflicts;
     private int _entitiesInvolved;
@@ -26,7 +26,7 @@ public class ConflictDetector : IConflictDetector
     /// Initializes a new instance of the ConflictDetector class.
     /// </summary>
     /// <param name="logger">Optional logger for diagnostic information</param>
-    public ConflictDetector(ILogger? logger = null)
+    public ConflictDetector(ILogger<ConflictDetector>? logger = null)
     {
         _logger = logger;
         _totalDetectionRuns = 0;
@@ -97,11 +97,14 @@ public class ConflictDetector : IConflictDetector
                 }
             }
 
-            // Update statistics
-            _totalDetectionRuns++;
-            _totalConflicts += conflicts.Count;
-            _entitiesInvolved += entitiesInConflict.Count;
-            _lastDetectionTime = detectedAt;
+            // Update statistics (thread-safe)
+            lock (_lockObject)
+            {
+                _totalDetectionRuns++;
+                _totalConflicts += conflicts.Count;
+                _entitiesInvolved += entitiesInConflict.Count;
+                _lastDetectionTime = detectedAt;
+            }
 
             _logger?.LogDebug(
                 "Conflict detection completed: {ConflictCount} conflicts found in {LocalCount} local vs {RemoteCount} remote changes",
@@ -162,19 +165,22 @@ public class ConflictDetector : IConflictDetector
     {
         try
         {
-            int averageConflicts = _totalDetectionRuns > 0
-                ? _totalConflicts / _totalDetectionRuns
-                : 0;
+            lock (_lockObject)
+            {
+                int averageConflicts = _totalDetectionRuns > 0
+                    ? _totalConflicts / _totalDetectionRuns
+                    : 0;
 
-            var stats = new ConflictDetectionStats(
-                TotalDetectionRuns: _totalDetectionRuns,
-                ConflictsFound: _totalConflicts,
-                EntitiesInvolved: _entitiesInvolved,
-                LastDetectionTime: _lastDetectionTime,
-                AverageConflictsPerRun: averageConflicts);
+                var stats = new ConflictDetectionStats(
+                    TotalDetectionRuns: _totalDetectionRuns,
+                    ConflictsFound: _totalConflicts,
+                    EntitiesInvolved: _entitiesInvolved,
+                    LastDetectionTime: _lastDetectionTime,
+                    AverageConflictsPerRun: averageConflicts);
 
-            _logger?.LogDebug("Conflict detection statistics: {Stats}", stats.DisplaySummary);
-            return Result.Ok(stats);
+                _logger?.LogDebug("Conflict detection statistics: {Stats}", stats.DisplaySummary);
+                return Result.Ok(stats);
+            }
         }
         catch (Exception ex)
         {
@@ -187,17 +193,16 @@ public class ConflictDetector : IConflictDetector
 
     /// <summary>
     /// Check if two change values conflict.
+    /// A conflict exists only when the final values (NewValue) differ.
+    /// Different OldValues are not a conflict if both changes produce the same result.
     /// </summary>
     /// <param name="local">Local change</param>
     /// <param name="remote">Remote change</param>
-    /// <returns>True if values differ, false otherwise</returns>
+    /// <returns>True if NewValues differ, false otherwise</returns>
     private static bool ValuesConflict(SyncChange local, SyncChange remote)
     {
-        // Values conflict if either old or new value differs
+        // Values conflict only if the final new values differ
         // Use object.Equals for comparison to handle nulls correctly
-        bool oldValuesDiffer = !Equals(local.OldValue, remote.OldValue);
-        bool newValuesDiffer = !Equals(local.NewValue, remote.NewValue);
-
-        return oldValuesDiffer || newValuesDiffer;
+        return !Equals(local.NewValue, remote.NewValue);
     }
 }

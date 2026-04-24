@@ -423,4 +423,40 @@ public class ConflictDetectorTests
         Assert.NotNull(result.Data);
         Assert.Empty(result.Data);
     }
+
+    /// <summary>
+    /// Test: No conflict when OldValue differs but NewValue is the same.
+    /// Both changes produce the same final state, so there is no conflict.
+    /// </summary>
+    [Fact]
+    public async Task DetectConflictsAsync_WithDifferentOldValueSameNewValue_NoConflict()
+    {
+        // Arrange
+        var detector = new ConflictDetector();
+        var now = DateTime.UtcNow;
+        var local = new SyncChange(
+            EntityId: "Order1",
+            EntityType: "Order",
+            Property: "Status",
+            OldValue: "Pending",      // Different old value
+            NewValue: "Processing",   // Same final value
+            Timestamp: now,
+            UserId: "user1");
+        var remote = new SyncChange(
+            EntityId: "Order1",
+            EntityType: "Order",
+            Property: "Status",
+            OldValue: "Draft",        // Different old value
+            NewValue: "Processing",   // Same final value
+            Timestamp: now.AddMinutes(-1),
+            UserId: "user2");
+
+        // Act
+        var result = await detector.DetectConflictsAsync(new[] { local }, new[] { remote });
+
+        // Assert
+        Assert.True(result.Succeeded);
+        Assert.NotNull(result.Data);
+        Assert.Empty(result.Data);  // No conflict because final values match
+    }
 }
