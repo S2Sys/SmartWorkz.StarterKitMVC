@@ -13,39 +13,32 @@ namespace SmartWorkz.StarterKitMVC.Infrastructure.Extensions;
 public static class MassTransitExtension
 {
     /// <summary>
-    /// Adds MassTransit event bus configuration to the service collection.
+    /// Adds MassTransit messaging configuration to the service collection.
     /// Automatically configures consumers and selects transport based on configuration.
     /// </summary>
-    public static IServiceCollection AddEventBus(
+    public static IServiceCollection AddMassTransitMessaging(
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var eventBusConfig = configuration.GetSection("Features:EventBus");
-        var isEnabled = eventBusConfig.GetValue<bool>("Enabled");
-
-        if (!isEnabled)
-        {
-            return services;
-        }
-
-        var provider = eventBusConfig.GetValue<string>("Provider") ?? "InMemory";
+        var messageBrokerConfig = configuration.GetSection("MessageBroker");
+        var transportType = messageBrokerConfig.GetValue<string>("Type") ?? "InMemory";
 
         services.AddMassTransit(x =>
         {
             // Register all event consumers
-            x.AddConsumer<UserRegisteredEventConsumer>();
-            x.AddConsumer<UserProfileUpdatedEventConsumer>();
-            x.AddConsumer<PasswordResetRequestedEventConsumer>();
-            x.AddConsumer<EmailSentEventConsumer>();
-            x.AddConsumer<OrderCreatedEventConsumer>();
-            x.AddConsumer<OrderShippedEventConsumer>();
-            x.AddConsumer<PaymentProcessedEventConsumer>();
+            x.AddConsumer<SendWelcomeEmailConsumer>();
+            x.AddConsumer<SendOrderConfirmationConsumer>();
+            x.AddConsumer<PublishAnalyticsEventConsumer>();
 
-            // Configure transport based on provider
-            switch (provider.ToLowerInvariant())
+            // Configure transport based on type
+            switch (transportType.ToLowerInvariant())
             {
                 case "rabbitmq":
-                    ConfigureRabbitMQ(x, eventBusConfig);
+                    ConfigureRabbitMq(x, messageBrokerConfig);
+                    break;
+
+                case "azureservicebus":
+                    ConfigureAzureServiceBus(x, messageBrokerConfig);
                     break;
 
                 case "inmemory":
@@ -64,20 +57,47 @@ public static class MassTransitExtension
     /// <summary>
     /// Configures RabbitMQ transport for MassTransit.
     /// </summary>
-    private static void ConfigureRabbitMQ(
+    private static void ConfigureRabbitMq(
         IBusRegistrationConfigurator x,
-        IConfiguration eventBusConfig)
+        IConfiguration messageBrokerConfig)
     {
-        var rabbitMqConfig = eventBusConfig.GetSection("RabbitMQ");
-        var hostname = rabbitMqConfig.GetValue<string>("HostName") ?? "localhost";
-        var port = rabbitMqConfig.GetValue<int>("Port", 5672);
-        var username = rabbitMqConfig.GetValue<string>("UserName") ?? "guest";
+        var rabbitMqConfig = messageBrokerConfig.GetSection("RabbitMQ");
+        var hostname = rabbitMqConfig.GetValue<string>("Host") ?? "localhost";
+        var username = rabbitMqConfig.GetValue<string>("Username") ?? "guest";
         var password = rabbitMqConfig.GetValue<string>("Password") ?? "guest";
-        var virtualHost = rabbitMqConfig.GetValue<string>("VirtualHost") ?? "/";
 
         x.UsingRabbitMq((context, cfg) =>
         {
-            cfg.Host($"amqp://{username}:{password}@{hostname}:{port}/{virtualHost}");
+            cfg.Host(hostname, "/", h =>
+            {
+                h.Username(username);
+                h.Password(password);
+            });
+            cfg.ConfigureEndpoints(context);
+        });
+    }
+
+    /// <summary>
+    /// Configures Azure Service Bus transport for MassTransit.
+    /// Note: Requires MassTransit.AzureServiceBus package to be installed.
+    /// Currently uses InMemory as fallback.
+    /// </summary>
+    private static void ConfigureAzureServiceBus(
+        IBusRegistrationConfigurator x,
+        IConfiguration messageBrokerConfig)
+    {
+        // TODO: Implement Azure Service Bus when package is available
+        // var connectionString = messageBrokerConfig.GetValue<string>("ConnectionString")
+        //     ?? throw new InvalidOperationException("Azure Service Bus connection string not configured.");
+        // x.UsingAzureServiceBus((context, cfg) =>
+        // {
+        //     cfg.ConnectionString(connectionString);
+        //     cfg.ConfigureEndpoints(context);
+        // });
+
+        // Fallback to InMemory for now
+        x.UsingInMemory((context, cfg) =>
+        {
             cfg.ConfigureEndpoints(context);
         });
     }

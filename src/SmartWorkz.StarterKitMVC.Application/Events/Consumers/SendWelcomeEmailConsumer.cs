@@ -9,16 +9,16 @@ namespace SmartWorkz.StarterKitMVC.Application.Events.Consumers;
 /// Consumer for handling user registration events.
 /// Sends a welcome email to the newly registered user.
 /// </summary>
-public class UserRegisteredEventConsumer : IConsumer<UserRegisteredEvent>
+public class SendWelcomeEmailConsumer : IConsumer<UserRegisteredEvent>
 {
     private readonly IEmailSender _emailSender;
     private readonly IUserRepository _userRepository;
-    private readonly ILogger<UserRegisteredEventConsumer> _logger;
+    private readonly ILogger<SendWelcomeEmailConsumer> _logger;
 
-    public UserRegisteredEventConsumer(
+    public SendWelcomeEmailConsumer(
         IEmailSender emailSender,
         IUserRepository userRepository,
-        ILogger<UserRegisteredEventConsumer> logger)
+        ILogger<SendWelcomeEmailConsumer> logger)
     {
         _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));

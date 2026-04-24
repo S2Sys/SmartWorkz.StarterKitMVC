@@ -5,33 +5,33 @@ using SmartWorkz.Shared;
 namespace SmartWorkz.StarterKitMVC.Application.Events.Consumers;
 
 /// <summary>
-/// Consumer for handling order created events.
-/// Sends order confirmation email and logs the order creation.
+/// Consumer for handling order processed events.
+/// Sends order confirmation email and logs the order processing.
 /// </summary>
-public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
+public class SendOrderConfirmationConsumer : IConsumer<OrderProcessedEvent>
 {
     private readonly IEmailSender _emailSender;
-    private readonly ILogger<OrderCreatedEventConsumer> _logger;
+    private readonly ILogger<SendOrderConfirmationConsumer> _logger;
 
-    public OrderCreatedEventConsumer(
+    public SendOrderConfirmationConsumer(
         IEmailSender emailSender,
-        ILogger<OrderCreatedEventConsumer> logger)
+        ILogger<SendOrderConfirmationConsumer> logger)
     {
         _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
+    public async Task Consume(ConsumeContext<OrderProcessedEvent> context)
     {
         var @event = context.Message;
 
         try
         {
             _logger.LogInformation(
-                "Processing order created event - OrderId: {OrderId}, UserId: {UserId}, Amount: {Amount}",
+                "Processing order processed event - OrderId: {OrderId}, UserId: {UserId}, Amount: {Amount}",
                 @event.OrderId,
                 @event.UserId,
-                @event.TotalAmount);
+                @event.Amount);
 
             // Send order confirmation email
             // Note: In a real scenario, you would fetch user email from repository
@@ -40,8 +40,7 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
                 <h2>Order Confirmation</h2>
                 <p>Thank you for your order!</p>
                 <p><strong>Order ID:</strong> {@event.OrderId}</p>
-                <p><strong>Total Amount:</strong> ${@event.TotalAmount:F2}</p>
-                <p><strong>Status:</strong> {@event.Status}</p>
+                <p><strong>Amount:</strong> ${@event.Amount:F2}</p>
                 <p>You can track your order status in your account dashboard.</p>
                 <p>If you have any questions about your order, please contact our customer support team.</p>
                 <br/>
