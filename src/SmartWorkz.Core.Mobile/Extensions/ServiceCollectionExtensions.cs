@@ -223,6 +223,15 @@ public static class ServiceCollectionExtensions
             return new OfflineMessageQueue(logger);
         });
 
+        // Step 28: Register Phase 5.1 Auto-Reconnect Service (Task 10)
+        services.AddSingleton<IAutoReconnectService>(sp =>
+        {
+            var realtimeService = sp.GetRequiredService<IRealtimeService>();
+            var messageQueue = sp.GetRequiredService<IOfflineMessageQueue>();
+            var logger = sp.GetService<ILogger<AutoReconnectService>>();
+            return new AutoReconnectService(realtimeService, messageQueue, logger);
+        });
+
         return services;
     }
 }
