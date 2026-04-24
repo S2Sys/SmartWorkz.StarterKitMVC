@@ -3,6 +3,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SmartWorkz.Mobile.Persistence;
 using SmartWorkz.Mobile.Services;
 using SmartWorkz.Mobile.Services.Implementations;
 using SmartWorkz.Shared;
@@ -163,6 +164,17 @@ public static class ServiceCollectionExtensions
         {
             var logger = sp.GetRequiredService<ILogger<ConflictDetector>>();
             return (IConflictDetector)new ConflictDetector(logger);
+        });
+
+        // Step 22: Register Phase 5.2 FileSystemSyncStateStore (Task 19)
+        var localAppDataPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "SmartWorkz.Mobile");
+
+        services.AddSingleton<ISyncStateStore>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILogger<FileSystemSyncStateStore>>();
+            return new FileSystemSyncStateStore(localAppDataPath, logger);
         });
 
         return services;

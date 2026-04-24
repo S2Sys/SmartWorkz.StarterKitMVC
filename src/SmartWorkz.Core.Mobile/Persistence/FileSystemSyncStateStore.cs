@@ -17,7 +17,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 /// Enables sync progress to survive app restarts without platform-specific SQLite dependencies.
 /// Uses JSON serialization for simple, portable persistence.
 /// </summary>
-public class SqliteSyncStateStore : ISyncStateStore, IDisposable
+public class FileSystemSyncStateStore : ISyncStateStore, IDisposable
 {
     private readonly string _databasePath;
     private readonly string _sessionsFile;
@@ -40,7 +40,7 @@ public class SqliteSyncStateStore : ISyncStateStore, IDisposable
 
     public string DatabasePath => _databasePath;
 
-    public SqliteSyncStateStore(string databasePath, ILogger<SqliteSyncStateStore>? logger = null)
+    public FileSystemSyncStateStore(string databasePath, ILogger<FileSystemSyncStateStore>? logger = null)
     {
         Guard.NotNull(databasePath, nameof(databasePath));
 
@@ -109,7 +109,7 @@ public class SqliteSyncStateStore : ISyncStateStore, IDisposable
                     _initialized = true;
                 }
 
-                _logger?.LogInformation("Sync state store initialized at {DbPath}", _databasePath);
+                _logger?.LogInformation("File-based sync state store initialized at {DbPath}", _databasePath);
                 return Result.Ok();
             }
             catch (Exception ex)
@@ -336,7 +336,7 @@ public class SqliteSyncStateStore : ISyncStateStore, IDisposable
 
                     var result = sessions
                         .OrderByDescending(s => s.StartTime)
-                        .Take(Math.Max(1, limit))
+                        .Take(limit)
                         .ToList();
 
                     return Result.Ok<IReadOnlyList<SyncSessionInfo>>(result.AsReadOnly());
@@ -434,7 +434,7 @@ public class SqliteSyncStateStore : ISyncStateStore, IDisposable
                     LastSyncTime: lastSyncTime ?? existing.LastSyncTime,
                     PendingChangesCount: pending ?? existing.PendingChangesCount,
                     ResolvedConflictsCount: (conflictsResolved ?? 0) + existing.ResolvedConflictsCount,
-                    LastErrorMessage: errorMessage ?? existing.LastErrorMessage);
+                    LastErrorMessage: errorMessage);
 
                 states[entityType] = updated;
             }
@@ -505,7 +505,7 @@ public class SqliteSyncStateStore : ISyncStateStore, IDisposable
         {
             if (!_initialized)
             {
-                throw new InvalidOperationException("SqliteSyncStateStore must be initialized before use. Call InitializeAsync() first.");
+                throw new InvalidOperationException("FileSystemSyncStateStore must be initialized before use. Call InitializeAsync() first.");
             }
         }
     }
