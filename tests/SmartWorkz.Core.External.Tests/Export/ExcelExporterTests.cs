@@ -342,4 +342,20 @@ public class ExcelExporterTests
         // Assert
         Assert.True(result.Succeeded);
     }
+
+    [Fact]
+    public async Task ExportAsync_WithSimpleData_GeneratesExcelBytes()
+    {
+        // Arrange
+        var data = new[] { new { Name = "John", Age = 30 } };
+        var exporter = new ExcelExporter();
+
+        // Act
+        var result = await exporter.ExportAsync(data, "Test Report", CancellationToken.None);
+
+        // Assert
+        Assert.True(result.Succeeded);
+        Assert.NotNull(result.Data);
+        Assert.NotEmpty(result.Data);
+    }
 }
