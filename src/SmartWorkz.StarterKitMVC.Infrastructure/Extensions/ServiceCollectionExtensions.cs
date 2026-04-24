@@ -37,21 +37,26 @@ public static class ServiceCollectionExtensions
         // Configure structured logging with Serilog
         // services.AddStructuredLogging(configuration);
 
+        // Validate connection string is configured
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        if (string.IsNullOrEmpty(connectionString))
+            throw new InvalidOperationException("Connection string 'DefaultConnection' not configured.");
+
         // DbContext registration
         services.AddDbContext<MasterDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(connectionString));
 
         services.AddDbContext<SharedDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(connectionString));
 
         services.AddDbContext<TransactionDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(connectionString));
 
         services.AddDbContext<ReportDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(connectionString));
 
         services.AddDbContext<AuthDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(connectionString));
 
         // Register IDbConnection for Dapper repositories
         services.AddScoped<IDbConnection>(sp =>
