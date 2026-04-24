@@ -11,22 +11,22 @@ using SmartWorkz.Mobile.Persistence;
 using SmartWorkz.Shared;
 
 /// <summary>
-/// Unit tests for SqliteSyncStateStore persistence service.
+/// Unit tests for FileSystemSyncStateStore persistence service.
 /// Tests database initialization, pending changes, sync sessions, and cleanup.
 /// </summary>
-public class SqliteSyncStateStoreTests : IAsyncLifetime
+public class FileSystemSyncStateStoreTests : IAsyncLifetime
 {
     private readonly string _testDatabasePath;
-    private SqliteSyncStateStore? _store;
+    private FileSystemSyncStateStore? _store;
 
-    public SqliteSyncStateStoreTests()
+    public FileSystemSyncStateStoreTests()
     {
         _testDatabasePath = Path.Combine(Path.GetTempPath(), $"sync_state_{Guid.NewGuid()}.db");
     }
 
     public async Task InitializeAsync()
     {
-        _store = new SqliteSyncStateStore(_testDatabasePath);
+        _store = new FileSystemSyncStateStore(_testDatabasePath);
         var result = await _store.InitializeAsync();
         Assert.True(result.Succeeded, "Failed to initialize database");
     }
@@ -66,7 +66,7 @@ public class SqliteSyncStateStoreTests : IAsyncLifetime
     public async Task InitializeAsync_CreatesDatabase_Succeeds()
     {
         // Arrange - fresh store without initialize
-        using var newStore = new SqliteSyncStateStore(
+        using var newStore = new FileSystemSyncStateStore(
             Path.Combine(Path.GetTempPath(), $"sync_init_{Guid.NewGuid()}.db"));
 
         // Act
@@ -274,7 +274,7 @@ public class SqliteSyncStateStoreTests : IAsyncLifetime
     public async Task IsInitializedAsync_BeforeInit_ReturnsFalse()
     {
         // Arrange
-        using var uninitializedStore = new SqliteSyncStateStore(
+        using var uninitializedStore = new FileSystemSyncStateStore(
             Path.Combine(Path.GetTempPath(), $"uninit_{Guid.NewGuid()}.db"));
 
         // Act
@@ -375,5 +375,44 @@ public class SqliteSyncStateStoreTests : IAsyncLifetime
         var state = await _store.GetSyncStateAsync("Order");
         Assert.NotNull(state.Data?.LastErrorMessage);
         Assert.Equal("Network timeout during sync", state.Data.LastErrorMessage);
+    }
+
+    [Fact]
+    public async Task RecordSyncSessionAsync_WithSuccessfulSessionAfterFailure_ClearsErrorMessage()
+    {
+        // Arrange
+        var store = _store!;
+
+        // Record a failed session first
+        var failedSession = new SyncSessionInfo(
+            SessionId: "session1",
+            EntityType: "Order",
+            StartTime: DateTime.UtcNow.AddMinutes(-5),
+            EndTime: DateTime.UtcNow.AddMinutes(-3),
+            IsSuccessful: false,
+            ErrorMessage: "Network timeout",
+            ChangesProcessed: 0,
+            ConflictsResolved: 0);
+        await store.RecordSyncSessionAsync(failedSession);
+
+        // Verify error is stored
+        var stateAfterFailure = await store.GetSyncStateAsync("Order");
+        Assert.Equal("Network timeout", stateAfterFailure.Data!.LastErrorMessage);
+
+        // Record a successful session
+        var successSession = new SyncSessionInfo(
+            SessionId: "session2",
+            EntityType: "Order",
+            StartTime: DateTime.UtcNow.AddMinutes(-2),
+            EndTime: DateTime.UtcNow,
+            IsSuccessful: true,
+            ErrorMessage: null,
+            ChangesProcessed: 5,
+            ConflictsResolved: 0);
+        await store.RecordSyncSessionAsync(successSession);
+
+        // Assert: error message should be cleared
+        var stateAfterSuccess = await store.GetSyncStateAsync("Order");
+        Assert.Null(stateAfterSuccess.Data!.LastErrorMessage);
     }
 }
