@@ -2,6 +2,7 @@ using MassTransit;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.Shared;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
+using System.Web;
 
 namespace SmartWorkz.StarterKitMVC.Application.Events.Consumers;
 
@@ -38,16 +39,29 @@ public class SendWelcomeEmailConsumer : IConsumer<UserRegisteredEvent>
 
             // Send welcome email to the new user
             var subject = "Welcome to SmartWorkz";
+            var escapedFirstName = HttpUtility.HtmlEncode(@event.FirstName);
+            var escapedLastName = HttpUtility.HtmlEncode(@event.LastName);
+
             var body = $@"
                 <h2>Welcome to SmartWorkz!</h2>
-                <p>Dear {@event.FirstName} {@event.LastName},</p>
+                <p>Dear {escapedFirstName} {escapedLastName},</p>
                 <p>Thank you for registering with us. Your account has been successfully created.</p>
                 <p>If you have any questions, please don't hesitate to contact our support team.</p>
                 <br/>
                 <p>Best regards,<br/>The SmartWorkz Team</p>
             ";
 
-            await _emailSender.SendAsync(@event.Email, subject, body, isHtml: true);
+            var result = await _emailSender.SendAsync(@event.Email, subject, body, isHtml: true);
+
+            if (!result.Succeeded)
+            {
+                _logger.LogError(
+                    "Failed to send welcome email to user {UserId} ({Email}): {Error}",
+                    @event.UserId,
+                    @event.Email,
+                    result.MessageKey);
+                throw new InvalidOperationException($"Email sending failed: {result.MessageKey}");
+            }
 
             _logger.LogInformation(
                 "Welcome email sent successfully to user {UserId} ({Email})",
