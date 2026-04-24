@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Button
+    x:Class="SmartWorkz.Mobile.Components.CustomButton"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    BackgroundColor="#007AFF"
+    CornerRadius="8"
+    FontAttributes="Bold"
+    FontSize="16"
+    Padding="16,12"
+    TextColor="White" />
