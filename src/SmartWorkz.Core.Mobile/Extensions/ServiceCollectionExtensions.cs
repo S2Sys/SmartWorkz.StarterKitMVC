@@ -191,6 +191,13 @@ public static class ServiceCollectionExtensions
             return new ExponentialBackoffRetryPolicy(config, logger);
         });
 
+        // Step 24: Register Phase 5.1 Realtime Subscription Manager (Task 6)
+        services.AddSingleton<IRealtimeSubscriptionManager>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILogger<RealtimeSubscriptionManager>>();
+            return new RealtimeSubscriptionManager(logger);
+        });
+
         return services;
     }
 }
