@@ -21,6 +21,7 @@ using SmartWorkz.StarterKitMVC.Infrastructure.EmailTemplates;
 using SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
 using SmartWorkz.StarterKitMVC.Infrastructure.BackgroundJobs;
 using SmartWorkz.StarterKitMVC.Infrastructure.Services;
+using SmartWorkz.StarterKitMVC.Infrastructure.Data.Services;
 
 namespace SmartWorkz.StarterKitMVC.Infrastructure.Extensions;
 
@@ -34,7 +35,7 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration)
     {
         // Configure structured logging with Serilog
-        services.AddStructuredLogging(configuration);
+        // services.AddStructuredLogging(configuration);
 
         // DbContext registration
         services.AddDbContext<MasterDbContext>(options =>
@@ -59,6 +60,9 @@ public static class ServiceCollectionExtensions
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not configured.");
             return new SqlConnection(connectionString);
         });
+
+        // Register MigrationManager for automatic migrations on startup
+        services.AddScoped<IMigrationManager, MigrationManager>();
 
         return services;
     }

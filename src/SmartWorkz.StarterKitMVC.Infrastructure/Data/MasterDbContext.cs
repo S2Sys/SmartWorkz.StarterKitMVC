@@ -34,9 +34,62 @@ public class MasterDbContext : DbContext
         // Configure schema
         modelBuilder.HasDefaultSchema("Master");
 
-        // Tenant Configuration
+        // Define primary keys for all entities
         modelBuilder.Entity<Tenant>()
             .HasKey(t => t.TenantId);
+
+        modelBuilder.Entity<Country>()
+            .HasKey(c => c.CountryId);
+
+        modelBuilder.Entity<Currency>()
+            .HasKey(c => c.CurrencyId);
+
+        modelBuilder.Entity<Language>()
+            .HasKey(l => l.LanguageId);
+
+        modelBuilder.Entity<Domain.Entities.Master.TimeZone>()
+            .HasKey(tz => tz.TimeZoneId);
+
+        modelBuilder.Entity<Domain.Entities.Master.Configuration>()
+            .HasKey(c => c.ConfigId);
+
+        modelBuilder.Entity<Category>()
+            .HasKey(c => c.CategoryId);
+
+        modelBuilder.Entity<Product>()
+            .HasKey(p => p.ProductId);
+
+        modelBuilder.Entity<GeoHierarchy>()
+            .HasKey(g => g.GeoId);
+
+        modelBuilder.Entity<GeolocationPage>()
+            .HasKey(gp => gp.GeoPageId);
+
+        modelBuilder.Entity<CustomPage>()
+            .HasKey(cp => cp.PageId);
+
+        modelBuilder.Entity<BlogPost>()
+            .HasKey(bp => bp.PostId);
+
+        modelBuilder.Entity<Customer>()
+            .HasKey(c => c.CustomerId);
+
+        modelBuilder.Entity<Supplier>()
+            .HasKey(s => s.SupplierId);
+
+        modelBuilder.Entity<Inventory>()
+            .HasKey(i => i.InventoryId);
+
+        modelBuilder.Entity<FeatureFlag>()
+            .HasKey(f => f.FeatureFlagId);
+
+        modelBuilder.Entity<Menu>()
+            .HasKey(m => m.MenuId);
+
+        modelBuilder.Entity<MenuItem>()
+            .HasKey(mi => mi.MenuItemId);
+
+        // Tenant Configuration
 
         modelBuilder.Entity<Tenant>()
             .HasMany(t => t.Countries)

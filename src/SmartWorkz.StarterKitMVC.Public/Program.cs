@@ -64,6 +64,22 @@ builder.Services.AddHttpContextAccessor();
 // ─── App Pipeline ─────────────────────────────────────────────────────────
 var app = builder.Build();
 
+// Run database migrations
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var migrationManager = scope.ServiceProvider.GetRequiredService<SmartWorkz.StarterKitMVC.Infrastructure.Data.Services.IMigrationManager>();
+        await migrationManager.MigrateAsync();
+        app.Logger.LogInformation("✓ All database migrations completed successfully");
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "✗ Database migration failed - application will not start");
+        throw;
+    }
+}
+
 // Swagger/OpenAPI documentation middleware
 app.UseSwaggerDocumentation(app.Configuration);
 
