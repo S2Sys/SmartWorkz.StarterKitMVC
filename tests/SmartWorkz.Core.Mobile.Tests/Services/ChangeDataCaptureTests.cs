@@ -51,8 +51,8 @@ public class ChangeDataCaptureTests
     {
         // Arrange
         var capture = new ChangeDataCapture();
-        var change1 = CreateChange("Order1", "Status", "123");
-        var change2 = CreateChange("Order2", "Amount", "456");
+        var change1 = CreateChange("Order1", "Status", changeId: "123");
+        var change2 = CreateChange("Order2", "Amount", changeId: "456");
         await capture.RecordChangeAsync(change1);
         await capture.RecordChangeAsync(change2);
 
@@ -139,8 +139,8 @@ public class ChangeDataCaptureTests
     {
         // Arrange
         var capture = new ChangeDataCapture();
-        await capture.RecordChangeAsync(CreateChange("Order1", "Status", "123"));
-        await capture.RecordChangeAsync(CreateChange("Order2", "Amount", "456"));
+        await capture.RecordChangeAsync(CreateChange("Order1", "Status", changeId: "123"));
+        await capture.RecordChangeAsync(CreateChange("Order2", "Amount", changeId: "456"));
 
         // Act
         var result = await capture.ClearChangesAsync();
@@ -176,9 +176,9 @@ public class ChangeDataCaptureTests
     {
         // Arrange
         var capture = new ChangeDataCapture();
-        await capture.RecordChangeAsync(CreateChange("Order1", "Status", "123"));
-        await capture.RecordChangeAsync(CreateChange("Order2", "Amount", "456"));
-        await capture.RecordChangeAsync(CreateChange("Order3", "Price", "789"));
+        await capture.RecordChangeAsync(CreateChange("Order1", "Status", changeId: "123"));
+        await capture.RecordChangeAsync(CreateChange("Order2", "Amount", changeId: "456"));
+        await capture.RecordChangeAsync(CreateChange("Order3", "Price", changeId: "789"));
 
         // Act
         var result = await capture.GetChangeCountAsync();

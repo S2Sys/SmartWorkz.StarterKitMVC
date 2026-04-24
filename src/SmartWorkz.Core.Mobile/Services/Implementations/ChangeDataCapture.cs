@@ -20,6 +20,7 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
     private readonly ConcurrentBag<SyncChange> _changes = new();
     private readonly ILogger? _logger;
     private bool _disposed;
+    private readonly object _lockObject = new();
 
     public ChangeDataCapture(ILogger? logger = null)
     {
@@ -29,8 +30,9 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
     /// <summary>
     /// Record a change to be tracked for sync.
     /// </summary>
-    public async Task<Result> RecordChangeAsync(SyncChange change)
+    public Task<Result> RecordChangeAsync(SyncChange change)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
         Guard.NotNull(change, nameof(change));
 
         try
@@ -43,7 +45,7 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
                 change.EntityId,
                 change.Property);
 
-            return await Task.FromResult(Result.Ok());
+            return Task.FromResult(Result.Ok());
         }
         catch (Exception ex)
         {
@@ -54,7 +56,7 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
                 change.EntityType,
                 change.EntityId);
 
-            return await Task.FromResult(
+            return Task.FromResult(
                 Result.Fail("ChangeCapture.RecordFailed", "Failed to record change"));
         }
     }
@@ -63,10 +65,11 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
     /// Get tracked changes with optional filtering.
     /// Returns results ordered by Timestamp DESC (most recent first).
     /// </summary>
-    public async Task<Result<IReadOnlyList<SyncChange>>> GetChangesAsync(
+    public Task<Result<IReadOnlyList<SyncChange>>> GetChangesAsync(
         string? entityType = null,
         DateTime? since = null)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
         try
         {
             var changes = _changes.AsEnumerable();
@@ -94,7 +97,7 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
                 entityType ?? "all",
                 since?.ToString("O") ?? "all");
 
-            return await Task.FromResult(Result.Ok(result));
+            return Task.FromResult(Result.Ok(result));
         }
         catch (Exception ex)
         {
@@ -104,7 +107,7 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
                 entityType ?? "all",
                 since?.ToString("O") ?? "all");
 
-            return await Task.FromResult(
+            return Task.FromResult(
                 Result.Fail<IReadOnlyList<SyncChange>>(
                     "ChangeCapture.RetrieveFailed",
                     "Failed to retrieve changes"));
@@ -114,8 +117,9 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
     /// <summary>
     /// Get a specific change by ID.
     /// </summary>
-    public async Task<Result<SyncChange>> GetChangeAsync(string changeId)
+    public Task<Result<SyncChange>> GetChangeAsync(string changeId)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
         Guard.NotEmpty(changeId, nameof(changeId));
 
         try
@@ -124,17 +128,17 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
             if (change == null)
             {
                 _logger?.LogWarning("Change not found: {ChangeId}", changeId);
-                return await Task.FromResult(
+                return Task.FromResult(
                     Result.Fail<SyncChange>("ChangeCapture.NotFound", $"Change {changeId} not found"));
             }
 
             _logger?.LogDebug("Retrieved change {ChangeId}", changeId);
-            return await Task.FromResult(Result.Ok(change));
+            return Task.FromResult(Result.Ok(change));
         }
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, "Failed to retrieve change {ChangeId}", changeId);
-            return await Task.FromResult(
+            return Task.FromResult(
                 Result.Fail<SyncChange>(
                     "ChangeCapture.RetrieveFailed",
                     "Failed to retrieve change"));
@@ -146,8 +150,9 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
     /// If before is null, clears all changes.
     /// If before is provided, clears only changes BEFORE that timestamp.
     /// </summary>
-    public async Task<Result> ClearChangesAsync(DateTime? before = null)
+    public Task<Result> ClearChangesAsync(DateTime? before = null)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
         try
         {
             if (before == null)
@@ -159,31 +164,34 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
                 }
 
                 _logger?.LogDebug("Cleared all changes");
-                return await Task.FromResult(Result.Ok());
+                return Task.FromResult(Result.Ok());
             }
 
-            // Clear only changes BEFORE the specified timestamp
-            var changesToKeep = _changes
-                .Where(c => c.Timestamp >= before.Value)
-                .ToList();
-
-            // Rebuild the bag with only the changes to keep
-            while (!_changes.IsEmpty)
+            // Clear only changes BEFORE the specified timestamp (atomically)
+            lock (_lockObject)
             {
-                _changes.TryTake(out _);
+                var changesToKeep = _changes
+                    .Where(c => c.Timestamp >= before.Value)
+                    .ToList();
+
+                // Rebuild the bag with only the changes to keep
+                while (!_changes.IsEmpty)
+                {
+                    _changes.TryTake(out _);
+                }
+
+                foreach (var change in changesToKeep)
+                {
+                    _changes.Add(change);
+                }
+
+                _logger?.LogDebug(
+                    "Cleared changes before {Before:O}, kept {KeptCount} changes",
+                    before.Value,
+                    changesToKeep.Count);
             }
 
-            foreach (var change in changesToKeep)
-            {
-                _changes.Add(change);
-            }
-
-            _logger?.LogDebug(
-                "Cleared changes before {Before:O}, kept {KeptCount} changes",
-                before.Value,
-                changesToKeep.Count);
-
-            return await Task.FromResult(Result.Ok());
+            return Task.FromResult(Result.Ok());
         }
         catch (Exception ex)
         {
@@ -192,7 +200,7 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
                 "Failed to clear changes (before: {Before:O})",
                 before?.ToString("O") ?? "all");
 
-            return await Task.FromResult(
+            return Task.FromResult(
                 Result.Fail("ChangeCapture.ClearFailed", "Failed to clear changes"));
         }
     }
@@ -200,18 +208,19 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
     /// <summary>
     /// Get total count of tracked changes.
     /// </summary>
-    public async Task<Result<int>> GetChangeCountAsync()
+    public Task<Result<int>> GetChangeCountAsync()
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
         try
         {
             var count = _changes.Count;
             _logger?.LogDebug("Current change count: {Count}", count);
-            return await Task.FromResult(Result.Ok(count));
+            return Task.FromResult(Result.Ok(count));
         }
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, "Failed to get change count");
-            return await Task.FromResult(
+            return Task.FromResult(
                 Result.Fail<int>("ChangeCapture.CountFailed", "Failed to get change count"));
         }
     }
@@ -236,7 +245,6 @@ public class ChangeDataCapture : IChangeDataCapture, IDisposable
         finally
         {
             _disposed = true;
-            GC.SuppressFinalize(this);
         }
     }
 }
