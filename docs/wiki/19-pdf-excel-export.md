@@ -68,7 +68,7 @@ public class OrderController
 
     public async Task<IActionResult> ExportOrdersPdf(List<Order> orders)
     {
-        var result = await _pdfExporter.ExportAsync(orders, "Orders");
+        var result = await _pdfExporter.ExportAsync(orders, "Orders"); // CancellationToken optional (default: CancellationToken.None)
         if (result.IsFailure)
             return BadRequest(result.Error);
         
@@ -77,7 +77,7 @@ public class OrderController
 
     public async Task<IActionResult> ExportOrdersExcel(List<Order> orders)
     {
-        var result = await _excelExporter.ExportAsync(orders, "Orders");
+        var result = await _excelExporter.ExportAsync(orders, "Orders"); // CancellationToken optional (default: CancellationToken.None)
         if (result.IsFailure)
             return BadRequest(result.Error);
         
@@ -105,7 +105,7 @@ Configuration for PDF export styling, layout, and formatting:
 | LeftMargin | float | 36 | 72 (1 inch) |
 | RightMargin | float | 36 | 72 (1 inch) |
 | HeaderBold | bool | true | false |
-| HeaderBackgroundColor | object? | null | RGB color object |
+| HeaderBackgroundColor | object? | null | Any format: hex `"#FF0000"`, RGB `Color.Red`, or Color objects |
 | DateFormat | string | "yyyy-MM-dd" | "MM/dd/yyyy" |
 | CurrencyFormat | string | "C" | "$#,##0.00" |
 | DecimalPlaces | int | 2 | 3 |
@@ -119,7 +119,7 @@ Configuration for Excel export styling, formatting, and layout:
 |----------|------|---------|---------|
 | SheetName | string | "Sheet1" | "Orders" |
 | HeaderBold | bool | true | false |
-| HeaderBackgroundColor | string | "D3D3D3" | "4472C4" (hex code) |
+| HeaderBackgroundColor | string | "D3D3D3" | Hex color only: `"4472C4"` or `"#FF0000"` |
 | HeaderFontSize | int | 11 | 12 |
 | AutoColumnWidth | bool | true | false |
 | FreezePanes | bool | true | false |
@@ -160,7 +160,7 @@ public class OrderReportService
         };
 
         var exporter = new PdfExporter(options);
-        var result = await exporter.ExportAsync(orders, "Orders");
+        var result = await exporter.ExportAsync(orders, "Orders"); // CancellationToken optional (default: CancellationToken.None)
 
         if (result.IsFailure)
             return Result<FileContent>.Fail(result.Error);
@@ -208,7 +208,7 @@ public class ReportController : ControllerBase
             { "Products", products.Cast<object>().ToList() }
         };
 
-        var result = await exporter.ExportMultipleAsync(sheets);
+        var result = await exporter.ExportMultipleAsync(sheets); // CancellationToken optional (default: CancellationToken.None)
 
         if (result.IsFailure)
             return BadRequest(new { error = result.Error });
@@ -301,6 +301,7 @@ public class ExportController : ControllerBase
                     DateFormat = request.DateFormat ?? "yyyy-MM-dd",
                     CurrencyFormat = request.CurrencyFormat ?? "$#,##0.00"
                 }
+                // CancellationToken optional (default: CancellationToken.None)
             ),
             
             "excel" => await _excelExporter.ExportAsync(
@@ -314,6 +315,7 @@ public class ExportController : ControllerBase
                     DateFormat = request.DateFormat ?? "yyyy-MM-dd",
                     CurrencyFormat = request.CurrencyFormat ?? "$#,##0.00"
                 }
+                // CancellationToken optional (default: CancellationToken.None)
             ),
             
             _ => Result<byte[]>.Fail("Error.UnsupportedFormat", "Only 'pdf' and 'excel' supported")
@@ -375,7 +377,7 @@ var result = await exporter.ExportAsync(orders, "Sales Orders");
 | Method | Return Type | Parameters | Description |
 |--------|-------------|-----------|-------------|
 | ExportAsync<T> | Task<Result<byte[]>> | data: IEnumerable<T>, sheetName: string, ct: CancellationToken | Export collection to single Excel sheet |
-| ExportMultipleAsync | Task<Result<byte[]>> | sheets: Dictionary<string, IEnumerable<object>>, ct: CancellationToken | Export multiple collections to multiple sheets |
+| ExportMultipleAsync | Task<Result<byte[]>> | sheets: Dictionary<string, IEnumerable<object>>, ct: CancellationToken | Export multiple collections to multiple sheets in one workbook |
 
 **Usage:**
 
@@ -487,8 +489,17 @@ public class DataController : ControllerBase
 
 ### Reflection Caching Behavior
 
-The exporters automatically cache property metadata per type to optimize repeated exports:
+The exporters automatically cache property metadata per type to optimize repeated exports. **You don't need to manage caching yourself** — it's entirely transparent.
 
+**How it works:**
+- **First call:** Reflection scans `Type.GetProperties()` (slow, ~1ms per type)
+- **Subsequent calls:** Cached `PropertyInfo[]` retrieved from `ConcurrentDictionary<Type, PropertyInfo[]>` (fast, <0.1ms per type)
+
+**You only need to understand this if:**
+- You're exporting the same type millions of times (you'll see a performance cliff after the first call)
+- You're debugging reflection-related errors
+
+**Example:**
 ```csharp
 // First call: Reflection scans Product.GetProperties() (slow)
 var result1 = await exporter.ExportAsync(products1, "Products");
@@ -497,6 +508,8 @@ var result1 = await exporter.ExportAsync(products1, "Products");
 var result2 = await exporter.ExportAsync(products2, "Products");
 var result3 = await exporter.ExportAsync(products3, "Products");
 ```
+
+In most cases, just ignore the caching layer — it's automatic and transparent to your code.
 
 ---
 
@@ -591,7 +604,7 @@ var options = new ExcelOptions { CurrencyFormat = "$#,##0.00" };
 var exporter = new ExcelExporter(options);
 ```
 
-### Issue 3: PDF Page Sizing and Margin Configuration
+### Gotcha 3: PDF Page Sizing and Margin Configuration
 
 **Problem:** Exported PDF has unexpected page size or margins don't apply as expected.
 
@@ -620,7 +633,7 @@ Common point conversions:
 - 1 inch = 72 points
 - 1.25 inch = 90 points
 
-### Issue 4: Licensing and Library Dependencies
+### Gotcha 4: Licensing and Library Dependencies
 
 **Problem:** Do I need to pay for PDF or Excel export? Are there licensing restrictions?
 
