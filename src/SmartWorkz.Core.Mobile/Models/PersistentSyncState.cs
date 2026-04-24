@@ -4,7 +4,7 @@ using System;
 
 /// <summary>
 /// Represents the persistent state of sync progress for a specific entity type.
-/// Persisted to SQLite and used to determine if sync is needed and track progress.
+/// Current sync state persisted to file-based storage and used to determine if sync is needed and track progress.
 /// </summary>
 public sealed record PersistentSyncState(
     string EntityType,

@@ -7,7 +7,7 @@ using SmartWorkz.Mobile.Models;
 using SmartWorkz.Shared;
 
 /// <summary>
-/// Persistent storage for sync state using SQLite.
+/// Persistent file-based storage for sync state using JSON files.
 /// Enables sync progress to survive app restarts and track sync history.
 /// </summary>
 public interface ISyncStateStore
