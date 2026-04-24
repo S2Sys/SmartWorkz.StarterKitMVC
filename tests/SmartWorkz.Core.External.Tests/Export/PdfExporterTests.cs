@@ -22,18 +22,22 @@ public class PdfExporterTests
 
     public PdfExporterTests()
     {
+        if (!IsArchitectureSupported)
+        {
+            throw new SkipTestException(SkipReason);
+        }
         _exporter = new PdfExporter();
     }
 
-    private void AssertSupportedArchitecture()
+    /// <summary>
+    /// Exception thrown to skip a test at runtime via the constructor.
+    /// xUnit recognizes this during test initialization and marks tests as skipped.
+    /// </summary>
+    private sealed class SkipTestException : Exception
     {
-        // Skip test if architecture is not supported by QuestPDF
-        // xUnit handles null/empty skip reason as test skip
-        if (!IsArchitectureSupported)
-        {
-            throw new PlatformNotSupportedException(SkipReason);
-        }
+        public SkipTestException(string message) : base(message) { }
     }
+
 
     private class SimpleData
     {
@@ -56,7 +60,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithValidSimpleData_ReturnsSuccessResult()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var data = new List<SimpleData>
@@ -78,7 +82,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithEmptyCollection_ReturnsFailureResult()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var data = new List<SimpleData>();
@@ -94,7 +98,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithNullValues_ReturnsSuccessResult()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var data = new List<SimpleData>
@@ -114,7 +118,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithoutTitle_ReturnsSuccessResult()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var data = new List<SimpleData>
@@ -132,7 +136,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithLargeDataset_ReturnsSuccessResult()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var data = Enumerable.Range(1, 200)
@@ -156,7 +160,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithCustomPageOptions_ReturnsSuccessResult()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var options = new PdfOptions
@@ -188,7 +192,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithLandscapeOrientation_ReturnsSuccessResult()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var options = new PdfOptions
@@ -212,7 +216,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithDifferentPageSizes_ReturnsSuccessResult()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var pageSizes = new[] { "A4", "Letter", "A3", "A5", "Legal" };
@@ -237,7 +241,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithNullableTypes_HandlesProperlyFormatted()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var data = new List<ComplexData>
@@ -256,7 +260,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithBooleanFields_FormatsCorrectly()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var data = new List<ComplexData>
@@ -275,7 +279,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithCurrencyData_AppliesCurrencyFormatting()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var data = new List<SimpleData>
@@ -293,7 +297,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithDateTimeData_AppliesDateFormatting()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var data = new List<SimpleData>
@@ -317,7 +321,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithPageNumbers_IncludesPageInfo()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var options = new PdfOptions { IncludePageNumbers = true };
@@ -342,7 +346,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithoutPageNumbers_ReturnsSuccessResult()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var options = new PdfOptions { IncludePageNumbers = false };
@@ -362,7 +366,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithCustomMargins_ReturnsSuccessResult()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var options = new PdfOptions
@@ -389,7 +393,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithValidCancellationToken_AllowsNormalOperation()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange - test that a non-cancelled token works fine
         var data = new List<SimpleData>
@@ -409,7 +413,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithSpecialCharacters_EncodesCorrectly()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var data = new List<SimpleData>
@@ -427,7 +431,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithPaginationAcrossPages_ReturnsSuccessResult()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var options = new PdfOptions { RowsPerPage = 10 };
@@ -453,7 +457,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_With1000RowDataset_ReturnsSuccessResult()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var data = Enumerable.Range(1, 300)
@@ -477,7 +481,7 @@ public class PdfExporterTests
     [Fact]
     public async Task ExportAsync_WithNumericData_AlignmentCorrect()
     {
-        AssertSupportedArchitecture();
+        SkipIfUnsupportedArchitecture();
 
         // Arrange
         var data = new List<ComplexData>
