@@ -12,7 +12,7 @@ using SmartWorkz.Shared;
 /// <summary>
 /// SignalR-based real-time communication service implementation.
 /// </summary>
-public class RealtimeService : IRealtimeService, IDisposable
+public partial class RealtimeService : IRealtimeService, IDisposable
 {
     private readonly string _hubUrl;
     private readonly ILogger<RealtimeService> _logger;
