@@ -1,6 +1,6 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using SmartWorkz.Shared.Communications;
+using SmartWorkz.Shared;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 
 namespace SmartWorkz.StarterKitMVC.Application.Events.Consumers;
@@ -52,7 +52,7 @@ public class PasswordResetRequestedEventConsumer : IConsumer<PasswordResetReques
                 <p>Best regards,<br/>The SmartWorkz Team</p>
             ";
 
-            await _emailSender.SendEmailAsync(@event.Email, subject, body);
+            await _emailSender.SendAsync(@event.Email, subject, body, isHtml: true);
 
             _logger.LogInformation(
                 "Password reset email sent successfully to user {UserId} ({Email})",

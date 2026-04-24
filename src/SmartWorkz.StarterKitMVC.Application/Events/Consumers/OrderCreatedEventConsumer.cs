@@ -1,6 +1,6 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using SmartWorkz.Shared.Communications;
+using SmartWorkz.Shared;
 
 namespace SmartWorkz.StarterKitMVC.Application.Events.Consumers;
 
