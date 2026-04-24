@@ -20,7 +20,7 @@ public static class SwaggerServiceExtension
         IConfiguration configuration)
     {
         var swaggerOptions = configuration
-            .GetSection("FeatureOptions:Swagger")
+            .GetSection("Features:Swagger")
             .Get<SwaggerFeatureOptions>()
             ?? new SwaggerFeatureOptions();
 
@@ -84,7 +84,7 @@ public static class SwaggerServiceExtension
         IConfiguration configuration)
     {
         var swaggerOptions = configuration
-            .GetSection("FeatureOptions:Swagger")
+            .GetSection("Features:Swagger")
             .Get<SwaggerFeatureOptions>();
 
         if (swaggerOptions?.Enabled != true)
