@@ -902,9 +902,9 @@ Result object returned after form submission.
 ### Cross-References
 
 - **[Template Engine](13-template-engine.md)** — Use with Form Builder for dynamic email templates based on form submissions
-- **[Email Service](../SMARTWORKZ_SERVICES_COMPLETE.md)** — Send confirmation/notification emails after form submission
+- **[Email Service](../SERVICES.md)** — Send confirmation/notification emails after form submission
 - **[Cache Attribute](12-cache-attribute.md)** — Cache form definitions if dynamically loaded from database
-- **[Logging](../LOGGING_GUIDE.md)** — Log form submissions and validation errors
+- **[Logging](../SERVICES.md#logging-service)** — Log form submissions and validation errors
 
 ### Integration Pattern
 
@@ -1039,51 +1039,188 @@ new FormValidationRule
 }
 ```
 
-**Extension Pattern (when custom validation is needed):**
+**Composition Pattern (recommended for custom validation):**
 
 ```csharp
-// Create a subclass of FormBuilderComponent
-@inherits FormBuilderComponent
-@namespace MyApp.Components.FormBuilder
+// Step 1: Create a custom validator service
+public class CustomFormValidator
+{
+    private readonly Dictionary<string, Func<string, string?>> _validators = new();
 
-@* Override ValidateField to add custom validation *@
-
-@code {
-    protected override string? ValidateField(FormField field, FormValidationRule rule)
+    public CustomFormValidator()
     {
-        return rule.Type?.ToLower() switch
+        // Register custom validators
+        RegisterValidator("ssn", ValidateSSN);
+        RegisterValidator("zipcode", ValidateZipCode);
+        RegisterValidator("phone", ValidatePhone);
+    }
+
+    public void RegisterValidator(string name, Func<string, string?> validator)
+    {
+        _validators[name.ToLower()] = validator;
+    }
+
+    public string? Validate(string validatorName, string value)
+    {
+        if (_validators.TryGetValue(validatorName.ToLower(), out var validator))
         {
-            // Call base for standard rules
-            var type when base.ValidateField(field, rule) is not null => base.ValidateField(field, rule),
-            
-            // Add custom validation
-            "custom" => rule.CustomFunction switch
-            {
-                "ValidateSSN" => ValidateSSN(field.Value?.ToString() ?? ""),
-                "ValidateZipCode" => ValidateZipCode(field.Value?.ToString() ?? ""),
-                _ => null
-            },
-            
-            _ => null
-        };
+            return validator(value);
+        }
+        return null;
     }
 
     private string? ValidateSSN(string value)
     {
-        // Custom validation logic
         return System.Text.RegularExpressions.Regex.IsMatch(value, @"^\d{3}-\d{2}-\d{4}$")
             ? null
-            : "Invalid SSN format";
+            : "SSN must be in format XXX-XX-XXXX";
     }
 
     private string? ValidateZipCode(string value)
     {
         return System.Text.RegularExpressions.Regex.IsMatch(value, @"^\d{5}(-\d{4})?$")
             ? null
-            : "Invalid ZIP code format";
+            : "ZIP code must be in format XXXXX or XXXXX-XXXX";
+    }
+
+    private string? ValidatePhone(string value)
+    {
+        return System.Text.RegularExpressions.Regex.IsMatch(value, @"^\d{3}-\d{3}-\d{4}$")
+            ? null
+            : "Phone must be in format XXX-XXX-XXXX";
+    }
+}
+
+// Step 2: Inject into FormBuilderComponent
+@page "/form-with-validation"
+@using SmartWorkz.Web.Models
+@inject CustomFormValidator CustomValidator
+
+<FormBuilderComponent FormDef="MyForm" OnSubmit="HandleSubmit" />
+
+@code {
+    private FormDefinition MyForm = new()
+    {
+        Title = "Account Registration",
+        Fields = new()
+        {
+            new FormField
+            {
+                Name = "ssn",
+                Label = "Social Security Number",
+                Type = "text",
+                Placeholder = "XXX-XX-XXXX",
+                IsRequired = true,
+                ValidationRules = new()
+                {
+                    new FormValidationRule
+                    {
+                        Type = "custom",
+                        CustomFunction = "ssn",
+                        Message = "Invalid SSN format"
+                    }
+                }
+            },
+            new FormField
+            {
+                Name = "zipcode",
+                Label = "ZIP Code",
+                Type = "text",
+                Placeholder = "XXXXX or XXXXX-XXXX",
+                IsRequired = true,
+                ValidationRules = new()
+                {
+                    new FormValidationRule
+                    {
+                        Type = "custom",
+                        CustomFunction = "zipcode",
+                        Message = "Invalid ZIP code"
+                    }
+                }
+            },
+            new FormField
+            {
+                Name = "phone",
+                Label = "Phone Number",
+                Type = "text",
+                Placeholder = "XXX-XXX-XXXX",
+                IsRequired = true,
+                ValidationRules = new()
+                {
+                    new FormValidationRule
+                    {
+                        Type = "custom",
+                        CustomFunction = "phone",
+                        Message = "Invalid phone format"
+                    }
+                }
+            }
+        }
+    };
+
+    private async Task HandleSubmit(FormSubmissionResult result)
+    {
+        if (result.IsSuccess)
+        {
+            // Validate custom rules
+            var errors = ValidateCustomRules(result.Data);
+            if (errors.Count > 0)
+            {
+                // Handle validation errors
+                foreach (var error in errors)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Validation error: {error}");
+                }
+            }
+            else
+            {
+                // Process valid data
+                var ssn = result.Data["ssn"]?.ToString();
+                var zipcode = result.Data["zipcode"]?.ToString();
+                var phone = result.Data["phone"]?.ToString();
+                // Save to database
+            }
+        }
+    }
+
+    private Dictionary<string, string> ValidateCustomRules(Dictionary<string, object?> data)
+    {
+        var errors = new Dictionary<string, string>();
+
+        if (data.TryGetValue("ssn", out var ssnValue))
+        {
+            var error = CustomValidator.Validate("ssn", ssnValue?.ToString() ?? "");
+            if (error != null)
+                errors["ssn"] = error;
+        }
+
+        if (data.TryGetValue("zipcode", out var zipcodeValue))
+        {
+            var error = CustomValidator.Validate("zipcode", zipcodeValue?.ToString() ?? "");
+            if (error != null)
+                errors["zipcode"] = error;
+        }
+
+        if (data.TryGetValue("phone", out var phoneValue))
+        {
+            var error = CustomValidator.Validate("phone", phoneValue?.ToString() ?? "");
+            if (error != null)
+                errors["phone"] = error;
+        }
+
+        return errors;
     }
 }
 ```
+
+**Key Benefits of Composition Pattern:**
+
+- **Decoupled**: CustomFormValidator is a standalone service, not coupled to FormBuilderComponent
+- **Testable**: Easy to unit test validators independently without component context
+- **Reusable**: Register once, use in multiple forms and pages
+- **Maintainable**: Add new validators by calling RegisterValidator() without modifying component code
+- **Type-safe**: Dictionary-based registration prevents inheritance issues with private methods
+- **Flexible**: Runtime registration allows conditional validators based on application state
 
 ### Issue 2: Conditional Fields Not Showing/Hiding
 
