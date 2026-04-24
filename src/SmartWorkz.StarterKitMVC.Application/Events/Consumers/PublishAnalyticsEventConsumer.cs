@@ -22,9 +22,9 @@ public class PublishAnalyticsEventConsumer : IConsumer<UserRegisteredEvent>
 
     public async Task Consume(ConsumeContext<UserRegisteredEvent> context)
     {
+        var message = context.Message;
         try
         {
-            var message = context.Message;
             await _analyticsService.TrackEventAsync("UserRegistered", new
             {
                 UserId = message.UserId,
@@ -32,11 +32,11 @@ public class PublishAnalyticsEventConsumer : IConsumer<UserRegisteredEvent>
                 RegisteredAt = message.RegisteredAt
             });
 
-            _logger.LogInformation($"✓ Analytics event published for user {message.UserId}");
+            _logger.LogInformation("Analytics event published for user {UserId}", message.UserId);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to publish analytics event");
+            _logger.LogError(ex, "Failed to publish analytics event for user {UserId}", message.UserId);
             // Don't throw - analytics should not block main flow
         }
     }

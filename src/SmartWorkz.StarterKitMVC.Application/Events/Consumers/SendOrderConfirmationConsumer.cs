@@ -1,6 +1,8 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.Shared;
+using SmartWorkz.StarterKitMVC.Application.Repositories;
+using System.Web;
 
 namespace SmartWorkz.StarterKitMVC.Application.Events.Consumers;
 
@@ -11,13 +13,16 @@ namespace SmartWorkz.StarterKitMVC.Application.Events.Consumers;
 public class SendOrderConfirmationConsumer : IConsumer<OrderProcessedEvent>
 {
     private readonly IEmailSender _emailSender;
+    private readonly IUserRepository _userRepository;
     private readonly ILogger<SendOrderConfirmationConsumer> _logger;
 
     public SendOrderConfirmationConsumer(
         IEmailSender emailSender,
+        IUserRepository userRepository,
         ILogger<SendOrderConfirmationConsumer> logger)
     {
         _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -33,11 +38,24 @@ public class SendOrderConfirmationConsumer : IConsumer<OrderProcessedEvent>
                 @event.UserId,
                 @event.Amount);
 
+            // Fetch user details for email
+            var user = await _userRepository.GetByIdAsync(@event.UserId);
+            if (user == null)
+            {
+                _logger.LogWarning(
+                    "User {UserId} not found for order {OrderId}",
+                    @event.UserId,
+                    @event.OrderId);
+                return;
+            }
+
             // Send order confirmation email
-            // Note: In a real scenario, you would fetch user email from repository
             var subject = $"Order Confirmation - Order #{@event.OrderId}";
+            var escapedUserName = HttpUtility.HtmlEncode(user.DisplayName ?? user.Username);
+
             var body = $@"
                 <h2>Order Confirmation</h2>
+                <p>Dear {escapedUserName},</p>
                 <p>Thank you for your order!</p>
                 <p><strong>Order ID:</strong> {@event.OrderId}</p>
                 <p><strong>Amount:</strong> ${@event.Amount:F2}</p>
@@ -47,11 +65,19 @@ public class SendOrderConfirmationConsumer : IConsumer<OrderProcessedEvent>
                 <p>Best regards,<br/>The SmartWorkz Team</p>
             ";
 
-            // TODO: Get user email from user repository and send confirmation
-            // await _emailSender.SendEmailAsync(userEmail, subject, body);
+            var result = await _emailSender.SendAsync(user.Email, subject, body, isHtml: true);
+
+            if (!result.Succeeded)
+            {
+                _logger.LogError(
+                    "Failed to send order confirmation email for order {OrderId}: {Error}",
+                    @event.OrderId,
+                    result.MessageKey);
+                throw new InvalidOperationException($"Email sending failed: {result.MessageKey}");
+            }
 
             _logger.LogInformation(
-                "Order created event processed successfully - OrderId: {OrderId}",
+                "Order confirmation sent for order {OrderId}",
                 @event.OrderId);
         }
         catch (Exception ex)

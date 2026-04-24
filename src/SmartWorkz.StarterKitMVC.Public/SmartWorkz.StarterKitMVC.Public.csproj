@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>SmartWorkz.StarterKitMVC.Public</RootNamespace>
+    <UserSecretsId>SmartWorkz.StarterKitMVC.Public</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
