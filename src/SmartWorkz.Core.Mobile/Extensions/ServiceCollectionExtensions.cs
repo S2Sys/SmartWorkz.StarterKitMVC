@@ -3,6 +3,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SmartWorkz.Mobile.Models;
 using SmartWorkz.Mobile.Persistence;
 using SmartWorkz.Mobile.Services;
 using SmartWorkz.Mobile.Services.Implementations;
@@ -175,6 +176,19 @@ public static class ServiceCollectionExtensions
         {
             var logger = sp.GetRequiredService<ILogger<FileSystemSyncStateStore>>();
             return new FileSystemSyncStateStore(localAppDataPath, logger);
+        });
+
+        // Step 23: Register Phase 5.2 Retry Policy service (Task 20)
+        services.AddSingleton<IRetryPolicy>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILogger<ExponentialBackoffRetryPolicy>>();
+            var config = new RetryConfig(
+                MaxRetries: 5,
+                InitialDelay: TimeSpan.FromMilliseconds(100),
+                MaxDelay: TimeSpan.FromSeconds(30),
+                BackoffMultiplier: 2.0,
+                UseJitter: true);
+            return new ExponentialBackoffRetryPolicy(config, logger);
         });
 
         return services;
