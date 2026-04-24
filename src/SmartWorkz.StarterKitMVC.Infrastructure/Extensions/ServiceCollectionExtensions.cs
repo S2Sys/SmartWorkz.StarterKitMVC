@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
+using SmartWorkz.Core.External.Export;
 using SmartWorkz.StarterKitMVC.Application.Abstractions;
 using SmartWorkz.StarterKitMVC.Application.Authorization;
 using SmartWorkz.StarterKitMVC.Application.Localization;
@@ -63,6 +64,10 @@ public static class ServiceCollectionExtensions
 
         // Register MigrationManager for automatic migrations on startup
         services.AddScoped<IMigrationManager, MigrationManager>();
+
+        // Add export services
+        services.AddScoped(typeof(IPdfExporter), typeof(PdfExporter));
+        services.AddScoped(typeof(IExcelExporter), typeof(ExcelExporter));
 
         return services;
     }
