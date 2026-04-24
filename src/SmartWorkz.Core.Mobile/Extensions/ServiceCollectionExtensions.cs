@@ -207,6 +207,15 @@ public static class ServiceCollectionExtensions
         });
 #endif
 
+        // Step 26: Register Phase 5.1 iOS Background Task Manager (Task 8)
+#if __IOS__
+        services.AddSingleton<IiOSBackgroundTaskManager>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILogger<iOSBackgroundTaskManager>>();
+            return new iOSBackgroundTaskManager(logger);
+        });
+#endif
+
         return services;
     }
 }
