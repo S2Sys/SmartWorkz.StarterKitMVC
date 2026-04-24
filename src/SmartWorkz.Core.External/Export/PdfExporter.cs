@@ -1,3 +1,6 @@
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+
 namespace SmartWorkz.Core.External.Export;
 
 /// <summary>
@@ -33,7 +36,104 @@ public sealed class PdfExporter : IPdfExporter
                     return Result<byte[]>.Fail<byte[]>("Error.NoDataToExport", "No data to export.");
                 }
 
-                return Result<byte[]>.Fail<byte[]>("Error.FeatureNotImplemented", "PDF export requires implementation update for current QuestPDF version.");
+                var properties = typeof(T).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Instance)
+                    .Where(p => p.CanRead)
+                    .ToList();
+
+                if (properties.Count == 0)
+                {
+                    return Result<byte[]>.Fail<byte[]>("Error.NoPropertiesFound", "The data type has no public readable properties.");
+                }
+
+                var pageSize = GetPageSize();
+
+                var document = QuestPDF.Fluent.Document.Create(container =>
+                {
+                    container
+                        .Page(page =>
+                        {
+                            page.Size(pageSize);
+                            page.MarginVertical(_options.TopMargin);
+                            page.MarginHorizontal(_options.LeftMargin);
+
+                            page.Header().Element(header =>
+                            {
+                                if (!string.IsNullOrEmpty(title))
+                                {
+                                    header.Text(title)
+                                        .FontSize(14)
+                                        .Bold();
+                                }
+                            });
+
+                            page.Content().Element(content =>
+                            {
+                                content.Table(table =>
+                                {
+                                    table.ColumnsDefinition(columns =>
+                                    {
+                                        foreach (var _ in properties)
+                                        {
+                                            columns.RelativeColumn(1);
+                                        }
+                                    });
+
+                                    table.Header(header =>
+                                    {
+                                        foreach (var property in properties)
+                                        {
+                                            header.Cell()
+                                                .Background(Colors.Blue.Medium)
+                                                .Padding(5)
+                                                .Text(property.Name)
+                                                .FontSize(10)
+                                                .Bold();
+                                        }
+                                    });
+
+                                    foreach (var row in dataList)
+                                    {
+                                        foreach (var property in properties)
+                                        {
+                                            var value = property.GetValue(row);
+                                            var formattedValue = FormatCellValue(value, property);
+                                            var alignment = GetCellAlignment(value);
+
+                                            var cell = table.Cell().Padding(5).Text(formattedValue).FontSize(9);
+                                            if (alignment == "right")
+                                            {
+                                                cell.AlignRight();
+                                            }
+                                        }
+                                    }
+                                });
+                            });
+
+                            if (_options.IncludePageNumbers)
+                            {
+                                page.Footer().AlignCenter().Text(x =>
+                                {
+                                    x.Span("Page ");
+                                    x.CurrentPageNumber();
+                                });
+                            }
+                        });
+                });
+
+                byte[] pdfBytes;
+                try
+                {
+                    pdfBytes = document.GeneratePdf();
+                }
+                catch (Exception genEx)
+                {
+                    var errMsg = $"PDF generation error: {genEx.Message}";
+                    if (genEx.InnerException != null)
+                        errMsg += $" | Inner: {genEx.InnerException.Message}";
+                    return Result<byte[]>.Fail<byte[]>("Error.PdfGenerationFailed", errMsg);
+                }
+
+                return Result<byte[]>.Ok(pdfBytes);
             }
             catch (Exception ex)
             {
