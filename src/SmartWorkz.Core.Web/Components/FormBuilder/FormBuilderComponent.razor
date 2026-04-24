@@ -1,0 +1,316 @@
+@namespace SmartWorkz.Core.Web.Components.FormBuilder
+@using SmartWorkz.Web.Models
+
+<div class="form-builder-container @(FormDef?.CssClass ?? "")">
+    @if (!string.IsNullOrEmpty(FormDef?.Title))
+    {
+        <h3 class="form-title mb-4">@FormDef.Title</h3>
+    }
+
+    @if (!string.IsNullOrEmpty(FormDef?.Description))
+    {
+        <p class="form-description text-muted mb-4">
+            @FormDef.Description
+        </p>
+    }
+
+    @if (!string.IsNullOrEmpty(SuccessMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @SuccessMessage
+            <button type="button" class="btn-close" @onclick="ClearMessages"></button>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @ErrorMessage
+            <button type="button" class="btn-close" @onclick="ClearMessages"></button>
+        </div>
+    }
+
+    <EditForm Model="FormModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+        <DataAnnotationsValidator />
+
+        @if (FormDef?.Fields?.Any() == true)
+        {
+            @foreach (var field in OrderedVisibleFields)
+            {
+                <FormFieldComponent
+                    Field="field"
+                    Errors="GetFieldErrors(field.Name)"
+                    OnFieldValueChanged="HandleFieldValueChanged" />
+            }
+        }
+
+        <div class="form-actions d-flex gap-2 mt-4">
+            <button type="submit"
+                    class="@(FormDef?.SubmitConfig?.SubmitButtonClass ?? "btn btn-primary")"
+                    disabled="@(FormDef?.IsDisabled == true || IsSubmitting)">
+                @if (IsSubmitting)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                @(FormDef?.SubmitConfig?.SubmitButtonText ?? "Submit")
+            </button>
+
+            @if (FormDef?.SubmitConfig?.ShowResetButton == true)
+            {
+                <button type="reset"
+                        class="@(FormDef?.SubmitConfig?.ResetButtonClass ?? "btn btn-outline-secondary")"
+                        @onclick="ResetForm"
+                        disabled="@(FormDef?.IsDisabled == true)">
+                    Reset
+                </button>
+            }
+
+            @if (FormDef?.SubmitConfig?.ShowCancelButton == true)
+            {
+                <button type="button"
+                        class="@(FormDef?.SubmitConfig?.CancelButtonClass ?? "btn btn-secondary")"
+                        @onclick="HandleCancel"
+                        disabled="@(FormDef?.IsDisabled == true)">
+                    @(FormDef.SubmitConfig.CancelButtonText ?? "Cancel")
+                </button>
+            }
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public FormDefinition? FormDef { get; set; }
+
+    [Parameter]
+    public EventCallback<FormSubmissionResult> OnSubmit { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private FormModel FormModel = new();
+    private string SuccessMessage = string.Empty;
+    private string ErrorMessage = string.Empty;
+    private bool IsSubmitting = false;
+    private Dictionary<string, List<string>> FieldErrors = [];
+
+    protected override void OnInitialized()
+    {
+        if (FormDef != null)
+        {
+            InitializeForm();
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (FormDef != null)
+        {
+            UpdateFieldVisibility();
+        }
+    }
+
+    private void InitializeForm()
+    {
+        if (FormDef?.Fields == null) return;
+
+        FormModel.FormId = FormDef.Id;
+        FormModel.Data = new Dictionary<string, object?>();
+
+        foreach (var field in FormDef.Fields)
+        {
+            FormModel.Data[field.Name] = field.Value;
+            field.IsVisible = true;
+        }
+    }
+
+    private void UpdateFieldVisibility()
+    {
+        if (FormDef?.Fields == null) return;
+
+        foreach (var field in FormDef.Fields)
+        {
+            field.IsVisible = EvaluateVisibility(field);
+        }
+    }
+
+    private bool EvaluateVisibility(FormField field)
+    {
+        if (string.IsNullOrEmpty(field.DependsOn))
+            return true;
+
+        var dependentField = FormDef?.Fields?.FirstOrDefault(f => f.Name == field.DependsOn);
+        if (dependentField == null)
+            return true;
+
+        if (field.DependsOnValue == null)
+            return true;
+
+        return dependentField.Value?.ToString() == field.DependsOnValue?.ToString();
+    }
+
+    private async Task HandleFieldValueChanged(FormFieldValueChangedArgs args)
+    {
+        if (FormModel.Data.ContainsKey(args.FieldName))
+        {
+            FormModel.Data[args.FieldName] = args.NewValue;
+        }
+        else
+        {
+            FormModel.Data.Add(args.FieldName, args.NewValue);
+        }
+
+        UpdateFieldVisibility();
+        StateHasChanged();
+
+        await Task.CompletedTask;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        IsSubmitting = true;
+        FieldErrors.Clear();
+        ErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
+
+        try
+        {
+            var validationErrors = ValidateForm();
+            if (validationErrors.Any())
+            {
+                FieldErrors = validationErrors;
+                ErrorMessage = "Please correct the errors below.";
+            }
+            else
+            {
+                var result = new FormSubmissionResult
+                {
+                    IsSuccess = true,
+                    Message = "Form submitted successfully",
+                    Data = FormModel.Data
+                };
+
+                if (OnSubmit.HasDelegate)
+                {
+                    await OnSubmit.InvokeAsync(result);
+                }
+
+                SuccessMessage = "Form submitted successfully!";
+            }
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task HandleInvalidSubmit()
+    {
+        ErrorMessage = "Please correct the errors in the form.";
+        await Task.CompletedTask;
+    }
+
+    private Dictionary<string, List<string>> ValidateForm()
+    {
+        var errors = new Dictionary<string, List<string>>();
+
+        if (FormDef?.Fields == null) return errors;
+
+        foreach (var field in FormDef.Fields.Where(f => f.IsVisible))
+        {
+            var fieldErrors = new List<string>();
+
+            foreach (var rule in field.ValidationRules)
+            {
+                var error = ValidateField(field, rule);
+                if (!string.IsNullOrEmpty(error))
+                {
+                    fieldErrors.Add(error);
+                }
+            }
+
+            if (field.IsRequired && string.IsNullOrEmpty(field.Value?.ToString()))
+            {
+                fieldErrors.Add($"{field.Label} is required");
+            }
+
+            if (fieldErrors.Any())
+            {
+                errors[field.Name] = fieldErrors;
+            }
+        }
+
+        return errors;
+    }
+
+    private string? ValidateField(FormField field, FormValidationRule rule)
+    {
+        var value = field.Value?.ToString() ?? string.Empty;
+
+        return rule.Type?.ToLower() switch
+        {
+            "email" => ValidateEmail(value) ? null : rule.Message,
+            "minlength" => value.Length >= (int.TryParse(rule.Value, out var minLen) ? minLen : 0) ? null : rule.Message,
+            "maxlength" => value.Length <= (int.TryParse(rule.Value, out var maxLen) ? maxLen : int.MaxValue) ? null : rule.Message,
+            "pattern" => System.Text.RegularExpressions.Regex.IsMatch(value, rule.Value ?? "") ? null : rule.Message,
+            "min" => decimal.TryParse(value, out var decVal) && decimal.TryParse(rule.Value, out var minVal) && decVal >= minVal ? null : rule.Message,
+            "max" => decimal.TryParse(value, out var decVal2) && decimal.TryParse(rule.Value, out var maxVal) && decVal2 <= maxVal ? null : rule.Message,
+            _ => null
+        };
+    }
+
+    private bool ValidateEmail(string email)
+    {
+        try
+        {
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private List<string> GetFieldErrors(string fieldName)
+    {
+        return FieldErrors.ContainsKey(fieldName) ? FieldErrors[fieldName] : [];
+    }
+
+    private IEnumerable<FormField> OrderedVisibleFields =>
+        FormDef?.Fields?
+            .Where(f => f.IsVisible)
+            .OrderBy(f => f.Order)
+            .ToList() ?? [];
+
+    private void ClearMessages()
+    {
+        SuccessMessage = string.Empty;
+        ErrorMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    private async Task ResetForm()
+    {
+        InitializeForm();
+        FieldErrors.Clear();
+        ClearMessages();
+        await Task.CompletedTask;
+    }
+
+    private async Task HandleCancel()
+    {
+        if (OnCancel.HasDelegate)
+        {
+            await OnCancel.InvokeAsync();
+        }
+    }
+
+    private class FormModel
+    {
+        public string FormId { get; set; } = string.Empty;
+        public Dictionary<string, object?> Data { get; set; } = [];
+    }
+}

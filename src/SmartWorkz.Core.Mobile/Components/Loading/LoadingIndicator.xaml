@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="SmartWorkz.Mobile.Components.LoadingIndicator"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <VerticalStackLayout
+        x:Name="LoadingContainer"
+        IsVisible="False"
+        HorizontalOptions="Center"
+        Spacing="12"
+        VerticalOptions="Center">
+        <ActivityIndicator
+            x:Name="ActivityIndicatorControl"
+            Color="#007AFF"
+            IsRunning="False"
+            Scale="1.5" />
+        <Label
+            x:Name="MessageLabel"
+            FontSize="14"
+            HorizontalTextAlignment="Center"
+            Text="{Binding Message, Source={RelativeSource AncestorType={x:Type ContentView}}}"
+            TextColor="#333333" />
+    </VerticalStackLayout>
+</ContentView>
