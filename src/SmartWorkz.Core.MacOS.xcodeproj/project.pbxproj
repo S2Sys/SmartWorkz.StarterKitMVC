@@ -19,6 +19,11 @@
 		00B1A9011D120B0400123456 /* SyncChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A9001D120B0400123456 /* SyncChange.swift */; };
 		00B1A9021D120B0500123456 /* NetworkState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A9011D120B0500123456 /* NetworkState.swift */; };
 		00B1A9031D120B0600123456 /* SharedModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A9021D120B0600123456 /* SharedModelTests.swift */; };
+		00B1A9041D120B0700123456 /* OfflineSyncManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A9041D120B0800123456 /* OfflineSyncManagerTests.swift */; };
+		00B1A9051D120B0700123456 /* SyncQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A9051D120B0800123456 /* SyncQueue.swift */; };
+		00B1A9061D120B0700123456 /* ConflictResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A9061D120B0800123456 /* ConflictResolver.swift */; };
+		00B1A9071D120B0700123456 /* OfflineSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A9071D120B0800123456 /* OfflineSyncManager.swift */; };
+		00B1A9081D120B0700123456 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B1A9081D120B0800123456 /* CoreDataStack.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +60,11 @@
 		00B1A9001D120B0400123456 /* SyncChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncChange.swift; sourceTree = "<group>"; };
 		00B1A9011D120B0500123456 /* NetworkState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkState.swift; sourceTree = "<group>"; };
 		00B1A9021D120B0600123456 /* SharedModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedModelTests.swift; sourceTree = "<group>"; };
+		00B1A9041D120B0800123456 /* OfflineSyncManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineSyncManagerTests.swift; sourceTree = "<group>"; };
+		00B1A9051D120B0800123456 /* SyncQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncQueue.swift; sourceTree = "<group>"; };
+		00B1A9061D120B0800123456 /* ConflictResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConflictResolver.swift; sourceTree = "<group>"; };
+		00B1A9071D120B0800123456 /* OfflineSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineSyncManager.swift; sourceTree = "<group>"; };
+		00B1A9081D120B0800123456 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +137,7 @@
 			children = (
 				00B1A9021D120B0600123456 /* SharedModelTests.swift */,
 				00B1A8D62D120A0200123456 /* AppStateTests.swift */,
+				00B1A9041D120B0800123456 /* OfflineSyncManagerTests.swift */,
 			);
 			path = SmartWorkz.Core.MacOS.Tests;
 			sourceTree = "<group>";
@@ -154,6 +165,8 @@
 				00B1A8F22D120A0F00123456 /* AppState.swift */,
 				00B1A8F22D120A1500123456 /* AppDelegate.swift */,
 				00B1A8F52D120A2000123456 /* Models */,
+				00B1A9091D120B0900123456 /* Services */,
+				00B1A90A1D120B0A00123456 /* Persistence */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -166,6 +179,32 @@
 				00B1A9011D120B0500123456 /* NetworkState.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		00B1A9091D120B0900123456 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				00B1A90B1D120B0B00123456 /* Sync */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		00B1A90B1D120B0B00123456 /* Sync */ = {
+			isa = PBXGroup;
+			children = (
+				00B1A9051D120B0800123456 /* SyncQueue.swift */,
+				00B1A9061D120B0800123456 /* ConflictResolver.swift */,
+				00B1A9071D120B0800123456 /* OfflineSyncManager.swift */,
+			);
+			path = Sync;
+			sourceTree = "<group>";
+		};
+		00B1A90A1D120B0A00123456 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				00B1A9081D120B0800123456 /* CoreDataStack.swift */,
+			);
+			path = Persistence;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -305,6 +344,10 @@
 				00B1A8F42D120A1500123456 /* AppDelegate.swift in Sources */,
 				00B1A8C82D120A0000123456 /* ContentView.swift in Sources */,
 				00B1A8C62D120A0000123456 /* SmartWorkzApp.swift in Sources */,
+				00B1A9051D120B0700123456 /* SyncQueue.swift in Sources */,
+				00B1A9061D120B0700123456 /* ConflictResolver.swift in Sources */,
+				00B1A9071D120B0700123456 /* OfflineSyncManager.swift in Sources */,
+				00B1A9081D120B0700123456 /* CoreDataStack.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -314,6 +357,11 @@
 			files = (
 				00B1A9031D120B0600123456 /* SharedModelTests.swift in Sources */,
 				00B1A8D72D120A0200123456 /* AppStateTests.swift in Sources */,
+				00B1A9041D120B0700123456 /* OfflineSyncManagerTests.swift in Sources */,
+				00B1A9051D120B0700123456 /* SyncQueue.swift in Sources */,
+				00B1A9061D120B0700123456 /* ConflictResolver.swift in Sources */,
+				00B1A9071D120B0700123456 /* OfflineSyncManager.swift in Sources */,
+				00B1A9081D120B0700123456 /* CoreDataStack.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
