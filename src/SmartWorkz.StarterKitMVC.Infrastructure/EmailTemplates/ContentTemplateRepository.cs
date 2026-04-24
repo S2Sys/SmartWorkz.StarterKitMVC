@@ -87,6 +87,7 @@ public sealed class ContentTemplateRepository : IEmailTemplateRepository
 
     public async Task<EmailTemplate?> GetTemplateByIdAsync(string id, CancellationToken cancellationToken = default)
     {
+        using var connection = GetConnection();
         var template = await connection.QueryFirstOrDefaultAsync<EmailTemplate>(
             "Master.sp_GetContentTemplateById",
             new { Id = id },
@@ -101,6 +102,7 @@ public sealed class ContentTemplateRepository : IEmailTemplateRepository
 
     public async Task<IReadOnlyList<EmailTemplate>> GetTemplatesByCategoryAsync(string category, string? tenantId = null, CancellationToken cancellationToken = default)
     {
+        using var connection = GetConnection();
         var templates = await connection.QueryAsync<EmailTemplate>(
             "Master.sp_GetContentTemplatesByTenant",
             new { TenantId = tenantId ?? "DEFAULT", TemplateType = (string?)null, Category = category },
@@ -118,6 +120,7 @@ public sealed class ContentTemplateRepository : IEmailTemplateRepository
 
     public async Task<EmailTemplate> SaveTemplateAsync(EmailTemplate template, CancellationToken cancellationToken = default)
     {
+        using var connection = GetConnection();
 
         var tagsJson = template.Tags.Count == 0
             ? null
@@ -159,6 +162,7 @@ public sealed class ContentTemplateRepository : IEmailTemplateRepository
 
     public async Task<bool> DeleteTemplateAsync(string id, CancellationToken cancellationToken = default)
     {
+        using var connection = GetConnection();
         var affected = await connection.QueryFirstOrDefaultAsync<int>(
             "Master.sp_DeleteContentTemplate",
             new { Id = id },
@@ -169,6 +173,7 @@ public sealed class ContentTemplateRepository : IEmailTemplateRepository
 
     public async Task<bool> TemplateExistsAsync(string id, CancellationToken cancellationToken = default)
     {
+        using var connection = GetConnection();
         var template = await connection.QueryFirstOrDefaultAsync<EmailTemplate>(
             "Master.sp_GetContentTemplateById",
             new { Id = id },
@@ -181,6 +186,7 @@ public sealed class ContentTemplateRepository : IEmailTemplateRepository
 
     public async Task<IReadOnlyList<EmailTemplateSection>> GetAllSectionsAsync(SectionType? type = null, string? tenantId = null, CancellationToken cancellationToken = default)
     {
+        using var connection = GetConnection();
         var sections = await connection.QueryAsync<EmailTemplateSection>(
             "Master.sp_GetContentTemplateSectionsByTenant",
             new { TenantId = tenantId ?? "DEFAULT", SectionType = type?.ToString() },
@@ -191,6 +197,7 @@ public sealed class ContentTemplateRepository : IEmailTemplateRepository
 
     public async Task<EmailTemplateSection?> GetSectionByIdAsync(string id, CancellationToken cancellationToken = default)
     {
+        using var connection = GetConnection();
         // No direct "get by ID" SP — query via GetContentTemplateSectionsByTenant and filter
         var sections = await connection.QueryAsync<EmailTemplateSection>(
             "SELECT * FROM Master.ContentTemplateSections WHERE Id = @Id AND IsDeleted = 0",
@@ -201,6 +208,7 @@ public sealed class ContentTemplateRepository : IEmailTemplateRepository
 
     public async Task<EmailTemplateSection?> GetDefaultSectionAsync(SectionType type, string? tenantId = null, CancellationToken cancellationToken = default)
     {
+        using var connection = GetConnection();
         var section = await connection.QueryFirstOrDefaultAsync<EmailTemplateSection>(
             """
             SELECT * FROM Master.ContentTemplateSections
@@ -215,6 +223,7 @@ public sealed class ContentTemplateRepository : IEmailTemplateRepository
 
     public async Task<EmailTemplateSection> SaveSectionAsync(EmailTemplateSection section, CancellationToken cancellationToken = default)
     {
+        using var connection = GetConnection();
 
         await connection.ExecuteAsync(
             "Master.sp_UpsertContentTemplateSection",
@@ -237,6 +246,7 @@ public sealed class ContentTemplateRepository : IEmailTemplateRepository
 
     public async Task<bool> DeleteSectionAsync(string id, CancellationToken cancellationToken = default)
     {
+        using var connection = GetConnection();
         var affected = await connection.ExecuteAsync(
             "UPDATE Master.ContentTemplateSections SET IsDeleted = 1, UpdatedAt = GETUTCDATE() WHERE Id = @Id",
             new { Id = id });

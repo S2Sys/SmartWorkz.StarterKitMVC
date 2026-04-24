@@ -223,6 +223,7 @@ public abstract class CachedDapperRepository : ICachedDapperRepository
     {
         try
         {
+            using var reader = await QueryMultipleSpAsync(spName, param, timeoutSeconds);
             var items = await reader.ReadAsync<T>();
             var total = await reader.ReadSingleAsync<int>();
             return (items, total);

@@ -22,7 +22,6 @@ public class ExponentialBackoffRetryPolicy : IRetryPolicy
 {
     private readonly RetryConfig _config;
     private readonly ILogger<ExponentialBackoffRetryPolicy>? _logger;
-    private static readonly Random _random = new Random();
 
     /// <summary>
     /// Creates a new ExponentialBackoffRetryPolicy with optional configuration and logging.
@@ -432,7 +431,7 @@ public class ExponentialBackoffRetryPolicy : IRetryPolicy
         if (_config.UseJitter)
         {
             // ±20% jitter
-            var jitterPercent = (_random.NextDouble() - 0.5) * 0.4; // -0.2 to +0.2
+            var jitterPercent = (Random.Shared.NextDouble() - 0.5) * 0.4; // -0.2 to +0.2
             var jitterMs = cappedDelayMs * jitterPercent;
             cappedDelayMs = Math.Max(1, cappedDelayMs + jitterMs); // Ensure at least 1ms
         }

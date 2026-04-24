@@ -338,48 +338,44 @@ public class RetryPolicyTests
     public async Task ExecuteAsync_WithTimeoutException_IsTransient()
     {
         // Arrange
-        var policy = new ExponentialBackoffRetryPolicy();
         var callCount = 0;
+        var policy = new ExponentialBackoffRetryPolicy(
+            new RetryConfig(MaxRetries: 3, InitialDelay: TimeSpan.FromMilliseconds(10)));
 
-        Func<Task<Result<string>>> operation = async () =>
+        // Act: Operation throws TimeoutException twice, then succeeds
+        var result = await policy.ExecuteAsync(async () =>
         {
             callCount++;
-            if (callCount == 1)
-            {
-                throw new TimeoutException("Request timed out");
-            }
+            if (callCount < 3)
+                throw new TimeoutException("Simulated timeout");
             return await Task.FromResult(Result.Ok("success"));
-        };
+        }, "TimeoutTest");
 
-        // Act & Assert
-        // This will depend on how exceptions are handled - if converted to Result.Fail
-        var result = await policy.ExecuteAsync(operation, "TimeoutTest");
-
-        // At this point, the implementation determines how to handle thrown exceptions
-        // For now, we verify the call was retried
-        Assert.True(callCount >= 1);
+        // Assert
+        Assert.True(result.Succeeded);
+        Assert.Equal(3, callCount);  // Verify it retried (called 3 times)
     }
 
     [Fact]
     public async Task ExecuteAsync_WithHttpRequestException_IsTransient()
     {
         // Arrange
-        var policy = new ExponentialBackoffRetryPolicy();
         var callCount = 0;
+        var policy = new ExponentialBackoffRetryPolicy(
+            new RetryConfig(MaxRetries: 2, InitialDelay: TimeSpan.FromMilliseconds(10)));
 
-        Func<Task<Result<string>>> operation = async () =>
+        // Act: Operation throws HttpRequestException once, then succeeds
+        var result = await policy.ExecuteAsync(async () =>
         {
             callCount++;
-            if (callCount == 1)
-            {
+            if (callCount < 2)
                 throw new HttpRequestException("Network error");
-            }
             return await Task.FromResult(Result.Ok("success"));
-        };
+        }, "HttpTest");
 
-        // Act & Assert
-        var result = await policy.ExecuteAsync(operation, "HttpTest");
-        Assert.True(callCount >= 1);
+        // Assert
+        Assert.True(result.Succeeded);
+        Assert.Equal(2, callCount);  // Verify it retried (called 2 times)
     }
 
     [Fact]
