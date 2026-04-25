@@ -16,7 +16,7 @@ namespace SmartWorkz.StarterKitMVC.Admin.Pages;
 ///       // Override BuildFilter() to add entity-specific WHERE conditions
 ///   }
 /// </summary>
-public abstract class BaseListPage<T> : BasePage where T : class, new()
+public abstract class BaseListPage<T> : BasePaging<T> where T : class, new()
 {
     private readonly IDapperRepository<T> _repository;
 
@@ -24,21 +24,6 @@ public abstract class BaseListPage<T> : BasePage where T : class, new()
     {
         _repository = repository;
     }
-
-    // ── Bound query params ────────────────────────────────────────────────────
-
-    [BindProperty(SupportsGet = true)] public string? Search    { get; set; }
-    [BindProperty(SupportsGet = true)] public new int Page      { get; set; } = 1;
-    [BindProperty(SupportsGet = true)] public int     PageSize  { get; set; } = 20;
-    [BindProperty(SupportsGet = true)] public string  SortBy    { get; set; } = "CreatedAt";
-    [BindProperty(SupportsGet = true)] public bool    Desc      { get; set; } = true;
-
-    // ── Result ────────────────────────────────────────────────────────────────
-
-    public IEnumerable<T>  Items      { get; private set; } = [];
-    public int             Total      { get; private set; }
-    public int             PageCount  => (int)Math.Ceiling((double)Total / PageSize);
-    public PaginationModel Pagination { get; private set; } = PaginationModel.From(0, 1, 20);
 
     // ── Load ──────────────────────────────────────────────────────────────────
 
