@@ -492,4 +492,79 @@ public class SqliteDatabaseTests : IAsyncLifetime
         await _database.CloseAsync();
         Assert.False(_database.IsConnected);
     }
+
+    [Fact]
+    public async Task SqliteConnection_ExecuteAsync_WithCancelledToken_ThrowsOperationCanceledException()
+    {
+        // Arrange
+        await _database.OpenAsync();
+        var connection = _database.CreateConnection();
+        var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => connection.ExecuteAsync("CREATE TABLE Test (Id INTEGER)", cancellationToken: cts.Token)
+        );
+    }
+
+    [Fact]
+    public async Task SqliteConnection_QueryAsync_WithCancelledToken_ThrowsOperationCanceledException()
+    {
+        // Arrange
+        await _database.OpenAsync();
+        var connection = _database.CreateConnection();
+        var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => connection.QueryAsync<dynamic>("SELECT 1", cancellationToken: cts.Token)
+        );
+    }
+
+    [Fact]
+    public async Task SqliteConnection_QueryFirstOrDefaultAsync_WithCancelledToken_ThrowsOperationCanceledException()
+    {
+        // Arrange
+        await _database.OpenAsync();
+        var connection = _database.CreateConnection();
+        var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => connection.QueryFirstOrDefaultAsync<dynamic>("SELECT 1", cancellationToken: cts.Token)
+        );
+    }
+
+    [Fact]
+    public async Task SqliteTransaction_CommitAsync_WithCancelledToken_ThrowsOperationCanceledException()
+    {
+        // Arrange
+        await _database.OpenAsync();
+        var transaction = await _database.BeginTransactionAsync();
+        var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => transaction.CommitAsync(cts.Token)
+        );
+    }
+
+    [Fact]
+    public async Task SqliteTransaction_RollbackAsync_WithCancelledToken_ThrowsOperationCanceledException()
+    {
+        // Arrange
+        await _database.OpenAsync();
+        var transaction = await _database.BeginTransactionAsync();
+        var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => transaction.RollbackAsync(cts.Token)
+        );
+    }
 }
