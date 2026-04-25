@@ -1,9 +1,10 @@
-namespace SmartWorkz.Shared;
+namespace SmartWorkz.Core.Shared.Webhooks.Implementations;
 
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using SmartWorkz.Core.Shared.Webhooks.Abstractions;
 
 /// <summary>
 /// Service for publishing domain events to registered webhook endpoints.
