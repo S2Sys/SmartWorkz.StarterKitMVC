@@ -88,7 +88,7 @@ public class BreadcrumbLogger
     {
         lock (_lock)
         {
-            return _breadcrumbs.ToList().AsReadOnly();
+            return new List<Breadcrumb>(_breadcrumbs).AsReadOnly();
         }
     }
 

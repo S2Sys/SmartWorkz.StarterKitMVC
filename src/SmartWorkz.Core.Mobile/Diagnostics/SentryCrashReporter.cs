@@ -136,6 +136,19 @@ public class SentryCrashReporter : ICrashReportingService, IDisposable
 
         try
         {
+            // Validate no overlapping keys between CustomData and Extra
+            if (context.CustomData != null && context.Extra != null)
+            {
+                var overlappingKeys = context.CustomData.Keys.Intersect(context.Extra.Keys).ToList();
+                if (overlappingKeys.Count > 0)
+                {
+                    _logger?.LogWarning(
+                        "CrashContext has overlapping keys between CustomData and Extra: {Keys}. Extra values will override CustomData.",
+                        string.Join(", ", overlappingKeys)
+                    );
+                }
+            }
+
             SentrySdk.ConfigureScope(scope =>
             {
                 // Set session context
