@@ -1,8 +1,11 @@
 <Project>
 
   <PropertyGroup>
+    <!-- Enable XML documentation for all projects for wiki generation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
     <IsLocalBuild Condition="'$(GITHUB_ACTIONS)' != 'true' And '$(TF_BUILD)' != 'true'">true</IsLocalBuild>
-    <!-- New: Set to 'true' to generate wiki (defaults to false for local dev) -->
+    <!-- Set to 'true' to generate wiki (defaults to false for local dev) -->
     <GenerateWikiDocs Condition="'$(GenerateWikiDocs)' == ''">false</GenerateWikiDocs>
     <!-- Auto-enable in CI -->
     <GenerateWikiDocs Condition="'$(GITHUB_ACTIONS)' == 'true' Or '$(TF_BUILD)' == 'true'">true</GenerateWikiDocs>
