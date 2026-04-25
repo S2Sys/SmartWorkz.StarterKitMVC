@@ -25,8 +25,10 @@ internal class SqliteTransaction : IDbTransaction
     /// <summary>
     /// Commit transaction changes.
     /// </summary>
-    public async Task CommitAsync()
+    public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (_disposed)
             throw new ObjectDisposedException(nameof(SqliteTransaction));
 
@@ -47,8 +49,10 @@ internal class SqliteTransaction : IDbTransaction
     /// <summary>
     /// Rollback transaction changes.
     /// </summary>
-    public async Task RollbackAsync()
+    public async Task RollbackAsync(CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (_disposed)
             throw new ObjectDisposedException(nameof(SqliteTransaction));
 
