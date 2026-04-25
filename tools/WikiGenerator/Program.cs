@@ -116,24 +116,30 @@ class WikiGenerator
             Console.WriteLine($"[Scanner] Found {dllsAndXml.Count} DLL+XML pairs");
 
         var parser = new XmlCommentParser(_logLevel);
+        var categorizer = new Categorizer(config, _logLevel);
 
         var totalTypes = 0;
-        var allParsedDocs = new List<(string Project, XmlDocumentation Docs)>();
+        var allCategorizedItems = new List<CategorizedItem>();
 
         foreach (var (dllPath, xmlPath) in dllsAndXml)
         {
             var projectName = Path.GetFileNameWithoutExtension(dllPath);
             var xmlDocs = parser.ParseXmlFile(xmlPath);
             totalTypes += xmlDocs.Types.Count;
-            allParsedDocs.Add((projectName, xmlDocs));
+
+            var categorized = categorizer.Categorize(projectName, xmlDocs);
+            allCategorizedItems.AddRange(categorized);
         }
 
         if (_logLevel == "info")
             Console.WriteLine($"[Parser] Extracted {totalTypes} types total");
 
-        // TODO: Task 4 - Implement categorization and write markdown output files
         if (_logLevel == "info")
-            Console.WriteLine($"[Output] Writing {allParsedDocs.Count} projects to {_outputPath}...");
+            Console.WriteLine($"[Categorizer] Processed {allCategorizedItems.Count} categorized items");
+
+        // TODO: Task 5 - Implement markdown generation and write output files
+        if (_logLevel == "info")
+            Console.WriteLine($"[Output] Writing to {_outputPath}...");
 
         Console.WriteLine("[WikiGenerator] Generation complete");
     }
