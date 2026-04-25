@@ -1,4 +1,5 @@
 using System.CommandLine;
+using SmartWorkz.Tools.WikiGenerator.Models;
 
 namespace SmartWorkz.Tools.WikiGenerator;
 
@@ -117,14 +118,22 @@ class WikiGenerator
         var parser = new XmlCommentParser(_logLevel);
 
         var totalTypes = 0;
+        var allParsedDocs = new List<(string Project, XmlDocumentation Docs)>();
+
         foreach (var (dllPath, xmlPath) in dllsAndXml)
         {
+            var projectName = Path.GetFileNameWithoutExtension(dllPath);
             var xmlDocs = parser.ParseXmlFile(xmlPath);
             totalTypes += xmlDocs.Types.Count;
+            allParsedDocs.Add((projectName, xmlDocs));
         }
 
         if (_logLevel == "info")
             Console.WriteLine($"[Parser] Extracted {totalTypes} types total");
+
+        // TODO: Task 4 - Implement categorization and write markdown output files
+        if (_logLevel == "info")
+            Console.WriteLine($"[Output] Writing {allParsedDocs.Count} projects to {_outputPath}...");
 
         Console.WriteLine("[WikiGenerator] Generation complete");
     }

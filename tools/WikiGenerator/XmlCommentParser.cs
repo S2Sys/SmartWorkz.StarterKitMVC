@@ -3,7 +3,7 @@ using SmartWorkz.Tools.WikiGenerator.Models;
 
 namespace SmartWorkz.Tools.WikiGenerator;
 
-class XmlCommentParser
+internal class XmlCommentParser
 {
     private readonly string _logLevel;
 
@@ -15,6 +15,14 @@ class XmlCommentParser
     public XmlDocumentation ParseXmlFile(string xmlPath)
     {
         var doc = new XmlDocumentation();
+
+        // Guard against null or non-existent paths
+        if (string.IsNullOrWhiteSpace(xmlPath) || !File.Exists(xmlPath))
+        {
+            if (_logLevel == "warning" || _logLevel == "info")
+                Console.WriteLine($"[Warning] XML file not found or invalid: {xmlPath}");
+            return doc;
+        }
 
         try
         {
@@ -29,7 +37,7 @@ class XmlCommentParser
                 var nameAttr = member.Attribute("name")?.Value ?? "";
                 var fullName = nameAttr.Substring(2); // Remove "T:" prefix
 
-                var type = new TypeInfo
+                var type = new XmlTypeInfo
                 {
                     FullName = fullName,
                     Name = fullName.Split('.').Last(),
@@ -56,9 +64,11 @@ class XmlCommentParser
                     {
                         var methodName = methodFullName.Substring(type.FullName.Length + 1);
                         // Extract just the method name (before parentheses)
-                        methodName = methodName.Split('(')[0];
+                        var parenIndex = methodName.IndexOf('(');
+                        if (parenIndex > 0)
+                            methodName = methodName.Substring(0, parenIndex);
 
-                        var memberInfo = new MemberInfo
+                        var memberInfo = new XmlMemberInfo
                         {
                             Name = methodName,
                             Summary = ExtractText(methodMember, "summary"),
