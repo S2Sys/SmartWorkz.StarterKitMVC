@@ -242,7 +242,7 @@ public class SqliteDatabase : IDatabase, IAsyncDisposable
 
         try
         {
-            await _connection!.ExecuteAsync("BEGIN TRANSACTION");
+            await _connection!.ExecuteAsync("BEGIN TRANSACTION", null, cancellationToken);
             return new SqliteTransaction(_connection);
         }
         catch (OperationCanceledException)
