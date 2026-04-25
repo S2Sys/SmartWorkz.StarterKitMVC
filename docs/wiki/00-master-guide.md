@@ -30,37 +30,66 @@ After completing the SRS Foundation, explore these 19 pattern-focused pages for 
 
 ### Web Application Patterns (09-16, 20-22, 25, 27)
 
-| # | File | Title | Related to |
-|---|------|-------|-----------|
-| 09 | [Translation System](./09-translation-system.md) | Database-backed multi-language support | Core.Shared |
-| 10 | [Localized Validation](./10-localized-validation.md) | Translate validation messages at render time | Core.Web |
-| 11 | [Base Page Pattern](./11-base-page-pattern.md) | Common foundation for all Razor pages | Core.Web |
-| 12 | [Result Pattern](./12-result-pattern.md) | Structured success/failure outcomes | Core |
-| 13 | [HTMX List Pattern](./13-htmx-list-pattern.md) | Dynamic list updates without page reload | Core.Web |
-| 14 | [Password Reset Flow](./14-password-reset-flow.md) | Secure password reset via email tokens | Infrastructure |
-| 15 | [Pagination Factory Method](./15-pagination-factory-method.md) | Convert API responses to UI view models | Core.Web |
-| 16 | [Simple Form Validation](./16-simple-form-validation.md) | Client + server validation with translation | Core.Web |
-| 20 | [Cache Attribute Pattern](./20-cache-attribute.md) | Decorator-based HTTP result caching | Core.Shared |
-| 21 | [Template Engine Pattern](./21-template-engine.md) | Dynamic template rendering with placeholders | Core.Shared |
-| 22 | [Swagger/OpenAPI Documentation](./22-swagger-openapi.md) | Auto-generated API documentation | Core.Web |
-| 25 | [Blazor Form Builder](./25-blazor-form-builder.md) | Dynamic form generation and validation | Core.Web |
-| 27 | [PDF/Excel Export](./27-pdf-excel-export.md) | Binary file export with styling | Core.External |
+**09** — [Translation System](./09-translation-system.md)  
+Database-backed multi-language support (Core.Shared)
+
+**10** — [Localized Validation](./10-localized-validation.md)  
+Translate validation messages at render time (Core.Web)
+
+**11** — [Base Page Pattern](./11-base-page-pattern.md)  
+Common foundation for all Razor pages (Core.Web)
+
+**12** — [Result Pattern](./12-result-pattern.md)  
+Structured success/failure outcomes (Core)
+
+**13** — [HTMX List Pattern](./13-htmx-list-pattern.md)  
+Dynamic list updates without page reload (Core.Web)
+
+**14** — [Password Reset Flow](./14-password-reset-flow.md)  
+Secure password reset via email tokens (Infrastructure)
+
+**15** — [Pagination Factory Method](./15-pagination-factory-method.md)  
+Convert API responses to UI view models (Core.Web)
+
+**16** — [Simple Form Validation](./16-simple-form-validation.md)  
+Client + server validation with translation (Core.Web)
+
+**20** — [Cache Attribute Pattern](./20-cache-attribute.md)  
+Decorator-based HTTP result caching (Core.Shared)
+
+**21** — [Template Engine Pattern](./21-template-engine.md)  
+Dynamic template rendering with placeholders (Core.Shared)
+
+**22** — [Swagger/OpenAPI Documentation](./22-swagger-openapi.md)  
+Auto-generated API documentation (Core.Web)
+
+**25** — [Blazor Form Builder](./25-blazor-form-builder.md)  
+Dynamic form generation and validation (Core.Web)
+
+**27** — [PDF/Excel Export](./27-pdf-excel-export.md)  
+Binary file export with styling (Core.External)
 
 ### Infrastructure & Multi-Tenancy (17-19, 23-24)
 
-| # | File | Title | Related to |
-|---|------|-------|-----------|
-| 17 | [Multi-Tenant Login Flow](./17-multi-tenant-login-flow.md) | How tenants and users interact during login | Core |
-| 18 | [Why TenantId in Multiple Tables](./18-why-tenantid-in-multiple-tables.md) | Tenant isolation design rationale | Core |
-| 19 | [Multi-Tenant Architecture](./19-multi-tenant-architecture.md) | Visual guide to tenant isolation | Core |
-| 23 | [EF Core Multi-Context Migrations](./23-ef-core-migrations.md) | Orchestrate 5 independent DbContext schemas | Infrastructure |
-| 24 | [MassTransit Message Queue](./24-masstransit-message-queue.md) | Asynchronous event-driven messaging | Infrastructure |
+**17** — [Multi-Tenant Login Flow](./17-multi-tenant-login-flow.md)  
+How tenants and users interact during login (Core)
+
+**18** — [Why TenantId in Multiple Tables](./18-why-tenantid-in-multiple-tables.md)  
+Tenant isolation design rationale (Core)
+
+**19** — [Multi-Tenant Architecture](./19-multi-tenant-architecture.md)  
+Visual guide to tenant isolation (Core)
+
+**23** — [EF Core Multi-Context Migrations](./23-ef-core-migrations.md)  
+Orchestrate 5 independent DbContext schemas (Infrastructure)
+
+**24** — [MassTransit Message Queue](./24-masstransit-message-queue.md)  
+Asynchronous event-driven messaging (Infrastructure)
 
 ### Mobile & Cross-Platform (26)
 
-| # | File | Title | Related to |
-|---|------|-------|-----------|
-| 26 | [Mobile XAML Components](./26-mobile-xaml-components.md) | .NET MAUI reusable UI components | Core.Mobile |
+**26** — [Mobile XAML Components](./26-mobile-xaml-components.md)  
+.NET MAUI reusable UI components (Core.Mobile)
 
 ---
 
