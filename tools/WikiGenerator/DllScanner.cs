@@ -6,21 +6,38 @@ class DllScanner
 {
     private readonly GeneratorConfig _config;
     private readonly string _logLevel;
+    private readonly List<Regex> _includePatterns;
+    private readonly List<Regex> _excludePatterns;
 
     public DllScanner(GeneratorConfig config, string logLevel)
     {
         _config = config;
         _logLevel = logLevel;
+
+        _includePatterns = config.IncludeDllPatterns
+            .Select(p => new Regex(GlobToRegex(p), RegexOptions.Compiled | RegexOptions.IgnoreCase))
+            .ToList();
+
+        _excludePatterns = config.ExcludeDllPatterns
+            .Select(p => new Regex(GlobToRegex(p), RegexOptions.Compiled | RegexOptions.IgnoreCase))
+            .ToList();
     }
 
     public List<(string DllPath, string XmlPath)> ScanForDllsAndXml(string rootPath = ".")
     {
+        if (_includePatterns.Count == 0)
+        {
+            if (_logLevel == "warning" || _logLevel == "info")
+                Console.WriteLine("[Warning] IncludeDllPatterns is empty - no DLLs will be scanned");
+            return new();
+        }
+
         var result = new List<(string, string)>();
         var rootDir = new DirectoryInfo(rootPath);
 
         var allDlls = rootDir.GetFiles("*.dll", SearchOption.AllDirectories)
-            .Where(f => MatchesPattern(f.FullName, _config.IncludeDllPatterns))
-            .Where(f => !MatchesPattern(f.FullName, _config.ExcludeDllPatterns))
+            .Where(f => MatchesPattern(f.FullName, _includePatterns))
+            .Where(f => !MatchesPattern(f.FullName, _excludePatterns))
             .ToList();
 
         foreach (var dll in allDlls)
@@ -42,64 +59,56 @@ class DllScanner
         return result;
     }
 
-    private bool MatchesPattern(string filePath, List<string> patterns)
+    private bool MatchesPattern(string filePath, List<Regex> patterns)
     {
-        // Normalize path for matching - use forward slashes
-        var normalizedPath = filePath.Replace("\\", "/");
-
-        return patterns.Any(pattern =>
-        {
-            // Convert glob pattern to regex
-            var regexPattern = GlobToRegex(pattern);
-            var regex = new Regex(regexPattern, RegexOptions.IgnoreCase);
-            return regex.IsMatch(normalizedPath);
-        });
+        return patterns.Any(regex => regex.IsMatch(filePath));
     }
 
-    private string GlobToRegex(string glob)
+    private static string GlobToRegex(string glob)
     {
-        var sb = new System.Text.StringBuilder();
-        var i = 0;
+        var sb = new System.Text.StringBuilder("^");
+        var normalized = glob.Replace("\\", "/");
+        int i = 0;
 
-        while (i < glob.Length)
+        while (i < normalized.Length)
         {
-            var c = glob[i];
-
-            if (c == '*')
+            if (i + 1 < normalized.Length && normalized[i..].StartsWith("**"))
             {
-                // Check for **
-                if (i + 1 < glob.Length && glob[i + 1] == '*')
+                if ((i == 0 || normalized[i - 1] == '/') &&
+                    (i + 2 >= normalized.Length || normalized[i + 2] == '/'))
                 {
                     sb.Append(".*");
                     i += 2;
+                    if (i < normalized.Length && normalized[i] == '/')
+                        i++;
                 }
                 else
                 {
-                    // Single * matches anything except path separators
-                    sb.Append("[^/]*");
+                    sb.Append(System.Text.RegularExpressions.Regex.Escape("*"));
                     i++;
                 }
             }
-            else if (c == '?')
+            else if (normalized[i] == '*')
             {
-                sb.Append(".");
+                sb.Append("[^/]*");
                 i++;
             }
-            else if (c == '\\' || c == '/' || c == '.' || c == '+' || c == '^' || c == '$' || c == '(' || c == ')' || c == '[' || c == ']' || c == '{' || c == '}' || c == '|')
+            else if (normalized[i] == '?')
             {
-                // Escape regex special characters (but not /)
-                if (c != '/')
-                    sb.Append('\\');
-                sb.Append(c);
+                sb.Append("[^/]");
                 i++;
             }
             else
             {
+                var c = normalized[i];
+                if ("\\^$.|+()[]{}".Contains(c))
+                    sb.Append('\\');
                 sb.Append(c);
                 i++;
             }
         }
 
-        return $"^{sb.ToString()}$";
+        sb.Append("$");
+        return sb.ToString();
     }
 }

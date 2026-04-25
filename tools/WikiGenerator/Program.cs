@@ -32,8 +32,18 @@ class Program
 
         rootCommand.SetHandler(async (output, config, logLevel) =>
         {
-            var generator = new WikiGenerator(output, config, logLevel);
-            await generator.GenerateAsync();
+            try
+            {
+                var generator = new WikiGenerator(output, config, logLevel);
+                await generator.GenerateAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"[Error] {ex.Message}");
+                if (logLevel == "info")
+                    Console.Error.WriteLine(ex.StackTrace);
+                Environment.Exit(1);
+            }
         }, outputOption, configOption, logLevelOption);
 
         return await rootCommand.InvokeAsync(args);
@@ -55,31 +65,19 @@ class WikiGenerator
 
     public async Task GenerateAsync()
     {
-        try
-        {
-            if (_logLevel == "info")
-                Console.WriteLine("[WikiGenerator] Starting generation...");
+        if (_logLevel == "info")
+            Console.WriteLine("[WikiGenerator] Starting generation...");
 
-            var config = GeneratorConfig.LoadFromFile(_configPath);
-            if (_logLevel == "info")
-                Console.WriteLine($"[Config] Loaded {config.ProjectMappings.Count} project mappings");
+        var config = GeneratorConfig.LoadFromFile(_configPath);
+        if (_logLevel == "info")
+            Console.WriteLine($"[Config] Loaded {config.ProjectMappings.Count} project mappings");
 
-            var scanner = new DllScanner(config, _logLevel);
-            var dllsAndXml = scanner.ScanForDllsAndXml(".");
+        var scanner = new DllScanner(config, _logLevel);
+        var dllsAndXml = scanner.ScanForDllsAndXml(".");
 
-            if (_logLevel == "info")
-                Console.WriteLine($"[Scanner] Found {dllsAndXml.Count} DLL+XML pairs");
+        if (_logLevel == "info")
+            Console.WriteLine($"[Scanner] Found {dllsAndXml.Count} DLL+XML pairs");
 
-            Console.WriteLine("[WikiGenerator] Generation complete");
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"[Error] {ex.Message}");
-            if (_logLevel == "info")
-                Console.Error.WriteLine(ex.StackTrace);
-            Environment.Exit(1);
-        }
-
-        await Task.CompletedTask;
+        Console.WriteLine("[WikiGenerator] Generation complete");
     }
 }
