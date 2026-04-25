@@ -1,5 +1,9 @@
 {
   "projectMappings": {
+    "SmartWorkz.Core": {
+      "platform": "shared",
+      "layers": ["Core"]
+    },
     "SmartWorkz.Core.Mobile": {
       "platform": "mobile",
       "layers": ["Core", "Infrastructure", "Application"]
@@ -12,13 +16,25 @@
       "platform": "shared",
       "layers": ["Core"]
     },
+    "SmartWorkz.Core.External": {
+      "platform": "shared",
+      "layers": ["Core"]
+    },
+    "SmartWorkz.SDK": {
+      "platform": "shared",
+      "layers": ["Core"]
+    },
     "SmartWorkz.StarterKitMVC": {
       "platform": "web",
       "layers": ["Application", "Infrastructure"]
     },
-    "SmartWorkz.Core.External": {
-      "platform": "shared",
-      "layers": ["Core"]
+    "SmartWorkz.StarterKitMVC.Admin": {
+      "platform": "web",
+      "layers": ["Application", "Infrastructure"]
+    },
+    "SmartWorkz.StarterKitMVC.Public": {
+      "platform": "web",
+      "layers": ["Application", "Infrastructure"]
     },
     "SmartWorkz.Sample.ECommerce": {
       "platform": "web",

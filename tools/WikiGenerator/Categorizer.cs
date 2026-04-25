@@ -26,6 +26,7 @@ internal class Categorizer
             return result;
         }
 
+        int skippedCount = 0;
         foreach (var type in xmlDocs.Types)
         {
             var feature = DetermineFeature(type.FullName);
@@ -33,8 +34,9 @@ internal class Categorizer
 
             if (string.IsNullOrEmpty(layer))
             {
+                skippedCount++;
                 if (_logLevel == "info")
-                    Console.WriteLine($"[Categorizer] Skipping {type.FullName} (no matching layer)");
+                    Console.WriteLine($"[Categorizer] Skipping {type.FullName} (no matching layer from {string.Join(", ", mapping.Layers)})");
                 continue;
             }
 
@@ -48,8 +50,8 @@ internal class Categorizer
             });
         }
 
-        if (_logLevel == "info" && result.Count > 0)
-            Console.WriteLine($"[Categorizer] Categorized {result.Count} types from {projectName}");
+        if (_logLevel == "info")
+            Console.WriteLine($"[Categorizer] {projectName}: Processed {xmlDocs.Types.Count} types, Categorized {result.Count}, Skipped {skippedCount}");
 
         return result;
     }
