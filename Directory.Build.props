@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <IsLocalBuild Condition="'$(GITHUB_ACTIONS)' != 'true' And '$(TF_BUILD)' != 'true'">true</IsLocalBuild>
+  </PropertyGroup>
+
+  <Target Name="GenerateWiki"
+          AfterTargets="Build"
+          Condition="'$(Configuration)' == 'Release' Or '$(IsLocalBuild)' == 'true'">
+
+    <Message Text="[MSBuild] Generating wiki from DLL XML comments..." Importance="high" />
+
+    <Exec Command="dotnet run --project $(MSBuildThisFileDirectory)tools/WikiGenerator -- --output $(MSBuildThisFileDirectory)docs/framework --config $(MSBuildThisFileDirectory)tools/WikiGenerator/config.json --log-level info"
+          ContinueOnError="true" />
+
+    <Message Text="[MSBuild] Wiki generation completed" Importance="high" />
+  </Target>
+</Project>
