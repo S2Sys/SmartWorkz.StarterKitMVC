@@ -55,12 +55,31 @@ class WikiGenerator
 
     public async Task GenerateAsync()
     {
-        Console.WriteLine("WikiGenerator initialized");
-        Console.WriteLine($"Output: {_outputPath}");
-        Console.WriteLine($"Config: {_configPath}");
-        Console.WriteLine($"Log Level: {_logLevel}");
+        try
+        {
+            if (_logLevel == "info")
+                Console.WriteLine("[WikiGenerator] Starting generation...");
 
-        // Placeholder for implementation
+            var config = GeneratorConfig.LoadFromFile(_configPath);
+            if (_logLevel == "info")
+                Console.WriteLine($"[Config] Loaded {config.ProjectMappings.Count} project mappings");
+
+            var scanner = new DllScanner(config, _logLevel);
+            var dllsAndXml = scanner.ScanForDllsAndXml(".");
+
+            if (_logLevel == "info")
+                Console.WriteLine($"[Scanner] Found {dllsAndXml.Count} DLL+XML pairs");
+
+            Console.WriteLine("[WikiGenerator] Generation complete");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[Error] {ex.Message}");
+            if (_logLevel == "info")
+                Console.Error.WriteLine(ex.StackTrace);
+            Environment.Exit(1);
+        }
+
         await Task.CompletedTask;
     }
 }
