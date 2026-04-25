@@ -151,14 +151,14 @@ public class WebhookSignatureTests
     }
 
     [Fact]
-    public void Sign_WithNullPayload_ThrowsArgumentNullException()
+    public void Sign_WithNullEvent_ThrowsArgumentNullException()
     {
         // Arrange
-        WebhookPayload nullPayload = null!;
+        WebhookEvent nullEvent = null!;
         var secretKey = "secret-key";
 
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => WebhookSignature.Sign(nullPayload, secretKey));
+        Assert.Throws<ArgumentNullException>(() => WebhookSignature.Sign(nullEvent, secretKey));
     }
 
     [Fact]
@@ -177,23 +177,22 @@ public class WebhookSignatureTests
     {
         // Arrange
         var @event = new UserCreatedEvent("user-123", "user@example.com", "John", "Doe");
-        var payload = new WebhookPayload { Event = @event };
         string nullSecretKey = null!;
 
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => WebhookSignature.Sign(payload, nullSecretKey));
+        Assert.Throws<ArgumentNullException>(() => WebhookSignature.Sign(@event, nullSecretKey));
     }
 
     [Fact]
-    public void Verify_WithNullPayload_ThrowsArgumentNullException()
+    public void Verify_WithNullEvent_ThrowsArgumentNullException()
     {
         // Arrange
-        WebhookPayload nullPayload = null!;
+        WebhookEvent nullEvent = null!;
         var signature = "somesignature";
         var secretKey = "secret-key";
 
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => WebhookSignature.Verify(nullPayload, signature, secretKey));
+        Assert.Throws<ArgumentNullException>(() => WebhookSignature.Verify(nullEvent, signature, secretKey));
     }
 
     [Fact]
