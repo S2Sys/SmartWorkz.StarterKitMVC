@@ -1,11 +1,17 @@
 <Project>
+
   <PropertyGroup>
     <IsLocalBuild Condition="'$(GITHUB_ACTIONS)' != 'true' And '$(TF_BUILD)' != 'true'">true</IsLocalBuild>
+    <!-- New: Set to 'true' to generate wiki (defaults to false for local dev) -->
+    <GenerateWikiDocs Condition="'$(GenerateWikiDocs)' == ''">false</GenerateWikiDocs>
+    <!-- Auto-enable in CI -->
+    <GenerateWikiDocs Condition="'$(GITHUB_ACTIONS)' == 'true' Or '$(TF_BUILD)' == 'true'">true</GenerateWikiDocs>
   </PropertyGroup>
 
+  <!-- Wiki Generation Task - Only runs when GenerateWikiDocs=true -->
   <Target Name="GenerateWiki"
           AfterTargets="Build"
-          Condition="'$(Configuration)' == 'Release' Or '$(IsLocalBuild)' == 'true'">
+          Condition="'$(GenerateWikiDocs)' == 'true'">
 
     <Message Text="[MSBuild] Generating wiki from DLL XML comments..." Importance="high" />
 
@@ -14,4 +20,5 @@
 
     <Message Text="[MSBuild] Wiki generation completed" Importance="high" />
   </Target>
+
 </Project>
