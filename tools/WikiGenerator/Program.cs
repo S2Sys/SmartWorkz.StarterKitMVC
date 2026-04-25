@@ -1,8 +1,6 @@
-using System;
 using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.IO;
-using System.Threading.Tasks;
+
+namespace SmartWorkz.Tools.WikiGenerator;
 
 class Program
 {
