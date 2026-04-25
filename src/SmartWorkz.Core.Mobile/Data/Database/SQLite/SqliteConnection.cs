@@ -19,8 +19,10 @@ internal class SqliteConnection : IDbConnection
     /// <summary>
     /// Execute non-query SQL statement.
     /// </summary>
-    public async Task<int> ExecuteAsync(string sql, Dictionary<string, object?>? parameters = null)
+    public async Task<int> ExecuteAsync(string sql, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (_disposed)
             throw new ObjectDisposedException(nameof(SqliteConnection));
 
@@ -56,9 +58,11 @@ internal class SqliteConnection : IDbConnection
     /// <summary>
     /// Execute query and return results as list.
     /// </summary>
-    public async Task<List<T>> QueryAsync<T>(string sql, Dictionary<string, object?>? parameters = null)
+    public async Task<List<T>> QueryAsync<T>(string sql, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
         where T : class, new()
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (_disposed)
             throw new ObjectDisposedException(nameof(SqliteConnection));
 
@@ -92,9 +96,11 @@ internal class SqliteConnection : IDbConnection
     /// <summary>
     /// Execute query and return first result or null.
     /// </summary>
-    public async Task<T?> QueryFirstOrDefaultAsync<T>(string sql, Dictionary<string, object?>? parameters = null)
+    public async Task<T?> QueryFirstOrDefaultAsync<T>(string sql, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
         where T : class, new()
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (_disposed)
             throw new ObjectDisposedException(nameof(SqliteConnection));
 
