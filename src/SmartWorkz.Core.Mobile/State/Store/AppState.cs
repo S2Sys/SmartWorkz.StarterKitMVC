@@ -84,14 +84,14 @@ public class SyncState
     public int PendingChanges { get; init; }
 
     /// <summary>List of sync errors encountered.</summary>
-    public List<string> SyncErrors { get; init; } = new();
+    public IReadOnlyList<string> SyncErrors { get; init; } = Array.Empty<string>();
 }
 
 /// <summary>Push notification state.</summary>
 public class NotificationState
 {
     /// <summary>List of received push notifications.</summary>
-    public List<PushNotification> Notifications { get; init; } = new();
+    public IReadOnlyList<PushNotification> Notifications { get; init; } = Array.Empty<PushNotification>();
 
     /// <summary>Count of unread notifications.</summary>
     public int UnreadCount { get; init; }
@@ -116,7 +116,7 @@ public class PushNotification
     public bool IsRead { get; init; }
 
     /// <summary>Additional notification data.</summary>
-    public Dictionary<string, string>? Data { get; init; }
+    public IReadOnlyDictionary<string, string>? Data { get; init; }
 }
 
 /// <summary>Application error state.</summary>

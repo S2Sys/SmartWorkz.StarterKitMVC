@@ -157,4 +157,5 @@ public class AppStoreTests
 public class TestAction : IAction
 {
     public int Value { get; set; }
+    public string Type => nameof(TestAction);
 }
