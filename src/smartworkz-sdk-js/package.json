@@ -1,0 +1,44 @@
+{
+  "name": "@smartworkz/sdk",
+  "version": "1.0.0",
+  "description": "Official Node.js SDK for SmartWorkz APIs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "prepublishOnly": "npm run build",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "smartworkz",
+    "api",
+    "sdk",
+    "rest",
+    "typescript",
+    "nodejs"
+  ],
+  "author": "S2 Systems",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/S2Sys/SmartWorkz.git"
+  },
+  "bugs": {
+    "url": "https://github.com/S2Sys/SmartWorkz/issues"
+  },
+  "homepage": "https://github.com/S2Sys/SmartWorkz",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "ts-jest": "^29.0.0"
+  }
+}

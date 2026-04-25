@@ -31,17 +31,32 @@ SmartWorkz divides into three interconnected layers, each with a specific respon
 
 ## DLL Reference Map
 
-| Assembly | Layer | Responsibility | Key Consumer(s) |
-|----------|-------|-----------------|-----------------|
-| **SmartWorkz.StarterKitMVC.Domain** | App | Domain entities, enums, invariants | Application, Infrastructure |
-| **SmartWorkz.StarterKitMVC.Application** | App | Business logic, CQRS handlers, services | Infrastructure, Admin/Public |
-| **SmartWorkz.StarterKitMVC.Infrastructure** | App | Database contexts, repositories, implementations | Admin/Public |
-| **SmartWorkz.StarterKitMVC.Shared** | App | DTOs, models, base page classes, validators | Admin/Public, all other projects |
-| **SmartWorkz.Core** | Core | Entity base classes, guards, value objects, DDD interfaces | All StarterKit projects |
-| **SmartWorkz.Core.Web** | Core | Tag helpers, Blazor components, GraphQL setup | Public portal |
-| **SmartWorkz.Core.Shared** | Core | Caching, CQRS contracts, logging, webhooks | Application, Infrastructure |
-| **SmartWorkz.Core.External** | Core | Excel (ClosedXML), PDF (iText7) exporters | Infrastructure |
-| **SmartWorkz.Core.Mobile** | Core | MAUI components, platform services (iOS/Android) | Mobile apps (out of scope for this kit) |
+**SmartWorkz.StarterKitMVC.Domain** (App Layer)  
+Domain entities, enums, invariants — consumed by Application, Infrastructure
+
+**SmartWorkz.StarterKitMVC.Application** (App Layer)  
+Business logic, CQRS handlers, services — consumed by Infrastructure, Admin/Public
+
+**SmartWorkz.StarterKitMVC.Infrastructure** (App Layer)  
+Database contexts, repositories, implementations — consumed by Admin/Public
+
+**SmartWorkz.StarterKitMVC.Shared** (App Layer)  
+DTOs, models, base page classes, validators — consumed by Admin/Public, all projects
+
+**SmartWorkz.Core** (Core Layer)  
+Entity base classes, guards, value objects, DDD interfaces — consumed by all StarterKit projects
+
+**SmartWorkz.Core.Web** (Core Layer)  
+Tag helpers, Blazor components, GraphQL setup — consumed by Public portal
+
+**SmartWorkz.Core.Shared** (Core Layer)  
+Caching, CQRS contracts, logging, webhooks — consumed by Application, Infrastructure
+
+**SmartWorkz.Core.External** (Core Layer)  
+Excel (ClosedXML), PDF (iText7) exporters — consumed by Infrastructure
+
+**SmartWorkz.Core.Mobile** (Core Layer)  
+MAUI components, platform services (iOS/Android) — for mobile apps
 
 ## Project Dependency Chain
 
@@ -70,19 +85,38 @@ Admin Portal / Public Portal
 
 ## When to Use Which DLL
 
-| Scenario | Use This DLL | Reason |
-|----------|------|--------|
-| Need a domain entity (User, Product)? | `SmartWorkz.Core` | Base class Entity, AuditEntity, TenantEntity, guard clauses |
-| Need a value object (Money, Email)? | `SmartWorkz.Core` | Pre-built Money, EmailAddress, Address with factories returning Result<T> |
-| Need to query the database? | `SmartWorkz.Core.Shared` + Application services | CQRS: IQuery<T> / IQueryHandler<T,TResult> for read-only logic |
-| Need caching? | `SmartWorkz.Core.Shared` | ICacheService (L1: memory, L2: Redis or distributed) |
-| Need structured logging? | `SmartWorkz.Core.Shared` | AddStructuredLogging() configures Serilog with console + rolling file |
-| Need to publish events? | `SmartWorkz.Core.Shared` | IWebhookPublisher for outbound webhook delivery with retry policy |
-| Need to render a Razor form with validation? | `SmartWorkz.Core.Web` | FormGroupTagHelper, validation extensions |
-| Need to build a dynamic data grid (Blazor)? | `SmartWorkz.Core.Web` | GridComponent with sorting, filtering, virtual scroll |
-| Need to export data to Excel? | `SmartWorkz.Core.External` | IExcelExporter with styling options |
-| Need to export data to PDF? | `SmartWorkz.Core.External` | IPdfExporter with layout options |
-| Building a mobile app? | `SmartWorkz.Core.Mobile` | MAUI custom components, offline queue, reconnect service |
+**Need a domain entity (User, Product)?**  
+Use `SmartWorkz.Core` — Base class Entity, AuditEntity, TenantEntity, guard clauses
+
+**Need a value object (Money, Email)?**  
+Use `SmartWorkz.Core` — Pre-built Money, EmailAddress, Address with factories returning Result<T>
+
+**Need to query the database?**  
+Use `SmartWorkz.Core.Shared` + Application services — CQRS: IQuery<T> / IQueryHandler<T,TResult>
+
+**Need caching?**  
+Use `SmartWorkz.Core.Shared` — ICacheService (L1: memory, L2: Redis or distributed)
+
+**Need structured logging?**  
+Use `SmartWorkz.Core.Shared` — AddStructuredLogging() configures Serilog with console + rolling file
+
+**Need to publish events?**  
+Use `SmartWorkz.Core.Shared` — IWebhookPublisher for outbound webhook delivery with retry policy
+
+**Need to render a Razor form with validation?**  
+Use `SmartWorkz.Core.Web` — FormGroupTagHelper, validation extensions
+
+**Need to build a dynamic data grid (Blazor)?**  
+Use `SmartWorkz.Core.Web` — GridComponent with sorting, filtering, virtual scroll
+
+**Need to export data to Excel?**  
+Use `SmartWorkz.Core.External` — IExcelExporter with styling options
+
+**Need to export data to PDF?**  
+Use `SmartWorkz.Core.External` — IPdfExporter with layout options
+
+**Building a mobile app?**  
+Use `SmartWorkz.Core.Mobile` — MAUI custom components, offline queue, reconnect service
 
 ## Solution File Layout
 
