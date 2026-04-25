@@ -137,9 +137,12 @@ class WikiGenerator
         if (_logLevel == "info")
             Console.WriteLine($"[Categorizer] Processed {allCategorizedItems.Count} categorized items");
 
-        // TODO: Task 5 - Implement markdown generation and write output files
+        var markdownGen = new MarkdownGenerator(_outputPath, _logLevel);
+        markdownGen.GenerateApiReference(allCategorizedItems);
+        markdownGen.GenerateUsageGuides(allCategorizedItems);
+
         if (_logLevel == "info")
-            Console.WriteLine($"[Output] Writing to {_outputPath}...");
+            Console.WriteLine($"[Output] Generated markdown files in {_outputPath}");
 
         Console.WriteLine("[WikiGenerator] Generation complete");
     }
