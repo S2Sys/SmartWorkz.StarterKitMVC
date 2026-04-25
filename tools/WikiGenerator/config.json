@@ -44,9 +44,12 @@
   },
   "outputPath": "docs/framework",
   "includeDllPatterns": [
-    "**/bin/**/SmartWorkz*.dll"
+    "*bin*SmartWorkz*.dll"
   ],
   "excludeDllPatterns": [
-    "**/*Tests.dll"
+    "*Tests.dll",
+    "*ref*",
+    "*refint*",
+    "*obj*"
   ]
 }

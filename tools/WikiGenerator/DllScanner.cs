@@ -35,10 +35,20 @@ class DllScanner
         var result = new List<(string, string)>();
         var rootDir = new DirectoryInfo(rootPath);
 
-        var allDlls = rootDir.GetFiles("*.dll", SearchOption.AllDirectories)
+        var allDlls = rootDir.GetFiles("*.dll", SearchOption.AllDirectories).ToList();
+
+        if (_logLevel == "info")
+            Console.WriteLine($"[Scanner] Found {allDlls.Count} total DLL files, filtering by pattern...");
+
+        var filtered = allDlls
             .Where(f => MatchesPattern(f.FullName, _includePatterns))
             .Where(f => !MatchesPattern(f.FullName, _excludePatterns))
             .ToList();
+
+        if (_logLevel == "info" && filtered.Count != allDlls.Count)
+            Console.WriteLine($"[Scanner] Filtered to {filtered.Count} DLLs after pattern matching");
+
+        allDlls = filtered;
 
         foreach (var dll in allDlls)
         {
