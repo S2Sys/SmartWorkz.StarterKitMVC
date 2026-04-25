@@ -151,11 +151,11 @@ CREATE TABLE IF NOT EXISTS {MigrationHistoryTable} (
                 await RecordMigrationAsync(migration, cancellationToken);
 
                 // Commit transaction
-                await transaction.CommitAsync();
+                await transaction.CommitAsync(cancellationToken);
             }
             catch
             {
-                await transaction.RollbackAsync();
+                await transaction.RollbackAsync(cancellationToken);
                 throw;
             }
         }
