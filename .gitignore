@@ -23,3 +23,9 @@ Thumbs.db
 
 # Claude development artifacts (planning, temporary work)
 .claude/
+
+# Docusaurus build artifacts
+build/
+.docusaurus/
+node_modules/
+.cache/
