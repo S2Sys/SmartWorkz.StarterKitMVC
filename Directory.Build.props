@@ -1,0 +1,27 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- Enable XML documentation for all projects for wiki generation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <IsLocalBuild Condition="'$(GITHUB_ACTIONS)' != 'true' And '$(TF_BUILD)' != 'true'">true</IsLocalBuild>
+    <!-- Set to 'true' to generate wiki (defaults to false for local dev) -->
+    <GenerateWikiDocs Condition="'$(GenerateWikiDocs)' == ''">false</GenerateWikiDocs>
+    <!-- Auto-enable in CI -->
+    <GenerateWikiDocs Condition="'$(GITHUB_ACTIONS)' == 'true' Or '$(TF_BUILD)' == 'true'">true</GenerateWikiDocs>
+  </PropertyGroup>
+
+  <!-- Wiki Generation Task - Only runs when GenerateWikiDocs=true -->
+  <Target Name="GenerateWiki"
+          AfterTargets="Build"
+          Condition="'$(GenerateWikiDocs)' == 'true'">
+
+    <Message Text="[MSBuild] Generating wiki from DLL XML comments..." Importance="high" />
+
+    <Exec Command="dotnet run --project $(MSBuildThisFileDirectory)tools/WikiGenerator -- --output $(MSBuildThisFileDirectory)docs/framework --config $(MSBuildThisFileDirectory)tools/WikiGenerator/config.json --log-level info"
+          ContinueOnError="true" />
+
+    <Message Text="[MSBuild] Wiki generation completed" Importance="high" />
+  </Target>
+
+</Project>

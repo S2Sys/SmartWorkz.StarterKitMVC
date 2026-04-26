@@ -1,83 +1,183 @@
-using SmartWorkz.Mobile.State.Actions;
-using SmartWorkz.Mobile.State.Reducers;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
-
 namespace SmartWorkz.Mobile.State.Store;
 
+using SmartWorkz.Mobile.State.Actions;
+using SmartWorkz.Mobile.State.Reducers;
+
 /// <summary>
-/// Redux store managing centralized application state.
-/// Single source of truth for all app data.
+/// Redux store implementation managing application state.
+/// Provides immutable state updates via pure reducer functions.
+/// Thread-safe with subscriber notifications on state changes.
 /// </summary>
 public class AppStore : IAppStore
 {
-    private AppState _state;
-    private readonly List<Action<AppState>> _listeners = new();
-    private readonly IReducerRegistry _reducerRegistry;
-    private readonly ILogger<AppStore> _logger;
+    private AppState _state = new();
+    private readonly object _stateLock = new();
+    private readonly List<(Action<AppState> callback, Guid id)> _subscribers = new();
+    private readonly AppReducer _reducer = new();
+    private readonly object _subscribersLock = new();
 
-    public AppStore(AppState initialState, IReducerRegistry reducerRegistry, ILogger<AppStore> logger)
+    public AppState State
     {
-        _state = initialState ?? throw new ArgumentNullException(nameof(initialState));
-        _reducerRegistry = reducerRegistry ?? throw new ArgumentNullException(nameof(reducerRegistry));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        get
+        {
+            lock (_stateLock)
+            {
+                return _state;
+            }
+        }
     }
 
-    /// <summary>Dispatch action through reducer pipeline to update state.</summary>
+    public int SubscriberCount
+    {
+        get
+        {
+            lock (_subscribersLock)
+            {
+                return _subscribers.Count;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the AppStore with initial state.
+    /// </summary>
+    public AppStore()
+    {
+        _state = new AppState();
+    }
+
+    /// <summary>
+    /// Dispatches an action to update state.
+    /// Calls the reducer with current state and action to compute new state,
+    /// then notifies all subscribers.
+    /// </summary>
+    /// <param name="action">The action to dispatch.</param>
+    /// <exception cref="ArgumentNullException">Thrown when action is null.</exception>
     public void Dispatch(IAction action)
     {
         ArgumentNullException.ThrowIfNull(action);
 
-        try
+        AppState newState;
+
+        lock (_stateLock)
         {
-            _logger.LogDebug("Dispatching action: {ActionType}", action.Type);
+            newState = _reducer.Reduce(_state, action);
 
-            var newState = _reducerRegistry.Reduce(_state, action);
-
-            if (newState != _state)
+            // Only update if state actually changed (reference or value equality)
+            if (ReferenceEquals(_state, newState) || _state == newState)
             {
-                _state = newState;
-                NotifyListeners();
-                _logger.LogDebug("State updated by action: {ActionType}", action.Type);
+                return;
             }
+
+            _state = newState;
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error dispatching action: {ActionType}", action.Type);
-            throw;
-        }
+
+        // Notify subscribers outside of lock to prevent deadlocks
+        NotifySubscribers(newState);
     }
 
-    /// <summary>Get current immutable state snapshot.</summary>
-    public AppState GetState() => _state;
-
-    /// <summary>Subscribe to state changes. Returns function to unsubscribe.</summary>
-    public Action Subscribe(Action<AppState> listener)
+    /// <summary>
+    /// Subscribes to all state changes.
+    /// </summary>
+    /// <param name="callback">Called with the new state whenever it changes.</param>
+    /// <returns>A disposable that removes the subscription when disposed.</returns>
+    public IDisposable Subscribe(Action<AppState> callback)
     {
-        ArgumentNullException.ThrowIfNull(listener);
+        ArgumentNullException.ThrowIfNull(callback);
 
-        _listeners.Add(listener);
-        _logger.LogDebug("Listener subscribed. Total listeners: {Count}", _listeners.Count);
+        var id = Guid.NewGuid();
 
-        // Return unsubscribe function
-        return () =>
+        lock (_subscribersLock)
         {
-            _listeners.Remove(listener);
-            _logger.LogDebug("Listener unsubscribed. Total listeners: {Count}", _listeners.Count);
-        };
+            _subscribers.Add((callback, id));
+        }
+
+        // Return a disposable that unsubscribes
+        return new Unsubscriber(this, id);
     }
 
-    private void NotifyListeners()
+    /// <summary>
+    /// Subscribes to changes of a specific state slice.
+    /// Only calls the callback when the selected value changes.
+    /// </summary>
+    /// <typeparam name="T">The type of the state slice.</typeparam>
+    /// <param name="selector">Extracts a portion of state.</param>
+    /// <param name="callback">Called when the selected portion changes.</param>
+    /// <returns>A disposable that removes the subscription when disposed.</returns>
+    public IDisposable SubscribeToSlice<T>(Func<AppState, T> selector, Action<T> callback)
     {
-        foreach (var listener in _listeners.ToList())
+        ArgumentNullException.ThrowIfNull(selector);
+        ArgumentNullException.ThrowIfNull(callback);
+
+        T? previousValue = default;
+        var isFirstCall = true;
+
+        return Subscribe(newState =>
+        {
+            var currentValue = selector(newState);
+
+            if (isFirstCall || !EqualityComparer<T>.Default.Equals(currentValue, previousValue))
+            {
+                isFirstCall = false;
+                previousValue = currentValue;
+                callback(currentValue);
+            }
+        });
+    }
+
+    /// <summary>
+    /// Notifies all subscribers of a state change.
+    /// </summary>
+    private void NotifySubscribers(AppState newState)
+    {
+        List<(Action<AppState> callback, Guid id)> subscribersCopy;
+
+        lock (_subscribersLock)
+        {
+            subscribersCopy = new List<(Action<AppState>, Guid)>(_subscribers);
+        }
+
+        foreach (var (callback, _) in subscribersCopy)
         {
             try
             {
-                listener(_state);
+                callback(newState);
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, "Error notifying listener");
+                // Silently ignore subscriber errors to prevent one bad subscriber from affecting others
             }
+        }
+    }
+
+    /// <summary>
+    /// Internal helper class for unsubscribing.
+    /// </summary>
+    private class Unsubscriber : IDisposable
+    {
+        private readonly AppStore _store;
+        private readonly Guid _id;
+        private bool _disposed;
+
+        public Unsubscriber(AppStore store, Guid id)
+        {
+            _store = store;
+            _id = id;
+        }
+
+        public void Dispose()
+        {
+            if (!_disposed)
+            {
+                lock (_store._subscribersLock)
+                {
+                    _store._subscribers.RemoveAll(s => s.id == _id);
+                }
+
+                _disposed = true;
+            }
+
+            GC.SuppressFinalize(this);
         }
     }
 }

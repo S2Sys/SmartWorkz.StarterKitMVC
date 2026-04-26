@@ -1,131 +1,148 @@
 namespace SmartWorkz.Mobile.State.Store;
 
-/// <summary>Root application state (immutable).</summary>
-public class AppState
+/// <summary>
+/// Root application state record holding all sub-states.
+/// Immutable record with init-only properties for Redux-style pure state updates.
+/// </summary>
+public record AppState(
+    InitState InitState = default,
+    AuthState AuthState = default,
+    SyncState SyncState = default,
+    NotificationState NotificationState = default,
+    ErrorState ErrorState = default,
+    int TestValue = 0)
 {
-    /// <summary>Current app initialization state.</summary>
-    public InitializationState InitState { get; init; } = new();
+    /// <summary>Initialization state - tracks app startup and setup.</summary>
+    public InitState InitState { get; init; } = InitState ?? new();
 
-    /// <summary>User authentication state.</summary>
-    public AuthState AuthState { get; init; } = new();
+    /// <summary>Authentication state - tracks user login and session.</summary>
+    public AuthState AuthState { get; init; } = AuthState ?? new();
 
-    /// <summary>Sync/offline state.</summary>
-    public SyncState SyncState { get; init; } = new();
+    /// <summary>Synchronization state - tracks sync progress and pending changes.</summary>
+    public SyncState SyncState { get; init; } = SyncState ?? new();
 
-    /// <summary>Notification state.</summary>
-    public NotificationState NotificationState { get; init; } = new();
+    /// <summary>Notification state - tracks push notifications and unread count.</summary>
+    public NotificationState NotificationState { get; init; } = NotificationState ?? new();
 
-    /// <summary>Error state.</summary>
-    public ErrorState ErrorState { get; init; } = new();
+    /// <summary>Error state - tracks application errors.</summary>
+    public ErrorState ErrorState { get; init; } = ErrorState ?? new();
 
-    /// <summary>Test value for unit testing.</summary>
-    public int TestValue { get; init; }
+    /// <summary>Test value for testing immutability behavior.</summary>
+    public int TestValue { get; init; } = TestValue;
 
-    /// <summary>Create new state with updated values (for immutability).</summary>
+    /// <summary>
+    /// Create a new AppState with selective property updates.
+    /// </summary>
     public AppState With(
-        InitializationState? initState = null,
+        InitState? initState = null,
         AuthState? authState = null,
         SyncState? syncState = null,
         NotificationState? notificationState = null,
         ErrorState? errorState = null,
         int? testValue = null)
     {
-        return new AppState
-        {
-            InitState = initState ?? InitState,
-            AuthState = authState ?? AuthState,
-            SyncState = syncState ?? SyncState,
-            NotificationState = notificationState ?? NotificationState,
-            ErrorState = errorState ?? ErrorState,
-            TestValue = testValue ?? TestValue
-        };
+        return new AppState(
+            initState ?? this.InitState,
+            authState ?? this.AuthState,
+            syncState ?? this.SyncState,
+            notificationState ?? this.NotificationState,
+            errorState ?? this.ErrorState,
+            testValue ?? this.TestValue);
     }
 }
 
-/// <summary>Application initialization state.</summary>
-public class InitializationState
+/// <summary>
+/// Application initialization state.
+/// Tracks the startup sequence and any initialization errors.
+/// </summary>
+public record InitState
 {
-    /// <summary>Whether app has completed initialization.</summary>
-    public bool IsInitialized { get; init; }
-
-    /// <summary>Whether initialization is in progress.</summary>
+    /// <summary>Whether the app is currently initializing.</summary>
     public bool IsInitializing { get; init; }
 
-    /// <summary>Initialization error message, if any.</summary>
+    /// <summary>Whether the app has completed initialization.</summary>
+    public bool IsInitialized { get; init; }
+
+    /// <summary>Error message if initialization failed.</summary>
     public string? InitError { get; init; }
 }
 
-/// <summary>User authentication and authorization state.</summary>
-public class AuthState
+/// <summary>
+/// Authentication state.
+/// Tracks user identity, authentication tokens, and session information.
+/// </summary>
+public record AuthState
 {
-    /// <summary>Whether user is authenticated.</summary>
+    /// <summary>Whether the user is currently authenticated.</summary>
     public bool IsAuthenticated { get; init; }
 
-    /// <summary>Current user ID.</summary>
+    /// <summary>Authenticated user's unique identifier.</summary>
     public string? UserId { get; init; }
 
-    /// <summary>Current access token.</summary>
+    /// <summary>Bearer token for authenticated API requests.</summary>
     public string? AccessToken { get; init; }
 
     /// <summary>When the access token expires.</summary>
     public DateTime? TokenExpiresAt { get; init; }
 }
 
-/// <summary>Synchronization and offline state.</summary>
-public class SyncState
+/// <summary>
+/// Synchronization state.
+/// Tracks the status of data synchronization with the server.
+/// </summary>
+public record SyncState
 {
-    /// <summary>Whether sync is currently in progress.</summary>
+    /// <summary>Whether a sync operation is currently in progress.</summary>
     public bool IsSyncing { get; init; }
 
-    /// <summary>Last successful sync timestamp.</summary>
+    /// <summary>Timestamp of the last successful sync (null if never synced).</summary>
     public DateTime? LastSyncTime { get; init; }
 
-    /// <summary>Number of pending changes awaiting sync.</summary>
+    /// <summary>Count of changes pending synchronization.</summary>
     public int PendingChanges { get; init; }
-
-    /// <summary>List of sync errors encountered.</summary>
-    public IReadOnlyList<string> SyncErrors { get; init; } = Array.Empty<string>();
 }
 
-/// <summary>Push notification state.</summary>
-public class NotificationState
+/// <summary>
+/// Notification state.
+/// Tracks all received push notifications and unread count.
+/// </summary>
+public record NotificationState
 {
-    /// <summary>List of received push notifications.</summary>
-    public IReadOnlyList<PushNotification> Notifications { get; init; } = Array.Empty<PushNotification>();
+    /// <summary>List of all received notifications.</summary>
+    public IReadOnlyList<PushNotification> Notifications { get; init; } = new List<PushNotification>();
 
     /// <summary>Count of unread notifications.</summary>
     public int UnreadCount { get; init; }
 }
 
-/// <summary>Individual push notification model.</summary>
-public class PushNotification
+/// <summary>
+/// A single push notification.
+/// </summary>
+public record PushNotification
 {
-    /// <summary>Unique notification ID.</summary>
-    public string Id { get; init; } = Guid.NewGuid().ToString();
+    /// <summary>Unique identifier for the notification.</summary>
+    public required string Id { get; init; }
 
     /// <summary>Notification title.</summary>
-    public string Title { get; init; } = string.Empty;
+    public required string Title { get; init; }
 
     /// <summary>Notification body text.</summary>
-    public string Body { get; init; } = string.Empty;
+    public required string Body { get; init; }
 
-    /// <summary>When the notification was received.</summary>
-    public DateTime ReceivedAt { get; init; } = DateTime.UtcNow;
-
-    /// <summary>Whether the notification has been read.</summary>
+    /// <summary>Whether the notification has been read by the user.</summary>
     public bool IsRead { get; init; }
-
-    /// <summary>Additional notification data.</summary>
-    public IReadOnlyDictionary<string, string>? Data { get; init; }
 }
 
-/// <summary>Application error state.</summary>
-public class ErrorState
+/// <summary>
+/// Error state.
+/// Tracks the most recent application error if one occurred.
+/// </summary>
+public record ErrorState
 {
     /// <summary>Last error message.</summary>
     public string? LastError { get; init; }
 
-    /// <summary>Last error code or identifier.</summary>
+    /// <summary>Last error code for error categorization.</summary>
     public string? LastErrorCode { get; init; }
 
     /// <summary>When the last error occurred.</summary>

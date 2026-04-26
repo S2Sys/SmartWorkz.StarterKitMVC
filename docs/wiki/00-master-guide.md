@@ -1,227 +1,159 @@
 # Master Guide — SmartWorkz Starter Kit Wiki
 
-Welcome to the SmartWorkz Starter Kit documentation hub. **Start with the Foundation Series (01-08)** to learn core concepts, then explore the Pattern Library (09-27) for advanced features and architectural patterns.
+Welcome to the SmartWorkz Starter Kit documentation hub. **Start with Foundation Series (01-08)** for a complete zero-to-hero learning path, then explore Pattern Library (09-27) for advanced reference material.
 
 ---
 
-## 🎯 START HERE: Foundation Series (Zero-to-Hero Learning Path)
+## 🎯 START HERE: Foundation Series (01-08)
 
-New to SmartWorkz? Begin with **files 01-08** in order. This is a complete learning path from setup to building your first feature.
+New to SmartWorkz? Begin with files **01-08 in order**. This is a complete learning path with everything you need to build your first feature.
 
-**01** — [Getting Started](./01-getting-started.md)  
-Installation & quick-start (10 min) — Clone, run, verify, FAQ
+**01 — [Getting Started](./01-getting-started.md)**  
+Prerequisites, clone + run (10 min)
 
-**02** — [Project Overview](./02-project-overview.md)  
-Architecture & DLL map (15 min) — Three-tier architecture, DLL dependencies, when to use what
+**02 — [Project Overview](./02-project-overview.md)**  
+Architecture diagram, DLL map, dependencies (15 min)
 
-**03** — [SmartWorkz.Core](./03-smartworkz-core.md)  
-Domain foundation (25 min) — Entity hierarchy, Value Objects, Guard class, EntityState
+**03 — [SmartWorkz.Core](./03-smartworkz-core.md)**  
+Entity hierarchy, Value Objects, Guard, EntityState — extracted from XML docs (25 min)
 
-**04** — [SmartWorkz.Core.Web](./04-smartworkz-core-web.md)  
-Web components (20 min) — Tag Helpers, Blazor Grid, Validation, GraphQL setup
+**04 — [SmartWorkz.Core.Web](./04-smartworkz-core-web.md)**  
+Tag Helpers, Blazor Grid, Validation, GraphQL — extracted from XML docs (20 min)
 
-**05** — [SmartWorkz.Core.Shared](./05-smartworkz-core-shared.md)  
-Caching, CQRS, Logging, Webhooks (25 min) — In-memory cache, lightweight CQRS, Serilog, webhook security
+**05 — [SmartWorkz.Core.Shared](./05-smartworkz-core-shared.md)**  
+Caching, CQRS, Logging, Webhooks — extracted from XML docs (25 min)
 
-**06** — [SmartWorkz.Core.External](./06-smartworkz-core-external.md)  
-Excel & PDF export (15 min) — IExcelExporter, IPdfExporter, Result<T> pattern
+**06 — [SmartWorkz.Core.External](./06-smartworkz-core-external.md)**  
+Excel & PDF export, Result<T> pattern — extracted from XML docs (15 min)
 
-**07** — [SmartWorkz.Mobile](./07-smartworkz-mobile.md)  
-MAUI components & services (20 min) — Six components, offline queue, auto-reconnect, VoIP push
+**07 — [SmartWorkz.Mobile](./07-smartworkz-mobile.md)**  
+MAUI components, offline queue, push, background sync — extracted from XML docs (20 min)
 
-**08** — [Step-by-Step Guide](./08-step-by-step-guide.md)  
-Build your first feature (45 min) — 9 concrete steps with exact code: new project → list → export → CQRS
+**08 — [Step-by-Step Guide](./08-step-by-step-guide.md)**  
+Build your first feature with exact code: new project → list → export → CQRS (45 min)
 
-**Total Time: ~2.5 hours**  
-**Outcome: You can build a complete CRUD feature using SmartWorkz patterns.**
-
----
-
-## Pattern Library (Advanced Features & Reference)
-
-After completing the Foundation Series, explore these 19 pattern-focused pages for deeper dives into specific areas.
-
-### Web Application Patterns (09-16, 20-22, 25, 27)
-
-**09** — [Translation System](./09-translation-system.md)  
-Database-backed multi-language support (Core.Shared)
-
-**10** — [Localized Validation](./10-localized-validation.md)  
-Translate validation messages at render time (Core.Web)
-
-**11** — [Base Page Pattern](./11-base-page-pattern.md)  
-Common foundation for all Razor pages (Core.Web)
-
-**12** — [Result Pattern](./12-result-pattern.md)  
-Structured success/failure outcomes (Core)
-
-**13** — [HTMX List Pattern](./13-htmx-list-pattern.md)  
-Dynamic list updates without page reload (Core.Web)
-
-**14** — [Password Reset Flow](./14-password-reset-flow.md)  
-Secure password reset via email tokens (Infrastructure)
-
-**15** — [Pagination Factory Method](./15-pagination-factory-method.md)  
-Convert API responses to UI view models (Core.Web)
-
-**16** — [Simple Form Validation](./16-simple-form-validation.md)  
-Client + server validation with translation (Core.Web)
-
-**20** — [Cache Attribute Pattern](./20-cache-attribute.md)  
-Decorator-based HTTP result caching (Core.Shared)
-
-**21** — [Template Engine Pattern](./21-template-engine.md)  
-Dynamic template rendering with placeholders (Core.Shared)
-
-**22** — [Swagger/OpenAPI Documentation](./22-swagger-openapi.md)  
-Auto-generated API documentation (Core.Web)
-
-**25** — [Blazor Form Builder](./25-blazor-form-builder.md)  
-Dynamic form generation and validation (Core.Web)
-
-**27** — [PDF/Excel Export](./27-pdf-excel-export.md)  
-Binary file export with styling (Core.External)
-
-### Infrastructure & Multi-Tenancy (17-19, 23-24)
-
-**17** — [Multi-Tenant Login Flow](./17-multi-tenant-login-flow.md)  
-How tenants and users interact during login (Core)
-
-**18** — [Why TenantId in Multiple Tables](./18-why-tenantid-in-multiple-tables.md)  
-Tenant isolation design rationale (Core)
-
-**19** — [Multi-Tenant Architecture](./19-multi-tenant-architecture.md)  
-Visual guide to tenant isolation (Core)
-
-**23** — [EF Core Multi-Context Migrations](./23-ef-core-migrations.md)  
-Orchestrate 5 independent DbContext schemas (Infrastructure)
-
-**24** — [MassTransit Message Queue](./24-masstransit-message-queue.md)  
-Asynchronous event-driven messaging (Infrastructure)
-
-### Mobile & Cross-Platform (26)
-
-**26** — [Mobile XAML Components](./26-mobile-xaml-components.md)  
-.NET MAUI reusable UI components (Core.Mobile)
+**Total: ~2.5 hours**
 
 ---
 
-## System Architecture — Three-Tier Overview
+## Pattern Library (09-27)
 
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                   SMARTWORKZ.CORE (DLL Foundation)                   │
-│  SmartWorkz.Core → SmartWorkz.Core.Web → SmartWorkz.Core.Shared    │
-│  SmartWorkz.Core.External → SmartWorkz.Core.Mobile (MAUI)           │
-└──────────────────────────────────────────────────────────────────────┘
-                              ↓
-┌──────────────────────────────────────────────────────────────────────┐
-│         PUBLIC WEB APP TIER (Razor Pages + HTMX)                     │
-│  Pages: Translation, Validation, Base Page, Lists, Export            │
-│  Services: Caching, CQRS, Logging, Webhooks                         │
-└──────────────────────────────────────────────────────────────────────┘
-                              ↓
-┌──────────────────────────────────────────────────────────────────────┐
-│      INFRASTRUCTURE TIER (Auth, DB, Messaging)                       │
-│  Multi-Tenant Login, EF Core Migrations, MassTransit Queue          │
-└──────────────────────────────────────────────────────────────────────┘
-                              ↓
-┌──────────────────────────────────────────────────────────────────────┐
-│         MOBILE TIER (.NET MAUI)                                       │
-│  XAML Components, Offline Queue, Auto-Reconnect, VoIP Push          │
-└──────────────────────────────────────────────────────────────────────┘
-```
+After Foundation Series, explore these patterns for specific features.
+
+### Web Application Patterns
+
+**09 — [Translation System](./09-translation-system.md)**  
+Database-backed multi-language support
+
+**10 — [Localized Validation](./10-localized-validation.md)**  
+Translate validation messages at render time
+
+**11 — [Base Page Pattern](./11-base-page-pattern.md)**  
+Common foundation for all Razor pages
+
+**12 — [Result Pattern](./12-result-pattern.md)**  
+Structured success/failure outcomes
+
+**13 — [HTMX List Pattern](./13-htmx-list-pattern.md)**  
+Dynamic list updates without page reload
+
+**14 — [Password Reset Flow](./14-password-reset-flow.md)**  
+Secure password reset via email tokens
+
+**15 — [Pagination Factory Method](./15-pagination-factory-method.md)**  
+Convert API responses to UI view models
+
+**16 — [Simple Form Validation](./16-simple-form-validation.md)**  
+Client + server validation with translation
+
+**20 — [Cache Attribute Pattern](./20-cache-attribute.md)**  
+Decorator-based HTTP result caching
+
+**21 — [Template Engine Pattern](./21-template-engine.md)**  
+Dynamic template rendering with placeholders
+
+**22 — [Swagger/OpenAPI Documentation](./22-swagger-openapi.md)**  
+Auto-generated API documentation
+
+**25 — [Blazor Form Builder](./25-blazor-form-builder.md)**  
+Dynamic form generation and validation
+
+**27 — [PDF/Excel Export](./27-pdf-excel-export.md)**  
+Binary file export with styling
+
+### Infrastructure & Multi-Tenancy
+
+**17 — [Multi-Tenant Login Flow](./17-multi-tenant-login-flow.md)**  
+How tenants and users interact during login
+
+**18 — [Why TenantId in Multiple Tables](./18-why-tenantid-in-multiple-tables.md)**  
+Tenant isolation design rationale
+
+**19 — [Multi-Tenant Architecture](./19-multi-tenant-architecture.md)**  
+Visual guide to tenant isolation
+
+**23 — [EF Core Multi-Context Migrations](./23-ef-core-migrations.md)**  
+Orchestrate 5 independent DbContext schemas
+
+**24 — [MassTransit Message Queue](./24-masstransit-message-queue.md)**  
+Asynchronous event-driven messaging
+
+### Mobile & Cross-Platform
+
+**26 — [Mobile XAML Components](./26-mobile-xaml-components.md)**  
+MAUI reusable UI components
 
 ---
 
 ## File Organization
 
-All 27 wiki pages live in `docs/wiki/`:
+All 27 wiki pages in `docs/wiki/`:
 
-```
-docs/wiki/
-├── 00-master-guide.md                          ← You are here
-
-FOUNDATION SERIES (01-08) — Start Here!
-├── 01-getting-started.md                       ← Begin here
-├── 02-project-overview.md
-├── 03-smartworkz-core.md
-├── 04-smartworkz-core-web.md
-├── 05-smartworkz-core-shared.md
-├── 06-smartworkz-core-external.md
-├── 07-smartworkz-mobile.md
-├── 08-step-by-step-guide.md
-
-PATTERN LIBRARY (09-27) — Reference Material
-├── 09-translation-system.md
-├── 10-localized-validation.md
-├── 11-base-page-pattern.md
-├── 12-result-pattern.md
-├── 13-htmx-list-pattern.md
-├── 14-password-reset-flow.md
-├── 15-pagination-factory-method.md
-├── 16-simple-form-validation.md
-├── 17-multi-tenant-login-flow.md
-├── 18-why-tenantid-in-multiple-tables.md
-├── 19-multi-tenant-architecture.md
-├── 20-cache-attribute.md
-├── 21-template-engine.md
-├── 22-swagger-openapi.md
-├── 23-ef-core-migrations.md
-├── 24-masstransit-message-queue.md
-├── 25-blazor-form-builder.md
-├── 26-mobile-xaml-components.md
-└── 27-pdf-excel-export.md
-```
+**Foundation Series (01-08)** — Start here for zero-to-hero  
+**Pattern Library (09-27)** — Advanced reference material
 
 ---
 
 ## Quick Navigation by Role
 
-### Web Developer (Razor Pages)
+**Web Developer**  
+→ Foundation (01-08), then files 09-12, 13, 15-16, 20-22, 25, 27
 
-**Foundation:** Files 01-08 (2.5 hours)  
-**Patterns:** 09-12, 13, 15-16, 20-22, 25, 27
+**Infrastructure Engineer**  
+→ Foundation (01-08, focus 02-05), then files 12, 14, 17-19, 23-24
 
-### Infrastructure Engineer (Database, Auth, Messaging)
-
-**Foundation:** Files 01-08 (focus on 02-05)  
-**Patterns:** 12, 14, 17-19, 23-24
-
-### Mobile Developer (.NET MAUI)
-
-**Foundation:** Files 01-08 (focus on 01-02, 07-08)  
-**Patterns:** 09-12, 26
+**Mobile Developer**  
+→ Foundation (01-08, focus 01-02, 07-08), then files 09-12, 26
 
 ---
 
 ## Troubleshooting
 
-**"Where do I start?"**  
+**Where do I start?**  
 Read files 01-08 in order (Foundation Series)
 
-**"I want to learn <pattern>"**  
-Jump to files 09-27 for specific patterns
+**I want to learn a specific pattern**  
+Jump to files 09-27 for advanced patterns
 
-**"What's the architecture?"**  
+**What's the architecture?**  
 Read file 02 (Project Overview)
 
-**"How do I build a feature?"**  
+**How do I build my first feature?**  
 Follow file 08 (Step-by-Step Guide) with exact code
 
-**"Which DLL should I use?"**  
+**Which DLL should I use?**  
 See file 02 (Decision Matrix)
 
-**"Validation errors aren't translating"**  
+**Validation errors aren't translating**  
 See file 10 (Localized Validation)
 
-**"How do multi-tenant systems work?"**  
+**How do multi-tenant systems work?**  
 See files 17-19 (Multi-Tenant Architecture)
 
-**"Need to export data"**  
+**Need to export data to Excel/PDF**  
 See file 27 (PDF/Excel Export)
 
-**"Building a mobile app"**  
+**Building a mobile app**  
 See file 07 (SmartWorkz.Mobile)
 
 ---
@@ -236,26 +168,10 @@ Initial 19-page wiki
 
 ---
 
-## Contributing
-
-When adding wiki pages:
-
-**Foundation Series (01-08)** — Zero-to-hero learning path; keep pedagogical
-
-**Pattern Library (09-27)** — Reference material; detailed and comprehensive
-
-**Links** — Use relative paths: `[Title](./NN-filename.md)`
-
-**Code** — Always show complete, working examples with error handling
-
-**Cross-references** — List related files at the end of each page
-
----
-
 ## Next Steps
 
-👉 **Start with [01-getting-started.md](./01-getting-started.md)** (10 minutes)
+👉 **Start with [01-getting-started.md](./01-getting-started.md)** (10 min)
 
-Then continue through files 02-08 in order for a complete zero-to-hero experience.
+Then continue through files 02-08 in order for complete zero-to-hero learning.
 
-After the Foundation Series, explore files 09-27 for advanced patterns and features.
+After Foundation Series, explore files 09-27 for advanced features.

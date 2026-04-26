@@ -1,0 +1,71 @@
+{
+  "projectMappings": {
+    "SmartWorkz.Core": {
+      "platform": "shared",
+      "layers": ["Core"]
+    },
+    "SmartWorkz.Core.Mobile": {
+      "platform": "mobile",
+      "layers": ["Core", "Infrastructure", "Application"]
+    },
+    "SmartWorkz.Core.Web": {
+      "platform": "web",
+      "layers": ["Core", "Infrastructure", "Application"]
+    },
+    "SmartWorkz.Core.Shared": {
+      "platform": "shared",
+      "layers": ["Core"]
+    },
+    "SmartWorkz.Core.External": {
+      "platform": "shared",
+      "layers": ["Core"]
+    },
+    "SmartWorkz.SDK": {
+      "platform": "shared",
+      "layers": ["Core"]
+    },
+    "SmartWorkz.StarterKitMVC": {
+      "platform": "web",
+      "layers": ["Application", "Infrastructure"]
+    },
+    "SmartWorkz.StarterKitMVC.Admin": {
+      "platform": "web",
+      "layers": ["Application", "Infrastructure"]
+    },
+    "SmartWorkz.StarterKitMVC.Public": {
+      "platform": "web",
+      "layers": ["Application", "Infrastructure"]
+    },
+    "SmartWorkz.Sample.ECommerce": {
+      "platform": "web",
+      "layers": ["Application"]
+    },
+    "SmartWorkz.Sample.ECommerce.Mobile": {
+      "platform": "mobile",
+      "layers": ["Application"]
+    }
+  },
+  "featurePatterns": {
+    "Database": ".*\\.Data\\.|.*\\.Repository\\.|.*\\.Migrations",
+    "Caching": ".*\\.Caching",
+    "Logging": ".*\\.Logging",
+    "State Management": ".*\\.State|.*\\.Redux",
+    "Http Client": ".*\\.Http",
+    "Services": ".*\\.Services",
+    "ViewModels": ".*\\.ViewModels",
+    "Commands": ".*\\.Commands|.*\\.Queries",
+    "Webhooks": ".*\\.Webhooks",
+    "Authentication": ".*\\.Auth|.*\\.Identity",
+    "Models": ".*\\.Models"
+  },
+  "outputPath": "docs/framework",
+  "includeDllPatterns": [
+    "*bin*SmartWorkz*.dll"
+  ],
+  "excludeDllPatterns": [
+    "*Tests.dll",
+    "*ref*",
+    "*refint*",
+    "*obj*"
+  ]
+}
