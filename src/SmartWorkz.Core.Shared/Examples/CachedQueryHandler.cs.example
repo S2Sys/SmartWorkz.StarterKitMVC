@@ -1,0 +1,178 @@
+// =============================================================================
+// Decorator Pattern Example: Cached Query Handler
+//
+// This example demonstrates how to transparently add caching to any query
+// handler using the Decorator pattern. The decorated handler inherits all
+// behavior from the wrapped handler while adding caching functionality.
+// =============================================================================
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SmartWorkz.Core.Shared.CQRS;
+using SmartWorkz.Core.Shared.Caching;
+
+namespace SmartWorkz.Core.Shared.Examples;
+
+/// <summary>
+/// Decorator that wraps any IQueryHandler to add intelligent caching.
+/// The decorated handler checks cache before delegating to the inner handler.
+/// </summary>
+/// <typeparam name="TQuery">Query type (implements IQuery&lt;TResult&gt;)</typeparam>
+/// <typeparam name="TResult">Result type returned by handler</typeparam>
+public class CachedQueryHandlerDecorator<TQuery, TResult>
+    : IQueryHandler<TQuery, TResult>
+    where TQuery : IQuery<TResult>
+{
+    private readonly IQueryHandler<TQuery, TResult> _innerHandler;
+    private readonly IQueryCacheService _cache;
+    private readonly ILogger<CachedQueryHandlerDecorator<TQuery, TResult>> _logger;
+
+    // Cache duration: 5 minutes for most queries (override in subclass)
+    private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5);
+
+    public CachedQueryHandlerDecorator(
+        IQueryHandler<TQuery, TResult> innerHandler,
+        IQueryCacheService cache,
+        ILogger<CachedQueryHandlerDecorator<TQuery, TResult>> logger)
+    {
+        _innerHandler = innerHandler ?? throw new ArgumentNullException(nameof(innerHandler));
+        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    /// <summary>
+    /// Handles query by checking cache first, then delegating to inner handler if miss.
+    /// </summary>
+    public async Task<TResult> HandleAsync(TQuery query, CancellationToken cancellationToken = default)
+    {
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
+
+        // Generate deterministic cache key from query type and properties
+        var cacheKey = GenerateCacheKey(query);
+
+        _logger.LogDebug(
+            "Query handler cache check: {QueryType} → CacheKey={CacheKey}",
+            typeof(TQuery).Name,
+            cacheKey);
+
+        // Attempt to retrieve from cache
+        return await _cache.GetOrSetAsync(
+            cacheKey,
+            async () =>
+            {
+                _logger.LogDebug(
+                    "Cache miss for {QueryType}, executing handler",
+                    typeof(TQuery).Name);
+
+                // Cache miss: execute inner handler
+                return await _innerHandler.HandleAsync(query, cancellationToken);
+            },
+            _cacheDuration);
+    }
+
+    /// <summary>
+    /// Generates a unique cache key from the query type and its properties.
+    /// Override this method for custom cache key strategies.
+    /// </summary>
+    /// <remarks>
+    /// Default: "QueryTypeName:{query.GetHashCode()}"
+    /// For better keys, override and hash property values explicitly.
+    /// </remarks>
+    protected virtual string GenerateCacheKey(TQuery query)
+    {
+        var queryTypeName = typeof(TQuery).Name;
+        var queryHash = query.GetHashCode();
+        return $"{queryTypeName}:{queryHash}";
+    }
+}
+
+// =============================================================================
+// USAGE EXAMPLE: Decorating a GetAllUsersQuery Handler
+// =============================================================================
+
+/// <summary>Example query: retrieve all users (read-only).</summary>
+public record GetAllUsersQuery : IQuery<List<UserDto>>;
+
+/// <summary>Base handler without caching.</summary>
+public class GetAllUsersQueryHandler : IQueryHandler<GetAllUsersQuery, List<UserDto>>
+{
+    private readonly ILogger<GetAllUsersQueryHandler> _logger;
+    // In real app: inject IDbConnection or repository
+    // private readonly IUserRepository _repo;
+
+    public GetAllUsersQueryHandler(ILogger<GetAllUsersQueryHandler> logger)
+    {
+        _logger = logger;
+    }
+
+    public async Task<List<UserDto>> HandleAsync(
+        GetAllUsersQuery query,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Executing GetAllUsersQueryHandler (no cache)");
+
+        // Simulate database query
+        await Task.Delay(100, cancellationToken);
+
+        return new List<UserDto>
+        {
+            new("user-1", "alice@example.com", "Alice", "Smith"),
+            new("user-2", "bob@example.com", "Bob", "Jones"),
+        };
+    }
+}
+
+/// <summary>
+/// Registration pattern in Program.cs:
+///
+/// // 1. Register base handler as transient (new per request)
+/// services.AddTransient<IQueryHandler<GetAllUsersQuery, List<UserDto>>, GetAllUsersQueryHandler>();
+///
+/// // 2. Wrap with caching decorator
+/// services.Decorate<IQueryHandler<GetAllUsersQuery, List<UserDto>>>(
+///     (inner, sp) => new CachedQueryHandlerDecorator<GetAllUsersQuery, List<UserDto>>(
+///         inner,
+///         sp.GetRequiredService<IQueryCacheService>(),
+///         sp.GetRequiredService<ILogger<CachedQueryHandlerDecorator<GetAllUsersQuery, List<UserDto>>>>()
+///     ));
+/// </summary>
+
+/// <summary>Sample DTO for demonstration.</summary>
+public record UserDto(string Id, string Email, string FirstName, string LastName);
+
+// =============================================================================
+// ADVANCED: Custom Cache Key Strategy (Override for Complex Queries)
+// =============================================================================
+
+/// <summary>
+/// Query with filters that should be part of the cache key.
+/// Generic decorator cannot know how to hash complex query properties,
+/// so we create a specialized decorator.
+/// </summary>
+public record GetUsersByDepartmentQuery(string Department, int PageNumber, int PageSize)
+    : IQuery<List<UserDto>>;
+
+/// <summary>
+/// Specialized decorator that hashes query parameters explicitly.
+/// </summary>
+public class GetUsersByDepartmentCachedDecorator
+    : CachedQueryHandlerDecorator<GetUsersByDepartmentQuery, List<UserDto>>
+{
+    public GetUsersByDepartmentCachedDecorator(
+        IQueryHandler<GetUsersByDepartmentQuery, List<UserDto>> innerHandler,
+        IQueryCacheService cache,
+        ILogger<GetUsersByDepartmentCachedDecorator> logger)
+        : base(innerHandler, cache, logger)
+    {
+    }
+
+    protected override string GenerateCacheKey(GetUsersByDepartmentQuery query)
+    {
+        // Include query parameters in cache key so different department searches
+        // don't return cached results for other departments
+        return $"GetUsersByDepartment:{query.Department}:page{query.PageNumber}:size{query.PageSize}";
+    }
+}
