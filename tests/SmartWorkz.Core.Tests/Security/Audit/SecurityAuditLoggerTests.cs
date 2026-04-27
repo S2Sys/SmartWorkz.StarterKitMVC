@@ -190,7 +190,7 @@ namespace SmartWorkz.Core.Tests.Security.Audit
         [Theory]
         [InlineData("user@example.com", "[REDACTED_EMAIL]")]
         [InlineData("3F2504E0-4F89-41D3-9A0C-0305E8EA9698", "[REDACTED_ID]")]
-        [InlineData("token123456789abcdefghijklmnop.token123456789abcdefghijklmnop.token123456789abcdefghijklmnop", "[REDACTED_TOKEN]")]
+        [InlineData("fake_jwt_header.fake_payload.fake_signature", "[REDACTED_TOKEN]")]
         [InlineData("api_key=sk_test_1234567890abcdefghijklmnop", "[REDACTED]")]
         public void RedactSensitiveData_HandlesVariousPatterns(string input, string expectedRedaction)
         {
