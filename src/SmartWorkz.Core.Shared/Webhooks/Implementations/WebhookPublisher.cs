@@ -240,7 +240,7 @@ public class WebhookPublisher : IWebhookPublisher
                 await _registry.UpdateEndpointAsync(endpoint.Id, new
                 {
                     FailureCount = 0,
-                    LastAttemptAt = DateTimeOffset.UtcNow,
+                    LastAttemptAt = DateTime.UtcNow,
                     FailureReason = (string?)null
                 }, cancellationToken);
 
@@ -277,7 +277,7 @@ public class WebhookPublisher : IWebhookPublisher
         CancellationToken cancellationToken = default)
     {
         endpoint.FailureCount++;
-        endpoint.LastAttemptAt = DateTimeOffset.UtcNow;
+        endpoint.LastAttemptAt = DateTime.UtcNow;
         endpoint.FailureReason = reason;
 
         if (endpoint.FailureCount >= endpoint.MaxRetries)

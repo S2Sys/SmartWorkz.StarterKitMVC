@@ -54,4 +54,19 @@ public class WebhookEndpointRegistration
     /// When the last delivery attempt was made.
     /// </summary>
     public DateTime? LastAttemptAt { get; set; }
+
+    /// <summary>
+    /// Maximum number of retry attempts for failed deliveries (default: 5).
+    /// </summary>
+    public int? MaxRetries { get; set; } = 5;
+
+    /// <summary>
+    /// HTTP request timeout in seconds (default: 30).
+    /// </summary>
+    public int? TimeoutSeconds { get; set; } = 30;
+
+    /// <summary>
+    /// Description of the last failure reason.
+    /// </summary>
+    public string? FailureReason { get; set; }
 }
