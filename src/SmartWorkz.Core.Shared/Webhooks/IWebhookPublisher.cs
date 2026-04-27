@@ -1,3 +1,5 @@
+using SmartWorkz.Core.Shared.Webhooks.Models;
+
 namespace SmartWorkz.Core.Shared.Webhooks;
 
 /// <summary>
