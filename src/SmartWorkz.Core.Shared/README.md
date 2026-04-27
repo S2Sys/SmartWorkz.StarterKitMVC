@@ -33,8 +33,16 @@ var resizer = new ImageResizer();
 
 ## Project Structure
 
+### Core Modules (See detailed documentation below)
+
+- **[Caching/](Caching/README.md)** — High-performance caching with tenant isolation and cache invalidation strategies
+- **[CQRS/](CQRS/README.md)** — Command Query Responsibility Segregation pattern for clean read/write separation
+- **[Logging/](Logging/README.md)** — Structured logging, correlation IDs, and audit trails
+- **[Webhooks/](Webhooks/README.md)** — Event-driven webhook publishing with retry logic and signature verification
+
+### Utility Modules
+
 - **Data/** — Database access, providers, and Dapper utilities
-- **Caching/** — In-memory caching and cache attributes
 - **File/** — File operations (upload, resize, delete)
 - **Templates/** — Template engine with placeholder support
 - **Utilities/** — Helper utilities and extensions
@@ -52,6 +60,36 @@ var resizer = new ImageResizer();
 | Microsoft.Extensions.Caching.Abstractions | 9.0.0 | Caching abstractions |
 | Microsoft.AspNetCore.Mvc.Core | 2.3.0 | Attribute support |
 
+## DI Registration Pattern
+
+All modules follow consistent dependency injection patterns. See [DI-CONFIGURATION.md](DI-CONFIGURATION.md) for complete setup.
+
+### Quick Module Registration
+
+```csharp
+// Program.cs
+var services = builder.Services;
+
+// Caching
+services.AddMemoryCache();
+services.AddScoped<ICacheService, MemoryCacheService>();
+
+// CQRS
+services.Scan(scan =>
+    scan.FromApplicationDependencies()
+        .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>)))
+        .AsImplementedInterfaces()
+        .WithScopedLifetime());
+
+// Logging
+services.AddLogging(config => config.AddConsole());
+
+// Webhooks
+services.AddHttpClient();
+services.AddScoped<IWebhookRegistry, SqlWebhookRegistry>();
+services.AddScoped<IWebhookPublisher, WebhookPublisher>();
+```
+
 ## Configuration
 
 ### Database Configuration
@@ -65,14 +103,6 @@ services.AddScoped<IDbProvider>(provider =>
 "ConnectionStrings": {
     "DefaultConnection": "Server=.;Database=SmartWorkz;Integrated Security=true;"
 }
-```
-
-### Caching Configuration
-
-```csharp
-// Register cache manager
-services.AddMemoryCache();
-services.AddScoped<ICacheManager, CacheManager>();
 ```
 
 ### Template Engine Configuration
