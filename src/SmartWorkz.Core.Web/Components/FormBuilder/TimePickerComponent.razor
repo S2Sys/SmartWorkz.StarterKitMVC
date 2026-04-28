@@ -1,0 +1,147 @@
+@namespace SmartWorkz.Core.Web.Components.FormBuilder
+@using System
+
+<div class="form-group mb-3 @(CssClass ?? "")">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label for="time-picker-@UniqueId" class="form-label">
+            @Label
+            @if (IsRequired)
+            {
+                <span class="text-danger" title="Required">*</span>
+            }
+        </label>
+    }
+
+    <input type="time"
+           id="time-picker-@UniqueId"
+           class="form-control @ErrorClass"
+           value="@TimeValue"
+           min="@MinTimeString"
+           max="@MaxTimeString"
+           disabled="@IsDisabled"
+           @onchange="HandleTimeChanged" />
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="invalid-feedback d-block mt-1">
+            @ErrorMessage
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(HelpText))
+    {
+        <small class="form-text text-muted d-block mt-1">
+            @HelpText
+        </small>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the selected time value.
+    /// </summary>
+    [Parameter]
+    public TimeSpan? SelectedTime { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the time value changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<TimeSpan> OnTimeChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the optional label text displayed above the input.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <summary>
+    /// Gets or sets the optional error message displayed below the input.
+    /// </summary>
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the time picker is disabled.
+    /// </summary>
+    [Parameter]
+    public bool IsDisabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum allowed time (optional).
+    /// </summary>
+    [Parameter]
+    public TimeSpan? MinTime { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum allowed time (optional).
+    /// </summary>
+    [Parameter]
+    public TimeSpan? MaxTime { get; set; }
+
+    /// <summary>
+    /// Gets or sets the optional CSS class applied to the container.
+    /// </summary>
+    [Parameter]
+    public string? CssClass { get; set; }
+
+    /// <summary>
+    /// Gets or sets the optional help text displayed below the input.
+    /// </summary>
+    [Parameter]
+    public string? HelpText { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the time picker is required.
+    /// </summary>
+    [Parameter]
+    public bool IsRequired { get; set; }
+
+    private string UniqueId { get; set; } = Guid.NewGuid().ToString("N").Substring(0, 8);
+
+    /// <summary>
+    /// Gets the formatted time value for HTML5 time input binding.
+    /// </summary>
+    private string TimeValue =>
+        SelectedTime.HasValue ? SelectedTime.Value.ToString("hh\\:mm") : string.Empty;
+
+    /// <summary>
+    /// Gets the CSS class for error state styling.
+    /// </summary>
+    private string ErrorClass =>
+        !string.IsNullOrEmpty(ErrorMessage) ? "is-invalid" : string.Empty;
+
+    /// <summary>
+    /// Gets the formatted minimum time constraint for HTML5 time input.
+    /// </summary>
+    private string MinTimeString =>
+        MinTime.HasValue ? MinTime.Value.ToString("hh\\:mm") : string.Empty;
+
+    /// <summary>
+    /// Gets the formatted maximum time constraint for HTML5 time input.
+    /// </summary>
+    private string MaxTimeString =>
+        MaxTime.HasValue ? MaxTime.Value.ToString("hh\\:mm") : string.Empty;
+
+    /// <summary>
+    /// Handles the time input change event and invokes the OnTimeChanged callback.
+    /// </summary>
+    private async Task HandleTimeChanged(ChangeEventArgs e)
+    {
+        if (e.Value is string timeString && TimeSpan.TryParse(timeString, out var timeSpan))
+        {
+            // Validate against min/max constraints
+            if ((MinTime.HasValue && timeSpan < MinTime.Value) ||
+                (MaxTime.HasValue && timeSpan > MaxTime.Value))
+            {
+                return;
+            }
+
+            if (OnTimeChanged.HasDelegate)
+            {
+                await OnTimeChanged.InvokeAsync(timeSpan);
+            }
+        }
+    }
+}
