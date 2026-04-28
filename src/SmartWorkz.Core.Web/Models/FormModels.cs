@@ -235,3 +235,28 @@ public record TabItem
     /// </summary>
     public Microsoft.AspNetCore.Components.RenderFragment? Content { get; set; }
 }
+
+/// <summary>
+/// Represents a single collapsible section in the AccordionComponent.
+/// Each section has a title (header) and content that can be expanded or collapsed.
+/// </summary>
+public record AccordionItem
+{
+    /// <summary>
+    /// Unique identifier for the accordion section, passed to the OnSectionChanged callback when toggled.
+    /// Used to track which section is currently active.
+    /// </summary>
+    public string Key { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Display text shown in the accordion section header (always visible).
+    /// This is the clickable title that users interact with to expand/collapse the section.
+    /// </summary>
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>
+    /// RenderFragment containing the accordion section's content to display when expanded.
+    /// This content is hidden by default and shown when the section is active.
+    /// </summary>
+    public Microsoft.AspNetCore.Components.RenderFragment? Content { get; set; }
+}

@@ -1,0 +1,283 @@
+@using SmartWorkz.Web.Models
+
+<div class="accordion-container">
+    @if (Items != null && Items.Count > 0)
+    {
+        <div class="accordion" role="region">
+            @foreach (var item in Items)
+            {
+                var isActive = GetActiveSectionKey() == item.Key;
+                var isOpen = AllowMultipleOpen ? IsOpenMultiple(item.Key) : isActive;
+
+                <div class="accordion-item" @key="item.Key">
+                    <!-- Accordion Header/Button -->
+                    <button
+                        type="button"
+                        class="accordion-button @(isOpen ? "" : "collapsed")"
+                        aria-expanded="@(isOpen ? "true" : "false")"
+                        aria-controls="@GetContentId(item.Key)"
+                        @onclick="@(async () => await HandleSectionToggle(item.Key))">
+                        @item.Title
+                    </button>
+
+                    <!-- Accordion Content -->
+                    <div
+                        id="@GetContentId(item.Key)"
+                        class="accordion-collapse @(isOpen ? "show" : "")"
+                        role="region"
+                        aria-labelledby="@GetHeaderId(item.Key)">
+                        <div class="accordion-body">
+                            @if (item.Content != null)
+                            {
+                                @item.Content
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .accordion-container {
+        width: 100%;
+    }
+
+    .accordion {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        overflow: hidden;
+    }
+
+    .accordion-item {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .accordion-item:last-child {
+        border-bottom: none;
+    }
+
+    .accordion-button {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        color: #212529;
+        text-align: left;
+        background-color: #fff;
+        border: 0;
+        border-radius: 0;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+        font-weight: 500;
+        position: relative;
+    }
+
+    .accordion-button::after {
+        content: "";
+        position: absolute;
+        right: 1.5rem;
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-left: auto;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23212529' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-size: 1.25rem;
+        transform: rotate(0deg);
+        transition: transform 0.2s ease;
+    }
+
+    .accordion-button:hover {
+        background-color: #f8f9fa;
+        color: #0c63e4;
+    }
+
+    .accordion-button:focus {
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #e7f1ff;
+        color: #0c63e4;
+    }
+
+    .accordion-button:not(.collapsed)::after {
+        transform: rotate(-180deg);
+    }
+
+    .accordion-button.collapsed {
+        box-shadow: none;
+    }
+
+    .accordion-collapse {
+        overflow: hidden;
+        transition: all 0.2s ease;
+        max-height: 0;
+    }
+
+    .accordion-collapse.show {
+        max-height: 5000px;
+        overflow: visible;
+    }
+
+    .accordion-body {
+        padding: 1rem 1.5rem;
+        color: #495057;
+        line-height: 1.5;
+        background-color: #fff;
+        animation: slideDown 0.2s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            max-height: 0;
+        }
+        to {
+            opacity: 1;
+            max-height: 5000px;
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 1;
+            max-height: 5000px;
+        }
+        to {
+            opacity: 0;
+            max-height: 0;
+        }
+    }
+</style>
+
+@code {
+    /// <summary>
+    /// Collection of AccordionItem objects representing the sections to display.
+    /// Each item contains a Key, Title, and Content RenderFragment.
+    /// </summary>
+    [Parameter]
+    public List<AccordionItem>? Items { get; set; }
+
+    /// <summary>
+    /// The key of the currently active section. In exclusive mode (AllowMultipleOpen=false),
+    /// this represents the only open section. If not provided, the first section will be active.
+    /// In multiple open mode, this represents the last toggled section.
+    /// </summary>
+    [Parameter]
+    public string? ActiveSectionKey { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a section is toggled (expanded or collapsed),
+    /// passing the Key of the toggled section.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnSectionChanged { get; set; }
+
+    /// <summary>
+    /// Determines whether multiple sections can be open at the same time.
+    /// When false (default), opening one section closes all others (exclusive mode).
+    /// When true, multiple sections can be open simultaneously.
+    /// </summary>
+    [Parameter]
+    public bool AllowMultipleOpen { get; set; } = false;
+
+    /// <summary>
+    /// Internal collection tracking which sections are open in multiple open mode.
+    /// Used only when AllowMultipleOpen is true.
+    /// </summary>
+    private HashSet<string> _openSections = [];
+
+    /// <summary>
+    /// Gets the currently active section key.
+    /// In exclusive mode, returns the single active section.
+    /// In multiple open mode, returns the last toggled section, or the first section if none open.
+    /// </summary>
+    /// <returns>The key of the active section, or empty string if no sections are available.</returns>
+    private string GetActiveSectionKey()
+    {
+        if (!string.IsNullOrEmpty(ActiveSectionKey))
+        {
+            return ActiveSectionKey;
+        }
+
+        return Items?.FirstOrDefault()?.Key ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Checks if a specific section is open in multiple open mode.
+    /// </summary>
+    /// <param name="sectionKey">The key of the section to check.</param>
+    /// <returns>True if the section is open, false otherwise.</returns>
+    private bool IsOpenMultiple(string sectionKey)
+    {
+        return _openSections.Contains(sectionKey);
+    }
+
+    /// <summary>
+    /// Generates a unique identifier for a section's content panel based on its key.
+    /// </summary>
+    /// <param name="sectionKey">The key of the section.</param>
+    /// <returns>A unique identifier string for the section content element.</returns>
+    private string GetContentId(string sectionKey)
+    {
+        return $"accordion-content-{sectionKey}";
+    }
+
+    /// <summary>
+    /// Generates a unique identifier for a section's header button based on its key.
+    /// </summary>
+    /// <param name="sectionKey">The key of the section.</param>
+    /// <returns>A unique identifier string for the section header element.</returns>
+    private string GetHeaderId(string sectionKey)
+    {
+        return $"accordion-header-{sectionKey}";
+    }
+
+    /// <summary>
+    /// Handles section toggle events by updating the active section state and invoking the callback.
+    /// In exclusive mode, opening a section closes all others.
+    /// In multiple open mode, sections toggle independently.
+    /// </summary>
+    /// <param name="sectionKey">The key of the section to toggle.</param>
+    private async Task HandleSectionToggle(string sectionKey)
+    {
+        if (AllowMultipleOpen)
+        {
+            // Multiple open mode: toggle the section independently
+            if (_openSections.Contains(sectionKey))
+            {
+                _openSections.Remove(sectionKey);
+            }
+            else
+            {
+                _openSections.Add(sectionKey);
+                ActiveSectionKey = sectionKey;
+            }
+        }
+        else
+        {
+            // Exclusive mode: close all others when opening a section
+            if (GetActiveSectionKey() == sectionKey)
+            {
+                // Clicking the active section closes it
+                ActiveSectionKey = "";
+            }
+            else
+            {
+                // Opening a different section
+                ActiveSectionKey = sectionKey;
+            }
+        }
+
+        if (OnSectionChanged.HasDelegate)
+        {
+            await OnSectionChanged.InvokeAsync(sectionKey);
+        }
+    }
+}
