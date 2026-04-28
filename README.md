@@ -12,18 +12,18 @@ Latest: **v4.2.0** (2026-04-28) — Complete stored procedure library, 27 wiki g
   - [Validation Demo](/Public/Pages/Demo/Validation.cshtml) — See validation attributes in action
 
 - **📖 Wiki Documentation** (New v4.1.0)
-  - [01 — Translation System](docs/wiki/01-translation-system.md) — DB-backed translations, T() helper, multi-locale
-  - [02 — Localized Validation](docs/wiki/02-localized-validation.md) — MessageKey validation attributes
-  - [03 — Base Page Pattern](docs/wiki/03-base-page-pattern.md) — BasePage, TenantId, T() method, toast helpers
-  - [04 — Result Pattern](docs/wiki/04-result-pattern.md) — Result/Result<T> for explicit success/failure
-  - [05 — HTMX List Pattern](docs/wiki/05-htmx-list-pattern.md) — Dynamic search/filter/pagination with HTMX
+  - [00 — Master Guide](docs/wiki/00-master-guide.md) — Navigation hub for all documentation
+  - [09 — Translation System](docs/wiki/09-translation-system.md) — DB-backed translations, T() helper, multi-locale
+  - [10 — Localized Validation](docs/wiki/10-localized-validation.md) — MessageKey validation attributes
+  - [11 — Base Page Pattern](docs/wiki/11-base-page-pattern.md) — BasePage, TenantId, T() method, toast helpers
+  - [12 — Result Pattern](docs/wiki/12-result-pattern.md) — Result/Result<T> for explicit success/failure
+  - [13 — HTMX List Pattern](docs/wiki/13-htmx-list-pattern.md) — Dynamic search/filter/pagination with HTMX
 
 ### 🏗️ Architecture & Design
 - **📋 Schema Design:** [`docs/srs/SCHEMA-REVIEW-v2.md`](docs/srs/SCHEMA-REVIEW-v2.md) — 42 LEAN tables across 5 schemas
-- **📊 Schema Summary:** [`SCHEMA-SUMMARY-LEAN.md`](SCHEMA-SUMMARY-LEAN.md) — Overview and extensibility patterns
+- **📊 Architecture Roadmap:** [`IMPLEMENTATION_ROADMAP_MASTER.md`](IMPLEMENTATION_ROADMAP_MASTER.md) — Complete multi-phase roadmap and strategy
 - **✅ Implementation Plan:** [`docs/srs/IMPLEMENTATION-PLAN.md`](docs/srs/IMPLEMENTATION-PLAN.md) — 4-phase roadmap (34-45 hours)
 - **🔍 Geo Design Analysis:** [`docs/srs/GEO-HIERARCHY-ANALYSIS.md`](docs/srs/GEO-HIERARCHY-ANALYSIS.md) — Option C (Hybrid) approach
-- **📋 Review Checklist:** [`REVIEW-CHECKLIST.md`](REVIEW-CHECKLIST.md) — Pre-implementation validation
 - **🗺️ Menu System Guide:** [`docs/srs/MENU-SYSTEM-GUIDE.md`](docs/srs/MENU-SYSTEM-GUIDE.md) — Complete navigation implementation
 - **⚡ Quick Reference:** [`docs/srs/QUICK-REFERENCE-v4.md`](docs/srs/QUICK-REFERENCE-v4.md) — One-page schema overview
 - **📝 Updates Summary:** [`docs/srs/UPDATES-SUMMARY-v4.md`](docs/srs/UPDATES-SUMMARY-v4.md) — What changed in v4
