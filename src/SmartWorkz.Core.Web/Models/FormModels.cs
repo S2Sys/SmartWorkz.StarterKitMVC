@@ -184,3 +184,12 @@ public class FormValidationError
 /// <param name="Value">The unique value of the autocomplete item</param>
 /// <param name="Label">The display label for the autocomplete item</param>
 public record AutocompleteItem(string Value, string Label);
+
+/// <summary>
+/// Represents a file selected through the file upload component.
+/// </summary>
+/// <param name="Name">The name of the file</param>
+/// <param name="Size">The size of the file in bytes</param>
+/// <param name="Type">The MIME type of the file</param>
+/// <param name="Data">The binary file data</param>
+public record FileInfo(string Name, long Size, string Type, byte[] Data);

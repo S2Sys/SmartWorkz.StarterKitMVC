@@ -1,0 +1,487 @@
+@typeparam TFiles where TFiles : class
+
+<div class="file-upload-container">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label class="form-label">@Label</label>
+    }
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="file-input-wrapper">
+                <div class="drag-drop-zone"
+                     @ondrop="HandleDrop"
+                     @ondragover="HandleDragOver"
+                     @ondragleave="HandleDragLeave"
+                     style="@GetDragOverStyle()">
+
+                    <input type="file"
+                           @ref="fileInputRef"
+                           @onchange="HandleFileSelect"
+                           multiple="@(AllowMultiple ? "multiple" : null)"
+                           accept="@AllowedFileTypes"
+                           disabled="@IsDisabled"
+                           class="d-none"
+                           id="@("file-input-" + ComponentId)" />
+
+                    <label for="@("file-input-" + ComponentId)"
+                           class="btn btn-primary mb-2"
+                           style="cursor: pointer; @(IsDisabled ? "pointer-events: none; opacity: 0.5;" : "")">
+                        <i class="bi bi-cloud-upload"></i>
+                        @(IsDragOverZone ? "Drop files here" : "Click or drag files to upload")
+                    </label>
+
+                    <p class="text-muted small">
+                        @if (!string.IsNullOrEmpty(AllowedFileTypes))
+                        {
+                            <span>Allowed types: @AllowedFileTypes<br /></span>
+                        }
+                        @if (MaxFileSize > 0)
+                        {
+                            <span>Max file size: @FormatFileSize(MaxFileSize)</span>
+                        }
+                    </p>
+                </div>
+
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="alert alert-danger mt-3" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        @ErrorMessage
+                    </div>
+                }
+
+                @if (SelectedFiles != null && SelectedFiles.Count > 0)
+                {
+                    <div class="file-list mt-3">
+                        <h6 class="mb-3">Selected Files:</h6>
+                        <ul class="list-group">
+                            @foreach (var file in SelectedFiles)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="file-info">
+                                        <i class="bi bi-file"></i>
+                                        <strong>@file.Name</strong>
+                                        <small class="text-muted d-block">@FormatFileSize(file.Size) - @file.Type</small>
+                                    </div>
+                                    @if (!IsDisabled)
+                                    {
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger"
+                                                @onclick="@(() => RemoveFile(file))">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                @if (IsUploading)
+                {
+                    <div class="progress mt-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                             role="progressbar"
+                             style="width: @UploadProgress%"
+                             aria-valuenow="@UploadProgress"
+                             aria-valuemin="0"
+                             aria-valuemax="100">
+                            @UploadProgress%
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .file-upload-container {
+        margin-bottom: 1rem;
+    }
+
+    .drag-drop-zone {
+        border: 2px dashed #dee2e6;
+        border-radius: 0.375rem;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+    }
+
+    .drag-drop-zone.drag-over {
+        border-color: #0d6efd;
+        background-color: #e7f1ff;
+    }
+
+    .file-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+    }
+
+    .d-none {
+        display: none;
+    }
+</style>
+
+@code {
+    /// <summary>
+    /// Unique component identifier for HTML element references.
+    /// </summary>
+    private string ComponentId { get; set; } = Guid.NewGuid().ToString("N")[..8];
+
+    /// <summary>
+    /// Reference to the file input element.
+    /// </summary>
+    private ElementReference fileInputRef;
+
+    /// <summary>
+    /// Tracks whether the drag-over zone is currently active.
+    /// </summary>
+    private bool IsDragOverZone { get; set; }
+
+    /// <summary>
+    /// Tracks whether files are currently uploading.
+    /// </summary>
+    private bool IsUploading { get; set; }
+
+    /// <summary>
+    /// Current upload progress percentage.
+    /// </summary>
+    private int UploadProgress { get; set; }
+
+    /// <summary>
+    /// List of currently selected files.
+    /// </summary>
+    private List<FileInfo> SelectedFiles { get; set; } = [];
+
+    /// <summary>
+    /// Callback invoked when files are selected, containing file information and data.
+    /// </summary>
+    [Parameter]
+    public EventCallback<List<FileInfo>> OnFilesSelected { get; set; }
+
+    /// <summary>
+    /// Comma-separated list of allowed MIME types (e.g., "image/*,application/pdf").
+    /// </summary>
+    [Parameter]
+    public string? AllowedFileTypes { get; set; }
+
+    /// <summary>
+    /// Maximum file size in bytes. Set to 0 or negative for no limit.
+    /// </summary>
+    [Parameter]
+    public long MaxFileSize { get; set; } = 0;
+
+    /// <summary>
+    /// Optional label displayed above the file upload input.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <summary>
+    /// Error message displayed when validation fails.
+    /// </summary>
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+
+    /// <summary>
+    /// Indicates whether the file upload component is disabled.
+    /// </summary>
+    [Parameter]
+    public bool IsDisabled { get; set; }
+
+    /// <summary>
+    /// Indicates whether multiple files can be selected at once.
+    /// </summary>
+    [Parameter]
+    public bool AllowMultiple { get; set; } = false;
+
+    /// <summary>
+    /// Handles file selection through the input element.
+    /// </summary>
+    private async Task HandleFileSelect(InputFileChangeEventArgs e)
+    {
+        if (IsDisabled)
+            return;
+
+        try
+        {
+            IsUploading = true;
+            UploadProgress = 0;
+
+            var files = new List<FileInfo>();
+            var totalFiles = e.GetMultipleFiles().Count;
+            var processedFiles = 0;
+
+            foreach (var file in e.GetMultipleFiles())
+            {
+                processedFiles++;
+                UploadProgress = (int)((processedFiles / (double)totalFiles) * 100);
+
+                if (!ValidateFile(file, out var validationError))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    using var stream = file.OpenReadStream(MaxFileSize > 0 ? MaxFileSize : long.MaxValue);
+                    var buffer = new byte[file.Size];
+                    await stream.ReadExactlyAsync(buffer, 0, buffer.Length);
+
+                    var fileInfo = new FileInfo(
+                        file.Name,
+                        file.Size,
+                        file.ContentType,
+                        buffer
+                    );
+
+                    files.Add(fileInfo);
+
+                    if (!AllowMultiple && files.Count > 0)
+                    {
+                        break;
+                    }
+                }
+                catch (Exception)
+                {
+                    // File read error
+                }
+            }
+
+            if (!AllowMultiple && SelectedFiles.Count > 0)
+            {
+                SelectedFiles.Clear();
+            }
+
+            SelectedFiles.AddRange(files);
+
+            if (OnFilesSelected.HasDelegate)
+            {
+                await OnFilesSelected.InvokeAsync(SelectedFiles);
+            }
+
+            UploadProgress = 100;
+            await Task.Delay(500); // Brief visual feedback
+            IsUploading = false;
+            UploadProgress = 0;
+        }
+        catch (Exception)
+        {
+            IsUploading = false;
+        }
+    }
+
+    /// <summary>
+    /// Handles drag over event for the drop zone.
+    /// </summary>
+    private void HandleDragOver(DragEventArgs e)
+    {
+        e.DataTransfer.DropEffect = "copy";
+        IsDragOverZone = true;
+    }
+
+    /// <summary>
+    /// Handles drag leave event for the drop zone.
+    /// </summary>
+    private void HandleDragLeave(DragEventArgs e)
+    {
+        IsDragOverZone = false;
+    }
+
+    /// <summary>
+    /// Handles drop event for the drop zone.
+    /// </summary>
+    private async Task HandleDrop(DragEventArgs e)
+    {
+        IsDragOverZone = false;
+
+        if (IsDisabled)
+            return;
+
+        try
+        {
+            IsUploading = true;
+            UploadProgress = 0;
+
+            var files = new List<FileInfo>();
+            var totalFiles = e.DataTransfer.Files.Length;
+
+            for (int i = 0; i < totalFiles; i++)
+            {
+                var file = e.DataTransfer.Files[i];
+                UploadProgress = (int)(((i + 1) / (double)totalFiles) * 100);
+
+                if (!ValidateDropFile(file, out var validationError))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    var fileInfo = new FileInfo(
+                        file.Name,
+                        file.Size,
+                        file.Type ?? "application/octet-stream",
+                        new byte[0]
+                    );
+
+                    files.Add(fileInfo);
+
+                    if (!AllowMultiple && files.Count > 0)
+                    {
+                        break;
+                    }
+                }
+                catch (Exception)
+                {
+                    // File processing error
+                }
+            }
+
+            if (!AllowMultiple && SelectedFiles.Count > 0)
+            {
+                SelectedFiles.Clear();
+            }
+
+            SelectedFiles.AddRange(files);
+
+            if (OnFilesSelected.HasDelegate)
+            {
+                await OnFilesSelected.InvokeAsync(SelectedFiles);
+            }
+
+            UploadProgress = 100;
+            await Task.Delay(500);
+            IsUploading = false;
+            UploadProgress = 0;
+        }
+        catch (Exception)
+        {
+            IsUploading = false;
+        }
+    }
+
+    /// <summary>
+    /// Removes a file from the selected files list.
+    /// </summary>
+    private async Task RemoveFile(FileInfo file)
+    {
+        SelectedFiles.Remove(file);
+
+        if (OnFilesSelected.HasDelegate)
+        {
+            await OnFilesSelected.InvokeAsync(SelectedFiles);
+        }
+    }
+
+    /// <summary>
+    /// Validates a file selected through the input element.
+    /// </summary>
+    private bool ValidateFile(IBrowserFile file, out string? validationError)
+    {
+        validationError = null;
+
+        if (MaxFileSize > 0 && file.Size > MaxFileSize)
+        {
+            validationError = $"File '{file.Name}' exceeds maximum size of {FormatFileSize(MaxFileSize)}";
+            return false;
+        }
+
+        if (!string.IsNullOrEmpty(AllowedFileTypes) && !IsFileTypeAllowed(file.ContentType))
+        {
+            validationError = $"File type '{file.ContentType}' is not allowed";
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Validates a file from a drag-drop event.
+    /// </summary>
+    private bool ValidateDropFile(FileData file, out string? validationError)
+    {
+        validationError = null;
+
+        if (MaxFileSize > 0 && file.Size > MaxFileSize)
+        {
+            validationError = $"File '{file.Name}' exceeds maximum size of {FormatFileSize(MaxFileSize)}";
+            return false;
+        }
+
+        if (!string.IsNullOrEmpty(AllowedFileTypes) && !IsFileTypeAllowed(file.Type ?? ""))
+        {
+            validationError = $"File type '{file.Type}' is not allowed";
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Checks if a file type matches the allowed file types with wildcard support.
+    /// </summary>
+    private bool IsFileTypeAllowed(string fileType)
+    {
+        if (string.IsNullOrEmpty(AllowedFileTypes))
+            return true;
+
+        var allowedTypes = AllowedFileTypes.Split(',').Select(t => t.Trim()).ToList();
+
+        foreach (var allowed in allowedTypes)
+        {
+            if (allowed == "*/*")
+                return true;
+
+            if (allowed.EndsWith("/*"))
+            {
+                var prefix = allowed.Substring(0, allowed.Length - 2);
+                if (fileType.StartsWith(prefix + "/", StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+            else if (allowed.Equals(fileType, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the inline style for the drag-over state of the drop zone.
+    /// </summary>
+    private string GetDragOverStyle()
+    {
+        return IsDragOverZone ? "border-color: #0d6efd; background-color: #e7f1ff;" : "";
+    }
+
+    /// <summary>
+    /// Formats a file size in bytes to a human-readable format.
+    /// </summary>
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+        double len = bytes;
+        int order = 0;
+
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+
+        return $"{len:0.##} {sizes[order]}";
+    }
+}
