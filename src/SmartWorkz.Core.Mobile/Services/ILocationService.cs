@@ -1,66 +1,99 @@
-namespace SmartWorkz.Mobile;
+namespace SmartWorkz.Core.Mobile.Services;
+
+using SmartWorkz.Core.Mobile.Models;
 
 /// <summary>
-/// Service for accessing device location via GPS.
+/// Provides unified access to platform-specific location services (GPS, geolocation).
+/// Supports single location retrieval, continuous monitoring, and location history.
 /// </summary>
+/// <remarks>
+/// Implementation varies by platform:
+/// - iOS: Uses CoreLocation.CLLocationManager
+/// - Android: Uses Google Play Services Location API
+/// - Windows: Uses Geolocator from Windows Runtime
+/// - macOS: Uses CoreLocation.CLLocationManager
+///
+/// Always request permissions before calling location methods.
+/// Battery usage increases significantly with higher accuracy levels and continuous monitoring.
+/// </remarks>
 public interface ILocationService
 {
     /// <summary>
-    /// Gets the current device location.
-    /// Requires LOCATION or FINE_LOCATION permission (Android) or Location permission (iOS).
+    /// Gets the current device location asynchronously.
     /// </summary>
-    Task<GpsLocation?> GetCurrentLocationAsync(CancellationToken ct = default);
+    /// <returns>Location with latitude, longitude, and metadata.</returns>
+    /// <exception cref="OperationCanceledException">If location retrieval times out.</exception>
+    /// <remarks>
+    /// First call may take several seconds while GPS acquires signal lock.
+    /// Subsequent calls may return cached location if within time threshold.
+    /// Respects accuracy settings and may retry internally.
+    /// </remarks>
+    Task<Location> GetCurrentLocationAsync();
 
     /// <summary>
-    /// Starts continuous location tracking.
-    /// Requires LOCATION or FINE_LOCATION permission (Android) or Location permission (iOS).
-    /// Returns an observable stream of location updates.
+    /// Continuously monitors device location changes asynchronously.
     /// </summary>
-    IObservable<GpsLocation> StartTracking(LocationTrackingOptions? options = null);
+    /// <param name="accuracy">Desired accuracy level (affects battery usage).</param>
+    /// <returns>Async enumerable that yields locations as they are acquired.</returns>
+    /// <remarks>
+    /// This method does not complete on its own; continue enumerating until manually cancelled.
+    /// Usage:
+    /// <code>
+    /// await foreach (var location in locationService.WatchLocationAsync())
+    /// {
+    ///     Console.WriteLine($"Location: {location.Latitude}, {location.Longitude}");
+    /// }
+    /// </code>
+    /// </remarks>
+    IAsyncEnumerable<Location> WatchLocationAsync(
+        LocationAccuracy accuracy = LocationAccuracy.Best);
 
     /// <summary>
-    /// Stops continuous location tracking.
+    /// Retrieves location history for a date range.
     /// </summary>
-    void StopTracking();
+    /// <param name="startDate">Start date (inclusive).</param>
+    /// <param name="endDate">End date (inclusive).</param>
+    /// <returns>List of locations recorded within date range.</returns>
+    /// <remarks>Availability depends on whether background tracking is enabled.</remarks>
+    Task<List<Location>> GetLocationHistoryAsync(DateTime startDate, DateTime endDate);
 
     /// <summary>
-    /// Checks if location service is available on this platform.
+    /// Starts background location tracking for offline synchronization.
     /// </summary>
-    Task<bool> IsAvailableAsync();
+    /// <remarks>
+    /// Requires 'Always' permission level on iOS and backgroundLocation permission on Android.
+    /// Enable based on use case; background tracking consumes significant battery.
+    /// </remarks>
+    Task StartBackgroundTrackingAsync();
 
     /// <summary>
-    /// Checks if location tracking is currently active.
+    /// Stops background location tracking.
     /// </summary>
-    bool IsTracking { get; }
+    Task StopBackgroundTrackingAsync();
+
+    /// <summary>
+    /// Gets whether device has location services enabled.
+    /// </summary>
+    Task<bool> IsLocationEnabledAsync();
+
+    /// <summary>
+    /// Gets the current location permission status.
+    /// </summary>
+    Task<PermissionStatus> GetPermissionStatusAsync();
 }
 
-/// <summary>
-/// Options for configuring location tracking behavior.
-/// </summary>
-public sealed record LocationTrackingOptions(
-    /// <summary>Minimum distance in meters between location updates (0 = all updates)</summary>
-    double? MinimumDistanceMeters = null,
-
-    /// <summary>Minimum time in milliseconds between location updates (0 = all updates)</summary>
-    int? MinimumTimeMilliseconds = null,
-
-    /// <summary>Desired accuracy level</summary>
-    LocationAccuracy? Accuracy = LocationAccuracy.Default);
-
-/// <summary>
-/// Location accuracy levels for platform-specific configuration.
-/// </summary>
-public enum LocationAccuracy
+/// <summary>Permission status for location access.</summary>
+public enum PermissionStatus
 {
-    /// <summary>Default accuracy for the platform</summary>
-    Default = 0,
+    /// <summary>Permission not yet requested.</summary>
+    NotRequested = 0,
 
-    /// <summary>Low accuracy, better battery life</summary>
-    Low = 1,
+    /// <summary>Permission denied by user or system policy.</summary>
+    Denied = 1,
 
-    /// <summary>Medium accuracy, balanced battery/accuracy</summary>
-    Medium = 2,
+    /// <summary>Permission granted only when app is in use.</summary>
+    WhenInUse = 2,
 
-    /// <summary>High accuracy, best location precision, worse battery life</summary>
-    High = 3
+    /// <summary>Permission granted always, including background.</summary>
+    Always = 3
 }
