@@ -84,13 +84,17 @@ public partial class LocationService : ILocationService
                 }
             };
 
+            // FIX: Register the location callback with FusedLocationProviderClient
+            var mainLooper = Looper.MainLooper ?? throw new InvalidOperationException("Main looper not available");
+            client.RequestLocationUpdates(request, locationCallback, mainLooper);
+
             // Use Task.Wait with timeout (30 seconds)
             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
             {
                 var task = _locationCompletionSource.Task;
                 if (!task.Wait(cts.Token))
                 {
-                    throw new OperationCanceledException("Location acquisition timed out");
+                    throw new OperationCanceledException("Location acquisition timed out after 30 seconds");
                 }
 
                 return task.Result;
@@ -98,6 +102,15 @@ public partial class LocationService : ILocationService
         }
         finally
         {
+            // Clean up by removing the callback from FusedLocationProviderClient
+            try
+            {
+                client.RemoveLocationUpdates(locationCallback);
+            }
+            catch (Exception ex)
+            {
+                // Log but don't throw - cleanup should not fail the method
+            }
             _locationCallback = null;
         }
     }
@@ -111,8 +124,8 @@ public partial class LocationService : ILocationService
     {
         var client = EnsureFusedLocationProviderClient();
         var request = CreateLocationRequest(accuracy);
+        var mainLooper = Looper.MainLooper ?? throw new InvalidOperationException("Main looper not available");
 
-        var tcs = new TaskCompletionSource<Location>();
         var locationCallback = new LocationCallback();
 
         locationCallback.OnLocationResult += (result) =>
@@ -130,28 +143,41 @@ public partial class LocationService : ILocationService
                     Timestamp = UnixTimeStampToDateTime(androidLocation.Time)
                 };
 
-                tcs.TrySetResult(location);
+                // If there's a pending TaskCompletionSource, resolve it
+                if (_locationCompletionSource is not null && !_locationCompletionSource.Task.IsCompleted)
+                {
+                    _locationCompletionSource.TrySetResult(location);
+                }
             }
         };
 
         try
         {
+            // FIX: Register the callback with FusedLocationProviderClient
+            client.RequestLocationUpdates(request, locationCallback, mainLooper);
+
+            _locationCallback = locationCallback;
+
             while (!ct.IsCancellationRequested)
             {
-                tcs = new TaskCompletionSource<Location>();
-                _locationCallback = locationCallback;
+                _locationCompletionSource = new TaskCompletionSource<Location>();
 
-                var location = await tcs.Task.ConfigureAwait(false);
+                var location = await _locationCompletionSource.Task.ConfigureAwait(false);
                 yield return location;
             }
         }
         finally
         {
-            if (_locationCallback != null)
+            // Clean up by removing the callback from FusedLocationProviderClient
+            try
             {
-                client.RemoveLocationUpdates(_locationCallback);
-                _locationCallback = null;
+                client.RemoveLocationUpdates(locationCallback);
             }
+            catch (Exception ex)
+            {
+                // Log but don't throw
+            }
+            _locationCallback = null;
         }
     }
 
