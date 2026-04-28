@@ -292,3 +292,50 @@ public class CarouselItem
     /// </summary>
     public Microsoft.AspNetCore.Components.RenderFragment? Content { get; set; }
 }
+
+/// <summary>
+/// Represents a linear progress bar with support for multiple color variants, animation, and striped patterns.
+/// Used to display the completion status of an operation as a percentage from 0 to 100.
+/// </summary>
+public class ProgressBar
+{
+    /// <summary>
+    /// Gets or sets the progress percentage value (0-100).
+    /// Values outside this range are automatically clamped to the valid range.
+    /// </summary>
+    public int Value { get; set; } = 0;
+
+    /// <summary>
+    /// Gets or sets the color variant of the progress bar.
+    /// Valid values: "primary" (default), "success", "warning", "danger".
+    /// Invalid variants fall back to "primary".
+    /// </summary>
+    public string Variant { get; set; } = "primary";
+
+    /// <summary>
+    /// Gets or sets whether to display the percentage label on the progress bar.
+    /// When true, displays the current percentage value (e.g., "75%").
+    /// Default is true.
+    /// </summary>
+    public bool ShowLabel { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets whether to animate the progress bar.
+    /// When true, applies a moving stripes animation effect to the bar.
+    /// Default is false.
+    /// </summary>
+    public bool Animated { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets whether to display a striped pattern on the progress bar.
+    /// When true, applies a diagonal striped pattern to the bar.
+    /// Default is false.
+    /// </summary>
+    public bool Striped { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the height of the progress bar using CSS units.
+    /// Default is "1rem". Examples: "0.5rem", "2rem", "25px".
+    /// </summary>
+    public string Height { get; set; } = "1rem";
+}

@@ -1,0 +1,227 @@
+@using SmartWorkz.Web.Models
+
+<div class="progress-wrapper">
+    <div class="progress" style="height: @Height;">
+        <div
+            class="progress-bar @GetProgressBarClasses()"
+            role="progressbar"
+            style="width: @GetProgressPercentage()%; height: @Height;"
+            aria-valuenow="@GetClampedValue()"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-label="@GetAriaLabel()">
+            @if (ShowLabel)
+            {
+                <span class="progress-label">@GetClampedValue()%</span>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .progress-wrapper {
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+    .progress {
+        width: 100%;
+        height: 1rem;
+        background-color: #e9ecef;
+        border-radius: 0.375rem;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+
+    .progress-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #0d6efd;
+        height: 100%;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        transition: width 0.3s ease;
+    }
+
+    .progress-label {
+        margin: 0 0.25rem;
+        display: inline-block;
+    }
+
+    /* Variant Colors */
+    .progress-bar.progress-bar-primary {
+        background-color: #0d6efd;
+    }
+
+    .progress-bar.progress-bar-success {
+        background-color: #198754;
+    }
+
+    .progress-bar.progress-bar-warning {
+        background-color: #ffc107;
+        color: #212529;
+    }
+
+    .progress-bar.progress-bar-danger {
+        background-color: #dc3545;
+    }
+
+    /* Striped Pattern */
+    .progress-bar.progress-bar-striped {
+        background-image: linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.15) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(255, 255, 255, 0.15) 50%,
+            rgba(255, 255, 255, 0.15) 75%,
+            transparent 75%,
+            transparent
+        );
+        background-size: 1rem 1rem;
+    }
+
+    /* Animation for striped pattern */
+    .progress-bar.progress-bar-animated.progress-bar-striped {
+        animation: progress-bar-stripes 1s linear infinite;
+    }
+
+    /* Fallback for non-striped animation */
+    .progress-bar.progress-bar-animated:not(.progress-bar-striped) {
+        animation: progress-pulse 0.6s ease-in-out infinite;
+    }
+
+    @keyframes progress-bar-stripes {
+        from {
+            background-position: 1rem 0;
+        }
+        to {
+            background-position: 0 0;
+        }
+    }
+
+    @keyframes progress-pulse {
+        0% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.8;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+</style>
+
+@code {
+    /// <summary>
+    /// Progress percentage value (0-100).
+    /// Values outside this range are automatically clamped to the valid range.
+    /// </summary>
+    [Parameter]
+    public int Value { get; set; } = 0;
+
+    /// <summary>
+    /// Color variant of the progress bar.
+    /// Valid values: "primary" (default), "success", "warning", "danger".
+    /// Invalid variants fall back to "primary".
+    /// </summary>
+    [Parameter]
+    public string Variant { get; set; } = "primary";
+
+    /// <summary>
+    /// Whether to display the percentage label on the progress bar.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool ShowLabel { get; set; } = true;
+
+    /// <summary>
+    /// Whether to animate the progress bar.
+    /// When combined with Striped=true, displays moving stripes.
+    /// When Striped=false, displays a pulse animation.
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool Animated { get; set; } = false;
+
+    /// <summary>
+    /// Whether to display a striped pattern on the progress bar.
+    /// Works best when combined with Animated=true for moving stripes effect.
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool Striped { get; set; } = false;
+
+    /// <summary>
+    /// Height of the progress bar using CSS units.
+    /// Default is "1rem". Examples: "0.5rem", "2rem", "25px".
+    /// </summary>
+    [Parameter]
+    public string Height { get; set; } = "1rem";
+
+    /// <summary>
+    /// Gets the clamped progress value between 0 and 100.
+    /// </summary>
+    /// <returns>The clamped value.</returns>
+    private int GetClampedValue()
+    {
+        return Math.Clamp(Value, 0, 100);
+    }
+
+    /// <summary>
+    /// Gets the progress percentage for the width style attribute.
+    /// </summary>
+    /// <returns>The percentage value (0-100).</returns>
+    private int GetProgressPercentage()
+    {
+        return GetClampedValue();
+    }
+
+    /// <summary>
+    /// Gets the CSS classes for the progress bar based on variant and options.
+    /// </summary>
+    /// <returns>A string of CSS classes.</returns>
+    private string GetProgressBarClasses()
+    {
+        var classes = new List<string> { $"progress-bar-{GetValidVariant()}" };
+
+        if (Striped)
+        {
+            classes.Add("progress-bar-striped");
+        }
+
+        if (Animated)
+        {
+            classes.Add("progress-bar-animated");
+        }
+
+        return string.Join(" ", classes);
+    }
+
+    /// <summary>
+    /// Gets a valid variant, falling back to "primary" if the provided variant is invalid.
+    /// </summary>
+    /// <returns>A valid variant string.</returns>
+    private string GetValidVariant()
+    {
+        var validVariants = new[] { "primary", "success", "warning", "danger" };
+        return validVariants.Contains(Variant) ? Variant : "primary";
+    }
+
+    /// <summary>
+    /// Gets the ARIA label for accessibility.
+    /// </summary>
+    /// <returns>An accessibility-friendly label.</returns>
+    private string GetAriaLabel()
+    {
+        return $"Progress: {GetClampedValue()} percent complete";
+    }
+}
