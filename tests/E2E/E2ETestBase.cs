@@ -87,7 +87,18 @@ public abstract class E2ETestBase : IDisposable
     /// <returns>The found IWebElement.</returns>
     protected IWebElement WaitForPresent(By locator)
     {
-        return GetWait().Until(ExpectedConditions.PresenceOfElementLocated(locator));
+        // Use a custom condition to find element presence
+        return GetWait().Until(driver =>
+        {
+            try
+            {
+                return driver.FindElement(locator);
+            }
+            catch
+            {
+                return null!;
+            }
+        }) ?? throw new TimeoutException($"Element not found: {locator}");
     }
 
     /// <summary>

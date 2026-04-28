@@ -325,8 +325,8 @@ public class ModalComponentE2ETests : E2ETestBase
 
             // Assert
             Assert.Equal(2, buttons.Count); // Cancel and Confirm buttons
-            Assert.True(buttons[0].Text.Contains("Cancel"));
-            Assert.True(buttons[1].Text.Contains("Confirm"));
+            Assert.Contains("Cancel", buttons[0].Text);
+            Assert.Contains("Confirm", buttons[1].Text);
         }
         finally
         {
