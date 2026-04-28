@@ -1,0 +1,135 @@
+@namespace SmartWorkz.Core.Web.Components.FormBuilder
+
+@if (IsVisible)
+{
+    <div class="alert alert-@Type alert-dismissible fade show" role="alert">
+        @if (!string.IsNullOrEmpty(Title))
+        {
+            <div class="alert-title">
+                <i class="bi @GetIconClass()"></i>
+                <strong>@Title</strong>
+            </div>
+        }
+        else if (HasIcon)
+        {
+            <i class="bi @GetIconClass() me-2"></i>
+        }
+
+        @if (Message != null)
+        {
+            @Message
+        }
+        else if (!string.IsNullOrEmpty(MessageText))
+        {
+            @MessageText
+        }
+
+        @if (Dismissible)
+        {
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"
+                    @onclick="OnDismissClicked">
+            </button>
+        }
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Gets or sets whether the toast/alert is visible. Default: false
+    /// </summary>
+    [Parameter]
+    public bool IsVisible { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the alert type: "info", "success", "warning", "danger". Default: "info"
+    /// </summary>
+    [Parameter]
+    public string Type { get; set; } = "info";
+
+    /// <summary>
+    /// Gets or sets the optional title for the alert.
+    /// </summary>
+    [Parameter]
+    public string? Title { get; set; }
+
+    /// <summary>
+    /// Gets or sets the message as a RenderFragment for complex content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Message { get; set; }
+
+    /// <summary>
+    /// Gets or sets the message as plain text. Used when Message RenderFragment is not provided.
+    /// </summary>
+    [Parameter]
+    public string? MessageText { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the dismiss button should be displayed. Default: true
+    /// </summary>
+    [Parameter]
+    public bool Dismissible { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the auto-dismiss timeout in milliseconds. Null means no auto-dismiss. Default: null
+    /// </summary>
+    [Parameter]
+    public int? AutoDismissMs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the alert is dismissed (either manually or auto-dismiss).
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDismiss { get; set; }
+
+    /// <summary>
+    /// Indicates whether the alert type supports icons. Used to show icon even without title.
+    /// </summary>
+    private bool HasIcon => !string.IsNullOrEmpty(Type);
+
+    /// <summary>
+    /// Gets the Bootstrap icon class based on the alert type.
+    /// </summary>
+    private string GetIconClass() => Type?.ToLower() switch
+    {
+        "success" => "bi-check-circle",
+        "warning" => "bi-exclamation-triangle",
+        "danger" => "bi-x-circle",
+        "info" => "bi-info-circle",
+        _ => "bi-info-circle"
+    };
+
+    /// <summary>
+    /// Handles the dismiss button click event and invokes the OnDismiss callback.
+    /// </summary>
+    private async Task OnDismissClicked()
+    {
+        if (OnDismiss.HasDelegate)
+        {
+            await OnDismiss.InvokeAsync();
+        }
+    }
+
+    /// <summary>
+    /// Handles component initialization and starts auto-dismiss timer if configured.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        if (AutoDismissMs.HasValue && AutoDismissMs > 0)
+        {
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(AutoDismissMs.Value);
+                if (OnDismiss.HasDelegate)
+                {
+                    await OnDismiss.InvokeAsync();
+                }
+            });
+        }
+    }
+}
