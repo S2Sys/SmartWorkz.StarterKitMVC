@@ -1,0 +1,270 @@
+@*
+    Alert Component - Contextual alert messages for user feedback
+    Supports multiple alert types (success, info, warning, danger), optional heading, dismissible functionality,
+    optional icons, and Bootstrap styling
+*@
+
+@if (Visible)
+{
+    <div class="alert @GetAlertClass() @(Dismissible ? "alert-dismissible fade show" : "")" role="alert">
+        @if (ShowIcon)
+        {
+            <span class="alert-icon me-2">
+                @GetAlertIcon()
+            </span>
+        }
+
+        <div class="alert-content">
+            @if (!string.IsNullOrEmpty(Heading))
+            {
+                <h4 class="alert-heading">@Heading</h4>
+            }
+
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
+            else if (Message != null)
+            {
+                @((MarkupString)Message)
+            }
+            else
+            {
+                <p>@Message</p>
+            }
+        </div>
+
+        @if (Dismissible)
+        {
+            <button type="button"
+                    class="btn-close"
+                    aria-label="Close alert"
+                    @onclick="@(async () => await HandleDismiss())">
+            </button>
+        }
+    </div>
+}
+
+<style>
+    .alert {
+        position: relative;
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: 0.375rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .alert-icon {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        font-size: 1.25rem;
+    }
+
+    .alert-content {
+        flex: 1;
+    }
+
+    .alert-heading {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .alert-success {
+        color: #084c61;
+        background-color: #d1e7dd;
+        border-color: #badbcc;
+    }
+
+    .alert-success .alert-heading {
+        color: #0a3622;
+    }
+
+    .alert-info {
+        color: #084298;
+        background-color: #cfe2ff;
+        border-color: #b6d4fe;
+    }
+
+    .alert-info .alert-heading {
+        color: #052c65;
+    }
+
+    .alert-warning {
+        color: #664d03;
+        background-color: #fff3cd;
+        border-color: #ffecb5;
+    }
+
+    .alert-warning .alert-heading {
+        color: #332701;
+    }
+
+    .alert-danger {
+        color: #842029;
+        background-color: #f8d7da;
+        border-color: #f5c2c7;
+    }
+
+    .alert-danger .alert-heading {
+        color: #601014;
+    }
+
+    .alert-dismissible {
+        padding-right: 3.75rem;
+    }
+
+    .alert-dismissible .btn-close {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+    }
+
+    .btn-close {
+        box-sizing: content-box;
+        width: 1em;
+        height: 1em;
+        padding: 0.25em 0.25em;
+        color: #000;
+        background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath d='M.293.293a1 1 0 1 1 1.414 1.414L1.414 2.12l.293-.293a1 1 0 1 1 1.414 1.414l-.293-.293.293.293a1 1 0 0 1-1.414 1.414L2.12 4.414l-.293.293a1 1 0 1 1-1.414-1.414l.293.293-.293-.293a1 1 0 0 1 1.414-1.414l.293.293-.293-.293A1 1 0 0 1 .293.293Z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+        border: 0;
+        border-radius: 0.375rem;
+        opacity: 0.5;
+        cursor: pointer;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .btn-close:hover,
+    .btn-close:focus {
+        opacity: 0.75;
+    }
+
+    .me-2 {
+        margin-right: 0.5rem !important;
+    }
+
+    .fade {
+        transition: opacity 0.15s linear;
+    }
+
+    .show {
+        opacity: 1;
+    }
+</style>
+
+@code {
+    /// <summary>
+    /// Gets or sets the type of alert to display.
+    /// Valid values: "success", "info", "warning", "danger" (default: "info").
+    /// Determines the color scheme and associated icon of the alert.
+    /// </summary>
+    [Parameter]
+    public string Type { get; set; } = "info";
+
+    /// <summary>
+    /// Gets or sets the optional heading text displayed at the top of the alert.
+    /// If not provided, no heading is rendered.
+    /// </summary>
+    [Parameter]
+    public string? Heading { get; set; }
+
+    /// <summary>
+    /// Gets or sets the alert message content as a string.
+    /// Either Message or ChildContent can be used to provide alert content.
+    /// </summary>
+    [Parameter]
+    public string? Message { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the alert should display a close button for dismissal.
+    /// When true, shows a close button and applies alert-dismissible styling (default: true).
+    /// </summary>
+    [Parameter]
+    public bool Dismissible { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the alert is dismissed via the close button.
+    /// Only invoked if Dismissible is set to true.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDismiss { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to display a type-specific icon in the alert.
+    /// When true, displays an icon corresponding to the alert type (default: true).
+    /// </summary>
+    [Parameter]
+    public bool Icon { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the visibility of the alert.
+    /// When false, the alert is not rendered (default: true).
+    /// </summary>
+    [Parameter]
+    public bool Visible { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets custom content to render in the alert.
+    /// If provided, overrides the Message parameter and allows rendering of HTML and components.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether to show the alert icon.
+    /// Internal property that combines Icon parameter with type-specific logic.
+    /// </summary>
+    private bool ShowIcon => Icon && !string.IsNullOrEmpty(Type);
+
+    /// <summary>
+    /// Maps the alert type to the corresponding Bootstrap alert CSS class.
+    /// </summary>
+    /// <returns>The CSS class for the alert type, including "alert" base class.</returns>
+    private string GetAlertClass()
+    {
+        var typeClass = Type switch
+        {
+            "success" => "alert-success",
+            "warning" => "alert-warning",
+            "danger" => "alert-danger",
+            "info" => "alert-info",
+            _ => "alert-info"
+        };
+
+        return $"alert {typeClass}";
+    }
+
+    /// <summary>
+    /// Returns the appropriate icon markup based on the alert type.
+    /// Uses Font Awesome or Bootstrap icons depending on type.
+    /// </summary>
+    /// <returns>Icon markup as a RenderFragment.</returns>
+    private RenderFragment GetAlertIcon()
+    {
+        return Type switch
+        {
+            "success" => @<text>✓</text>,
+            "warning" => @<text>⚠</text>,
+            "danger" => @<text>✕</text>,
+            "info" => @<text>ⓘ</text>,
+            _ => @<text>ⓘ</text>
+        };
+    }
+
+    /// <summary>
+    /// Handles the dismiss button click event.
+    /// Invokes the OnDismiss callback if it has been provided.
+    /// </summary>
+    private async Task HandleDismiss()
+    {
+        if (OnDismiss.HasDelegate)
+        {
+            await OnDismiss.InvokeAsync();
+        }
+    }
+}
