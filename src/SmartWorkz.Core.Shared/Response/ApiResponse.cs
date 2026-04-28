@@ -75,7 +75,7 @@ public sealed class ApiResponse<T>
     public static ApiResponse<T> Fail(ApiError error)
         => new(false, error: error);
 
-    /// <summary>Create from core Result<T> pattern.</summary>
+    /// <summary>Create from core Result&lt;T&gt; pattern.</summary>
     public static ApiResponse<T> FromResult(Result<T> result)
         => result.Succeeded
             ? Ok(result.Data!, result.MessageKey)

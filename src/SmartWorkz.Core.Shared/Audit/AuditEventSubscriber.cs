@@ -12,6 +12,12 @@ public class AuditEventSubscriber
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<AuditEventSubscriber> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AuditEventSubscriber"/> class.
+    /// </summary>
+    /// <param name="serviceProvider">Service provider for resolving audit trail implementations.</param>
+    /// <param name="logger">Logger for diagnostic information and error tracking.</param>
+    /// <exception cref="ArgumentNullException">Thrown when serviceProvider or logger is null.</exception>
     public AuditEventSubscriber(IServiceProvider serviceProvider, ILogger<AuditEventSubscriber> logger)
     {
         _serviceProvider = Guard.NotNull(serviceProvider, nameof(serviceProvider));

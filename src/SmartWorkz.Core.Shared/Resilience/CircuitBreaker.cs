@@ -102,7 +102,7 @@ public sealed class CircuitBreaker : ICircuitBreaker
     /// <param name="operation">The async operation to execute.</param>
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
     /// <returns>
-    /// A Result<T> containing the operation result on success, or a failure result if:
+    /// A Result&lt;T&gt; containing the operation result on success, or a failure result if:
     /// - The circuit breaker is Open (rejected immediately)
     /// - The operation throws an exception
     /// </returns>

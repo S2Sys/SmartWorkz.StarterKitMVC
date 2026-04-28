@@ -21,7 +21,9 @@
       "Bash(dotnet remove:*)",
       "Bash(for f:*)",
       "Bash(do sed:*)",
-      "Bash(done)"
+      "Bash(done)",
+      "Read(//c/Users/tsent/.worktrees/phase1-mobile-location/src/SmartWorkz.Core.Mobile/Services/**)",
+      "Read(//c/Users/tsent/.worktrees/phase1-mobile-location/tests/SmartWorkz.Core.Mobile.Tests/**)"
     ]
   }
 }

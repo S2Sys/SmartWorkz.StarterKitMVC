@@ -14,6 +14,12 @@ public class SqlAuditTrail : IAuditTrail
     private readonly IDbConnection _connection;
     private readonly ILogger<SqlAuditTrail> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SqlAuditTrail"/> class.
+    /// </summary>
+    /// <param name="connection">Database connection for audit trail operations.</param>
+    /// <param name="logger">Logger for diagnostic information and error tracking.</param>
+    /// <exception cref="ArgumentNullException">Thrown when connection or logger is null.</exception>
     public SqlAuditTrail(IDbConnection connection, ILogger<SqlAuditTrail> logger)
     {
         _connection = Guard.NotNull(connection, nameof(connection));

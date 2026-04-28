@@ -6,8 +6,18 @@ using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
+/// <summary>
+/// Extension methods for configuring Hangfire background job processing in the dependency injection container and application pipeline.
+/// </summary>
 public static class HangfireStartupExtensions
 {
+    /// <summary>
+    /// Adds Hangfire background job processing to the dependency injection container with SQL Server storage and job service registration.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    /// <param name="connectionString">SQL Server connection string for Hangfire job storage.</param>
+    /// <param name="workerCount">Number of background job workers. Default is 20.</param>
+    /// <returns>The configured service collection for method chaining.</returns>
     public static IServiceCollection AddHangfireBackgroundJobs(
         this IServiceCollection services,
         string connectionString,
@@ -38,6 +48,12 @@ public static class HangfireStartupExtensions
         return services;
     }
 
+    /// <summary>
+    /// Configures the Hangfire dashboard middleware in the application pipeline at the "/admin/jobs" route.
+    /// Includes authentication-based authorization using HangfireAuthorizationFilter.
+    /// </summary>
+    /// <param name="app">The application builder for configuring the request pipeline.</param>
+    /// <returns>The configured application builder for method chaining.</returns>
     public static IApplicationBuilder UseHangfireDashboard(this IApplicationBuilder app)
     {
         // Use Hangfire dashboard
@@ -49,8 +65,17 @@ public static class HangfireStartupExtensions
     }
 }
 
+/// <summary>
+/// Authorization filter for Hangfire dashboard that requires authenticated users.
+/// Checks the HttpContext's User identity to determine dashboard access permission.
+/// </summary>
 internal class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
 {
+    /// <summary>
+    /// Authorizes dashboard access by verifying user authentication status.
+    /// </summary>
+    /// <param name="context">The dashboard context containing HTTP context and user information.</param>
+    /// <returns>True if the user is authenticated and authorized; otherwise, false.</returns>
     public bool Authorize(DashboardContext context)
     {
         try
