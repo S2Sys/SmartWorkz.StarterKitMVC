@@ -193,3 +193,24 @@ public record AutocompleteItem(string Value, string Label);
 /// <param name="Type">The MIME type of the file</param>
 /// <param name="Data">The binary file data</param>
 public record FileInfo(string Name, long Size, string Type, byte[] Data);
+
+/// <summary>
+/// Represents a breadcrumb item in a breadcrumb navigation trail.
+/// </summary>
+public class BreadcrumbItem
+{
+    /// <summary>
+    /// Unique identifier for the breadcrumb item, passed to the OnNavigate callback when clicked.
+    /// </summary>
+    public string Value { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Display text shown to the user for this breadcrumb item.
+    /// </summary>
+    public string Label { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Optional Bootstrap icon class (e.g., "bi bi-house") to display before the label.
+    /// </summary>
+    public string? Icon { get; set; }
+}

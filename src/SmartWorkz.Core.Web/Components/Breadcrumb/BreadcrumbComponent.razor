@@ -1,0 +1,107 @@
+@typeparam TModel where TModel : class
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-0">
+        @if (Items != null && Items.Count > 0)
+        {
+            @for (int i = 0; i < Items.Count; i++)
+            {
+                var item = Items[i];
+                var isLast = i == Items.Count - 1;
+
+                <li class="breadcrumb-item @(isLast ? "active" : "")"
+                    @key="item.Value"
+                    aria-current="@(isLast ? "page" : null)">
+                    @if (!isLast && OnNavigate.HasDelegate)
+                    {
+                        <a href="javascript:void(0)"
+                           @onclick="@(async () => await HandleNavigate(item.Value))"
+                           class="breadcrumb-link">
+                            @if (!string.IsNullOrEmpty(item.Icon))
+                            {
+                                <i class="@item.Icon me-1"></i>
+                            }
+                            @item.Label
+                        </a>
+                    }
+                    else
+                    {
+                        @if (!string.IsNullOrEmpty(item.Icon))
+                        {
+                            <i class="@item.Icon me-1"></i>
+                        }
+                        @item.Label
+                    }
+                </li>
+
+                @if (!isLast)
+                {
+                    <li class="breadcrumb-separator d-inline mx-1">@Separator</li>
+                }
+            }
+        }
+    </ol>
+</nav>
+
+<style>
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0;
+    }
+
+    .breadcrumb-item {
+        display: inline-block;
+    }
+
+    .breadcrumb-item.active {
+        color: #6c757d;
+    }
+
+    .breadcrumb-link {
+        color: #0d6efd;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .breadcrumb-link:hover {
+        color: #0b5ed7;
+        text-decoration: underline;
+    }
+
+    .breadcrumb-separator {
+        color: #dee2e6;
+    }
+</style>
+
+@code {
+    /// <summary>
+    /// Collection of breadcrumb items to display in the navigation trail.
+    /// </summary>
+    [Parameter]
+    public List<BreadcrumbItem>? Items { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a breadcrumb item (except the last active item) is clicked.
+    /// Passes the Value property of the clicked breadcrumb item.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnNavigate { get; set; }
+
+    /// <summary>
+    /// Separator text displayed between breadcrumb items. Defaults to "/".
+    /// </summary>
+    [Parameter]
+    public string Separator { get; set; } = "/";
+
+    /// <summary>
+    /// Handles navigation when a breadcrumb item is clicked by invoking the OnNavigate callback.
+    /// </summary>
+    /// <param name="itemValue">The Value property of the clicked breadcrumb item.</param>
+    private async Task HandleNavigate(string itemValue)
+    {
+        if (OnNavigate.HasDelegate)
+        {
+            await OnNavigate.InvokeAsync(itemValue);
+        }
+    }
+}
