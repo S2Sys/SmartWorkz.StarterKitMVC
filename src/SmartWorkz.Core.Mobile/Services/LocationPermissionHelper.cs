@@ -13,6 +13,12 @@ public static class LocationPermissionHelper
     /// </summary>
     /// <param name="permissionStatus">The platform-specific permission status.</param>
     /// <returns>Unified PermissionStatus value.</returns>
+    /// <remarks>
+    /// Currently a pass-through operation as PermissionStatus is already unified across all platforms (iOS, Android, Windows, macOS).
+    /// The PermissionStatus enum (NotRequested, Denied, WhenInUse, Always) directly matches platform conventions,
+    /// eliminating the need for translation. This method is kept for API consistency and future extensibility if
+    /// platform-specific normalization becomes necessary.
+    /// </remarks>
     public static PermissionStatus NormalizePermissionStatus(PermissionStatus permissionStatus)
     {
         return permissionStatus;

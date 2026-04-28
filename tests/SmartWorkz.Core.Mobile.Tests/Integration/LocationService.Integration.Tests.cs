@@ -1,5 +1,7 @@
 namespace SmartWorkz.Mobile.Tests.Integration;
 
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using SmartWorkz.Mobile;
 using SmartWorkz.Mobile.Services;
 using Xunit;
@@ -11,6 +13,14 @@ using Xunit;
 [Collection("LocationService Integration Tests")]
 public class LocationServiceIntegrationTests
 {
+    private readonly ILocationService _locationService;
+
+    public LocationServiceIntegrationTests()
+    {
+        var mockPermissions = new Mock<IPermissionService>();
+        _locationService = new LocationService(NullLogger<LocationService>.Instance, mockPermissions.Object);
+    }
+
     [Theory]
     [InlineData(LocationAccuracy.Lowest)]
     [InlineData(LocationAccuracy.Low)]
@@ -19,7 +29,7 @@ public class LocationServiceIntegrationTests
     [InlineData(LocationAccuracy.Best)]
     public async Task LocationService_WatchLocationAsync_SupportsAllAccuracyLevels(LocationAccuracy accuracy)
     {
-        var service = new LocationService();
+        var service = _locationService;
 
         // This test verifies the accuracy parameter is accepted without throwing
         // Actual location updates would require device/simulator
@@ -37,7 +47,7 @@ public class LocationServiceIntegrationTests
     [Fact]
     public async Task LocationService_GetCurrentLocation_ThrowsOperationCanceledOnTimeout()
     {
-        var service = new LocationService();
+        var service = _locationService;
 
         // On a device/simulator where location is available, this should timeout
         // In test environment without location, it will fail appropriately
@@ -70,7 +80,7 @@ public class LocationServiceIntegrationTests
     [Fact]
     public async Task LocationService_GetPermissionStatus_ReturnsValidStatus()
     {
-        var service = new LocationService();
+        var service = _locationService;
         var status = await service.GetPermissionStatusAsync();
 
         Assert.True(
@@ -84,7 +94,7 @@ public class LocationServiceIntegrationTests
     [Fact]
     public async Task LocationService_IsLocationEnabled_ReturnsBoolean()
     {
-        var service = new LocationService();
+        var service = _locationService;
         var enabled = await service.IsLocationEnabledAsync();
 
         Assert.IsType<bool>(enabled);

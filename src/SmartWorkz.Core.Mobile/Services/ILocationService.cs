@@ -34,6 +34,7 @@ public interface ILocationService
     /// Continuously monitors device location changes asynchronously.
     /// </summary>
     /// <param name="accuracy">Desired accuracy level (affects battery usage).</param>
+    /// <param name="ct">Cancellation token to stop watching for location updates.</param>
     /// <returns>Async enumerable that yields locations as they are acquired.</returns>
     /// <remarks>
     /// This method does not complete on its own; continue enumerating until manually cancelled.
@@ -46,7 +47,8 @@ public interface ILocationService
     /// </code>
     /// </remarks>
     IAsyncEnumerable<Location> WatchLocationAsync(
-        LocationAccuracy accuracy = LocationAccuracy.Best);
+        LocationAccuracy accuracy = LocationAccuracy.Best,
+        CancellationToken ct = default);
 
     /// <summary>
     /// Retrieves location history for a date range.
