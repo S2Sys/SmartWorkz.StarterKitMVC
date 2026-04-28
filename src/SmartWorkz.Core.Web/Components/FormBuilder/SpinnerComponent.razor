@@ -1,0 +1,66 @@
+@namespace SmartWorkz.Core.Web.Components.FormBuilder
+
+@if (IsVisible)
+{
+    <div class="spinner-wrapper text-center">
+        <div class="spinner-@Type text-@Variant @GetSizeClass()" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+
+        @if (ShowLabel && !string.IsNullOrEmpty(Label))
+        {
+            <div class="spinner-label mt-2">
+                @Label
+            </div>
+        }
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Gets or sets whether the spinner is visible. Default: true
+    /// </summary>
+    [Parameter]
+    public bool IsVisible { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the spinner type: "border" or "grow". Default: "border"
+    /// </summary>
+    [Parameter]
+    public string Type { get; set; } = "border";
+
+    /// <summary>
+    /// Gets or sets the spinner color variant: "primary", "success", "warning", "danger", "secondary", "info", "light", "dark". Default: "primary"
+    /// </summary>
+    [Parameter]
+    public string Variant { get; set; } = "primary";
+
+    /// <summary>
+    /// Gets or sets the spinner size: "sm", "md", "lg". Default: "md"
+    /// </summary>
+    [Parameter]
+    public string Size { get; set; } = "md";
+
+    /// <summary>
+    /// Gets or sets the optional loading text/label to display below the spinner.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the label should be displayed. Default: true
+    /// </summary>
+    [Parameter]
+    public bool ShowLabel { get; set; } = true;
+
+    /// <summary>
+    /// Gets the CSS size class based on the Size parameter.
+    /// </summary>
+    private string GetSizeClass() => Size?.ToLower() switch
+    {
+        "sm" => "spinner-sm",
+        "lg" => "spinner-lg",
+        "md" => "",
+        _ => ""
+    };
+}
