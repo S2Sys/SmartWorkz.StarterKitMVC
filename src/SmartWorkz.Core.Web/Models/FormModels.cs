@@ -260,3 +260,35 @@ public record AccordionItem
     /// </summary>
     public Microsoft.AspNetCore.Components.RenderFragment? Content { get; set; }
 }
+
+/// <summary>
+/// Represents a single slide in the CarouselComponent.
+/// Each slide can display an image with optional title and description, or custom RenderFragment content.
+/// </summary>
+public class CarouselItem
+{
+    /// <summary>
+    /// Gets or sets the title displayed on the slide.
+    /// Typically appears as an overlay on the image or above the content.
+    /// </summary>
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the description text displayed on the slide.
+    /// Typically appears below the title as supplementary text.
+    /// </summary>
+    public string Description { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the URL of the image to display for this slide.
+    /// If provided, the image is displayed as the slide's background or main content.
+    /// </summary>
+    public string ImageUrl { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets a custom RenderFragment to display as the slide content.
+    /// If provided, this takes precedence over ImageUrl for content rendering.
+    /// Allows for complex, interactive content within carousel slides.
+    /// </summary>
+    public Microsoft.AspNetCore.Components.RenderFragment? Content { get; set; }
+}

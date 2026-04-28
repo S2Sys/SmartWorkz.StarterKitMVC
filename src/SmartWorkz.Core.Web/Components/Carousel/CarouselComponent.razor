@@ -1,0 +1,502 @@
+@using SmartWorkz.Web.Models
+
+<div class="carousel-container">
+    @if (Items != null && Items.Count > 0)
+    {
+        <div class="carousel" role="region" aria-label="Image carousel">
+            <!-- Carousel Inner (Slides) -->
+            <div class="carousel-inner">
+                @foreach (var item in Items)
+                {
+                    var isActive = GetActiveIndex() == Items.IndexOf(item);
+                    <div class="carousel-item @(isActive ? "active" : "")" @key="Items.IndexOf(item)">
+                        @if (item.Content != null)
+                        {
+                            <!-- Custom Content -->
+                            <div class="carousel-content">
+                                @item.Content
+                            </div>
+                        }
+                        else if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                            <!-- Image Slide -->
+                            <div class="carousel-image-wrapper">
+                                <img src="@item.ImageUrl" alt="@item.Title" class="carousel-image" />
+                                @if (!string.IsNullOrEmpty(item.Title) || !string.IsNullOrEmpty(item.Description))
+                                {
+                                    <div class="carousel-caption">
+                                        @if (!string.IsNullOrEmpty(item.Title))
+                                        {
+                                            <h5>@item.Title</h5>
+                                        }
+                                        @if (!string.IsNullOrEmpty(item.Description))
+                                        {
+                                            <p>@item.Description</p>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Navigation Controls (Arrows) -->
+            @if (ShowControls)
+            {
+                <button type="button"
+                    class="carousel-control prev"
+                    aria-label="Previous slide"
+                    @onclick="@(async () => await GoToPrevious())">
+                    <span class="carousel-control-icon" aria-hidden="true"></span>
+                </button>
+                <button type="button"
+                    class="carousel-control next"
+                    aria-label="Next slide"
+                    @onclick="@(async () => await GoToNext())">
+                    <span class="carousel-control-icon" aria-hidden="true"></span>
+                </button>
+            }
+
+            <!-- Indicators/Dots -->
+            @if (ShowIndicators && Items.Count > 0)
+            {
+                <div class="carousel-indicators">
+                    @for (int i = 0; i < Items.Count; i++)
+                    {
+                        var index = i;
+                        var isIndicatorActive = GetActiveIndex() == index;
+                        <button type="button"
+                            class="carousel-indicator @(isIndicatorActive ? "active" : "")"
+                            aria-label="Go to slide @(index + 1)"
+                            aria-current="@(isIndicatorActive ? "true" : "false")"
+                            @onclick="@(async () => await GoToSlide(index))">
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .carousel-container {
+        width: 100%;
+        position: relative;
+        background-color: #f0f0f0;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+    .carousel {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .carousel-inner {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .carousel-item {
+        position: relative;
+        width: 100%;
+        min-height: 300px;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.6s ease-in-out;
+    }
+
+    .carousel-item.active {
+        display: block;
+        opacity: 1;
+    }
+
+    .carousel-image-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 300px;
+        overflow: hidden;
+    }
+
+    .carousel-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .carousel-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1.5rem;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+        color: white;
+        text-align: left;
+    }
+
+    .carousel-caption h5 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .carousel-caption p {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .carousel-content {
+        width: 100%;
+        height: 100%;
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff;
+        padding: 2rem;
+    }
+
+    /* Navigation Controls (Arrows) */
+    .carousel-control {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 3rem;
+        height: 3rem;
+        padding: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        border: 0;
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .carousel-control:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .carousel-control:focus {
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .carousel-control.prev {
+        left: 1rem;
+    }
+
+    .carousel-control.next {
+        right: 1rem;
+    }
+
+    .carousel-control-icon {
+        display: inline-block;
+        width: 1.25rem;
+        height: 1.25rem;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+
+    .carousel-control.prev .carousel-control-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z' fill='%23fff'/%3e%3c/svg%3e");
+    }
+
+    .carousel-control.next .carousel-control-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z' fill='%23fff'/%3e%3c/svg%3e");
+    }
+
+    /* Indicators/Dots */
+    .carousel-indicators {
+        position: absolute;
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .carousel-indicator {
+        display: inline-block;
+        width: 0.75rem;
+        height: 0.75rem;
+        padding: 0;
+        margin: 0 0.25rem;
+        text-indent: -999px;
+        cursor: pointer;
+        background-color: rgba(255, 255, 255, 0.5);
+        border: 0;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+    }
+
+    .carousel-indicator:hover {
+        background-color: rgba(255, 255, 255, 0.75);
+    }
+
+    .carousel-indicator.active {
+        background-color: white;
+    }
+
+    .carousel-indicator:focus {
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+        .carousel-item {
+            min-height: 200px;
+        }
+
+        .carousel-image-wrapper {
+            min-height: 200px;
+        }
+
+        .carousel-caption {
+            padding: 1rem;
+        }
+
+        .carousel-caption h5 {
+            font-size: 1.125rem;
+        }
+
+        .carousel-caption p {
+            font-size: 0.875rem;
+        }
+
+        .carousel-control {
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+    }
+</style>
+
+@code {
+    /// <summary>
+    /// Collection of CarouselItem objects representing the slides to display in the carousel.
+    /// Each item can contain an image URL, title, description, or custom RenderFragment content.
+    /// </summary>
+    [Parameter]
+    public List<CarouselItem>? Items { get; set; }
+
+    /// <summary>
+    /// The index of the currently active/displayed slide.
+    /// Must be between 0 and Items.Count - 1.
+    /// Default is 0 (first slide).
+    /// </summary>
+    [Parameter]
+    public int ActiveIndex { get; set; } = 0;
+
+    /// <summary>
+    /// Callback invoked when the active slide changes.
+    /// Passes the index of the newly active slide.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> OnSlideChanged { get; set; }
+
+    /// <summary>
+    /// Determines whether the carousel automatically advances to the next slide.
+    /// When true (default), slides automatically rotate based on AutoPlayIntervalMs.
+    /// When false, carousel only changes on user interaction (navigation arrows or indicators).
+    /// </summary>
+    [Parameter]
+    public bool AutoPlay { get; set; } = true;
+
+    /// <summary>
+    /// The interval in milliseconds between automatic slide advancement.
+    /// Only used when AutoPlay is true.
+    /// Default is 5000 (5 seconds).
+    /// Minimum recommended value is 1000 (1 second).
+    /// </summary>
+    [Parameter]
+    public int AutoPlayIntervalMs { get; set; } = 5000;
+
+    /// <summary>
+    /// Determines whether to display the navigation dots/indicators at the bottom of the carousel.
+    /// When true (default), dots are shown allowing users to jump to a specific slide.
+    /// When false, only arrow controls and auto-play can navigate slides.
+    /// </summary>
+    [Parameter]
+    public bool ShowIndicators { get; set; } = true;
+
+    /// <summary>
+    /// Determines whether to display the navigation arrow buttons (previous/next controls).
+    /// When true (default), arrow buttons are shown allowing manual navigation.
+    /// When false, only indicators and auto-play can navigate slides.
+    /// </summary>
+    [Parameter]
+    public bool ShowControls { get; set; } = true;
+
+    /// <summary>
+    /// Internal timer reference for managing auto-play functionality.
+    /// Used to track and cancel the automatic slide advancement timer.
+    /// </summary>
+    private System.Threading.Timer? _autoPlayTimer;
+
+    /// <summary>
+    /// Lifecycle method called after component has rendered.
+    /// Initializes auto-play timer if AutoPlay is enabled.
+    /// </summary>
+    /// <param name="firstRender">True if this is the first time the component is rendering.</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && AutoPlay && Items?.Count > 1)
+        {
+            StartAutoPlay();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    /// <summary>
+    /// Lifecycle method called when component parameters have changed.
+    /// Restarts auto-play timer if relevant parameters change.
+    /// </summary>
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        var autoPlayChanged = parameters.TryGetValue<bool>(nameof(AutoPlay), out var newAutoPlay) && newAutoPlay != AutoPlay;
+        var intervalChanged = parameters.TryGetValue<int>(nameof(AutoPlayIntervalMs), out var newInterval) && newInterval != AutoPlayIntervalMs;
+
+        await base.SetParametersAsync(parameters);
+
+        if (autoPlayChanged || intervalChanged)
+        {
+            StopAutoPlay();
+            if (AutoPlay && Items?.Count > 1)
+            {
+                StartAutoPlay();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the current active slide index, ensuring it's within valid bounds.
+    /// </summary>
+    /// <returns>The index of the active slide (0-based), or 0 if no slides available.</returns>
+    private int GetActiveIndex()
+    {
+        if (Items == null || Items.Count == 0)
+        {
+            return 0;
+        }
+
+        return Math.Clamp(ActiveIndex, 0, Items.Count - 1);
+    }
+
+    /// <summary>
+    /// Advances to the next slide in the carousel, wrapping to the first slide if at the end.
+    /// Invokes the OnSlideChanged callback with the new slide index.
+    /// </summary>
+    private async Task GoToNext()
+    {
+        if (Items == null || Items.Count == 0)
+        {
+            return;
+        }
+
+        var newIndex = (GetActiveIndex() + 1) % Items.Count;
+        await GoToSlide(newIndex);
+    }
+
+    /// <summary>
+    /// Goes back to the previous slide in the carousel, wrapping to the last slide if at the beginning.
+    /// Invokes the OnSlideChanged callback with the new slide index.
+    /// </summary>
+    private async Task GoToPrevious()
+    {
+        if (Items == null || Items.Count == 0)
+        {
+            return;
+        }
+
+        var newIndex = (GetActiveIndex() - 1 + Items.Count) % Items.Count;
+        await GoToSlide(newIndex);
+    }
+
+    /// <summary>
+    /// Navigates to a specific slide by index.
+    /// Updates the ActiveIndex and invokes the OnSlideChanged callback.
+    /// Restarts auto-play timer if enabled.
+    /// </summary>
+    /// <param name="index">The 0-based index of the slide to navigate to.</param>
+    private async Task GoToSlide(int index)
+    {
+        if (Items == null || Items.Count == 0 || index < 0 || index >= Items.Count)
+        {
+            return;
+        }
+
+        ActiveIndex = index;
+
+        // Restart auto-play timer on user interaction
+        if (AutoPlay && Items.Count > 1)
+        {
+            StopAutoPlay();
+            StartAutoPlay();
+        }
+
+        if (OnSlideChanged.HasDelegate)
+        {
+            await OnSlideChanged.InvokeAsync(index);
+        }
+    }
+
+    /// <summary>
+    /// Starts the automatic slide advancement timer.
+    /// Advances to the next slide at the interval specified by AutoPlayIntervalMs.
+    /// </summary>
+    private void StartAutoPlay()
+    {
+        if (_autoPlayTimer != null)
+        {
+            return;
+        }
+
+        _autoPlayTimer = new System.Threading.Timer(
+            async _ =>
+            {
+                await GoToNext();
+                await InvokeAsync(StateHasChanged);
+            },
+            null,
+            TimeSpan.FromMilliseconds(AutoPlayIntervalMs),
+            TimeSpan.FromMilliseconds(AutoPlayIntervalMs));
+    }
+
+    /// <summary>
+    /// Stops the automatic slide advancement timer.
+    /// Prevents further automatic slide changes until StartAutoPlay is called again.
+    /// </summary>
+    private void StopAutoPlay()
+    {
+        if (_autoPlayTimer != null)
+        {
+            _autoPlayTimer.Dispose();
+            _autoPlayTimer = null;
+        }
+    }
+
+    /// <summary>
+    /// Lifecycle method called when the component is being disposed.
+    /// Cleans up the auto-play timer to prevent memory leaks.
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        StopAutoPlay();
+        await Task.CompletedTask;
+    }
+}
