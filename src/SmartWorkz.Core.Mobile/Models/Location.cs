@@ -1,8 +1,13 @@
-namespace SmartWorkz.Core.Mobile.Models;
+namespace SmartWorkz.Mobile;
 
 /// <summary>
 /// Represents a geographic location with coordinates, accuracy, and timestamp.
 /// </summary>
+/// <remarks>
+/// Note: This class represents a location snapshot with full metadata.
+/// For simpler use cases with fixed coordinates, see GpsLocation (sealed record).
+/// GetDistanceTo() provides Haversine calculation consistent with GpsLocation.DistanceToMeters().
+/// </remarks>
 public class Location : IEquatable<Location>
 {
     /// <summary>Gets or sets latitude in degrees (-90 to +90).</summary>
@@ -39,7 +44,7 @@ public class Location : IEquatable<Location>
         var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
                 Math.Cos(ToRadians(Latitude)) * Math.Cos(ToRadians(other.Latitude)) *
                 Math.Sin(dLng / 2) * Math.Sin(dLng / 2);
-        var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        var c = 2 * Math.Asin(Math.Sqrt(a));
         return earthRadiusMeters * c;
     }
 

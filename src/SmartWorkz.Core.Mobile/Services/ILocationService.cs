@@ -1,6 +1,6 @@
 namespace SmartWorkz.Core.Mobile.Services;
 
-using SmartWorkz.Core.Mobile.Models;
+using SmartWorkz.Mobile;
 
 /// <summary>
 /// Provides unified access to platform-specific location services (GPS, geolocation).

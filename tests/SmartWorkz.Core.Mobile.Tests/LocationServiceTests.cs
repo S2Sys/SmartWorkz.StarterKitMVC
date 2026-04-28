@@ -1,6 +1,6 @@
 namespace SmartWorkz.Core.Mobile.Tests;
 
-using SmartWorkz.Core.Mobile.Models;
+using SmartWorkz.Mobile;
 using SmartWorkz.Core.Mobile.Services;
 using Xunit;
 
@@ -8,7 +8,7 @@ using Xunit;
 public class LocationServiceTests
 {
     [Fact]
-    public void Location_GetDistanceTo_CalculatesCorrectly()
+    public void Location_GetDistanceTo_NYCtoLA_ReturnsApproximately3944km()
     {
         var location1 = new Location { Latitude = 40.7128, Longitude = -74.0060 }; // NYC
         var location2 = new Location { Latitude = 34.0522, Longitude = -118.2437 }; // LA
@@ -16,12 +16,11 @@ public class LocationServiceTests
         var distance = location1.GetDistanceTo(location2);
 
         // NYC to LA is approximately 3944 km
-        Assert.True(distance > 3900000 && distance < 4000000,
-            $"Expected distance around 3944km, got {distance / 1000}km");
+        Assert.InRange(distance, 3900000, 4000000);
     }
 
     [Fact]
-    public void Location_Equals_WorksCorrectly()
+    public void Location_Equals_SameCoordinates_ReturnsTrue()
     {
         var loc1 = new Location { Latitude = 40.7128, Longitude = -74.0060 };
         var loc2 = new Location { Latitude = 40.7128, Longitude = -74.0060 };
@@ -32,7 +31,7 @@ public class LocationServiceTests
     }
 
     [Fact]
-    public void Location_WithNullAccuracy_IsValid()
+    public void Location_Constructor_NullAccuracy_DoesNotThrow()
     {
         var location = new Location
         {

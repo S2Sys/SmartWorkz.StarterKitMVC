@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Mobile.Models;
+namespace SmartWorkz.Mobile;
 
 /// <summary>
 /// Defines location accuracy levels balancing power consumption and precision.
