@@ -177,3 +177,10 @@ public class FormValidationError
     /// <summary>Error code for programmatic handling</summary>
     public string? ErrorCode { get; set; }
 }
+
+/// <summary>
+/// Represents an autocomplete item with a value and label for selection.
+/// </summary>
+/// <param name="Value">The unique value of the autocomplete item</param>
+/// <param name="Label">The display label for the autocomplete item</param>
+public record AutocompleteItem(string Value, string Label);

@@ -1,0 +1,232 @@
+@namespace SmartWorkz.Core.Web.Components.FormBuilder
+@using System
+@using System.Collections.Generic
+@using System.Linq
+
+<div class="form-group mb-3 @(CssClass ?? "")">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label for="autocomplete-@UniqueId" class="form-label">
+            @Label
+            @if (IsRequired)
+            {
+                <span class="text-danger" title="Required">*</span>
+            }
+        </label>
+    }
+
+    <div class="autocomplete-container position-relative">
+        <input type="text"
+               id="autocomplete-@UniqueId"
+               class="form-control @ErrorClass"
+               placeholder="@(Placeholder ?? "Search...")"
+               @bind="SearchValue"
+               @bind:event="oninput"
+               disabled="@IsDisabled"
+               @onkeyup="HandleKeyUp"
+               @onfocus="HandleFocus"
+               @onblur="HandleBlur"
+               autocomplete="off" />
+
+        @if (ShowSuggestions && FilteredItems.Any())
+        {
+            <ul class="list-group position-absolute w-100 mt-1 autocomplete-suggestions"
+                style="max-height: 250px; overflow-y: auto; z-index: 1000;">
+                @foreach (var item in FilteredItems.Take(MaxSuggestions))
+                {
+                    <li class="list-group-item list-group-item-action autocomplete-item"
+                        @onclick="() => HandleItemSelect(item)"
+                        style="cursor: pointer;">
+                        @item.Label
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="invalid-feedback d-block mt-1">
+            @ErrorMessage
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(HelpText))
+    {
+        <small class="form-text text-muted d-block mt-1">
+            @HelpText
+        </small>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the list of autocomplete items available for selection.
+    /// </summary>
+    [Parameter]
+    public List<AutocompleteItem>? Items { get; set; }
+
+    /// <summary>
+    /// Gets or sets the currently selected value.
+    /// </summary>
+    [Parameter]
+    public string? SelectedValue { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when an item is selected.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnValueSelected { get; set; }
+
+    /// <summary>
+    /// Gets or sets the optional label text displayed above the input.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <summary>
+    /// Gets or sets the placeholder text displayed in the input when empty.
+    /// </summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// Gets or sets the optional error message displayed below the input.
+    /// </summary>
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the autocomplete is disabled.
+    /// </summary>
+    [Parameter]
+    public bool IsDisabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum number of characters required to trigger filtering (default: 1).
+    /// </summary>
+    [Parameter]
+    public int MinChars { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the maximum number of suggestions to display (default: 10).
+    /// </summary>
+    [Parameter]
+    public int MaxSuggestions { get; set; } = 10;
+
+    /// <summary>
+    /// Gets or sets the optional CSS class applied to the container.
+    /// </summary>
+    [Parameter]
+    public string? CssClass { get; set; }
+
+    /// <summary>
+    /// Gets or sets the optional help text displayed below the input.
+    /// </summary>
+    [Parameter]
+    public string? HelpText { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the autocomplete is required.
+    /// </summary>
+    [Parameter]
+    public bool IsRequired { get; set; }
+
+    private string UniqueId { get; set; } = Guid.NewGuid().ToString("N").Substring(0, 8);
+    private string SearchValue { get; set; } = string.Empty;
+    private bool ShowSuggestions { get; set; }
+    private List<AutocompleteItem> FilteredItems { get; set; } = new();
+
+    /// <summary>
+    /// Gets the CSS class for error state styling.
+    /// </summary>
+    private string ErrorClass =>
+        !string.IsNullOrEmpty(ErrorMessage) ? "is-invalid" : string.Empty;
+
+    /// <summary>
+    /// Handles the key up event on the input and filters items based on the search query.
+    /// </summary>
+    private Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        FilterItems(SearchValue);
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Handles focus event to show suggestions if there's a valid search.
+    /// </summary>
+    private Task HandleFocus(FocusEventArgs e)
+    {
+        if (SearchValue.Length >= MinChars && Items?.Count > 0)
+        {
+            ShowSuggestions = true;
+        }
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Handles blur event to hide suggestions after a delay.
+    /// </summary>
+    private async Task HandleBlur(FocusEventArgs e)
+    {
+        // Delay hiding to allow click on suggestion to complete
+        await Task.Delay(200);
+        ShowSuggestions = false;
+    }
+
+    /// <summary>
+    /// Filters items based on the search value and updates the filtered list.
+    /// </summary>
+    private void FilterItems(string searchQuery)
+    {
+        if (Items == null || Items.Count == 0)
+        {
+            FilteredItems.Clear();
+            ShowSuggestions = false;
+            return;
+        }
+
+        if (string.IsNullOrEmpty(searchQuery) || searchQuery.Length < MinChars)
+        {
+            FilteredItems.Clear();
+            ShowSuggestions = false;
+            return;
+        }
+
+        FilteredItems = Items
+            .Where(item => item.Label.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        ShowSuggestions = FilteredItems.Count > 0;
+    }
+
+    /// <summary>
+    /// Handles item selection and invokes the OnValueSelected callback.
+    /// </summary>
+    private async Task HandleItemSelect(AutocompleteItem item)
+    {
+        SearchValue = item.Label;
+        ShowSuggestions = false;
+        FilteredItems.Clear();
+
+        if (OnValueSelected.HasDelegate)
+        {
+            await OnValueSelected.InvokeAsync(item.Value);
+        }
+    }
+
+    /// <summary>
+    /// Lifecycle method called after the component has been rendered.
+    /// </summary>
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrEmpty(SelectedValue))
+        {
+            var selectedItem = Items?.FirstOrDefault(item => item.Value == SelectedValue);
+            if (selectedItem != null)
+            {
+                SearchValue = selectedItem.Label;
+            }
+        }
+    }
+}
