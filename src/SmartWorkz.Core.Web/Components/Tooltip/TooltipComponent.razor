@@ -1,0 +1,301 @@
+@*
+    Tooltip Component - Hover tooltips positioned around trigger element
+    Displays contextual information on hover with configurable position, delays, and Bootstrap styling
+    Supports top, bottom, left, right positioning with fade animation and customizable delays
+*@
+
+<div class="tooltip-wrapper" @onmouseenter="ShowTooltip" @onmouseleave="HideTooltip" style="position: relative; display: inline-block;">
+    <!-- Trigger Element -->
+    <div class="tooltip-trigger" role="button" aria-label="@Title">
+        @Content
+    </div>
+
+    <!-- Tooltip -->
+    @if (_isVisible)
+    {
+        <div class="tooltip fade show @GetPositionClass()"
+             role="tooltip"
+             style="@GetTooltipStyle()"
+             aria-hidden="@(!_isVisible)">
+            <div class="tooltip-inner">
+                @Title
+            </div>
+            <div class="tooltip-arrow"></div>
+        </div>
+    }
+</div>
+
+<style>
+    :root {
+        --tooltip-max-width: 100px;
+        --tooltip-padding-y: 0.25rem;
+        --tooltip-padding-x: 0.5rem;
+        --tooltip-margin: 0.1rem;
+        --tooltip-bg: rgba(0, 0, 0, 0.9);
+        --tooltip-color: #fff;
+    }
+
+    .tooltip-wrapper {
+        display: inline-block;
+    }
+
+    .tooltip-trigger {
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .tooltip {
+        position: absolute;
+        z-index: 1070;
+        display: block;
+        max-width: var(--tooltip-max-width);
+        padding: var(--tooltip-padding-y) var(--tooltip-padding-x);
+        margin: var(--tooltip-margin);
+        font-size: 0.875rem;
+        color: var(--tooltip-color);
+        text-align: center;
+        background-color: var(--tooltip-bg);
+        border-radius: 0.25rem;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .tooltip.fade {
+        transition: opacity 0.15s linear;
+    }
+
+    .tooltip.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .tooltip-inner {
+        padding: var(--tooltip-padding-y) var(--tooltip-padding-x);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .tooltip-arrow {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-style: solid;
+    }
+
+    /* Top position */
+    .bs-tooltip-top {
+        bottom: calc(100% + var(--tooltip-margin));
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .bs-tooltip-top .tooltip-arrow {
+        bottom: -0.4rem;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 0.4rem 0.4rem 0 0.4rem;
+        border-color: var(--tooltip-bg) transparent transparent transparent;
+    }
+
+    /* Bottom position */
+    .bs-tooltip-bottom {
+        top: calc(100% + var(--tooltip-margin));
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .bs-tooltip-bottom .tooltip-arrow {
+        top: -0.4rem;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 0 0.4rem 0.4rem 0.4rem;
+        border-color: transparent transparent var(--tooltip-bg) transparent;
+    }
+
+    /* Left position */
+    .bs-tooltip-start {
+        right: calc(100% + var(--tooltip-margin));
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .bs-tooltip-start .tooltip-arrow {
+        left: -0.4rem;
+        top: 50%;
+        transform: translateY(-50%);
+        border-width: 0.4rem 0 0.4rem 0.4rem;
+        border-color: transparent transparent transparent var(--tooltip-bg);
+    }
+
+    /* Right position */
+    .bs-tooltip-end {
+        left: calc(100% + var(--tooltip-margin));
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .bs-tooltip-end .tooltip-arrow {
+        right: -0.4rem;
+        top: 50%;
+        transform: translateY(-50%);
+        border-width: 0.4rem 0.4rem 0.4rem 0;
+        border-color: transparent var(--tooltip-bg) transparent transparent;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+        .tooltip {
+            --tooltip-max-width: 150px;
+        }
+    }
+</style>
+
+@code {
+    /// <summary>
+    /// Gets or sets the tooltip title text displayed in the tooltip content area.
+    /// Required parameter that provides the main tooltip message.
+    /// </summary>
+    [Parameter]
+    [EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the position of the tooltip relative to the trigger element.
+    /// Valid values: "top", "bottom", "left", "right" (default: "top").
+    /// Determines the placement of the tooltip and its arrow indicator.
+    /// </summary>
+    [Parameter]
+    public string Position { get; set; } = "top";
+
+    /// <summary>
+    /// Gets or sets the RenderFragment content for the trigger element.
+    /// The element that the user hovers over to display the tooltip.
+    /// Must be provided to render the trigger.
+    /// </summary>
+    [Parameter]
+    [EditorRequired]
+    public RenderFragment? Content { get; set; }
+
+    /// <summary>
+    /// Gets or sets the delay in milliseconds before the tooltip is shown on hover.
+    /// Used to prevent tooltip flashing on brief hovers (default: 0).
+    /// </summary>
+    [Parameter]
+    public int ShowDelay { get; set; } = 0;
+
+    /// <summary>
+    /// Gets or sets the delay in milliseconds before the tooltip is hidden after mouse leave.
+    /// Used to keep tooltip visible briefly after mouse leaves to improve UX (default: 200).
+    /// </summary>
+    [Parameter]
+    public int HideDelay { get; set; } = 200;
+
+    /// <summary>
+    /// Internal flag tracking whether the tooltip is currently visible.
+    /// </summary>
+    private bool _isVisible = false;
+
+    /// <summary>
+    /// Timer task for managing show delay.
+    /// </summary>
+    private Task? _showDelayTask;
+
+    /// <summary>
+    /// Timer task for managing hide delay.
+    /// </summary>
+    private Task? _hideDelayTask;
+
+    /// <summary>
+    /// Cancellation token source for delaying operations.
+    /// </summary>
+    private CancellationTokenSource? _delayTokenSource;
+
+    /// <summary>
+    /// Gets the Bootstrap tooltip position CSS class based on the Position parameter.
+    /// Maps user-friendly position values to Bootstrap tooltip position classes.
+    /// </summary>
+    /// <returns>Bootstrap position class string for the tooltip.</returns>
+    private string GetPositionClass()
+    {
+        return Position?.ToLower() switch
+        {
+            "bottom" => "bs-tooltip-bottom",
+            "left" => "bs-tooltip-start",
+            "right" => "bs-tooltip-end",
+            "top" or _ => "bs-tooltip-top"
+        };
+    }
+
+    /// <summary>
+    /// Gets the inline CSS style for tooltip positioning and visibility.
+    /// Ensures proper absolute positioning relative to the trigger element.
+    /// </summary>
+    /// <returns>CSS style string for positioning and animation.</returns>
+    private string GetTooltipStyle()
+    {
+        return "white-space: normal; word-wrap: break-word; max-width: 250px;";
+    }
+
+    /// <summary>
+    /// Handles the mouse enter event on the tooltip wrapper.
+    /// Shows the tooltip after the configured ShowDelay.
+    /// Cancels any pending hide operations.
+    /// </summary>
+    private async Task ShowTooltip()
+    {
+        // Cancel any pending hide operation
+        _delayTokenSource?.Cancel();
+        _delayTokenSource = new CancellationTokenSource();
+
+        try
+        {
+            if (ShowDelay > 0)
+            {
+                await Task.Delay(ShowDelay, _delayTokenSource.Token);
+            }
+
+            _isVisible = true;
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (OperationCanceledException)
+        {
+            // Delay was cancelled, no action needed
+        }
+    }
+
+    /// <summary>
+    /// Handles the mouse leave event on the tooltip wrapper.
+    /// Hides the tooltip after the configured HideDelay.
+    /// Allows the user to interact with the tooltip during the delay period.
+    /// </summary>
+    private async Task HideTooltip()
+    {
+        _delayTokenSource?.Cancel();
+        _delayTokenSource = new CancellationTokenSource();
+
+        try
+        {
+            if (HideDelay > 0)
+            {
+                await Task.Delay(HideDelay, _delayTokenSource.Token);
+            }
+
+            _isVisible = false;
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (OperationCanceledException)
+        {
+            // Delay was cancelled, no action needed
+        }
+    }
+
+    /// <summary>
+    /// Disposes the cancellation token source when the component is disposed.
+    /// </summary>
+    public void Dispose()
+    {
+        _delayTokenSource?.Cancel();
+        _delayTokenSource?.Dispose();
+    }
+}
