@@ -214,3 +214,24 @@ public class BreadcrumbItem
     /// </summary>
     public string? Icon { get; set; }
 }
+
+/// <summary>
+/// Represents a single tab in the TabsComponent with its header and content.
+/// </summary>
+public record TabItem
+{
+    /// <summary>
+    /// Unique identifier for the tab, passed to the OnTabChanged callback when selected.
+    /// </summary>
+    public string Key { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Display text shown in the tab header.
+    /// </summary>
+    public string Label { get; set; } = string.Empty;
+
+    /// <summary>
+    /// RenderFragment containing the tab's content to display when active.
+    /// </summary>
+    public Microsoft.AspNetCore.Components.RenderFragment? Content { get; set; }
+}

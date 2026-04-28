@@ -1,0 +1,183 @@
+@using SmartWorkz.Web.Models
+
+<div class="tabs-container">
+    @if (Tabs != null && Tabs.Count > 0)
+    {
+        <!-- Nav tabs -->
+        <nav class="tabs-nav" role="tablist">
+            <ul class="nav nav-tabs" role="presentation">
+                @foreach (var tab in Tabs)
+                {
+                    var isActive = GetActiveTabKey() == tab.Key;
+                    <li class="nav-item" role="presentation" @key="tab.Key">
+                        <button
+                            class="nav-link @(isActive ? "active" : "")"
+                            type="button"
+                            role="tab"
+                            aria-selected="@(isActive ? "true" : "false")"
+                            aria-controls="@GetTabContentId(tab.Key)"
+                            @onclick="@(async () => await HandleTabChange(tab.Key))">
+                            @tab.Label
+                        </button>
+                    </li>
+                }
+            </ul>
+        </nav>
+
+        <!-- Tab content -->
+        <div class="tab-content">
+            @foreach (var tab in Tabs)
+            {
+                var isActive = GetActiveTabKey() == tab.Key;
+                <div
+                    id="@GetTabContentId(tab.Key)"
+                    class="tab-pane @(isActive ? "active show" : "")"
+                    role="tabpanel"
+                    aria-labelledby="@GetTabHeaderId(tab.Key)"
+                    @key="tab.Key">
+                    @if (tab.Content != null)
+                    {
+                        @tab.Content
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .tabs-container {
+        width: 100%;
+    }
+
+    .tabs-nav {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .nav-tabs {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+    .nav-tabs .nav-item {
+        margin-bottom: -1px;
+    }
+
+    .nav-tabs .nav-link {
+        border: 1px solid transparent;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+        color: #495057;
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .nav-tabs .nav-link:hover {
+        border-color: #e9ecef;
+        color: #0c63e4;
+    }
+
+    .nav-tabs .nav-link.active {
+        background-color: #fff;
+        border-color: #dee2e6 #dee2e6 #fff;
+        color: #0c63e4;
+        font-weight: 500;
+    }
+
+    .tab-content {
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-top: none;
+        padding: 1rem;
+    }
+
+    .tab-pane {
+        display: none;
+        animation: fadeIn 0.2s ease-in;
+    }
+
+    .tab-pane.active {
+        display: block;
+    }
+
+    .tab-pane.show {
+        opacity: 1;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+</style>
+
+@code {
+    /// <summary>
+    /// Collection of TabItem objects representing the tabs to display.
+    /// </summary>
+    [Parameter]
+    public List<TabItem>? Tabs { get; set; }
+
+    /// <summary>
+    /// The key of the currently active tab. If not provided, the first tab will be active.
+    /// </summary>
+    [Parameter]
+    public string? ActiveTabKey { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a tab is changed, passing the selected tab's Key.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnTabChanged { get; set; }
+
+    /// <summary>
+    /// Determines the currently active tab key, using ActiveTabKey if set, otherwise the first tab's key.
+    /// </summary>
+    /// <returns>The key of the active tab, or empty string if no tabs are available.</returns>
+    private string GetActiveTabKey()
+    {
+        if (!string.IsNullOrEmpty(ActiveTabKey))
+        {
+            return ActiveTabKey;
+        }
+
+        return Tabs?.FirstOrDefault()?.Key ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Generates a unique identifier for a tab's content panel based on its key.
+    /// </summary>
+    /// <param name="tabKey">The key of the tab.</param>
+    /// <returns>A unique identifier string for the tab content element.</returns>
+    private string GetTabContentId(string tabKey)
+    {
+        return $"tab-content-{tabKey}";
+    }
+
+    /// <summary>
+    /// Generates a unique identifier for a tab's header button based on its key.
+    /// </summary>
+    /// <param name="tabKey">The key of the tab.</param>
+    /// <returns>A unique identifier string for the tab header element.</returns>
+    private string GetTabHeaderId(string tabKey)
+    {
+        return $"tab-header-{tabKey}";
+    }
+
+    /// <summary>
+    /// Handles tab change events by updating the active tab and invoking the callback.
+    /// </summary>
+    /// <param name="tabKey">The key of the tab to activate.</param>
+    private async Task HandleTabChange(string tabKey)
+    {
+        ActiveTabKey = tabKey;
+        if (OnTabChanged.HasDelegate)
+        {
+            await OnTabChanged.InvokeAsync(tabKey);
+        }
+    }
+}
