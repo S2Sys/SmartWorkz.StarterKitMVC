@@ -1,0 +1,229 @@
+@*
+    Badge Component - Status and count badges with multiple color variants
+    Supports Bootstrap badge styling, pill-shaped option, and dismissible functionality
+*@
+
+<div class="badge-container">
+    @if (Dismissible && !string.IsNullOrEmpty(Text))
+    {
+        <span class="badge @GetVariantClass() @(IsPill ? "rounded-pill" : "")" role="status">
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
+            else
+            {
+                @Text
+            }
+            @if (Dismissible)
+            {
+                <button type="button"
+                        class="btn-close btn-close-white ms-1"
+                        aria-label="Close badge"
+                        @onclick="@(async () => await HandleDismiss())"
+                        style="padding: 0; margin-left: 0.5rem;">
+                </button>
+            }
+        </span>
+    }
+    else if (!Dismissible && !string.IsNullOrEmpty(Text))
+    {
+        <span class="badge @GetVariantClass() @(IsPill ? "rounded-pill" : "")" role="status">
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
+            else
+            {
+                @Text
+            }
+        </span>
+    }
+    else if (ChildContent != null)
+    {
+        <span class="badge @GetVariantClass() @(IsPill ? "rounded-pill" : "")" role="status">
+            @ChildContent
+            @if (Dismissible)
+            {
+                <button type="button"
+                        class="btn-close btn-close-white ms-1"
+                        aria-label="Close badge"
+                        @onclick="@(async () => await HandleDismiss())"
+                        style="padding: 0; margin-left: 0.5rem;">
+                </button>
+            }
+        </span>
+    }
+</div>
+
+<style>
+    .badge-container {
+        display: inline-block;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35em 0.65em;
+        font-size: 0.75rem;
+        font-weight: 700;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.25rem;
+        background-color: #0d6efd;
+    }
+
+    .badge.bg-primary {
+        background-color: #0d6efd !important;
+        color: #fff;
+    }
+
+    .badge.bg-secondary {
+        background-color: #6c757d !important;
+        color: #fff;
+    }
+
+    .badge.bg-success {
+        background-color: #198754 !important;
+        color: #fff;
+    }
+
+    .badge.bg-danger {
+        background-color: #dc3545 !important;
+        color: #fff;
+    }
+
+    .badge.bg-warning {
+        background-color: #ffc107 !important;
+        color: #000;
+    }
+
+    .badge.bg-info {
+        background-color: #0dcaf0 !important;
+        color: #000;
+    }
+
+    .badge.bg-light {
+        background-color: #f8f9fa !important;
+        color: #000;
+    }
+
+    .badge.bg-light.text-dark {
+        color: #212529 !important;
+    }
+
+    .badge.bg-dark {
+        background-color: #212529 !important;
+        color: #fff;
+    }
+
+    .badge.rounded-pill {
+        border-radius: 10rem;
+        padding: 0.5em 0.75em;
+    }
+
+    .btn-close {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        padding: 0.25em 0.25em;
+        color: #000;
+        background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath d='M.293.293a1 1 0 1 1 1.414 1.414L1.414 2.12l.293-.293a1 1 0 1 1 1.414 1.414l-.293-.293.293.293a1 1 0 0 1-1.414 1.414L2.12 4.414l-.293.293a1 1 0 1 1-1.414-1.414l.293.293-.293-.293a1 1 0 0 1 1.414-1.414l.293.293-.293-.293A1 1 0 0 1 .293.293Z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+        border: 0;
+        border-radius: 0.25rem;
+        opacity: 0.5;
+        cursor: pointer;
+    }
+
+    .btn-close:hover,
+    .btn-close:focus {
+        opacity: 0.75;
+    }
+
+    .btn-close-white {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+
+    .ms-1 {
+        margin-left: 0.25rem !important;
+    }
+</style>
+
+@code {
+    /// <summary>
+    /// Gets or sets the text content displayed in the badge.
+    /// Can contain counts, labels, status values, or other short text.
+    /// </summary>
+    [Parameter]
+    public string? Text { get; set; }
+
+    /// <summary>
+    /// Gets or sets the color variant of the badge.
+    /// Supported values: "primary", "success", "info", "warning", "danger", "secondary", "light", "dark" (default: "primary").
+    /// Maps to Bootstrap background classes: .bg-primary, .bg-success, .bg-info, .bg-warning, .bg-danger, .bg-secondary, .bg-light, .bg-dark
+    /// </summary>
+    [Parameter]
+    public string Variant { get; set; } = "primary";
+
+    /// <summary>
+    /// Gets or sets whether the badge should be displayed as a pill shape with fully rounded edges.
+    /// When true, applies the .rounded-pill class. Default is false.
+    /// </summary>
+    [Parameter]
+    public bool IsPill { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets whether the badge should be dismissible with a close button.
+    /// When true, displays a close button that invokes the OnDismiss callback. Default is false.
+    /// </summary>
+    [Parameter]
+    public bool Dismissible { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the dismiss button is clicked.
+    /// Only invoked if Dismissible is set to true.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDismiss { get; set; }
+
+    /// <summary>
+    /// Gets or sets the custom content to display in the badge.
+    /// If provided, overrides the Text parameter. Allows rendering of HTML and components within the badge.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Maps the variant parameter to the corresponding Bootstrap background CSS class.
+    /// </summary>
+    /// <returns>The CSS class for the badge variant and color.</returns>
+    private string GetVariantClass()
+    {
+        return Variant switch
+        {
+            "primary" => "bg-primary",
+            "success" => "bg-success",
+            "info" => "bg-info",
+            "warning" => "bg-warning",
+            "danger" => "bg-danger",
+            "secondary" => "bg-secondary",
+            "light" => "bg-light text-dark",
+            "dark" => "bg-dark",
+            _ => "bg-primary"
+        };
+    }
+
+    /// <summary>
+    /// Handles the dismiss button click event by invoking the OnDismiss callback.
+    /// </summary>
+    private async Task HandleDismiss()
+    {
+        if (OnDismiss.HasDelegate)
+        {
+            await OnDismiss.InvokeAsync();
+        }
+    }
+}
