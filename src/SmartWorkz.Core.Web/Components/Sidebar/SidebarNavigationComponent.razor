@@ -1,0 +1,306 @@
+@using SmartWorkz.Web.Models
+@implements IAsyncDisposable
+
+<div class="sidebar-container" style="width: @(IsCollapsed ? CollapsedWidth : Width); transition: width 0.3s ease;">
+    <div class="sidebar bg-dark text-white">
+        <!-- Sidebar Header with Toggle -->
+        <div class="sidebar-header d-flex align-items-center justify-content-between p-3">
+            <span class="sidebar-title" style="display: @(IsCollapsed ? "none" : "inline");">Navigation</span>
+            <button type="button"
+                    class="btn btn-sm btn-outline-light"
+                    aria-label="Toggle Sidebar"
+                    @onclick="@(async () => await HandleToggleCollapsed())"
+                    style="min-width: 36px;">
+                <i class="bi @(IsCollapsed ? "bi-chevron-right" : "bi-chevron-left")"></i>
+            </button>
+        </div>
+
+        <!-- Navigation Items -->
+        @if (Items != null && Items.Count > 0)
+        {
+            <nav class="sidebar-nav">
+                <ul class="nav flex-column">
+                    @foreach (var item in Items)
+                    {
+                        @RenderNavItem(item, 0)
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the list of navigation items to display in the sidebar.
+    /// Each item can have nested children for multi-level navigation.
+    /// </summary>
+    [Parameter]
+    public List<NavItem>? Items { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when a navigation item is clicked.
+    /// The callback receives the Key of the clicked item.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnNavigate { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the sidebar is currently collapsed.
+    /// When true, displays only icons. When false, shows full labels.
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool IsCollapsed { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the collapse state changes.
+    /// The callback receives the new collapsed state.
+    /// </summary>
+    [Parameter]
+    public EventCallback<bool> OnCollapsedChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the width of the sidebar when expanded.
+    /// Default is "250px".
+    /// </summary>
+    [Parameter]
+    public string Width { get; set; } = "250px";
+
+    /// <summary>
+    /// Gets or sets the width of the sidebar when collapsed.
+    /// Default is "60px".
+    /// </summary>
+    [Parameter]
+    public string CollapsedWidth { get; set; } = "60px";
+
+    /// <summary>
+    /// Dictionary to track which items are expanded for multi-level navigation.
+    /// </summary>
+    private Dictionary<string, bool> expandedItems = new();
+
+    /// <summary>
+    /// Handles the sidebar collapse/expand toggle button click.
+    /// Invokes the OnCollapsedChanged callback with the new state.
+    /// </summary>
+    private async Task HandleToggleCollapsed()
+    {
+        var newState = !IsCollapsed;
+        if (OnCollapsedChanged.HasDelegate)
+        {
+            await OnCollapsedChanged.InvokeAsync(newState);
+        }
+    }
+
+    /// <summary>
+    /// Handles navigation item click and invokes the OnNavigate callback.
+    /// </summary>
+    /// <param name="itemKey">The key of the clicked navigation item.</param>
+    private async Task HandleItemClick(string itemKey)
+    {
+        if (OnNavigate.HasDelegate)
+        {
+            await OnNavigate.InvokeAsync(itemKey);
+        }
+    }
+
+    /// <summary>
+    /// Toggles the expanded state of a navigation item with children.
+    /// </summary>
+    /// <param name="itemKey">The key of the item to toggle.</param>
+    private void ToggleExpanded(string itemKey)
+    {
+        if (expandedItems.ContainsKey(itemKey))
+        {
+            expandedItems[itemKey] = !expandedItems[itemKey];
+        }
+        else
+        {
+            expandedItems[itemKey] = true;
+        }
+    }
+
+    /// <summary>
+    /// Checks if a navigation item is expanded.
+    /// </summary>
+    /// <param name="itemKey">The key of the item to check.</param>
+    /// <returns>True if the item is expanded, false otherwise.</returns>
+    private bool IsItemExpanded(string itemKey)
+    {
+        return expandedItems.TryGetValue(itemKey, out var isExpanded) && isExpanded;
+    }
+
+    /// <summary>
+    /// Renders a single navigation item and its children if applicable.
+    /// Supports multi-level nesting.
+    /// </summary>
+    /// <param name="item">The navigation item to render.</param>
+    /// <param name="level">The nesting level (0 for top-level items).</param>
+    /// <returns>The rendered navigation item markup.</returns>
+    private RenderFragment RenderNavItem(NavItem item, int level)
+    {
+        return @<text>
+            <li class="nav-item">
+                <a href="#"
+                   class="nav-link d-flex align-items-center @(IsItemExpanded(item.Key) && item.Children != null ? "expanded" : "")"
+                   style="padding-left: @((level * 1.5 + 1)rem); min-height: 45px;"
+                   @onclick:preventDefault
+                   @onclick="@(async () => { await HandleItemClick(item.Key); if (item.Children?.Count > 0) { ToggleExpanded(item.Key); } })">
+                    <i class="bi @item.Icon" style="min-width: 24px; margin-right: @(IsCollapsed ? "0" : "0.5rem");"></i>
+                    @if (!IsCollapsed)
+                    {
+                        <span class="nav-label">@item.Label</span>
+                        @if (item.Children != null && item.Children.Count > 0)
+                        {
+                            <i class="bi bi-chevron-down ms-auto" style="transform: rotate(@(IsItemExpanded(item.Key) ? "0deg" : "-90deg")); transition: transform 0.2s ease;"></i>
+                        }
+                    }
+                </a>
+
+                <!-- Nested Items -->
+                @if (item.Children != null && item.Children.Count > 0 && IsItemExpanded(item.Key) && !IsCollapsed)
+                {
+                    <ul class="nav flex-column" style="background-color: rgba(255, 255, 255, 0.05);">
+                        @foreach (var childItem in item.Children)
+                        {
+                            @RenderNavItem(childItem, level + 1)
+                        }
+                    </ul>
+                }
+            </li>
+        </text>;
+    }
+
+    /// <summary>
+    /// Disposes resources used by the component.
+    /// </summary>
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        expandedItems?.Clear();
+        await ValueTask.CompletedTask;
+    }
+}
+
+<style>
+    .sidebar-container {
+        height: 100vh;
+        position: relative;
+        overflow-y: auto;
+        overflow-x: hidden;
+        box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        min-height: 60px;
+    }
+
+    .sidebar-title {
+        font-weight: 600;
+        font-size: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sidebar-nav {
+        flex-grow: 1;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .sidebar-nav .nav {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 1rem;
+    }
+
+    .sidebar-nav .nav:last-child {
+        border-bottom: none;
+    }
+
+    .nav-item {
+        list-style: none;
+    }
+
+    .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border-left: 3px solid transparent;
+        cursor: pointer;
+        user-select: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .nav-link:hover {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-left-color: #0d6efd;
+    }
+
+    .nav-link.expanded {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-left-color: #0d6efd;
+    }
+
+    .nav-link:focus {
+        outline: 2px solid #0d6efd;
+        outline-offset: -2px;
+    }
+
+    .nav-link i {
+        flex-shrink: 0;
+    }
+
+    .nav-label {
+        flex-grow: 1;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .nav-link .ms-auto {
+        margin-left: auto;
+    }
+
+    /* Scrollbar styling */
+    .sidebar-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebar-container::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .sidebar-container::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+    }
+
+    .sidebar-container::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Bootstrap button overrides */
+    .sidebar .btn-outline-light {
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .sidebar .btn-outline-light:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .sidebar .btn-outline-light:focus {
+        outline: 2px solid #0d6efd;
+        outline-offset: -2px;
+    }
+</style>
