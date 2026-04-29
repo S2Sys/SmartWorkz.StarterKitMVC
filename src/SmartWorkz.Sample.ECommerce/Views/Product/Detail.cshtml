@@ -2,15 +2,43 @@
 
 @{ ViewData["Title"] = Model?.Name ?? "Product"; }
 
+@{
+    var breadcrumbs = new List<SmartWorkz.Web.BreadcrumbItem>
+    {
+        new() { Label = "Home", Url = "/" },
+        new() { Label = "Products", Url = "/Catalog/Products" },
+        new() { Label = Model?.Name ?? "Product" }
+    };
+}
+
+<breadcrumb items="breadcrumbs"></breadcrumb>
+
 <div class="row">
     <div class="col-md-8">
         <div class="card">
             <div class="card-body">
-                <h1>@Model?.Name</h1>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h1>@Model?.Name</h1>
+                    @{
+                        var stockVariant = Model?.Stock > 10 ? "success"
+                                         : Model?.Stock > 0 ? "warning"
+                                         : "danger";
+                        var stockText = Model?.Stock > 10 ? "In Stock"
+                                      : Model?.Stock > 0 ? $"Only {Model?.Stock} left"
+                                      : "Out of Stock";
+                    }
+                    <badge variant="@stockVariant">@stockText</badge>
+                </div>
                 <p class="text-muted">@Model?.CategoryName</p>
                 <hr />
                 <p>@Model?.Description</p>
                 <h3 class="text-primary">$@Model?.Price</h3>
+                @if (Model?.Stock == 0)
+                {
+                    <alert type="warning" dismissible="false">
+                        This product is currently out of stock. Check back soon!
+                    </alert>
+                }
                 <p class="text-muted">Stock: @(Model?.Stock ?? 0) units available</p>
                 <hr />
                 @if (Model?.Stock > 0)
