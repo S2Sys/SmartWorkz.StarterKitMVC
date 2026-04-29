@@ -70,24 +70,24 @@ namespace SmartWorkz.Web;
 /// </remarks>
 /// <example>
 /// &lt;!-- Basic grid with data binding --&gt;
-/// &lt;grid data-source="@Model.Products" data-page-size="20"&gt;
+/// &lt;grid source="@Model.Products" page-size="20"&gt;
 ///   &lt;grid-column property="Name" sortable="true"&gt;Product Name&lt;/grid-column&gt;
 ///   &lt;grid-column property="Price" sortable="true" format="currency"&gt;Price&lt;/grid-column&gt;
 /// &lt;/grid&gt;
 ///
 /// &lt;!-- Grid with row selection enabled --&gt;
-/// &lt;grid data-source="@Model.Orders" data-page-size="50" data-allow-selection="true"&gt;
+/// &lt;grid source="@Model.Orders" page-size="50" allow-selection="true"&gt;
 ///   &lt;grid-column property="OrderId"&gt;Order ID&lt;/grid-column&gt;
 ///   &lt;grid-column property="OrderDate" sortable="true" format="date"&gt;Date&lt;/grid-column&gt;
 ///   &lt;grid-column property="Status" filterable="true"&gt;Status&lt;/grid-column&gt;
 /// &lt;/grid&gt;
 ///
 /// &lt;!-- Grid with custom CSS class and export option --&gt;
-/// &lt;grid data-source="@Model.Customers"
-///       data-page-size="25"
-///       data-allow-export="true"
-///       data-allow-column-toggle="true"
-///       data-css-class="compact-grid"&gt;
+/// &lt;grid source="@Model.Customers"
+///       page-size="25"
+///       allow-export="true"
+///       allow-column-toggle="true"
+///       css-class="compact-grid"&gt;
 ///   &lt;grid-column property="FirstName"&gt;First Name&lt;/grid-column&gt;
 ///   &lt;grid-column property="Email" sortable="true"&gt;Email&lt;/grid-column&gt;
 ///   &lt;grid-column property="CreatedDate" sortable="true" format="date"&gt;Created&lt;/grid-column&gt;
@@ -98,9 +98,9 @@ namespace SmartWorkz.Web;
 ///   var productDataContext = new DataContext&lt;Product&gt;(productService);
 ///   await productDataContext.Initialize(await productService.GetProductsAsync());
 /// }
-/// &lt;grid data-source="@productDataContext.Items"
-///       data-page-size="20"
-///       data-allow-selection="true"&gt;
+/// &lt;grid source="@productDataContext.Items"
+///       page-size="20"
+///       allow-selection="true"&gt;
 ///   &lt;grid-column property="Name" sortable="true"&gt;Product&lt;/grid-column&gt;
 ///   &lt;grid-column property="Category" filterable="true"&gt;Category&lt;/grid-column&gt;
 ///   &lt;grid-column property="Price" format="currency" css-class="text-end"&gt;Price&lt;/grid-column&gt;
@@ -117,7 +117,7 @@ namespace SmartWorkz.Web;
 ///   &lt;/select&gt;
 /// &lt;/div&gt;
 ///
-/// &lt;grid data-source="@Model.Items" data-page-size="20"&gt;
+/// &lt;grid source="@Model.Items" page-size="20"&gt;
 ///   &lt;grid-column property="Name" sortable="true"&gt;Name&lt;/grid-column&gt;
 ///   &lt;grid-column property="Status" filterable="true"&gt;Status&lt;/grid-column&gt;
 ///   &lt;grid-column property="CreatedDate" sortable="true" format="date"&gt;Created&lt;/grid-column&gt;
@@ -131,7 +131,7 @@ public class GridTagHelper : TagHelper
     /// Should be bound to IDataContext&lt;T&gt;.Items or an IEnumerable&lt;T&gt; collection.
     /// GridTagHelper passes this data to GridComponent.razor for rendering.
     /// </summary>
-    [HtmlAttributeName("data-source")]
+    [HtmlAttributeName("source")]
     public string? DataSource { get; set; }
 
     /// <summary>
@@ -139,7 +139,7 @@ public class GridTagHelper : TagHelper
     /// Used by IDataContext&lt;T&gt; pagination. Default is 20.
     /// Affects both initial data load and subsequent page navigation.
     /// </summary>
-    [HtmlAttributeName("data-page-size")]
+    [HtmlAttributeName("page-size")]
     public int PageSize { get; set; } = 20;
 
     /// <summary>
@@ -148,7 +148,7 @@ public class GridTagHelper : TagHelper
     /// Selected row IDs are tracked in IDataContext&lt;T&gt;.SelectedRowIds.
     /// Default is false.
     /// </summary>
-    [HtmlAttributeName("data-allow-selection")]
+    [HtmlAttributeName("allow-selection")]
     public bool AllowRowSelection { get; set; }
 
     /// <summary>
@@ -156,7 +156,7 @@ public class GridTagHelper : TagHelper
     /// When true, displays export buttons (CSV, Excel, PDF, etc.) for exporting grid data.
     /// Default is false. Requires backend support for export formats.
     /// </summary>
-    [HtmlAttributeName("data-allow-export")]
+    [HtmlAttributeName("allow-export")]
     public bool AllowExport { get; set; }
 
     /// <summary>
@@ -164,7 +164,7 @@ public class GridTagHelper : TagHelper
     /// When true, displays column visibility menu allowing users to show/hide columns.
     /// Default is false. Persists column preferences in browser storage.
     /// </summary>
-    [HtmlAttributeName("data-allow-column-toggle")]
+    [HtmlAttributeName("allow-column-toggle")]
     public bool AllowColumnVisibilityToggle { get; set; }
 
     /// <summary>
@@ -172,7 +172,7 @@ public class GridTagHelper : TagHelper
     /// These classes are merged with default grid classes for custom styling.
     /// Example: "compact-grid", "bordered-grid", or "striped-grid"
     /// </summary>
-    [HtmlAttributeName("data-css-class")]
+    [HtmlAttributeName("css-class")]
     public string? CustomCssClass { get; set; }
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
