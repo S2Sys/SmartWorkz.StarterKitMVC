@@ -18,5 +18,6 @@
     <ProjectReference Include="..\SmartWorkz.Core\SmartWorkz.Core.csproj" />
     <ProjectReference Include="..\SmartWorkz.Core.Shared\SmartWorkz.Core.Shared.csproj" />
     <ProjectReference Include="..\SmartWorkz.Core.Web\SmartWorkz.Core.Web.csproj" />
+    <ProjectReference Include="..\SmartWorkz.Core.External\SmartWorkz.Core.External.csproj" />
   </ItemGroup>
 </Project>

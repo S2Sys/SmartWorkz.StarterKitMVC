@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
+using System.Data;
 using SmartWorkz.Core;
 using SmartWorkz.Shared;
+using SmartWorkz.Core.External.Export;
+using SmartWorkz.Web;
 using SmartWorkz.Sample.ECommerce.Application.Mapping;
 using SmartWorkz.Sample.ECommerce.Application.Services;
 using SmartWorkz.Sample.ECommerce.Application.Validators;
@@ -64,6 +68,19 @@ public static class ECommerceServiceExtensions
         services.AddHttpContextAccessor();
         services.AddDistributedMemoryCache();
         services.AddSession(opt => { opt.IdleTimeout = TimeSpan.FromMinutes(30); opt.Cookie.HttpOnly = true; });
+
+        // IDbConnection required by CatalogSearchService
+        var connStr = config.GetConnectionString("DefaultConnection")
+            ?? "Data Source=ecommerce.db";
+        services.AddScoped<IDbConnection>(_ => new SqliteConnection(connStr));
+
+        // Export services
+        services.AddScoped<IExportService, CsvExportService>();
+        services.AddScoped<IExcelExportService, ExcelExportService>();
+        services.AddScoped<IPdfExportService, PdfExportService>();
+
+        // SmartWorkz TagHelpers DI
+        services.AddSmartWorkzCoreWeb();
 
         return services;
     }
