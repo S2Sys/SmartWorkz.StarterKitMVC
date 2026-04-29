@@ -8,6 +8,19 @@
         <a href="/admin/products/create" class="btn btn-primary">+ Add Product</a>
     </div>
 
+    <!-- Export Buttons -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div></div>
+        <div>
+            <a href="/admin/products/export/excel" class="btn btn-success btn-sm me-1">
+                <i class="bi bi-file-earmark-excel me-1"></i>Export Excel
+            </a>
+            <a href="/admin/products/export/csv" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-filetype-csv me-1"></i>Export CSV
+            </a>
+        </div>
+    </div>
+
     <!-- Search -->
     <form method="get" action="/admin/products/search" class="mb-4">
         <div class="input-group">
@@ -61,9 +74,15 @@
                             <td>@product.CategoryName</td>
                             <td>$@product.Price.ToString("F2")</td>
                             <td>
-                                <span class="badge bg-@(product.Stock > 20 ? "success" : product.Stock > 5 ? "warning" : "danger")">
-                                    @product.Stock
-                                </span>
+                                @{
+                                    var stockVariant = product.Stock > 10 ? "success"
+                                                    : product.Stock > 0 ? "warning"
+                                                    : "danger";
+                                    var stockText = product.Stock > 10 ? "In Stock"
+                                                  : product.Stock > 0 ? "Low Stock"
+                                                  : "Out of Stock";
+                                }
+                                <badge variant="@stockVariant">@stockText</badge>
                             </td>
                             <td>
                                 <span class="badge bg-@(product.IsActive ? "success" : "secondary")">
