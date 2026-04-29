@@ -18,6 +18,7 @@ using SmartWorkz.StarterKitMVC.Application.Localization;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Application.Services;
 using SmartWorkz.StarterKitMVC.Infrastructure.Authorization;
+using SmartWorkz.StarterKitMVC.Infrastructure.Auditing;
 using SmartWorkz.StarterKitMVC.Infrastructure.Data;
 using SmartWorkz.StarterKitMVC.Infrastructure.EmailTemplates;
 using SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
@@ -106,6 +107,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<SmartWorkz.StarterKitMVC.Application.Authorization.IPermissionService, SmartWorkz.StarterKitMVC.Infrastructure.Authorization.PermissionService>();
         services.AddScoped<IClaimService, ClaimService>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
+
+        // Audit logging for GDPR/SOC2 compliance
+        services.AddScoped<IAuditLogger, AuditLogger>();
 
         // Translation service (DB-backed, memory cached)
         services.AddMemoryCache();

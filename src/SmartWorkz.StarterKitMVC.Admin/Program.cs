@@ -35,6 +35,22 @@ builder.Services.AddRazorPages(options =>
 // Infrastructure stack: DbContexts, repositories, application services, JWT auth
 builder.Services.AddApplicationStack(builder.Configuration);
 
+// Health checks
+builder.Services.AddHealthChecks()
+    .AddSqlServer(
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection") ?? string.Empty,
+        name: "SQL Server",
+        tags: new[] { "database" });
+
+var redisConnection = builder.Configuration.GetConnectionString("Redis");
+if (!string.IsNullOrEmpty(redisConnection))
+{
+    builder.Services.AddHealthChecks().AddRedis(
+        redisConnection,
+        name: "Redis",
+        tags: new[] { "cache" });
+}
+
 // Swagger/OpenAPI documentation
 builder.Services.AddSwaggerDocumentation(builder.Configuration);
 
@@ -134,6 +150,9 @@ app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+// Health check endpoint
+app.MapHealthChecks("/health");
 app.UseAuthentication();
 app.UseTenantResolution();
 
