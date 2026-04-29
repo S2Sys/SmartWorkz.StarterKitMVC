@@ -2,6 +2,26 @@
 
 @{ ViewData["Title"] = "Order Details"; }
 
+@{
+    var statusVariant = Model?.Status switch
+    {
+        "Delivered" => "success",
+        "Shipped" => "info",
+        "Processing" => "warning",
+        "Cancelled" => "danger",
+        _ => "secondary"
+    };
+
+    var breadcrumbs = new List<SmartWorkz.Web.BreadcrumbItem>
+    {
+        new() { Label = "Home", Url = "/" },
+        new() { Label = "My Orders", Url = "/Order/History" },
+        new() { Label = $"Order #{Model?.Id}", Url = null }
+    };
+}
+
+<breadcrumb items="breadcrumbs"></breadcrumb>
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Order @Model?.Id</h1>
     <a href="/order/history" class="btn btn-secondary">Back to Orders</a>
@@ -18,7 +38,7 @@
                 <div class="card-body">
                     <p><strong>Order ID:</strong> @Model.Id</p>
                     <p><strong>Date:</strong> @Model.PlacedAt.ToString("MMM dd, yyyy HH:mm")</p>
-                    <p><strong>Status:</strong> <span class="badge bg-info">@Model.Status</span></p>
+                    <p><strong>Status:</strong> <badge variant="@statusVariant" is-pill="true">@Model.Status</badge></p>
                     <p><strong>Total:</strong> $@Model.Total</p>
                 </div>
             </div>
