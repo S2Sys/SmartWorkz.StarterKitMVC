@@ -3,11 +3,22 @@
 @{ ViewData["Title"] = "Products"; }
 
 <div class="container py-4">
+    <!-- Breadcrumb -->
+    @{
+        var breadcrumbs = new List<SmartWorkz.Web.BreadcrumbItem>
+        {
+            new() { Label = "Home", Url = "/" },
+            new() { Label = "Products", Url = "/Catalog/Products" },
+            new() { Label = Model.CategoryName ?? "Category", Url = null }
+        };
+    }
+    <breadcrumb items="breadcrumbs"></breadcrumb>
+
     <div class="mb-4">
         <a href="/catalog" class="btn btn-outline-secondary btn-sm">← Back to Categories</a>
     </div>
 
-    <h1 class="mb-4">Products in Category</h1>
+    <h1 class="mb-4">@Model.CategoryName</h1>
 
     <!-- Sorting -->
     <div class="mb-4">
@@ -37,6 +48,11 @@
                                 <strong>Price:</strong> <span class="text-success">$@product.Price.ToString("F2")</span>
                                 <br />
                                 <strong>Stock:</strong> <span class="badge bg-@(product.Stock > 10 ? "success" : product.Stock > 0 ? "warning" : "danger")">@product.Stock units</span>
+                            </p>
+                            <p class="card-text">
+                                <badge variant="@(product.Stock > 0 ? "success" : "danger")">
+                                    @(product.Stock > 0 ? "In Stock" : "Out of Stock")
+                                </badge>
                             </p>
                         </div>
                         <div class="card-footer bg-white">

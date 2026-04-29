@@ -19,4 +19,5 @@ public class ProductListViewModel
     public string? SearchQuery { get; set; }
     public string? SortBy { get; set; } = "name"; // name, price-asc, price-desc
     public string? CategorySlug { get; set; }
+    public string? CategoryName { get; set; }
 }

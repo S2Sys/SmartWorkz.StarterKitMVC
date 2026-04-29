@@ -89,7 +89,8 @@ public class CatalogController(
                 TotalItems = totalItems
             },
             SortBy = sortBy,
-            CategorySlug = slug
+            CategorySlug = slug,
+            CategoryName = category.Name
         };
 
         return View("CategoryProducts", viewModel);
