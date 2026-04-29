@@ -1,32 +1,59 @@
-namespace SmartWorkz.Mobile;
+namespace SmartWorkz.Core.Mobile.Services;
+
+using SmartWorkz.Mobile;
 
 /// <summary>
-/// Cross-platform camera service for capturing photos and videos.
-/// Handles permission checks and platform-specific camera access.
+/// Provides unified access to device camera for photo capture, video recording, and media picking.
+/// Supports taking photos/videos and selecting from device photo library.
 /// </summary>
+/// <remarks>
+/// Implementation varies by platform:
+/// - iOS: Uses AVFoundation framework
+/// - Android: Uses Camera2/CameraX API
+/// - Windows: Uses MediaCapture from Windows Runtime
+///
+/// Always request permissions before calling camera methods.
+/// </remarks>
 public interface ICameraService
 {
     /// <summary>
-    /// Checks if camera hardware is available on the device.
+    /// Captures a single photo from device camera.
     /// </summary>
-    Task<bool> IsCameraAvailableAsync(CancellationToken ct = default);
+    /// <returns>Photo with image data and metadata.</returns>
+    /// <exception cref="OperationCanceledException">If user cancels camera.</exception>
+    Task<Photo> TakePhotoAsync();
 
     /// <summary>
-    /// Launches the camera to capture a photo.
-    /// Permission must be granted before calling.
+    /// Records video from device camera with optional duration limit.
     /// </summary>
-    /// <returns>FileResult with path to photo, or null if cancelled</returns>
-    Task<FileResult?> TakePhotoAsync(CancellationToken ct = default);
+    /// <param name="maxDuration">Maximum recording duration (null for unlimited).</param>
+    /// <returns>Video with file path and metadata.</returns>
+    Task<Video> RecordVideoAsync(TimeSpan? maxDuration = null);
 
     /// <summary>
-    /// Launches the camera to record a video.
-    /// Permission must be granted before calling.
+    /// Opens photo library to select multiple photos.
     /// </summary>
-    /// <returns>FileResult with path to video, or null if cancelled</returns>
-    Task<FileResult?> RecordVideoAsync(CancellationToken ct = default);
+    /// <returns>List of selected photos.</returns>
+    Task<List<Photo>> PickMultiplePhotosAsync();
 
     /// <summary>
-    /// Gets the path where camera files are stored on this platform.
+    /// Opens photo library to select single photo.
     /// </summary>
-    string GetCameraFolder();
+    /// <returns>Selected photo or null if cancelled.</returns>
+    Task<Photo?> PickSinglePhotoAsync();
+
+    /// <summary>
+    /// Gets whether device camera is available.
+    /// </summary>
+    Task<bool> IsCameraAvailableAsync();
+
+    /// <summary>
+    /// Gets camera permission status.
+    /// </summary>
+    Task<PermissionStatus> GetCameraPermissionAsync();
+
+    /// <summary>
+    /// Gets photo library permission status.
+    /// </summary>
+    Task<PermissionStatus> GetPhotoLibraryPermissionAsync();
 }
