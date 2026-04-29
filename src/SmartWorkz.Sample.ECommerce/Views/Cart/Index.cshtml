@@ -2,6 +2,16 @@
 
 @{ ViewData["Title"] = "Shopping Cart"; }
 
+@{
+    var breadcrumbs = new List<SmartWorkz.Web.BreadcrumbItem>
+    {
+        new() { Label = "Home", Url = "/" },
+        new() { Label = "Shopping Cart", Url = null }
+    };
+}
+
+<breadcrumb items="breadcrumbs"></breadcrumb>
+
 <h1 class="mb-4">Shopping Cart</h1>
 
 @if (Model?.Items != null && Model.Items.Count > 0)
@@ -60,8 +70,7 @@
 }
 else
 {
-    <div class="alert alert-info">
-        <p>Your cart is empty.</p>
-        <a href="/catalog" class="btn btn-primary">Continue Shopping</a>
-    </div>
+    <alert type="info" dismissible="false">
+        Your cart is empty. <a href="/Catalog/Products">Continue shopping</a>
+    </alert>
 }
