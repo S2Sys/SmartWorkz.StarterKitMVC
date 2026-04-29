@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.Services;
+using SmartWorkz.Sample.ECommerce.Domain.Entities;
 
 namespace SmartWorkz.Sample.ECommerce.Web.Controllers;
 
-public class CartController(CartService cartService) : Controller
+public class CartController(CartService cartService, IRepository<Product, int> productRepository) : Controller
 {
     public IActionResult Index()
     {
@@ -14,7 +16,12 @@ public class CartController(CartService cartService) : Controller
     [HttpPost]
     public async Task<IActionResult> Add(int productId, int quantity = 1)
     {
-        await cartService.AddToCartAsync(productId, quantity);
+        var product = await productRepository.GetByIdAsync(productId);
+        if (product != null)
+        {
+            await cartService.AddToCartAsync(productId, quantity);
+            TempData["ToastMessage"] = $"'{product.Name}' added to cart!";
+        }
         return RedirectToAction(nameof(Index));
     }
 
