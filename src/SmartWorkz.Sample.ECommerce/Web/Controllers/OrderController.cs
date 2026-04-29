@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartWorkz.Core;
+using SmartWorkz.Shared;
+using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 
 namespace SmartWorkz.Sample.ECommerce.Web.Controllers;
 
-public class OrderController(IRepository<Order, int> orderRepo) : Controller
+public class OrderController(IRepository<Order, int> orderRepo, IMapper mapper) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> History()
@@ -15,7 +17,8 @@ public class OrderController(IRepository<Order, int> orderRepo) : Controller
 
         var orders = await orderRepo.GetAllAsync();
         var customerOrders = orders.Where(o => o.CustomerId == customerId).ToList();
-        return View(customerOrders);
+        var dtos = customerOrders.Select(o => mapper.Map<Order, OrderDto>(o)).ToList();
+        return View(dtos);
     }
 
     [HttpGet]
@@ -25,6 +28,7 @@ public class OrderController(IRepository<Order, int> orderRepo) : Controller
         if (order == null || (User.Identity!.IsAuthenticated && order.CustomerId != int.Parse(User.FindFirst("sub")?.Value ?? "0")))
             return NotFound();
 
-        return View(order);
+        var dto = mapper.Map<Order, OrderDto>(order);
+        return View(dto);
     }
 }
