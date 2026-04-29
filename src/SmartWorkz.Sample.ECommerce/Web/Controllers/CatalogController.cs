@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 using SmartWorkz.Core;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Application.Services;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
@@ -13,7 +13,7 @@ public class CatalogController(
     IRepository<Product, int> productRepo,
     ProductService productService,
     CatalogSearchService searchService,
-    IMapper mapper) : Controller
+    SmartWorkz.Shared.IMapper mapper) : Controller
 {
     private const int PageSize = 6;
 
