@@ -24,6 +24,13 @@
       "Bash(done)",
       "Read(//c/Users/tsent/.worktrees/phase1-mobile-location/src/SmartWorkz.Core.Mobile/Services/**)",
       "Read(//c/Users/tsent/.worktrees/phase1-mobile-location/tests/SmartWorkz.Core.Mobile.Tests/**)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Mobile\\src\\SmartWorkz.Core.Mobile\\Platforms\\Windows",
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Mobile\\tests",
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Mobile\\src\\SmartWorkz.Core.Mobile\\Models\\Enums",
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Mobile\\src\\SmartWorkz.Core.Mobile\\Models",
+      "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Mobile\\src\\SmartWorkz.Core.Mobile\\Services"
     ]
   }
 }
