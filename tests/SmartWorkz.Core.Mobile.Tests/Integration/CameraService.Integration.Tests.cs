@@ -11,16 +11,12 @@ using SmartWorkz.Core.Mobile.Services;
 /// Integration tests for CameraService across all platforms.
 /// Tests permission handling, error scenarios, and cross-platform consistency.
 /// </summary>
-public class CameraServiceIntegrationTests
+public class CameraServiceIntegrationTests : IDisposable
 {
-    private readonly Mock<ILogger<CameraService>> _mockLogger;
-    private readonly Mock<IPermissionService> _mockPermissions;
     private readonly MockCameraProvider _mockCamera;
 
     public CameraServiceIntegrationTests()
     {
-        _mockLogger = new Mock<ILogger<CameraService>>();
-        _mockPermissions = new Mock<IPermissionService>();
         _mockCamera = new MockCameraProvider();
     }
 
