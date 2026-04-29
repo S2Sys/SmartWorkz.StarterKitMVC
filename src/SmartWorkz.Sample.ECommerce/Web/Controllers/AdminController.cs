@@ -1,10 +1,9 @@
-﻿using AutoMapper;
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SmartWorkz.Core;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 using SmartWorkz.Sample.ECommerce.Web.Models;
+using SmartWorkz.Shared;
 
 namespace SmartWorkz.Sample.ECommerce.Web.Controllers;
 
@@ -12,7 +11,7 @@ namespace SmartWorkz.Sample.ECommerce.Web.Controllers;
 public class AdminController(
     IRepository<Product, int> productRepo,
     IRepository<Category, int> categoryRepo,
-    IMapper mapper) : Controller
+    SmartWorkz.Shared.IMapper mapper) : Controller
 {
     private const int PageSize = 10;
 
