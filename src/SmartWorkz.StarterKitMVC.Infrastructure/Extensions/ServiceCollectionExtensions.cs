@@ -214,6 +214,10 @@ public static class ServiceCollectionExtensions
             typeof(SmartWorkz.StarterKitMVC.Application.Abstractions.ICacheService).Assembly,
             typeof(CommandDispatcher).Assembly);
 
+        // OpenTelemetry distributed tracing
+        var telemetryConfigurator = new SmartWorkz.StarterKitMVC.Infrastructure.Telemetry.OpenTelemetryConfigurator();
+        telemetryConfigurator.ConfigureTelemetry(services, configuration);
+
         // Translation cache warm-up at startup
         services.AddHostedService<TranslationCacheWarmupService>();
 
