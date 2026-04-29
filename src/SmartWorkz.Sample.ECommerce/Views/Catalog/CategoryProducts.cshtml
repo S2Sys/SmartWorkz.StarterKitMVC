@@ -74,36 +74,12 @@
     <!-- Paging -->
     @if (Model.Paging.TotalPages > 1)
     {
-        <nav aria-label="Page navigation" class="mt-4">
-            <ul class="pagination justify-content-center">
-                @if (Model.Paging.HasPreviousPage)
-                {
-                    <li class="page-item">
-                        <a class="page-link" href="/catalog/category/@Model.CategorySlug?page=1&sortBy=@Model.SortBy">First</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="/catalog/category/@Model.CategorySlug?page=@Model.Paging.PreviousPageNumber&sortBy=@Model.SortBy">Previous</a>
-                    </li>
-                }
-
-                @for (int i = Math.Max(1, Model.Paging.PageNumber - 2); i <= Math.Min(Model.Paging.TotalPages, Model.Paging.PageNumber + 2); i++)
-                {
-                    <li class="page-item @(i == Model.Paging.PageNumber ? "active" : "")">
-                        <a class="page-link" href="/catalog/category/@Model.CategorySlug?page=@i&sortBy=@Model.SortBy">@i</a>
-                    </li>
-                }
-
-                @if (Model.Paging.HasNextPage)
-                {
-                    <li class="page-item">
-                        <a class="page-link" href="/catalog/category/@Model.CategorySlug?page=@Model.Paging.NextPageNumber&sortBy=@Model.SortBy">Next</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="/catalog/category/@Model.CategorySlug?page=@Model.Paging.TotalPages&sortBy=@Model.SortBy">Last</a>
-                    </li>
-                }
-            </ul>
-        </nav>
+        <pagination current-page="Model.Paging.PageNumber"
+                    total-pages="Model.Paging.TotalPages"
+                    action="Category"
+                    controller="Catalog"
+                    route-slug="@Model.CategorySlug"
+                    class="mt-4"></pagination>
         <div class="text-center text-muted small mt-2">
             Page @Model.Paging.PageNumber of @Model.Paging.TotalPages | Showing @Model.Products.Count of @Model.Paging.TotalItems products
         </div>
