@@ -1,132 +1,107 @@
 namespace SmartWorkz.Mobile;
 
-using System.Reactive.Subjects;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 /// <summary>
-/// Provides location services for accessing device geolocation and location tracking.
+/// Cross-platform location service providing device geolocation and location tracking.
+/// Platform-specific implementations are provided in partial class files (iOS, Android, Windows, macOS).
 /// </summary>
+/// <remarks>
+/// This class provides the ILocationService interface implementation.
+/// Each platform overrides the required methods via partial class definitions in platform-specific files.
+///
+/// Type System: Uses Location (class with rich metadata) for the interface contract.
+/// This allows full location data (heading, speed, altitude accuracy) across all platforms.
+/// </remarks>
 public partial class LocationService : ILocationService
 {
-    private readonly ILogger _logger;
-    private readonly IPermissionService _permissions;
-    private readonly Subject<GpsLocation> _locationSubject = new();
-    private bool _isTracking;
+    protected readonly ILogger Logger;
+    private readonly IPermissionService? _permissionService;
 
-    public bool IsTracking => _isTracking;
-
-    public LocationService(ILogger logger, IPermissionService permissions)
+    /// <summary>
+    /// Initializes a new instance of the LocationService.
+    /// </summary>
+    /// <param name="logger">Logger for diagnostic output</param>
+    /// <param name="permissionService">Optional permission service for legacy compatibility</param>
+    public LocationService(ILogger logger, IPermissionService? permissionService = null)
     {
-        _logger = Guard.NotNull(logger, nameof(logger));
-        _permissions = Guard.NotNull(permissions, nameof(permissions));
+        Logger = Guard.NotNull(logger, nameof(logger));
+        _permissionService = permissionService;
     }
 
     /// <summary>
-    /// Gets the current device location.
-    /// Permission must be granted before calling.
+    /// Gets the current device location asynchronously.
+    /// Platform implementations override this method.
     /// </summary>
-    public async Task<GpsLocation?> GetCurrentLocationAsync(CancellationToken ct = default)
+    public virtual Task<Location> GetCurrentLocationAsync()
     {
-        ct.ThrowIfCancellationRequested();
-
-        try
-        {
-            var permissionStatus = await _permissions.CheckAsync(MobilePermission.Location, ct);
-            if (permissionStatus != PermissionStatus.Granted)
-            {
-                permissionStatus = await _permissions.RequestAsync(MobilePermission.Location, ct);
-            }
-
-            if (permissionStatus != PermissionStatus.Granted)
-            {
-                _logger.LogWarning("Location permission denied");
-                return null;
-            }
-
-            return await GetCurrentLocationAsyncPlatform(ct);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to get current location");
-            return null;
-        }
+        throw new NotImplementedException($"Location services not available on this platform ({GetPlatformName()})");
     }
 
     /// <summary>
-    /// Starts continuous location tracking.
-    /// Returns an observable stream of location updates.
+    /// Continuously monitors device location changes asynchronously.
+    /// Platform implementations override this method.
     /// </summary>
-    public IObservable<GpsLocation> StartTracking(LocationTrackingOptions? options = null)
+    public virtual async IAsyncEnumerable<Location> WatchLocationAsync(
+        LocationAccuracy accuracy = LocationAccuracy.Best,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
     {
-        try
-        {
-            if (_isTracking)
-            {
-                return _locationSubject;
-            }
-
-            _isTracking = true;
-            StartTrackingPlatform(options);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to start location tracking");
-        }
-
-        return _locationSubject;
+        throw new NotImplementedException($"Location watching not available on this platform ({GetPlatformName()})");
+        yield break; // Never executed but required for async generator syntax
     }
 
     /// <summary>
-    /// Stops continuous location tracking.
+    /// Retrieves location history for a date range.
+    /// Platform implementations may override this method if history tracking is supported.
     /// </summary>
-    public void StopTracking()
+    public virtual Task<List<Location>> GetLocationHistoryAsync(DateTime startDate, DateTime endDate)
     {
-        try
-        {
-            if (!_isTracking)
-            {
-                return;
-            }
+        throw new NotSupportedException($"Location history not supported on this platform ({GetPlatformName()})");
+    }
 
-            _isTracking = false;
-            StopTrackingPlatform();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to stop location tracking");
-        }
+    /// <summary>
+    /// Starts background location tracking for offline synchronization.
+    /// Platform implementations may override this method.
+    /// </summary>
+    public virtual Task StartBackgroundTrackingAsync()
+    {
+        throw new NotSupportedException($"Background location tracking not supported on this platform ({GetPlatformName()})");
+    }
+
+    /// <summary>
+    /// Stops background location tracking.
+    /// Platform implementations may override this method.
+    /// </summary>
+    public virtual Task StopBackgroundTrackingAsync()
+    {
+        throw new NotSupportedException($"Background location tracking not supported on this platform ({GetPlatformName()})");
     }
 
     /// <summary>
     /// Checks if location services are available and enabled on the device.
+    /// Platform implementations override this method.
     /// </summary>
-    public async Task<bool> IsAvailableAsync()
+    public virtual Task<bool> IsLocationEnabledAsync()
     {
-        try
-        {
-            return await IsAvailableAsyncPlatform(CancellationToken.None);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to check location service availability");
-            return false;
-        }
+        return Task.FromResult(false);
     }
 
     /// <summary>
-    /// Raises the LocationChanged event when a location update occurs.
+    /// Gets the current location permission status.
+    /// Platform implementations override this method.
     /// </summary>
-    protected virtual void OnLocationChanged(GpsLocation location)
+    public virtual Task<PermissionStatus> GetPermissionStatusAsync()
     {
-        if (_isTracking)
-        {
-            _locationSubject.OnNext(location);
-        }
+        return Task.FromResult(PermissionStatus.NotRequested);
     }
 
-    // Platform-specific partial methods - implementation in platform-specific files
-    private partial Task<GpsLocation?> GetCurrentLocationAsyncPlatform(CancellationToken ct);
-    private partial void StartTrackingPlatform(LocationTrackingOptions? options);
-    private partial void StopTrackingPlatform();
-    private partial Task<bool> IsAvailableAsyncPlatform(CancellationToken ct);
+    /// <summary>
+    /// Gets a human-readable name for the current platform.
+    /// </summary>
+    private static string GetPlatformName() =>
+        OperatingSystem.IsIOS() ? "iOS" :
+        OperatingSystem.IsAndroid() ? "Android" :
+        OperatingSystem.IsWindows() ? "Windows" :
+        OperatingSystem.IsMacOS() ? "macOS" :
+        "Unknown";
 }
