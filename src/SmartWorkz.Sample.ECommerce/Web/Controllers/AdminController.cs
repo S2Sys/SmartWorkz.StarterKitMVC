@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartWorkz.Core;
+using SmartWorkz.Core.External.Export;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 using SmartWorkz.Sample.ECommerce.Web.Models;
@@ -11,7 +12,9 @@ namespace SmartWorkz.Sample.ECommerce.Web.Controllers;
 public class AdminController(
     IRepository<Product, int> productRepo,
     IRepository<Category, int> categoryRepo,
-    SmartWorkz.Shared.IMapper mapper) : Controller
+    SmartWorkz.Shared.IMapper mapper,
+    IExcelExportService excelExport,
+    IExportService csvExport) : Controller
 {
     private const int PageSize = 10;
 
@@ -147,6 +150,26 @@ public class AdminController(
         };
 
         return View(nameof(Products), viewModel);
+    }
+
+    [HttpGet("products/export/excel")]
+    public async Task<IActionResult> ExportProductsExcel()
+    {
+        var products = await productRepo.GetAllAsync();
+        var dtos = products.Select(p => mapper.Map<Product, ProductDto>(p)).ToList();
+        var result = await excelExport.ExportAsync(dtos, "Products");
+        if (!result.Succeeded) return BadRequest(result.Error);
+        return File(result.Data!, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "products.xlsx");
+    }
+
+    [HttpGet("products/export/csv")]
+    public async Task<IActionResult> ExportProductsCsv()
+    {
+        var products = await productRepo.GetAllAsync();
+        var dtos = products.Select(p => mapper.Map<Product, ProductDto>(p)).ToList();
+        var result = await csvExport.ExportAsync(dtos);
+        if (!result.Succeeded) return BadRequest(result.Error);
+        return File(result.Data!, "text/csv", "products.csv");
     }
 }
 
