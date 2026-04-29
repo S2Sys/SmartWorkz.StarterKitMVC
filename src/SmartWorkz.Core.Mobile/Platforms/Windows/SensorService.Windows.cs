@@ -1,0 +1,16 @@
+namespace SmartWorkz.Mobile;
+
+#if WINDOWS
+
+public partial class SensorService
+{
+    private partial IAsyncEnumerable<SensorReading> StreamAccelerometerAsyncPlatform(CancellationToken ct) => AsyncEnumerable.Empty<SensorReading>();
+    private partial IAsyncEnumerable<SensorReading> StreamGyroscopeAsyncPlatform(CancellationToken ct) => AsyncEnumerable.Empty<SensorReading>();
+    private partial IAsyncEnumerable<SensorReading> StreamMagnetometerAsyncPlatform(CancellationToken ct) => AsyncEnumerable.Empty<SensorReading>();
+    private partial async Task<DeviceOrientation> GetDeviceOrientationAsyncPlatform(CancellationToken ct) => DeviceOrientation.Unknown;
+    private partial IAsyncEnumerable<DeviceOrientation> StreamDeviceOrientationAsyncPlatform(CancellationToken ct) => AsyncEnumerable.Empty<DeviceOrientation>();
+    private partial async Task<bool> IsSensorAvailableAsyncPlatform(SensorType sensorType, CancellationToken ct) => false;
+    private partial async Task<IEnumerable<SensorType>> GetAvailableSensorsAsyncPlatform(CancellationToken ct) => Enumerable.Empty<SensorType>();
+}
+
+#endif
