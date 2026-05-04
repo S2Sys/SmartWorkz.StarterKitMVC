@@ -29,7 +29,7 @@ public static class MauiProgram
             fonts.AddFont("OpenSans-Semibold.ttf",  "OpenSansSemibold");
         });
 
-        // Register SmartWorkz.Core.Mobile services
+        // Register SmartWorkz.Core.MAUI services
         builder.Services.AddSmartWorkzCoreMobile(cfg =>
         {
             cfg.BaseUrl     = "https://localhost:7000"; // override in production via appsettings

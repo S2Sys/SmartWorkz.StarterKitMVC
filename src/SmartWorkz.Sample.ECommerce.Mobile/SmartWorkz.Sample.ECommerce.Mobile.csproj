@@ -28,7 +28,7 @@
     <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../SmartWorkz.Core.Mobile/SmartWorkz.Core.Mobile.csproj" />
+    <ProjectReference Include="../SmartWorkz.Core.MAUI/SmartWorkz.Core.MAUI.csproj" />
     <ProjectReference Include="../SmartWorkz.Sample.ECommerce/SmartWorkz.Sample.ECommerce.csproj" />
   </ItemGroup>
   <ItemGroup>
