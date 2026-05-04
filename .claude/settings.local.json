@@ -23,7 +23,9 @@
       "Bash(do sed:*)",
       "Bash(done)",
       "Read(//c/Users/tsent/.worktrees/phase1-mobile-location/src/SmartWorkz.Core.Mobile/Services/**)",
-      "Read(//c/Users/tsent/.worktrees/phase1-mobile-location/tests/SmartWorkz.Core.Mobile.Tests/**)"
+      "Read(//c/Users/tsent/.worktrees/phase1-mobile-location/tests/SmartWorkz.Core.Mobile.Tests/**)",
+      "PowerShell(Get-ChildItem \"c:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\\" | Where-Object {$_.Name -match \"mobile|maui\"}  | Select-Object Name, FullName)",
+      "PowerShell($xml = New-Object System.Xml.XmlDocument; try { $xml.Load\\(\"c:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\SmartWorkz.StarterKitMVC\\\\src\\\\SmartWorkz.Core.MAUI\\\\SmartWorkz.Core.MAUI.csproj\"\\); Write-Host \"✓ Valid XML\" } catch { Write-Host \"✗ Invalid XML: $_\" })"
     ],
     "additionalDirectories": [
       "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Mobile\\src\\SmartWorkz.Core.Mobile\\Platforms\\Windows",

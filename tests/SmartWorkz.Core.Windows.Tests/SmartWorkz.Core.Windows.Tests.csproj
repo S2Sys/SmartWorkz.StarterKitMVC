@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
     <IsTestProject>true</IsTestProject>
@@ -23,3 +23,4 @@
     <ProjectReference Include="../../src/SmartWorkz.Core.Windows/SmartWorkz.Core.Windows.csproj" />
   </ItemGroup>
 </Project>
+

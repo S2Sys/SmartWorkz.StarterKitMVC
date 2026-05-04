@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net9.0-ios;net9.0-android;net9.0-maccatalyst</TargetFrameworks>
@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/SmartWorkz.Core.Mobile/SmartWorkz.Core.Mobile.csproj" />
+    <ProjectReference Include="../../src/SmartWorkz.Core.MAUI/SmartWorkz.Core.MAUI.csproj" />
     <ProjectReference Include="../../src/SmartWorkz.Core.Shared/SmartWorkz.Core.Shared.csproj" />
   </ItemGroup>
 
@@ -31,3 +31,4 @@
   </ItemGroup>
 
 </Project>
+
