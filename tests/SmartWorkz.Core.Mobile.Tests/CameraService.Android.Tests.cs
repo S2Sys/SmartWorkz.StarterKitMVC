@@ -4,7 +4,7 @@ using Xunit;
 using Moq;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.Mobile;
-using SmartWorkz.Core.Mobile.Services;
+using SmartWorkz.Core.MAUI.Services;
 
 /// <summary>
 /// Android-specific camera service tests.

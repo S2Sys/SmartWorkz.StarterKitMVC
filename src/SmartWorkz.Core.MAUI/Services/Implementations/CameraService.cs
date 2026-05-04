@@ -1,6 +1,6 @@
 namespace SmartWorkz.Mobile;
 
-using SmartWorkz.Core.Mobile.Services;
+using SmartWorkz.Core.MAUI.Services;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 /// <summary>

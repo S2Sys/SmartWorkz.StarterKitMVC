@@ -1,7 +1,7 @@
 namespace SmartWorkz.Core.Mobile.Tests;
 
 using SmartWorkz.Mobile;
-using SmartWorkz.Core.Mobile.Services;
+using SmartWorkz.Core.MAUI.Services;
 using Xunit;
 
 [Collection("LocationService Tests")]

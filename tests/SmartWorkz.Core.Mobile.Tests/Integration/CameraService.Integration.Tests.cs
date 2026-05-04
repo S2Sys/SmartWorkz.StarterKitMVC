@@ -4,8 +4,8 @@ using Xunit;
 using Moq;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.Mobile;
-using SmartWorkz.Core.Mobile.Tests.Mocks;
-using SmartWorkz.Core.Mobile.Services;
+using SmartWorkz.Core.MAUI.Tests.Mocks;
+using SmartWorkz.Core.MAUI.Services;
 
 /// <summary>
 /// Integration tests for CameraService across all platforms.
