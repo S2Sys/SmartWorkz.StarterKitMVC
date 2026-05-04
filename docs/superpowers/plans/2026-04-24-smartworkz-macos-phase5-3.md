@@ -4,7 +4,7 @@
 
 **Goal:** Build a native macOS desktop client that reuses Phase 5.1-5.2 real-time and sync infrastructure while adding macOS-specific UI patterns, notifications, menu integration, and background task management.
 
-**Architecture:** The macOS client is a SwiftUI application that bridges to the C# backend services (SignalR, offline sync, conflict resolution) through a thin interop layer. It reuses core business logic from SmartWorkz.Core.Mobile while providing native macOS experiences: NSMenuBar integration, Dock interactions, system notifications, file system monitoring, and persistent background sync. The app works offline-first with automatic sync on connection restore.
+**Architecture:** The macOS client is a SwiftUI application that bridges to the C# backend services (SignalR, offline sync, conflict resolution) through a thin interop layer. It reuses core business logic from SmartWorkz.Core.MAUI while providing native macOS experiences: NSMenuBar integration, Dock interactions, system notifications, file system monitoring, and persistent background sync. The app works offline-first with automatic sync on connection restore.
 
 **Tech Stack:** SwiftUI, Combine (reactive streams), URLSession (for SignalR bridging), CoreData (local persistence), UserNotifications, AppKit (menu/dock), FileMonitor, macOS 12.0+
 

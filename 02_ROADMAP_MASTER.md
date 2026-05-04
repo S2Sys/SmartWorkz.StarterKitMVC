@@ -20,7 +20,7 @@ This document provides a complete project-by-project roadmap to close SmartWorkz
 | Project | Current | Target | Effort | Timeline | Priority |
 |---------|---------|--------|--------|----------|----------|
 | **SmartWorkz.Core.Web** | 50% | 95% | 90 days | 5 weeks | CRITICAL |
-| **SmartWorkz.Core.Mobile** | 15% | 95% | 160 days | 9-11 weeks | CRITICAL |
+| **SmartWorkz.Core.MAUI** | 15% | 95% | 160 days | 9-11 weeks | CRITICAL |
 | **SmartWorkz.Core.Shared** | 50% | 95% | 80 days | 4-5 weeks | CRITICAL |
 | **SmartWorkz.Core.External** | 0% | 100% | 24 days | 1.5-2 weeks | HIGH |
 | **DevOps & CI/CD** | 0% | 100% | 40 days | 2-3 weeks | CRITICAL |
@@ -134,7 +134,7 @@ SmartWorkz.Core.Web (2-3 developers)
 ├─ Mid-level web developer
 └─ QA/Test engineer
 
-SmartWorkz.Core.Mobile (3-4 developers)
+SmartWorkz.Core.MAUI (3-4 developers)
 ├─ iOS specialist (Swift/Objective-C bridge)
 ├─ Android specialist (Kotlin experience)
 ├─ Cross-platform MAUI expert
@@ -285,7 +285,7 @@ Five comprehensive implementation plans available:
 
 ---
 
-### 2. SmartWorkz.Core.Mobile Implementation Plan
+### 2. SmartWorkz.Core.MAUI Implementation Plan
 📄 [IMPLEMENTATION_PLAN_CORE.MOBILE.md](IMPLEMENTATION_PLAN_CORE.MOBILE.md)
 
 **Covers:**
@@ -438,7 +438,7 @@ DevOps (Stream D)
 
 ### Development Effort
 - SmartWorkz.Core.Web: 90 days × $150/day = $13,500
-- SmartWorkz.Core.Mobile: 160 days × $180/day = $28,800
+- SmartWorkz.Core.MAUI: 160 days × $180/day = $28,800
 - SmartWorkz.Core.Shared: 80 days × $150/day = $12,000
 - SmartWorkz.Core.External: 24 days × $150/day = $3,600
 - DevOps: 40 days × $200/day = $8,000

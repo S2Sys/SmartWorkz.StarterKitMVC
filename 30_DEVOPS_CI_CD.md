@@ -121,7 +121,7 @@ jobs:
       run: |
         dotnet test \
           SmartWorkz.Core.Web.Tests/SmartWorkz.Core.Web.Tests.csproj \
-          SmartWorkz.Core.Mobile.Tests/SmartWorkz.Core.Mobile.Tests.csproj \
+          SmartWorkz.Core.MAUI.Tests/SmartWorkz.Core.MAUI.Tests.csproj \
           SmartWorkz.Core.Shared.Tests/SmartWorkz.Core.Shared.Tests.csproj \
           --no-build --configuration Release \
           --logger "trx;LogFileName=test-results.trx" \

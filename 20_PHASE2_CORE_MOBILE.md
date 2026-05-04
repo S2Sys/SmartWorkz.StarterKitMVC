@@ -1,4 +1,4 @@
-# SmartWorkz.Core.Mobile - Implementation Plan
+# SmartWorkz.Core.MAUI - Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -43,16 +43,16 @@
 ### Task 1: Create Location Models and Interface
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Models/Location.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Models/LocationAccuracy.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Services/ILocationService.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Models/Location.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Models/LocationAccuracy.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Services/ILocationService.cs`
 - Create: `tests/LocationServiceTests.cs`
 
 - [ ] **Step 1: Define location models**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/Models/Location.cs
-namespace SmartWorkz.Core.Mobile.Models;
+// src/SmartWorkz.Core.MAUI/Models/Location.cs
+namespace SmartWorkz.Core.MAUI.Models;
 
 /// <summary>
 /// Represents a geographic location with coordinates, accuracy, and timestamp.
@@ -108,8 +108,8 @@ public class Location : IEquatable<Location>
     public override int GetHashCode() => (Latitude, Longitude).GetHashCode();
 }
 
-// src/SmartWorkz.Core.Mobile/Models/LocationAccuracy.cs
-namespace SmartWorkz.Core.Mobile.Models;
+// src/SmartWorkz.Core.MAUI/Models/LocationAccuracy.cs
+namespace SmartWorkz.Core.MAUI.Models;
 
 /// <summary>
 /// Defines location accuracy levels balancing power consumption and precision.
@@ -136,10 +136,10 @@ public enum LocationAccuracy
 - [ ] **Step 2: Define ILocationService interface**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/Services/ILocationService.cs
-namespace SmartWorkz.Core.Mobile.Services;
+// src/SmartWorkz.Core.MAUI/Services/ILocationService.cs
+namespace SmartWorkz.Core.MAUI.Services;
 
-using SmartWorkz.Core.Mobile.Models;
+using SmartWorkz.Core.MAUI.Models;
 
 /// <summary>
 /// Provides unified access to platform-specific location services (GPS, geolocation).
@@ -242,10 +242,10 @@ public enum PermissionStatus
 
 ```csharp
 // tests/LocationServiceTests.cs
-namespace SmartWorkz.Core.Mobile.Tests;
+namespace SmartWorkz.Core.MAUI.Tests;
 
-using SmartWorkz.Core.Mobile.Models;
-using SmartWorkz.Core.Mobile.Services;
+using SmartWorkz.Core.MAUI.Models;
+using SmartWorkz.Core.MAUI.Services;
 
 [TestFixture]
 public class LocationServiceTests
@@ -293,7 +293,7 @@ public class LocationServiceTests
 - [ ] **Step 4: Run tests to verify they pass**
 
 ```bash
-cd c:\Users\tsent\source\repos\S2Sys\SmartWorkz.Core.Mobile
+cd c:\Users\tsent\source\repos\S2Sys\SmartWorkz.Core.MAUI
 dotnet test tests/LocationServiceTests.cs -v
 ```
 
@@ -302,7 +302,7 @@ Expected: PASS
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Models/ src/SmartWorkz.Core.Mobile/Services/ILocationService.cs tests/LocationServiceTests.cs
+git add src/SmartWorkz.Core.MAUI/Models/ src/SmartWorkz.Core.MAUI/Services/ILocationService.cs tests/LocationServiceTests.cs
 git commit -m "feat(mobile): add Location models and ILocationService interface"
 ```
 
@@ -311,7 +311,7 @@ git commit -m "feat(mobile): add Location models and ILocationService interface"
 ### Task 2: Implement LocationService.iOS
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Services/LocationService.iOS.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Services/LocationService.iOS.cs`
 - Create: `tests/LocationService.iOS.Tests.cs`
 
 - [ ] **Step 1: Write failing test for iOS implementation**
@@ -339,13 +339,13 @@ public class LocationServiceiOSTests
 - [ ] **Step 2: Implement iOS LocationService**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/Services/LocationService.iOS.cs
+// src/SmartWorkz.Core.MAUI/Services/LocationService.iOS.cs
 #if IOS
 using CoreLocation;
 using Foundation;
-using SmartWorkz.Core.Mobile.Models;
+using SmartWorkz.Core.MAUI.Models;
 
-namespace SmartWorkz.Core.Mobile.Services;
+namespace SmartWorkz.Core.MAUI.Services;
 
 /// <summary>
 /// iOS-specific location service using CoreLocation framework.
@@ -495,7 +495,7 @@ dotnet test tests/LocationService.iOS.Tests.cs -v
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Services/LocationService.iOS.cs tests/LocationService.iOS.Tests.cs
+git add src/SmartWorkz.Core.MAUI/Services/LocationService.iOS.cs tests/LocationService.iOS.Tests.cs
 git commit -m "feat(mobile): implement LocationService for iOS using CoreLocation"
 ```
 
@@ -534,13 +534,13 @@ Following the same pattern as iOS implementation, create platform-specific imple
 ### Task 7: CameraService Interface & Models
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Models/Photo.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Models/Video.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Services/ICameraService.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Models/Photo.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Models/Video.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Services/ICameraService.cs`
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/Models/Photo.cs
-namespace SmartWorkz.Core.Mobile.Models;
+// src/SmartWorkz.Core.MAUI/Models/Photo.cs
+namespace SmartWorkz.Core.MAUI.Models;
 
 /// <summary>Represents a captured or selected photo.</summary>
 public class Photo
@@ -580,10 +580,10 @@ public class Video
     public DateTime CaptureTime { get; set; } = DateTime.UtcNow;
 }
 
-// src/SmartWorkz.Core.Mobile/Services/ICameraService.cs
-namespace SmartWorkz.Core.Mobile.Services;
+// src/SmartWorkz.Core.MAUI/Services/ICameraService.cs
+namespace SmartWorkz.Core.MAUI.Services;
 
-using SmartWorkz.Core.Mobile.Models;
+using SmartWorkz.Core.MAUI.Models;
 
 /// <summary>
 /// Provides unified access to device camera for photo capture, video recording, and media picking.

@@ -536,7 +536,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 ## Build Status
 ```
-SmartWorkz.Core.Mobile.csproj: ✅ Build succeeded
+SmartWorkz.Core.MAUI.csproj: ✅ Build succeeded
   - RootNamespace: SmartWorkz.Mobile
   - Target Frameworks: net9.0-ios, net9.0-android, net9.0-maccatalyst, net9.0-windows
   - All 55 files: namespace SmartWorkz.Mobile;
@@ -828,7 +828,7 @@ SmartWorkz.External
 ✅ SmartWorkz.Core.Shared ........... 0 errors
 ✅ SmartWorkz.Core ................. 0 errors
 ✅ SmartWorkz.Core.Web ............. 0 errors
-✅ SmartWorkz.Core.Mobile .......... 0 errors
+✅ SmartWorkz.Core.MAUI .......... 0 errors
 ✅ SmartWorkz.Sample.ECommerce ..... 0 errors
 
 SOLUTION BUILD STATUS: ✅ COMPLETE

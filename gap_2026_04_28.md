@@ -1,6 +1,6 @@
 # SmartWorkz.Core Framework - Gap Analysis Report
 **Date:** 2026-04-28  
-**Scope:** SmartWorkz.Core.Web, SmartWorkz.Core.Mobile, SmartWorkz.Core.Shared, SmartWorkz.Core.External  
+**Scope:** SmartWorkz.Core.Web, SmartWorkz.Core.MAUI, SmartWorkz.Core.Shared, SmartWorkz.Core.External  
 **Audience:** Development Team  
 **Format:** Functional Gaps Only (No DLL Mapping)
 
@@ -66,7 +66,7 @@ SmartWorkz.Core is a partially implemented enterprise framework with strong arch
 
 ---
 
-### 1.2 SmartWorkz.Core.Mobile
+### 1.2 SmartWorkz.Core.MAUI
 **Status:** Minimal, proof-of-concept only  
 **Files:** 7 source files (platform-specific implementations)  
 **Architecture:** .NET MAUI with platform-specific service implementations
@@ -257,7 +257,7 @@ public interface IBiometricService
 **Current State:**
 ```
 SmartWorkz.Core.Web:      13 tests (31% of files)
-SmartWorkz.Core.Mobile:   0 tests (0% of files) ❌
+SmartWorkz.Core.MAUI:   0 tests (0% of files) ❌
 SmartWorkz.Core.Shared:   0 tests (0% of files) ❌
 SmartWorkz.Core.External: 0 tests (N/A - no implementation)
 ```
@@ -589,10 +589,10 @@ public class ContactsService : IPlatformService
 
 #### Day 1-2: Mobile Documentation
 **Files to Create:**
-- SmartWorkz.Core.Mobile/README.md
-- SmartWorkz.Core.Mobile/docs/ARCHITECTURE.md
-- SmartWorkz.Core.Mobile/docs/PLATFORM-SETUP.md
-- SmartWorkz.Core.Mobile/docs/API-REFERENCE.md
+- SmartWorkz.Core.MAUI/README.md
+- SmartWorkz.Core.MAUI/docs/ARCHITECTURE.md
+- SmartWorkz.Core.MAUI/docs/PLATFORM-SETUP.md
+- SmartWorkz.Core.MAUI/docs/API-REFERENCE.md
 
 **Deliverable:** Complete mobile dev guide
 
@@ -867,11 +867,11 @@ public class UserServiceTests
 
 #### Day 6-7: LocationService Implementation
 **Files to Create:**
-- SmartWorkz.Core.Mobile/Services/LocationService.cs
-- SmartWorkz.Core.Mobile/Services/LocationService.iOS.cs
-- SmartWorkz.Core.Mobile/Services/LocationService.Android.cs
-- SmartWorkz.Core.Mobile/Services/LocationService.Windows.cs
-- SmartWorkz.Core.Mobile/Services/LocationService.macCatalyst.cs
+- SmartWorkz.Core.MAUI/Services/LocationService.cs
+- SmartWorkz.Core.MAUI/Services/LocationService.iOS.cs
+- SmartWorkz.Core.MAUI/Services/LocationService.Android.cs
+- SmartWorkz.Core.MAUI/Services/LocationService.Windows.cs
+- SmartWorkz.Core.MAUI/Services/LocationService.macCatalyst.cs
 
 **Deliverable:** Cross-platform GPS/geolocation service
 
@@ -918,10 +918,10 @@ public class Location
 
 #### Day 8: CameraService Implementation
 **Files to Create:**
-- SmartWorkz.Core.Mobile/Services/CameraService.cs
-- SmartWorkz.Core.Mobile/Services/CameraService.iOS.cs
-- SmartWorkz.Core.Mobile/Services/CameraService.Android.cs
-- SmartWorkz.Core.Mobile/Services/CameraService.Windows.cs
+- SmartWorkz.Core.MAUI/Services/CameraService.cs
+- SmartWorkz.Core.MAUI/Services/CameraService.iOS.cs
+- SmartWorkz.Core.MAUI/Services/CameraService.Android.cs
+- SmartWorkz.Core.MAUI/Services/CameraService.Windows.cs
 
 **Deliverable:** Cross-platform camera service for photo/video
 
@@ -947,10 +947,10 @@ public interface ICameraService
 
 #### Day 9: BiometricService Implementation
 **Files to Create:**
-- SmartWorkz.Core.Mobile/Services/BiometricService.cs
-- SmartWorkz.Core.Mobile/Services/BiometricService.iOS.cs
-- SmartWorkz.Core.Mobile/Services/BiometricService.Android.cs
-- SmartWorkz.Core.Mobile/Services/BiometricService.Windows.cs
+- SmartWorkz.Core.MAUI/Services/BiometricService.cs
+- SmartWorkz.Core.MAUI/Services/BiometricService.iOS.cs
+- SmartWorkz.Core.MAUI/Services/BiometricService.Android.cs
+- SmartWorkz.Core.MAUI/Services/BiometricService.Windows.cs
 
 **Deliverable:** Cross-platform biometric authentication
 
@@ -1048,7 +1048,7 @@ public class ExcelExporter : IExcelExporter
 **Files to Update:**
 - SmartWorkz.Core.Web/src/** (Complete remaining 12 files)
 - SmartWorkz.Core.Shared/** (Complete 1 missing file)
-- SmartWorkz.Core.Mobile/** (Verify all 7 files complete)
+- SmartWorkz.Core.MAUI/** (Verify all 7 files complete)
 
 **Deliverable:** 100% XML documentation across all projects
 
@@ -1317,16 +1317,16 @@ public class Location
 ## 6. Wiki Coverage Assessment
 
 ### Current Wiki State
-**Location:** SmartWorkz.Core.Web/docs/ and SmartWorkz.Core.Mobile/  
+**Location:** SmartWorkz.Core.Web/docs/ and SmartWorkz.Core.MAUI/  
 **Files:**
 - SmartWorkz.Core.Web/README.md ✅
 - SmartWorkz.Core.Web/docs/API-REFERENCE.md ✅
 - SmartWorkz.Core.Web/docs/CONTRIBUTING.md ✅
 
 **Missing:**
-- SmartWorkz.Core.Mobile/README.md ❌
-- SmartWorkz.Core.Mobile/docs/API-REFERENCE.md ❌
-- SmartWorkz.Core.Mobile/docs/PLATFORM-SETUP.md ❌
+- SmartWorkz.Core.MAUI/README.md ❌
+- SmartWorkz.Core.MAUI/docs/API-REFERENCE.md ❌
+- SmartWorkz.Core.MAUI/docs/PLATFORM-SETUP.md ❌
 - SmartWorkz.Core.Shared/README.md ❌
 - SmartWorkz.Core.Shared/docs/ARCHITECTURE.md ❌
 - Architecture overview (all projects) ❌
@@ -1350,7 +1350,7 @@ SmartWorkz.Core/
 │   │   ├── COMPONENTS.md
 │   │   ├── GRAPHQL.md
 │   │   └── EXAMPLES.md
-├── SmartWorkz.Core.Mobile/
+├── SmartWorkz.Core.MAUI/
 │   ├── docs/
 │   │   ├── PLATFORM-SETUP.md
 │   │   ├── SERVICES.md
@@ -1603,9 +1603,9 @@ tests/
     └── StatusBadgeTagHelperTests.cs
 ```
 
-### SmartWorkz.Core.Mobile (7 files)
+### SmartWorkz.Core.MAUI (7 files)
 ```
-src/SmartWorkz.Core.Mobile/
+src/SmartWorkz.Core.MAUI/
 ├── Services/
 │   ├── IContactsService.cs
 │   ├── ContactsService.cs

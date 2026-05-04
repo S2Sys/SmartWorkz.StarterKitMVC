@@ -57,7 +57,7 @@ All implementation plans follow the **superpowers:writing-plans** methodology wi
 ---
 
 ## 3. 📱 IMPLEMENTATION_PLAN_CORE.MOBILE.md
-**SmartWorkz.Core.Mobile - 9-11 weeks, 3-4 developers**
+**SmartWorkz.Core.MAUI - 9-11 weeks, 3-4 developers**
 
 ### Coverage
 - **Phase 1 (2-3 weeks):** LocationService

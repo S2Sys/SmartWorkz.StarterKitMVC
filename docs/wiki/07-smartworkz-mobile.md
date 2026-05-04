@@ -2,8 +2,8 @@
 
 ## Assembly Reference
 
-**Path:** `src/SmartWorkz.Core.Mobile/`  
-**Namespace:** `SmartWorkz.Core.Mobile`  
+**Path:** `src/SmartWorkz.Core.MAUI/`  
+**Namespace:** `SmartWorkz.Core.MAUI`  
 **Target Framework:** .NET 9 MAUI (iOS/Android)  
 **Dependencies:** Microsoft.Maui.Controls v9.0.0, Microsoft.Extensions.DependencyInjection
 

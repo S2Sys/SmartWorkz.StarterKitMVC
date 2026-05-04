@@ -15,7 +15,7 @@
 ### Task B1: BiometricService.AuthenticateAsync Tests
 
 **Files:**
-- Create: `tests/SmartWorkz.Core.Mobile.Tests/Services/BiometricServiceTests.cs`
+- Create: `tests/SmartWorkz.Core.MAUI.Tests/Services/BiometricServiceTests.cs`
 
 **Task content:** Write 4 unit tests covering BiometricService.AuthenticateAsync success/failure paths, availability checks, and biometric type detection. Tests validate existing production implementation across Android/iOS platforms using mocked IPermissionService.
 
@@ -24,7 +24,7 @@
 ### Task B2: BiometricService Platform-Specific Tests
 
 **Files:**
-- Modify: `tests/SmartWorkz.Core.Mobile.Tests/Services/BiometricServiceTests.cs`
+- Modify: `tests/SmartWorkz.Core.MAUI.Tests/Services/BiometricServiceTests.cs`
 
 **Task content:** Add 2 platform-specific tests validating Face/Fingerprint detection on Android and FaceID/TouchID detection on iOS. Verifies platform APIs return correct BiometricType enum values.
 
@@ -35,7 +35,7 @@
 ### Task BT1: BluetoothConnectionState Model
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Models/BluetoothConnectionState.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Models/BluetoothConnectionState.cs`
 
 **Task content:** Create BluetoothConnectionState record with device address, connection status, timestamp, RSSI signal strength tracking, and ServiceUuids. Include SignalStrength enum (Excellent/Good/Fair/Weak/Poor) and ConnectionDuration property computing elapsed time since connection.
 
@@ -44,7 +44,7 @@
 ### Task BT2: Update IBluetoothService for Connection State Tracking
 
 **Files:**
-- Modify: `src/SmartWorkz.Core.Mobile/Services/IBluetoothService.cs`
+- Modify: `src/SmartWorkz.Core.MAUI/Services/IBluetoothService.cs`
 
 **Task content:** Add three new members to IBluetoothService: GetConnectionStateAsync() returning nullable BluetoothConnectionState, OnConnectionStateChanged() observable stream, ConnectedDeviceAddress property. These enable connection state tracking across Android/iOS platforms.
 
@@ -53,8 +53,8 @@
 ### Task BT3: Implement BluetoothService Connect/Disconnect with Android Platform
 
 **Files:**
-- Modify: `src/SmartWorkz.Core.Mobile/Services/Implementations/BluetoothService.cs`
-- Modify: `src/SmartWorkz.Core.Mobile/Platforms/Android/BluetoothService.Android.cs`
+- Modify: `src/SmartWorkz.Core.MAUI/Services/Implementations/BluetoothService.cs`
+- Modify: `src/SmartWorkz.Core.MAUI/Platforms/Android/BluetoothService.Android.cs`
 
 **Task content:** Update BluetoothService main class to track connection states in dictionary and emit via Subject<BluetoothConnectionState>. Implement Android platform ConnectAsyncPlatform using BluetoothSocket and UUID for standard SPP profile. Track RSSI and emit connection state changes.
 
@@ -63,7 +63,7 @@
 ### Task BT4: Implement BluetoothService Connect/Disconnect with iOS Platform
 
 **Files:**
-- Modify: `src/SmartWorkz.Core.Mobile/Platforms/iOS/BluetoothService.iOS.cs`
+- Modify: `src/SmartWorkz.Core.MAUI/Platforms/iOS/BluetoothService.iOS.cs`
 
 **Task content:** Implement iOS platform ConnectAsyncPlatform and DisconnectAsyncPlatform using CBCentralManager and CBPeripheral. Store connected peripheral reference, implement 30-second connection timeout, check CBPeripheralState.Connected status.
 
@@ -72,8 +72,8 @@
 ### Task BT5: Device Pairing Workflow
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Services/IBluetoothPairingService.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Services/Implementations/BluetoothPairingService.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Services/IBluetoothPairingService.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Services/Implementations/BluetoothPairingService.cs`
 
 **Task content:** Create IBluetoothPairingService interface with PairAsync, UnpairAsync, GetPairedDevicesAsync, OnPairingStateChanged methods. Implement BluetoothPairingService checking permissions, managing pairing state via Subject<>, with platform-specific stubs for Android/iOS implementation. Error handling with Result<T>.
 
@@ -82,8 +82,8 @@
 ### Task BT6: Bluetooth Tests for Connection State and Pairing
 
 **Files:**
-- Create: `tests/SmartWorkz.Core.Mobile.Tests/Services/BluetoothConnectionTests.cs`
-- Create: `tests/SmartWorkz.Core.Mobile.Tests/Services/BluetoothPairingTests.cs`
+- Create: `tests/SmartWorkz.Core.MAUI.Tests/Services/BluetoothConnectionTests.cs`
+- Create: `tests/SmartWorkz.Core.MAUI.Tests/Services/BluetoothPairingTests.cs`
 
 **Task content:** Write 3 connection state tests (successful connect tracking, state retrieval, observable stream) and 3 pairing tests (permission denied failure, paired devices list, observable stream). Mock IPermissionService, verify Result<T> status codes.
 
@@ -94,7 +94,7 @@
 ### Task NFC1: Implement NFC Read Operation (Android)
 
 **Files:**
-- Modify: `src/SmartWorkz.Core.Mobile/Platforms/Android/NfcService.Android.cs`
+- Modify: `src/SmartWorkz.Core.MAUI/Platforms/Android/NfcService.Android.cs`
 
 **Task content:** Implement Android ReadAsyncPlatform using NfcManager/NfcAdapter. Check NFC availability/enabled status. Get Tag from Activity intent, open Ndef connection, extract NDEF message payload, return NfcMessage with type/payload/timestamp/URI. Handle missing tag, not NDEF, disabled NFC errors.
 
@@ -103,7 +103,7 @@
 ### Task NFC2: Implement NFC Read Operation (iOS)
 
 **Files:**
-- Modify: `src/SmartWorkz.Core.Mobile/Platforms/iOS/NfcService.iOS.cs`
+- Modify: `src/SmartWorkz.Core.MAUI/Platforms/iOS/NfcService.iOS.cs`
 
 **Task content:** Implement iOS ReadAsyncPlatform using NFCNDEFReaderSession delegate pattern. Check ReadingAvailable, create session, implement DidDetect callback storing detected NDEF message, implement DidInvalidate callback for errors. Handle 30-second timeout, return NfcMessage with extracted payload and URI if parseable.
 
@@ -112,7 +112,7 @@
 ### Task NFC3: NFC Read Operation Tests
 
 **Files:**
-- Create: `tests/SmartWorkz.Core.Mobile.Tests/Services/NfcReadTests.cs`
+- Create: `tests/SmartWorkz.Core.MAUI.Tests/Services/NfcReadTests.cs`
 
 **Task content:** Write 3 NFC read tests: NFC unavailable returns failure, permission denied returns failure, availability check returns boolean. Mock IPermissionService, verify Result<T> error codes and messages.
 
@@ -123,7 +123,7 @@
 ### Task FINAL: Register Refinements + Run Full Test Suite
 
 **Files:**
-- Modify: `src/SmartWorkz.Core.Mobile/Extensions/ServiceCollectionExtensions.cs`
+- Modify: `src/SmartWorkz.Core.MAUI/Extensions/ServiceCollectionExtensions.cs`
 
 **Task content:** Register IBluetoothPairingService in ServiceCollectionExtensions. Build all target frameworks (net9.0-ios/android/maccatalyst/windows). Run full test suite verifying 100+ tests pass across all phases. Final commit with complete implementation summary.
 

@@ -39,7 +39,7 @@ Caching, CQRS contracts, logging, webhooks — used by Application, Infrastructu
 **SmartWorkz.Core.External** (Core Layer)  
 Excel (ClosedXML), PDF (iText7) exporters — used by Infrastructure
 
-**SmartWorkz.Core.Mobile** (Core Layer)  
+**SmartWorkz.Core.MAUI** (Core Layer)  
 MAUI components, platform services (iOS/Android) — for mobile apps
 
 ## When to Use Which DLL
@@ -75,7 +75,7 @@ Use `SmartWorkz.Core.External` — IExcelExporter with styling
 Use `SmartWorkz.Core.External` — IPdfExporter with layout options
 
 **Building a mobile app?**  
-Use `SmartWorkz.Core.Mobile` — MAUI components, offline queue, auto-reconnect
+Use `SmartWorkz.Core.MAUI` — MAUI components, offline queue, auto-reconnect
 
 ## Project Dependency Chain
 
@@ -113,7 +113,7 @@ src/
 ├── SmartWorkz.Core.Web/                     [Web components]
 ├── SmartWorkz.Core.Shared/                  [Caching, CQRS, logging, webhooks]
 ├── SmartWorkz.Core.External/                [PDF, Excel]
-└── SmartWorkz.Core.Mobile/                  [MAUI components]
+└── SmartWorkz.Core.MAUI/                  [MAUI components]
 
 tests/
 ├── SmartWorkz.StarterKitMVC.Tests.Unit/

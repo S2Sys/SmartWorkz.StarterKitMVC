@@ -15,7 +15,7 @@
 ### Task G1: GeofenceRegion Model
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Models/GeofenceRegion.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Models/GeofenceRegion.cs`
 
 **Step 1: Create GeofenceRegion record with location and radius**
 
@@ -69,7 +69,7 @@ public record GeofenceRegion
 **Step 2: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Models/GeofenceRegion.cs
+git add src/SmartWorkz.Core.MAUI/Models/GeofenceRegion.cs
 git commit -m "feat: add GeofenceRegion model"
 ```
 
@@ -78,7 +78,7 @@ git commit -m "feat: add GeofenceRegion model"
 ### Task G2: IGeofencingService Interface
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Services/IGeofencingService.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Services/IGeofencingService.cs`
 
 **Step 1: Create IGeofencingService interface with monitoring methods**
 
@@ -163,7 +163,7 @@ public record GeofenceEvent
 **Step 2: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Services/IGeofencingService.cs
+git add src/SmartWorkz.Core.MAUI/Services/IGeofencingService.cs
 git commit -m "feat: add IGeofencingService interface"
 ```
 
@@ -172,7 +172,7 @@ git commit -m "feat: add IGeofencingService interface"
 ### Task G3: GeofencingService Base Implementation
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Services/Implementations/GeofencingService.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Services/Implementations/GeofencingService.cs`
 
 **Step 1: Create GeofencingService base class with cross-platform methods**
 
@@ -296,7 +296,7 @@ public partial class GeofencingService : IGeofencingService
 **Step 2: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Services/Implementations/GeofencingService.cs
+git add src/SmartWorkz.Core.MAUI/Services/Implementations/GeofencingService.cs
 git commit -m "feat: add GeofencingService base implementation"
 ```
 
@@ -305,7 +305,7 @@ git commit -m "feat: add GeofencingService base implementation"
 ### Task G4: GeofencingService Android Platform Implementation
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Platforms/Android/GeofencingService.Android.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Platforms/Android/GeofencingService.Android.cs`
 
 **Step 1: Create Android platform implementation using LocationManager**
 
@@ -433,7 +433,7 @@ public class GeofenceProximityAlertReceiver : BroadcastReceiver
 **Step 2: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Platforms/Android/GeofencingService.Android.cs
+git add src/SmartWorkz.Core.MAUI/Platforms/Android/GeofencingService.Android.cs
 git commit -m "feat: add GeofencingService Android implementation"
 ```
 
@@ -442,7 +442,7 @@ git commit -m "feat: add GeofencingService Android implementation"
 ### Task G5: GeofencingService iOS Platform Implementation
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Platforms/iOS/GeofencingService.iOS.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Platforms/iOS/GeofencingService.iOS.cs`
 
 **Step 1: Create iOS platform implementation using CLLocationManager**
 
@@ -568,7 +568,7 @@ partial class GeofencingService
 **Step 2: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Platforms/iOS/GeofencingService.iOS.cs
+git add src/SmartWorkz.Core.MAUI/Platforms/iOS/GeofencingService.iOS.cs
 git commit -m "feat: add GeofencingService iOS implementation"
 ```
 
@@ -577,7 +577,7 @@ git commit -m "feat: add GeofencingService iOS implementation"
 ### Task G6: GeofencingService Tests
 
 **Files:**
-- Create: `tests/SmartWorkz.Core.Mobile.Tests/Services/GeofencingServiceTests.cs`
+- Create: `tests/SmartWorkz.Core.MAUI.Tests/Services/GeofencingServiceTests.cs`
 
 **Step 1: Write geofencing service unit tests**
 
@@ -705,7 +705,7 @@ public class GeofencingServiceTests
 **Step 2: Run tests and verify they pass**
 
 ```bash
-cd tests/SmartWorkz.Core.Mobile.Tests
+cd tests/SmartWorkz.Core.MAUI.Tests
 dotnet test Services/GeofencingServiceTests.cs -v
 ```
 
@@ -714,7 +714,7 @@ Expected: All 4 tests passing
 **Step 3: Commit**
 
 ```bash
-git add tests/SmartWorkz.Core.Mobile.Tests/Services/GeofencingServiceTests.cs
+git add tests/SmartWorkz.Core.MAUI.Tests/Services/GeofencingServiceTests.cs
 git commit -m "test: add GeofencingService unit tests"
 ```
 
@@ -725,7 +725,7 @@ git commit -m "test: add GeofencingService unit tests"
 ### Task W1: WifiNetwork Model
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Models/WifiNetwork.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Models/WifiNetwork.cs`
 
 **Step 1: Create WifiNetwork record**
 
@@ -784,7 +784,7 @@ public record WifiNetwork
 **Step 2: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Models/WifiNetwork.cs
+git add src/SmartWorkz.Core.MAUI/Models/WifiNetwork.cs
 git commit -m "feat: add WifiNetwork model"
 ```
 
@@ -793,7 +793,7 @@ git commit -m "feat: add WifiNetwork model"
 ### Task W2: IWifiService Interface
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Services/IWifiService.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Services/IWifiService.cs`
 
 **Step 1: Create IWifiService interface**
 
@@ -845,7 +845,7 @@ public interface IWifiService
 **Step 2: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Services/IWifiService.cs
+git add src/SmartWorkz.Core.MAUI/Services/IWifiService.cs
 git commit -m "feat: add IWifiService interface"
 ```
 
@@ -854,7 +854,7 @@ git commit -m "feat: add IWifiService interface"
 ### Task W3: WifiService Base Implementation
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Services/Implementations/WifiService.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Services/Implementations/WifiService.cs`
 
 **Step 1: Create WifiService base class**
 
@@ -955,7 +955,7 @@ public partial class WifiService : IWifiService
 **Step 2: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Services/Implementations/WifiService.cs
+git add src/SmartWorkz.Core.MAUI/Services/Implementations/WifiService.cs
 git commit -m "feat: add WifiService base implementation"
 ```
 
@@ -964,7 +964,7 @@ git commit -m "feat: add WifiService base implementation"
 ### Task W4: WifiService Android Platform
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Platforms/Android/WifiService.Android.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Platforms/Android/WifiService.Android.cs`
 
 **Step 1: Create Android WiFi implementation**
 
@@ -1131,7 +1131,7 @@ public class WifiScanReceiver : Android.Content.BroadcastReceiver
 **Step 2: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Platforms/Android/WifiService.Android.cs
+git add src/SmartWorkz.Core.MAUI/Platforms/Android/WifiService.Android.cs
 git commit -m "feat: add WifiService Android implementation"
 ```
 
@@ -1140,7 +1140,7 @@ git commit -m "feat: add WifiService Android implementation"
 ### Task W5: WifiService iOS Platform
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Platforms/iOS/WifiService.iOS.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Platforms/iOS/WifiService.iOS.cs`
 
 **Step 1: Create iOS WiFi implementation**
 
@@ -1236,7 +1236,7 @@ partial class WifiService
 **Step 2: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Platforms/iOS/WifiService.iOS.cs
+git add src/SmartWorkz.Core.MAUI/Platforms/iOS/WifiService.iOS.cs
 git commit -m "feat: add WifiService iOS implementation"
 ```
 
@@ -1245,7 +1245,7 @@ git commit -m "feat: add WifiService iOS implementation"
 ### Task W6: WifiService Tests
 
 **Files:**
-- Create: `tests/SmartWorkz.Core.Mobile.Tests/Services/WifiServiceTests.cs`
+- Create: `tests/SmartWorkz.Core.MAUI.Tests/Services/WifiServiceTests.cs`
 
 **Step 1: Write WiFi service tests**
 
@@ -1315,10 +1315,10 @@ public class WifiServiceTests
 **Step 2: Run and commit**
 
 ```bash
-cd tests/SmartWorkz.Core.Mobile.Tests
+cd tests/SmartWorkz.Core.MAUI.Tests
 dotnet test Services/WifiServiceTests.cs -v
 
-git add tests/SmartWorkz.Core.Mobile.Tests/Services/WifiServiceTests.cs
+git add tests/SmartWorkz.Core.MAUI.Tests/Services/WifiServiceTests.cs
 git commit -m "test: add WifiService unit tests"
 ```
 
@@ -1352,7 +1352,7 @@ git commit -m "test: add WifiService unit tests"
 ### Task INT1: Register All Phase 5 Services in DI Container
 
 **Files:**
-- Modify: `src/SmartWorkz.Core.Mobile/Extensions/ServiceCollectionExtensions.cs`
+- Modify: `src/SmartWorkz.Core.MAUI/Extensions/ServiceCollectionExtensions.cs`
 
 **Step 1: Add Phase 5 service registrations**
 
@@ -1373,7 +1373,7 @@ services.AddScoped<IQRCodeService, QRCodeService>();
 **Step 2: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Extensions/ServiceCollectionExtensions.cs
+git add src/SmartWorkz.Core.MAUI/Extensions/ServiceCollectionExtensions.cs
 git commit -m "feat: register Phase 5 extended capabilities services"
 ```
 
@@ -1389,7 +1389,7 @@ git commit -m "feat: register Phase 5 extended capabilities services"
 ```markdown
 # Phase 5: Extended Device Capabilities
 
-SmartWorkz.Core.Mobile Phase 5 adds 8 additional device capability services:
+SmartWorkz.Core.MAUI Phase 5 adds 8 additional device capability services:
 
 ## Services Implemented
 
@@ -1444,7 +1444,7 @@ git commit -m "docs: add Phase 5 extended capabilities documentation"
 **Step 1: Run all Phase 5 tests**
 
 ```bash
-cd tests/SmartWorkz.Core.Mobile.Tests
+cd tests/SmartWorkz.Core.MAUI.Tests
 dotnet test --filter "Category=Phase5" -v --logger "console;verbosity=detailed"
 ```
 
@@ -1453,7 +1453,7 @@ Expected output: 45+ tests passing across all 8 services
 **Step 2: Verify no compilation errors**
 
 ```bash
-cd src/SmartWorkz.Core.Mobile
+cd src/SmartWorkz.Core.MAUI
 dotnet build --configuration Release /p:TargetFrameworks="net9.0-ios;net9.0-android"
 ```
 

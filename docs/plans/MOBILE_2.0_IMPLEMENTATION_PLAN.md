@@ -17,7 +17,7 @@
 ### File Structure - Phase 3A
 
 ```
-src/SmartWorkz.Core.Mobile/
+src/SmartWorkz.Core.MAUI/
 ├── State/                          # NEW: Redux-like state container
 │   ├── Store/
 │   │   ├── IAppStore.cs           # Store interface
@@ -84,18 +84,18 @@ src/SmartWorkz.Core.Mobile/
 ### Task 1: Redux State Container - Store Foundation
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/State/Store/IAppStore.cs`
-- Create: `src/SmartWorkz.Core.Mobile/State/Store/AppStore.cs`
-- Create: `src/SmartWorkz.Core.Mobile/State/Store/AppState.cs`
-- Create: `src/SmartWorkz.Core.Mobile/State/Actions/Action.cs`
-- Test: `tests/SmartWorkz.Core.Mobile.Tests/State/AppStoreTests.cs`
+- Create: `src/SmartWorkz.Core.MAUI/State/Store/IAppStore.cs`
+- Create: `src/SmartWorkz.Core.MAUI/State/Store/AppStore.cs`
+- Create: `src/SmartWorkz.Core.MAUI/State/Store/AppState.cs`
+- Create: `src/SmartWorkz.Core.MAUI/State/Actions/Action.cs`
+- Test: `tests/SmartWorkz.Core.MAUI.Tests/State/AppStoreTests.cs`
 
 **Steps:**
 
 - [ ] **Step 1: Write failing test for store dispatch**
 
 ```csharp
-// tests/SmartWorkz.Core.Mobile.Tests/State/AppStoreTests.cs
+// tests/SmartWorkz.Core.MAUI.Tests/State/AppStoreTests.cs
 using Xunit;
 using SmartWorkz.Mobile.State;
 
@@ -141,7 +141,7 @@ public class TestAction : IAction
 }
 ```
 
-Run: `dotnet test tests/SmartWorkz.Core.Mobile.Tests/State/AppStoreTests.cs -v`
+Run: `dotnet test tests/SmartWorkz.Core.MAUI.Tests/State/AppStoreTests.cs -v`
 Expected: **FAIL** - Classes don't exist yet
 
 ---
@@ -149,7 +149,7 @@ Expected: **FAIL** - Classes don't exist yet
 - [ ] **Step 2: Create IAppStore interface**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/State/Store/IAppStore.cs
+// src/SmartWorkz.Core.MAUI/State/Store/IAppStore.cs
 using SmartWorkz.Mobile.State.Actions;
 
 namespace SmartWorkz.Mobile.State.Store;
@@ -176,7 +176,7 @@ public interface IAppStore
 - [ ] **Step 3: Create Action interface**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/State/Actions/Action.cs
+// src/SmartWorkz.Core.MAUI/State/Actions/Action.cs
 namespace SmartWorkz.Mobile.State.Actions;
 
 /// <summary>Base interface for all Redux actions.</summary>
@@ -192,7 +192,7 @@ public interface IAction
 - [ ] **Step 4: Create AppState model**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/State/Store/AppState.cs
+// src/SmartWorkz.Core.MAUI/State/Store/AppState.cs
 using SmartWorkz.Mobile.State.Models;
 
 namespace SmartWorkz.Mobile.State.Store;
@@ -286,7 +286,7 @@ public class ErrorState
 - [ ] **Step 5: Create AppStore implementation**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/State/Store/AppStore.cs
+// src/SmartWorkz.Core.MAUI/State/Store/AppStore.cs
 using SmartWorkz.Mobile.State.Actions;
 using SmartWorkz.Mobile.State.Reducers;
 
@@ -375,7 +375,7 @@ public class AppStore : IAppStore
 
 - [ ] **Step 6: Run tests - verify they pass**
 
-Run: `dotnet test tests/SmartWorkz.Core.Mobile.Tests/State/AppStoreTests.cs -v`
+Run: `dotnet test tests/SmartWorkz.Core.MAUI.Tests/State/AppStoreTests.cs -v`
 Expected: **PASS** - AppStore dispatches actions and notifies subscribers
 
 ---
@@ -383,7 +383,7 @@ Expected: **PASS** - AppStore dispatches actions and notifies subscribers
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/State/ tests/SmartWorkz.Core.Mobile.Tests/State/
+git add src/SmartWorkz.Core.MAUI/State/ tests/SmartWorkz.Core.MAUI.Tests/State/
 git commit -m "feat(state): add Redux store foundation with dispatch and subscribe"
 ```
 
@@ -392,18 +392,18 @@ git commit -m "feat(state): add Redux store foundation with dispatch and subscri
 ### Task 2: Redux Reducers Registry
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/State/Reducers/Reducer.cs`
-- Create: `src/SmartWorkz.Core.Mobile/State/Reducers/IReducerRegistry.cs`
-- Create: `src/SmartWorkz.Core.Mobile/State/Reducers/ReducerRegistry.cs`
-- Create: `src/SmartWorkz.Core.Mobile/State/Reducers/AppReducer.cs`
-- Test: `tests/SmartWorkz.Core.Mobile.Tests/State/ReducerTests.cs`
+- Create: `src/SmartWorkz.Core.MAUI/State/Reducers/Reducer.cs`
+- Create: `src/SmartWorkz.Core.MAUI/State/Reducers/IReducerRegistry.cs`
+- Create: `src/SmartWorkz.Core.MAUI/State/Reducers/ReducerRegistry.cs`
+- Create: `src/SmartWorkz.Core.MAUI/State/Reducers/AppReducer.cs`
+- Test: `tests/SmartWorkz.Core.MAUI.Tests/State/ReducerTests.cs`
 
 **Steps:**
 
 - [ ] **Step 1: Write failing test for reducer registry**
 
 ```csharp
-// tests/SmartWorkz.Core.Mobile.Tests/State/ReducerTests.cs
+// tests/SmartWorkz.Core.MAUI.Tests/State/ReducerTests.cs
 using Xunit;
 using SmartWorkz.Mobile.State;
 using SmartWorkz.Mobile.State.Reducers;
@@ -450,7 +450,7 @@ public class InitializeAppAction : IAction { }
 public class UnknownAction : IAction { }
 ```
 
-Run: `dotnet test tests/SmartWorkz.Core.Mobile.Tests/State/ReducerTests.cs -v`
+Run: `dotnet test tests/SmartWorkz.Core.MAUI.Tests/State/ReducerTests.cs -v`
 Expected: **FAIL** - ReducerRegistry doesn't exist
 
 ---
@@ -458,7 +458,7 @@ Expected: **FAIL** - ReducerRegistry doesn't exist
 - [ ] **Step 2: Create Reducer base interface**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/State/Reducers/Reducer.cs
+// src/SmartWorkz.Core.MAUI/State/Reducers/Reducer.cs
 using SmartWorkz.Mobile.State.Actions;
 
 namespace SmartWorkz.Mobile.State.Reducers;
@@ -482,7 +482,7 @@ public interface IReducer
 - [ ] **Step 3: Create IReducerRegistry**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/State/Reducers/IReducerRegistry.cs
+// src/SmartWorkz.Core.MAUI/State/Reducers/IReducerRegistry.cs
 using SmartWorkz.Mobile.State.Actions;
 
 namespace SmartWorkz.Mobile.State.Reducers;
@@ -503,7 +503,7 @@ public interface IReducerRegistry
 - [ ] **Step 4: Create ReducerRegistry implementation**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/State/Reducers/ReducerRegistry.cs
+// src/SmartWorkz.Core.MAUI/State/Reducers/ReducerRegistry.cs
 using SmartWorkz.Mobile.State.Actions;
 
 namespace SmartWorkz.Mobile.State.Reducers;
@@ -566,7 +566,7 @@ public class ReducerRegistry : IReducerRegistry
 - [ ] **Step 5: Create AppReducer**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/State/Reducers/AppReducer.cs
+// src/SmartWorkz.Core.MAUI/State/Reducers/AppReducer.cs
 using SmartWorkz.Mobile.State.Actions;
 
 namespace SmartWorkz.Mobile.State.Reducers;
@@ -736,7 +736,7 @@ public class ClearErrorAction : IAction { }
 
 - [ ] **Step 6: Run tests**
 
-Run: `dotnet test tests/SmartWorkz.Core.Mobile.Tests/State/ReducerTests.cs -v`
+Run: `dotnet test tests/SmartWorkz.Core.MAUI.Tests/State/ReducerTests.cs -v`
 Expected: **PASS** - Reducer registry applies reductions correctly
 
 ---
@@ -744,7 +744,7 @@ Expected: **PASS** - Reducer registry applies reductions correctly
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/State/Reducers/ tests/SmartWorkz.Core.Mobile.Tests/State/ReducerTests.cs
+git add src/SmartWorkz.Core.MAUI/State/Reducers/ tests/SmartWorkz.Core.MAUI.Tests/State/ReducerTests.cs
 git commit -m "feat(state): add reducer registry and app reducer with action handlers"
 ```
 
@@ -753,18 +753,18 @@ git commit -m "feat(state): add reducer registry and app reducer with action han
 ### Task 3: Database Abstraction Layer - Interfaces
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Data/Database/IDatabase.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Data/Database/IDbConnection.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Data/Database/IDbTransaction.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Data/Database/DbMigration.cs`
-- Test: `tests/SmartWorkz.Core.Mobile.Tests/Data/DatabaseTests.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Data/Database/IDatabase.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Data/Database/IDbConnection.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Data/Database/IDbTransaction.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Data/Database/DbMigration.cs`
+- Test: `tests/SmartWorkz.Core.MAUI.Tests/Data/DatabaseTests.cs`
 
 **Steps:**
 
 - [ ] **Step 1: Create IDatabase interface**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/Data/Database/IDatabase.cs
+// src/SmartWorkz.Core.MAUI/Data/Database/IDatabase.cs
 namespace SmartWorkz.Mobile.Data.Database;
 
 /// <summary>
@@ -844,7 +844,7 @@ public interface IDbTransaction : IAsyncDisposable
 - [ ] **Step 2: Create DbMigration base class**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/Data/Database/DbMigration.cs
+// src/SmartWorkz.Core.MAUI/Data/Database/DbMigration.cs
 namespace SmartWorkz.Mobile.Data.Database;
 
 /// <summary>Base class for database schema migrations.</summary>
@@ -872,7 +872,7 @@ public abstract class DbMigration
 - [ ] **Step 3: Create migration implementations**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/Data/Database/Migrations/Migration_001_InitialSchema.cs
+// src/SmartWorkz.Core.MAUI/Data/Database/Migrations/Migration_001_InitialSchema.cs
 namespace SmartWorkz.Mobile.Data.Database.Migrations;
 
 public class Migration_001_InitialSchema : DbMigration
@@ -921,7 +921,7 @@ CREATE INDEX IF NOT EXISTS idx_LocalChangeLog_IsSynced ON LocalChangeLog(IsSynce
     }
 }
 
-// src/SmartWorkz.Core.Mobile/Data/Database/Migrations/Migration_002_AddNotificationLog.cs
+// src/SmartWorkz.Core.MAUI/Data/Database/Migrations/Migration_002_AddNotificationLog.cs
 public class Migration_002_AddNotificationLog : DbMigration
 {
     public override int Version => 2;
@@ -954,7 +954,7 @@ CREATE INDEX IF NOT EXISTS idx_NotificationLog_IsRead ON NotificationLog(IsRead)
 - [ ] **Step 4: Write test for database interface**
 
 ```csharp
-// tests/SmartWorkz.Core.Mobile.Tests/Data/DatabaseTests.cs
+// tests/SmartWorkz.Core.MAUI.Tests/Data/DatabaseTests.cs
 using Xunit;
 using SmartWorkz.Mobile.Data.Database;
 
@@ -1029,7 +1029,7 @@ public class DatabaseTests
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Data/Database/ tests/SmartWorkz.Core.Mobile.Tests/Data/
+git add src/SmartWorkz.Core.MAUI/Data/Database/ tests/SmartWorkz.Core.MAUI.Tests/Data/
 git commit -m "feat(data): add database abstraction interfaces and migrations"
 ```
 
@@ -1038,16 +1038,16 @@ git commit -m "feat(data): add database abstraction interfaces and migrations"
 ### Task 4: SQLite Database Implementation
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Data/Database/SQLiteDatabase.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Data/Database/DbMigrationRunner.cs`
-- Test: `tests/SmartWorkz.Core.Mobile.Tests/Data/SQLiteDatabaseTests.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Data/Database/SQLiteDatabase.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Data/Database/DbMigrationRunner.cs`
+- Test: `tests/SmartWorkz.Core.MAUI.Tests/Data/SQLiteDatabaseTests.cs`
 
 **Steps:**
 
 - [ ] **Step 1: Create SQLiteDatabase implementation**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/Data/Database/SQLiteDatabase.cs
+// src/SmartWorkz.Core.MAUI/Data/Database/SQLiteDatabase.cs
 using sqlite3 = SQLite.SQLiteConnection;
 using SmartWorkz.Mobile.Data.Database.Migrations;
 
@@ -1345,7 +1345,7 @@ internal class SQLiteDbTransaction : IDbTransaction
 - [ ] **Step 2: Create DbMigrationRunner**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/Data/Database/DbMigrationRunner.cs
+// src/SmartWorkz.Core.MAUI/Data/Database/DbMigrationRunner.cs
 namespace SmartWorkz.Mobile.Data.Database;
 
 /// <summary>Executes database migrations in order.</summary>
@@ -1430,7 +1430,7 @@ public class DbMigrationRunner
 - [ ] **Step 3: Run tests**
 
 ```bash
-dotnet test tests/SmartWorkz.Core.Mobile.Tests/Data/ -v
+dotnet test tests/SmartWorkz.Core.MAUI.Tests/Data/ -v
 ```
 Expected: **PASS** - Database opens, migrations run
 
@@ -1439,7 +1439,7 @@ Expected: **PASS** - Database opens, migrations run
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Data/Database/SQLiteDatabase.cs src/SmartWorkz.Core.Mobile/Data/Database/DbMigrationRunner.cs
+git add src/SmartWorkz.Core.MAUI/Data/Database/SQLiteDatabase.cs src/SmartWorkz.Core.MAUI/Data/Database/DbMigrationRunner.cs
 git commit -m "feat(data): implement SQLite database with migration runner"
 ```
 
@@ -1448,17 +1448,17 @@ git commit -m "feat(data): implement SQLite database with migration runner"
 ### Task 5: Crash Reporting Service (Sentry Integration)
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Telemetry/ICrashReportingService.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Telemetry/SentryCrashReporter.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Telemetry/CrashContext.cs`
-- Test: `tests/SmartWorkz.Core.Mobile.Tests/Telemetry/CrashReportingTests.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Telemetry/ICrashReportingService.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Telemetry/SentryCrashReporter.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Telemetry/CrashContext.cs`
+- Test: `tests/SmartWorkz.Core.MAUI.Tests/Telemetry/CrashReportingTests.cs`
 
 **Steps:**
 
 - [ ] **Step 1: Create ICrashReportingService interface**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/Telemetry/ICrashReportingService.cs
+// src/SmartWorkz.Core.MAUI/Telemetry/ICrashReportingService.cs
 namespace SmartWorkz.Mobile.Telemetry;
 
 /// <summary>
@@ -1527,7 +1527,7 @@ public class CrashContext
 - [ ] **Step 2: Create Sentry implementation**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/Telemetry/SentryCrashReporter.cs
+// src/SmartWorkz.Core.MAUI/Telemetry/SentryCrashReporter.cs
 using Sentry;
 using Sentry.Maui;
 
@@ -1741,7 +1741,7 @@ public class SentryCrashReporter : ICrashReportingService
 - [ ] **Step 3: Write tests**
 
 ```csharp
-// tests/SmartWorkz.Core.Mobile.Tests/Telemetry/CrashReportingTests.cs
+// tests/SmartWorkz.Core.MAUI.Tests/Telemetry/CrashReportingTests.cs
 using Xunit;
 using SmartWorkz.Mobile.Telemetry;
 
@@ -1783,7 +1783,7 @@ public class CrashReportingTests
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Telemetry/ tests/SmartWorkz.Core.Mobile.Tests/Telemetry/
+git add src/SmartWorkz.Core.MAUI/Telemetry/ tests/SmartWorkz.Core.MAUI.Tests/Telemetry/
 git commit -m "feat(telemetry): add Sentry crash reporting service"
 ```
 
@@ -1792,17 +1792,17 @@ git commit -m "feat(telemetry): add Sentry crash reporting service"
 ### Task 6: Complete Push Notification Pipeline
 
 **Files:**
-- Modify: `src/SmartWorkz.Core.Mobile/Notifications/IPushNotificationHandler.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Notifications/PushMessageRouter.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Notifications/PushNotificationPermissionHelper.cs`
-- Test: `tests/SmartWorkz.Core.Mobile.Tests/Notifications/PushNotificationTests.cs`
+- Modify: `src/SmartWorkz.Core.MAUI/Notifications/IPushNotificationHandler.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Notifications/PushMessageRouter.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Notifications/PushNotificationPermissionHelper.cs`
+- Test: `tests/SmartWorkz.Core.MAUI.Tests/Notifications/PushNotificationTests.cs`
 
 *Due to length constraints, this task shows the interfaces and key pieces. Full code available in implementation.*
 
 - [ ] **Step 1: Create IPushNotificationHandler interface**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/Notifications/IPushNotificationHandler.cs
+// src/SmartWorkz.Core.MAUI/Notifications/IPushNotificationHandler.cs
 namespace SmartWorkz.Mobile.Notifications;
 
 /// <summary>
@@ -1836,7 +1836,7 @@ public class PushMessage
 - [ ] **Step 2: Create PushMessageRouter**
 
 ```csharp
-// src/SmartWorkz.Core.Mobile/Notifications/PushMessageRouter.cs
+// src/SmartWorkz.Core.MAUI/Notifications/PushMessageRouter.cs
 namespace SmartWorkz.Mobile.Notifications;
 
 /// <summary>Routes push messages to appropriate handlers.</summary>
@@ -1900,7 +1900,7 @@ public class PushMessageRouter : IPushNotificationHandler
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/Notifications/
+git add src/SmartWorkz.Core.MAUI/Notifications/
 git commit -m "feat(notifications): complete push notification pipeline with routing"
 ```
 
@@ -1909,7 +1909,7 @@ git commit -m "feat(notifications): complete push notification pipeline with rou
 ### Task 7: Register Phase 3A Services in MauiProgram
 
 **Files:**
-- Modify: `src/SmartWorkz.Core.Mobile/MauiProgram.cs`
+- Modify: `src/SmartWorkz.Core.MAUI/MauiProgram.cs`
 
 - [ ] **Step 1: Update MauiProgram.cs with Phase 3A services**
 
@@ -1988,7 +1988,7 @@ public static class MauiProgram
 - [ ] **Step 2: Commit**
 
 ```bash
-git add src/SmartWorkz.Core.Mobile/MauiProgram.cs
+git add src/SmartWorkz.Core.MAUI/MauiProgram.cs
 git commit -m "feat(core): register Phase 3A infrastructure services in DI"
 ```
 
@@ -1999,7 +1999,7 @@ git commit -m "feat(core): register Phase 3A infrastructure services in DI"
 ### File Structure - Phase 3B
 
 ```
-src/SmartWorkz.Core.Mobile/Components/
+src/SmartWorkz.Core.MAUI/Components/
 ├── DatePickers/                    # NEW
 │   ├── DatePicker.xaml
 │   ├── DatePicker.xaml.cs
@@ -2050,7 +2050,7 @@ Each component follows same pattern:
 ### File Structure - Phase 3C
 
 ```
-src/SmartWorkz.Core.Mobile/
+src/SmartWorkz.Core.MAUI/
 ├── Configuration/                  # NEW
 │   ├── IAppConfiguration.cs
 │   ├── AppConfiguration.cs
@@ -2072,9 +2072,9 @@ src/SmartWorkz.Core.Mobile/
 ### Task 13: Environment-Based Configuration
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Configuration/IAppConfiguration.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Configuration/AppConfiguration.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Configuration/AppConfigurationExtensions.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Configuration/IAppConfiguration.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Configuration/AppConfiguration.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Configuration/AppConfigurationExtensions.cs`
 
 *[Implementation follows same TDD pattern as previous tasks]*
 
@@ -2083,16 +2083,16 @@ src/SmartWorkz.Core.Mobile/
 ### Task 14: Accessibility Helpers
 
 **Files:**
-- Create: `src/SmartWorkz.Core.Mobile/Accessibility/IAccessibilityService.cs`
-- Create: `src/SmartWorkz.Core.Mobile/Accessibility/AccessibilityService.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Accessibility/IAccessibilityService.cs`
+- Create: `src/SmartWorkz.Core.MAUI/Accessibility/AccessibilityService.cs`
 
 ---
 
 ### Task 15: Component Testing Framework
 
 **Files:**
-- Create: `tests/SmartWorkz.Core.Mobile.Tests/TestViewModelBase.cs`
-- Create: `tests/SmartWorkz.Core.Mobile.Tests/TestDataBuilder.cs`
+- Create: `tests/SmartWorkz.Core.MAUI.Tests/TestViewModelBase.cs`
+- Create: `tests/SmartWorkz.Core.MAUI.Tests/TestDataBuilder.cs`
 
 ---
 

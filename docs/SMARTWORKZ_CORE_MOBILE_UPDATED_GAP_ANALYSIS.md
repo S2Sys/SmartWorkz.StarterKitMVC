@@ -1,4 +1,4 @@
-# SmartWorkz.Core.Mobile - Updated Gap Analysis
+# SmartWorkz.Core.MAUI - Updated Gap Analysis
 **Analysis Date:** April 23, 2026  
 **Scope:** Actual vs. Planned Implementation  
 **Baseline:** Continuous Review Prompt Framework (April 22, 2026)
@@ -25,7 +25,7 @@
 ### 1.1 What's Really Implemented
 
 ```
-SmartWorkz.Core.Mobile (Actual)
+SmartWorkz.Core.MAUI (Actual)
 ├── Models
 │   └── Contact.cs (record)
 │
@@ -72,7 +72,7 @@ SmartWorkz.Core.Mobile (Actual)
 **Expected vs. Actual:**
 ```
 EXPECTED (from framework doc):
-src/SmartWorkz.Core.Mobile/
+src/SmartWorkz.Core.MAUI/
 ├── ViewModels/           ❌ MISSING
 ├── Navigation/           ❌ MISSING
 ├── Forms/                ❌ MISSING
@@ -90,7 +90,7 @@ src/SmartWorkz.Core.Mobile/
 └── Platforms/            ✅ PARTIALLY STUBBED
 
 ACTUAL:
-src/SmartWorkz.Core.Mobile/
+src/SmartWorkz.Core.MAUI/
 ├── Models/
 │   └── Contact.cs        ✅ DONE
 ├── Services/
@@ -281,20 +281,20 @@ Option C: Permission Service (enables others)
 #### Sprint 0.1 (Week 1): Foundation
 ```
 Day 1-2: MVVM Foundation
-├─ File: src/SmartWorkz.Core.Mobile/ViewModels/ViewModelBase.cs
-├─ File: src/SmartWorkz.Core.Mobile/ViewModels/AsyncCommand.cs
-├─ File: src/SmartWorkz.Core.Mobile/ViewModels/IViewModelBase.cs
-├─ File: src/SmartWorkz.Core.Mobile/ViewModels/BindableProperty.cs
+├─ File: src/SmartWorkz.Core.MAUI/ViewModels/ViewModelBase.cs
+├─ File: src/SmartWorkz.Core.MAUI/ViewModels/AsyncCommand.cs
+├─ File: src/SmartWorkz.Core.MAUI/ViewModels/IViewModelBase.cs
+├─ File: src/SmartWorkz.Core.MAUI/ViewModels/BindableProperty.cs
 └─ Tests: tests/.../ViewModels/ViewModelBaseTests.cs (6 tests)
 
 Day 3-4: Navigation
-├─ File: src/SmartWorkz.Core.Mobile/Navigation/INavigationService.cs
-├─ File: src/SmartWorkz.Core.Mobile/Navigation/NavigationService.cs
-├─ File: src/SmartWorkz.Core.Mobile/Navigation/NavigationParameters.cs
+├─ File: src/SmartWorkz.Core.MAUI/Navigation/INavigationService.cs
+├─ File: src/SmartWorkz.Core.MAUI/Navigation/NavigationService.cs
+├─ File: src/SmartWorkz.Core.MAUI/Navigation/NavigationParameters.cs
 └─ Tests: tests/.../Navigation/NavigationServiceTests.cs (5 tests)
 
 Day 5: DI & Core Registration
-├─ File: src/SmartWorkz.Core.Mobile/ServiceCollectionExtensions.cs
+├─ File: src/SmartWorkz.Core.MAUI/ServiceCollectionExtensions.cs
 │   ├─ AddSmartWorkzMobile()
 │   ├─ RegisterViewModels()
 │   ├─ RegisterServices()
@@ -309,7 +309,7 @@ TESTS: 14 tests passing
 #### Sprint 0.2 (Week 2): Contacts Service (Completed)
 ```
 Day 1-2: Android Implementation
-├─ File: src/SmartWorkz.Core.Mobile/Platforms/Android/ContactsService.Android.cs
+├─ File: src/SmartWorkz.Core.MAUI/Platforms/Android/ContactsService.Android.cs
 │   ├─ Use ContentResolver to access contacts
 │   ├─ Handle READ_CONTACTS permission
 │   ├─ Parse contact data
@@ -318,7 +318,7 @@ Day 1-2: Android Implementation
 └─ EFFORT: 6-8 hours
 
 Day 2-3: iOS Implementation
-├─ File: src/SmartWorkz.Core.Mobile/Platforms/iOS/ContactsService.iOS.cs
+├─ File: src/SmartWorkz.Core.MAUI/Platforms/iOS/ContactsService.iOS.cs
 │   ├─ Use CNContactStore
 │   ├─ Handle permissions via IOS contacts framework
 │   ├─ Implement contact picker
@@ -350,7 +350,7 @@ TESTS: 12 tests passing
 
 ### 5.1 ViewModelBase (Foundation)
 ```csharp
-// src/SmartWorkz.Core.Mobile/ViewModels/ViewModelBase.cs
+// src/SmartWorkz.Core.MAUI/ViewModels/ViewModelBase.cs
 namespace SmartWorkz.Mobile.ViewModels;
 
 using System;
@@ -426,7 +426,7 @@ public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
 
 ### 5.2 AsyncCommand (for async operations)
 ```csharp
-// src/SmartWorkz.Core.Mobile/ViewModels/AsyncCommand.cs
+// src/SmartWorkz.Core.MAUI/ViewModels/AsyncCommand.cs
 namespace SmartWorkz.Mobile.ViewModels;
 
 using System;
@@ -477,7 +477,7 @@ public class AsyncCommand<T> : ICommand
 
 ### 5.3 Corrected DI Extension
 ```csharp
-// src/SmartWorkz.Core.Mobile/ServiceCollectionExtensions.cs
+// src/SmartWorkz.Core.MAUI/ServiceCollectionExtensions.cs
 namespace SmartWorkz.Mobile;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -486,7 +486,7 @@ using SmartWorkz.Mobile.Services;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Register all SmartWorkz.Core.Mobile services.
+    /// Register all SmartWorkz.Core.MAUI services.
     /// </summary>
     public static IServiceCollection AddSmartWorkzMobile(
         this IServiceCollection services)
@@ -510,7 +510,7 @@ public static class ServiceCollectionExtensions
 
 ### 5.4 Actual ContactsService Implementation (Android)
 ```csharp
-// src/SmartWorkz.Core.Mobile/Platforms/Android/ContactsService.Android.cs
+// src/SmartWorkz.Core.MAUI/Platforms/Android/ContactsService.Android.cs
 #if __ANDROID__
 namespace SmartWorkz.Mobile.Services;
 
@@ -760,7 +760,7 @@ TOTAL: 12 weeks for complete framework (from current stub state)
 
 ## CONCLUSION
 
-**The SmartWorkz.Core.Mobile framework document is comprehensive and well-designed, but represents an aspirational Phase 4.5 state that has not been implemented.**
+**The SmartWorkz.Core.MAUI framework document is comprehensive and well-designed, but represents an aspirational Phase 4.5 state that has not been implemented.**
 
 **Current reality: Phase 0.5 (foundation only, 1 stub service)**
 

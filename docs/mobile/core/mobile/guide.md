@@ -2,7 +2,7 @@
 
 ## Overview
 
-Extension methods for configuring SmartWorkz.Core.Mobile services in the dependency injection container.
+Extension methods for configuring SmartWorkz.Core.MAUI services in the dependency injection container.
 
 ## API Reference
 

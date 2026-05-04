@@ -3,7 +3,7 @@
 
 **Analysis Date:** April 22, 2026  
 **Framework Version:** Phase 4.5 (Post-Mobile Refinements)  
-**Scope:** SmartWorkz.Core + SmartWorkz.Core.Mobile + SmartWorkz.Core.Shared  
+**Scope:** SmartWorkz.Core + SmartWorkz.Core.MAUI + SmartWorkz.Core.Shared  
 
 ---
 
@@ -46,7 +46,7 @@ TIER 1: CORE FOUNDATION
 
 ```
 TIER 2: MOBILE & PLATFORM
-├── SmartWorkz.Core.Mobile (net9.0-ios, android, maccatalyst, windows)
+├── SmartWorkz.Core.MAUI (net9.0-ios, android, maccatalyst, windows)
 │   ├─ COMPLETE (Phase 4.5 Refinements):
 │   │   ├─ ViewModels: AsyncCommand, ViewModelBase, IViewModelBase
 │   │   ├─ Navigation: INavigationService, NavigationParameters
@@ -1036,7 +1036,7 @@ public interface ISecurityService
 
 **File Structure:**
 ```
-src/SmartWorkz.Core.Mobile/State/
+src/SmartWorkz.Core.MAUI/State/
 ├── IAction.cs
 ├── IReducer.cs
 ├── IMiddleware.cs
@@ -1049,7 +1049,7 @@ src/SmartWorkz.Core.Mobile/State/
 
 **Core Implementation:**
 ```csharp
-// src/SmartWorkz.Core.Mobile/State/IStateStore.cs
+// src/SmartWorkz.Core.MAUI/State/IStateStore.cs
 namespace SmartWorkz.Mobile.State;
 
 using System;
@@ -1099,7 +1099,7 @@ public interface IMiddleware<T> where T : class
 
 **File Structure:**
 ```
-tests/SmartWorkz.Core.Mobile.Tests/Infrastructure/
+tests/SmartWorkz.Core.MAUI.Tests/Infrastructure/
 ├── MockViewModelFactory.cs
 ├── NavigationTestHelper.cs
 ├── PermissionMocks.cs

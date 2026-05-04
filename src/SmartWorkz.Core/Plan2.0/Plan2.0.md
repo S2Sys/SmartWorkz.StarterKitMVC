@@ -1162,7 +1162,7 @@ public partial class FormBuilderComponent : ComponentBase
 
 1. **Create Component Folder Structure**
 ```
-src/SmartWorkz.Core.Mobile/
+src/SmartWorkz.Core.MAUI/
 ├── Components/
 │   ├── Buttons/
 │   │   └── CustomButton.xaml(.cs)

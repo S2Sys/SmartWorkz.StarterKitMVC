@@ -5,11 +5,11 @@
 ### ServiceCollectionExtensions
 
 - **Namespace:** `SmartWorkz.Mobile.ServiceCollectionExtensions`
-- **Summary:** Extension methods for configuring SmartWorkz.Core.Mobile services in the dependency injection container.
+- **Summary:** Extension methods for configuring SmartWorkz.Core.MAUI services in the dependency injection container.
 
 #### Methods & Properties
 
-- **AddSmartWorkzCoreMobile** - Adds SmartWorkz.Core.Mobile services to the dependency injection container with Phase B configuration.
+- **AddSmartWorkzCoreMobile** - Adds SmartWorkz.Core.MAUI services to the dependency injection container with Phase B configuration.
             
              Registers platform services, connectivity checks, storage, authentication, and synchronization capabilities.
              Supports configurable interceptors, analytics, and rate limiting.

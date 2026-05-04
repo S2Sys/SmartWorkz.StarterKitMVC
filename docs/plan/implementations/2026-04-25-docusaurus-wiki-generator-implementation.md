@@ -134,7 +134,7 @@ Create `tools/WikiGenerator/config.json`:
 ```json
 {
   "projectMappings": {
-    "SmartWorkz.Core.Mobile": {
+    "SmartWorkz.Core.MAUI": {
       "platform": "mobile",
       "layers": ["Core", "Infrastructure", "Application"]
     },
@@ -1219,7 +1219,7 @@ Complete API reference and usage guides for all SmartWorkz frameworks.
 ## Platforms
 
 ### Mobile
-MAUI-based cross-platform mobile framework. Used by SmartWorkz.Core.Mobile and sample apps.
+MAUI-based cross-platform mobile framework. Used by SmartWorkz.Core.MAUI and sample apps.
 
 ### Web
 ASP.NET Core web framework. Used by SmartWorkz.Core.Web and MVC applications.

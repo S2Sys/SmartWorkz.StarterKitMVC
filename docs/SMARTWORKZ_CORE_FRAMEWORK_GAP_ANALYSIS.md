@@ -2,7 +2,7 @@
 
 > **Analysis Date:** April 22, 2026  
 > **Framework:** SmartWorkz.Core + SmartWorkz.Core.Shared + SmartWorkz.Core.Web + SmartWorkz.Core.External  
-> **Benchmark:** SmartWorkz.Core.Mobile (quality reference)  
+> **Benchmark:** SmartWorkz.Core.MAUI (quality reference)  
 > **Scope:** Architecture, patterns, contracts, and production readiness
 
 ---

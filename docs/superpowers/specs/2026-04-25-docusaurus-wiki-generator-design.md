@@ -60,7 +60,7 @@ framework/
 ├── index.md (overview of all frameworks)
 ├── mobile/
 │   ├── core/
-│   │   ├── database.md (auto-gen from SmartWorkz.Core.Mobile)
+│   │   ├── database.md (auto-gen from SmartWorkz.Core.MAUI)
 │   │   ├── caching.md
 │   │   ├── state-management.md
 │   │   └── [other features]
@@ -118,7 +118,7 @@ Existing documentation migrated to Docusaurus:
 ```json
 {
   "projectMappings": {
-    "SmartWorkz.Core.Mobile": { "platform": "mobile", "layers": ["Core", "Infrastructure", "Application"] },
+    "SmartWorkz.Core.MAUI": { "platform": "mobile", "layers": ["Core", "Infrastructure", "Application"] },
     "SmartWorkz.Core.Web": { "platform": "web", "layers": ["Core", "Infrastructure", "Application"] },
     "SmartWorkz.Core.Shared": { "platform": "shared", "layers": ["Core"] },
     "SmartWorkz.StarterKitMVC": { "platform": "web", "layers": ["Application", "Infrastructure"] }

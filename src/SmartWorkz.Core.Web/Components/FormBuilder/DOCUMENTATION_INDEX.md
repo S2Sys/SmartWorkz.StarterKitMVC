@@ -275,5 +275,5 @@ These documentation files should be updated when:
 
 ## Related Documentation
 
-- SmartWorkz.Core.Mobile: `src/SmartWorkz.Core.Mobile/Components/COMPONENT_USAGE.md`
-- SmartWorkz.Core.Mobile: `src/SmartWorkz.Core.Mobile/Components/EXAMPLES.md`
+- SmartWorkz.Core.MAUI: `src/SmartWorkz.Core.MAUI/Components/COMPONENT_USAGE.md`
+- SmartWorkz.Core.MAUI: `src/SmartWorkz.Core.MAUI/Components/EXAMPLES.md`

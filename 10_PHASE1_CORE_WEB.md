@@ -1242,4 +1242,4 @@ git commit -m "docs(web): update README with all 25+ components and features"
 
 ---
 
-**Next:** Move to SmartWorkz.Core.Mobile implementation plan
+**Next:** Move to SmartWorkz.Core.MAUI implementation plan
