@@ -1,6 +1,15 @@
 @model SmartWorkz.Sample.ECommerce.Web.Models.CheckoutViewModel
 
-@{ ViewData["Title"] = "Checkout"; }
+@{ ViewData["Title"] = "Checkout";
+   var breadcrumbs = new List<SmartWorkz.Web.BreadcrumbItem>
+   {
+       new() { Label = "Home", Url = "/" },
+       new() { Label = "Cart", Url = "/Cart" },
+       new() { Label = "Checkout", Url = null }
+   };
+}
+
+<breadcrumb items="breadcrumbs"></breadcrumb>
 
 <h2>Checkout</h2>
 
@@ -36,7 +45,9 @@
                 <input asp-for="Checkout.Country" class="form-control" value="US" />
             </div>
 
-            <button type="submit" class="btn btn-success">Place Order</button>
+            <button variant="success" type="submit">
+                <i class="bi bi-check-circle me-1"></i>Place Order
+            </button>
         </form>
     </div>
     <div class="col-md-4">

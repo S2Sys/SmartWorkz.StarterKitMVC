@@ -5,7 +5,9 @@
 <div class="jumbotron bg-light p-5 mb-4">
     <h1 class="display-4">Welcome to ShopWorkz</h1>
     <p class="lead">Discover amazing products at great prices</p>
-    <a class="btn btn-success btn-lg" href="/catalog"><i class="bi bi-shop me-1"></i>Browse Catalog</a>
+    <button variant="success" size="lg" asp-controller="Catalog" asp-action="Products">
+        <i class="bi bi-shop me-1"></i>Browse Catalog
+    </button>
 </div>
 
 <h2 class="mb-4">Featured Products</h2>
@@ -17,7 +19,21 @@
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
                     <div class="card-body">
-                        <h5 class="card-title">@product.Name</h5>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title">@product.Name</h5>
+                            @if (product.Stock > 10)
+                            {
+                                <badge variant="success" size="sm">In Stock</badge>
+                            }
+                            else if (product.Stock > 0)
+                            {
+                                <badge variant="warning" size="sm">Low Stock</badge>
+                            }
+                            else
+                            {
+                                <badge variant="danger" size="sm">Out of Stock</badge>
+                            }
+                        </div>
                         <p class="card-text">@(product.Description != null && product.Description.Length > 50 ? product.Description.Substring(0, 50) + "..." : product.Description ?? "No description")</p>
                         <p class="card-text"><strong>$@product.Price</strong></p>
                     </div>
