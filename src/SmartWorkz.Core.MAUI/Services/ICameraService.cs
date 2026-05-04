@@ -1,4 +1,4 @@
-namespace SmartWorkz.Core.Mobile.Services;
+namespace SmartWorkz.Core.MAUI.Services;
 
 using SmartWorkz.Mobile;
 

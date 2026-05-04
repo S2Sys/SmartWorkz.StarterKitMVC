@@ -5,7 +5,7 @@ using Windows.Devices.Geolocation;
 using SmartWorkz.Mobile;
 using SmartWorkz.Mobile.Services;
 
-namespace SmartWorkz.Core.Mobile.Services;
+namespace SmartWorkz.Core.MAUI.Services;
 
 /// <summary>
 /// Windows-specific location service using UWP Geolocator API.

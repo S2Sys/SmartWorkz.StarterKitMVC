@@ -12,7 +12,7 @@ using Google.Android.Gms.Location;
 using SmartWorkz.Mobile;
 using SmartWorkz.Mobile.Services;
 
-namespace SmartWorkz.Core.Mobile.Services;
+namespace SmartWorkz.Core.MAUI.Services;
 
 /// <summary>
 /// Android-specific location service using Google Play Services Location API (FusedLocationProvider).

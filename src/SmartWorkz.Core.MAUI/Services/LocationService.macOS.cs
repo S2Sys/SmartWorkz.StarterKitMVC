@@ -6,7 +6,7 @@ using Foundation;
 using SmartWorkz.Mobile;
 using SmartWorkz.Mobile.Services;
 
-namespace SmartWorkz.Core.Mobile.Services;
+namespace SmartWorkz.Core.MAUI.Services;
 
 /// <summary>
 /// macOS and Mac Catalyst-specific location service using CoreLocation framework.
