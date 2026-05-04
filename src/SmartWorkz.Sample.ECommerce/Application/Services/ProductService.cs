@@ -1,15 +1,15 @@
-﻿using AutoMapper;
-using SmartWorkz.Core;
+﻿using SmartWorkz.Core;
+using SmartWorkz.Shared;
 using SmartWorkz.Sample.ECommerce.Application.DTOs;
 using SmartWorkz.Sample.ECommerce.Domain.Entities;
 using SmartWorkz.Sample.ECommerce.Domain.Specifications;
 
 namespace SmartWorkz.Sample.ECommerce.Application.Services;
 
-public class ProductService(IRepository<Product, int> repo, IMapper mapper)
+public class ProductService(IRepository<Product, int> repo, SmartWorkz.Shared.IMapper mapper)
     : ServiceBase<Product, ProductDto>(repo)
 {
-    private readonly IMapper _mapper = mapper;
+    private readonly SmartWorkz.Shared.IMapper _mapper = mapper;
 
     protected override ProductDto Map(Product entity) =>
         _mapper.Map<Product, ProductDto>(entity);
