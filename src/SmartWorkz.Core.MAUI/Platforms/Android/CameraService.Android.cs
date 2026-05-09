@@ -23,7 +23,6 @@ public partial class CameraService
     private static readonly object _lockObject = new();
     private static TaskCompletionSource<FileResult?>? _photoCompletionSource;
     private static TaskCompletionSource<FileResult?>? _videoCompletionSource;
-    private ILogger<CameraService>? _logger;
 
     private const int RequestCodePhotoCapture = 1001;
     private const int RequestCodeVideoCapture = 1002;

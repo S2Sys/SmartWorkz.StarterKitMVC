@@ -1,11 +1,13 @@
 ﻿namespace SmartWorkz.Core.Tests.Audit;
 
 using System.Data;
+using Dapper;
 using SmartWorkz.Core;
 using SmartWorkz.Shared;
 using Moq;
 using Xunit;
 using Microsoft.Extensions.Logging;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 /// <summary>
 /// Unit tests for SqlAuditTrail implementation.

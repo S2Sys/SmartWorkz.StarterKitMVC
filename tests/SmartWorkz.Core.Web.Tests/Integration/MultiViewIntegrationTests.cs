@@ -1,5 +1,5 @@
 ﻿using Xunit;
-using SmartWorkz.Web.Components.DataContext;
+using SmartWorkz.Web;
 using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Web.Tests.Integration;

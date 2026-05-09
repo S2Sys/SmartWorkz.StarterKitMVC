@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Moq;
 using SmartWorkz.Components;
-using SmartWorkz.Web.TagHelpers.Forms;
+using SmartWorkz.Web;
 using Xunit;
 
 namespace SmartWorkz.Core.Web.Tests.TagHelpers.Forms;

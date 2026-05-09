@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using SmartWorkz.Web.TagHelpers.Display;
+using SmartWorkz.Web;
 using Xunit;
 
 namespace SmartWorkz.Core.Web.Tests.TagHelpers.Display;

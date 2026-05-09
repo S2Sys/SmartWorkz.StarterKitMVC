@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="SmartWorkz.Mobile.Components.CustomPicker"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <VerticalStackLayout Spacing="4">
+        <Label
+            x:Name="LabelLabel"
+            FontAttributes="Bold"
+            FontSize="14"
+            Text="{Binding Label, Source={RelativeSource AncestorType={x:Type ContentView}}}"
+            TextColor="#333333" />
+        <Border
+            Padding="0"
+            StrokeThickness="1"
+            Stroke="#D3D3D3"
+            StrokeShape="RoundRectangle 6">
+            <Picker
+                x:Name="PickerControl"
+                Padding="12,8"
+                BackgroundColor="White"
+                FontSize="14"
+                ItemsSource="{Binding ItemsSource, Source={RelativeSource AncestorType={x:Type ContentView}}}"
+                SelectedItem="{Binding SelectedItem, Source={RelativeSource AncestorType={x:Type ContentView}}, Mode=TwoWay}"
+                TextColor="#333333"
+                Title="Select an item" />
+        </Border>
+    </VerticalStackLayout>
+</ContentView>

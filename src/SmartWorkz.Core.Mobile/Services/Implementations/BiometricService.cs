@@ -35,7 +35,7 @@ public class BiometricService : IBiometricService
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to check biometric availability", ex);
+            _logger.LogError(ex, "Failed to check biometric availability");
             return false;
         }
         #endif
@@ -57,7 +57,7 @@ public class BiometricService : IBiometricService
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to get biometric type", ex);
+            _logger.LogError(ex, "Failed to get biometric type");
             return BiometricType.None;
         }
         #endif
@@ -95,7 +95,7 @@ public class BiometricService : IBiometricService
         }
         catch (Exception ex)
         {
-            _logger.LogError("Biometric authentication error", ex);
+            _logger.LogError(ex, "Biometric authentication error");
 
             if (ex.Message.Contains("denied", StringComparison.OrdinalIgnoreCase) ||
                 ex.Message.Contains("permission", StringComparison.OrdinalIgnoreCase))
