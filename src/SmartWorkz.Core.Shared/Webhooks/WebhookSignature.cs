@@ -16,6 +16,18 @@ public static class WebhookSignature
     public const string Algorithm = "sha256";
 
     /// <summary>
+    /// Sign a webhook event using the provided secret key.
+    /// </summary>
+    /// <param name="webhookEvent">The webhook event to sign.</param>
+    /// <param name="secretKey">The webhook secret key.</param>
+    /// <returns>HMAC-SHA256 signature in hex format.</returns>
+    public static string Sign(WebhookEvent webhookEvent, string secretKey)
+    {
+        var json = JsonSerializer.Serialize(webhookEvent, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+        return Sign(json, secretKey);
+    }
+
+    /// <summary>
     /// Sign a webhook payload using the provided secret key.
     /// </summary>
     /// <param name="payload">The webhook payload to sign.</param>

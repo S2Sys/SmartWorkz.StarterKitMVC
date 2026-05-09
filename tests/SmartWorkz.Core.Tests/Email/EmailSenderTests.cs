@@ -15,7 +15,7 @@ public class EmailSenderTests
             Host = "smtp.example.com",
             Port = 587,
             Username = "test@example.com",
-            Password = "password",
+            Password = "test_password_123",
             FromAddress = "noreply@example.com",
             FromDisplayName = "Test App",
             EnableSsl = true,

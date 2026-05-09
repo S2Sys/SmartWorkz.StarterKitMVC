@@ -1,0 +1,188 @@
+// =============================================================================
+// SmartWorkz.Core Dependency Injection Configuration Example
+// This file demonstrates the complete setup of all DI modules in Program.cs
+// Copy this pattern to your ASP.NET Core application's Program.cs
+// =============================================================================
+
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using SmartWorkz.Core.Shared.Caching;
+using SmartWorkz.Core.Shared.Logging;
+using SmartWorkz.Core.Shared.Services;
+using SmartWorkz.Core.Shared.Webhooks.Extensions;
+
+// =============================================================================
+// APPLICATION STARTUP: Configure services and middleware
+// =============================================================================
+
+var builder = WebApplication.CreateBuilder(args);
+
+// ---------------------------------------------------------------------------
+// PHASE 1: Core Infrastructure (Must be registered first)
+// ---------------------------------------------------------------------------
+
+// 1.1: Structured Logging (Serilog)
+// Dependency: configuration
+// Registers: ILoggerProvider, Log.Logger (global), EnrichedLogger
+builder.Services.AddStructuredLogging(builder.Configuration);
+
+// Get logger for startup diagnostics
+var startupLogger = Log.ForContext<Program>();
+startupLogger.Information("SmartWorkz.Core application starting");
+
+// 1.2: Memory Cache Foundation
+// Dependency: None
+// Registers: IMemoryCache with size limits and eviction policy
+builder.Services.AddMemoryCache(opts =>
+{
+    opts.SizeLimit = 10_000;           // Max 10k cache entries
+    opts.CompactionPercentage = 0.25;  // Remove 25% when limit hit
+});
+
+// 1.3: Query Cache Service (wraps memory cache)
+// Dependency: IMemoryCache
+// Registers: IQueryCacheService for query result caching
+builder.Services.AddScoped<IQueryCacheService, QueryCacheService>();
+
+startupLogger.Information("Core infrastructure initialized: Logging, Cache");
+
+// ---------------------------------------------------------------------------
+// PHASE 2: Business Domain Services
+// ---------------------------------------------------------------------------
+
+// 2.1: CQRS Query Handler Discovery
+// Dependency: IQueryCacheService (for cached decorators)
+// Registers: All types implementing IQueryHandler<TQuery, TResult>
+// Scans current assembly for handlers
+builder.Services.AddQueryHandlers(typeof(Program).Assembly);
+
+startupLogger.Information("Query handlers registered from assembly");
+
+// 2.2: Business Services
+// Dependency: ILogger, IQueryCacheService, repositories
+// Registers: Domain services that implement business logic
+builder.Services.AddScoped<IUserService, UserService>();
+
+// Example: Register repositories if using data layer
+// builder.Services.AddScoped<IUserRepository, UserRepository>();
+// builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+startupLogger.Information("Business services registered");
+
+// 2.3: Webhook System
+// Dependency: IHttpClientFactory, IWebhookRegistry (concrete impl)
+// Registers: IWebhookPublisher, IWebhookRegistry, HttpClientFactory
+// Generic variant allows specifying custom registry implementation
+builder.Services.AddWebhooks<SqlWebhookRegistry>();
+
+startupLogger.Information("Webhook infrastructure registered");
+
+// ---------------------------------------------------------------------------
+// PHASE 3: ASP.NET Core Framework Services
+// ---------------------------------------------------------------------------
+
+// 3.1: MVC/Controllers
+builder.Services.AddControllers();
+
+// 3.2: HTTP Client Factory (pooled HTTP clients)
+// Note: May be called by AddWebhooks, safe to call multiple times
+builder.Services.AddHttpClient();
+
+// 3.3: CORS (Cross-Origin Resource Sharing)
+builder.Services.AddCors(opts =>
+{
+    opts.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:3000", "https://yourapp.com")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
+startupLogger.Information("ASP.NET Core services registered: Controllers, HttpClient, CORS");
+
+// ---------------------------------------------------------------------------
+// PHASE 4: Build application and configure middleware pipeline
+// ---------------------------------------------------------------------------
+
+var app = builder.Build();
+
+// Configure exception handling by environment
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    startupLogger.Information("Running in Development environment with detailed errors");
+}
+else
+{
+    // Production: Don't expose stack traces to clients
+    app.UseExceptionHandler("/error");
+    app.UseHsts();
+    startupLogger.Information("Running in Production environment with secured headers");
+}
+
+// ---------------------------------------------------------------------------
+// MIDDLEWARE PIPELINE (order is critical!)
+// ---------------------------------------------------------------------------
+
+// Order: Logging → Routing → CORS → Custom → Application Logic
+
+// Logging: Captures all HTTP requests/responses
+app.UseSerilogRequestLogging();
+
+// Security: HTTPS redirection and HSTS headers
+app.UseHttpsRedirection();
+
+// CORS: Handle cross-origin requests
+app.UseCors();
+
+// Authentication (if using)
+// app.UseAuthentication();
+
+// Authorization (if using)
+// app.UseAuthorization();
+
+// Routing
+app.MapControllers();
+
+// Health check endpoint (optional but recommended)
+app.MapGet("/health", () => new { status = "healthy" });
+
+startupLogger.Information("Middleware pipeline configured");
+
+// ---------------------------------------------------------------------------
+// PHASE 5: Run Application with Graceful Shutdown
+// ---------------------------------------------------------------------------
+
+try
+{
+    startupLogger.Information(
+        "Starting web application on {HostEnvironment}",
+        app.Environment.EnvironmentName);
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    // Log critical startup errors
+    startupLogger.Fatal(ex, "Application terminated unexpectedly during startup");
+    throw;
+}
+finally
+{
+    // Always flush logs before exit
+    startupLogger.Information("Application shutdown completed");
+    Log.CloseAndFlush();
+}
+
+// =============================================================================
+// NOTE: This Program.cs assumes:
+// 1. All SmartWorkz.Core.Shared modules are referenced
+// 2. appsettings.json contains logging and application configuration
+// 3. SqlWebhookRegistry is implemented in your project
+// 4. UserService and other services are implemented
+// 5. Query handlers exist in the calling assembly
+// =============================================================================

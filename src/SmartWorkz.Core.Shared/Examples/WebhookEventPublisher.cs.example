@@ -1,0 +1,378 @@
+// =============================================================================
+// Webhook Event Publishing Example
+//
+// This example demonstrates how to use the webhook system to publish
+// domain events asynchronously to registered webhook endpoints.
+// =============================================================================
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SmartWorkz.Core.Shared.Caching;
+using SmartWorkz.Core.Shared.Webhooks.Abstractions;
+
+namespace SmartWorkz.Core.Shared.Examples;
+
+// =============================================================================
+// DOMAIN EVENTS: Events that occur in your business domain
+// =============================================================================
+
+/// <summary>
+/// Domain event: A user account was created.
+/// This event is published whenever a new user is registered.
+/// </summary>
+public record UserCreatedEvent
+{
+    public string UserId { get; init; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
+    public string FirstName { get; init; } = string.Empty;
+    public string LastName { get; init; } = string.Empty;
+    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+    public string CreatedByUserId { get; init; } = string.Empty;
+}
+
+/// <summary>
+/// Domain event: A user profile was updated.
+/// This event is published after user changes their profile information.
+/// </summary>
+public record UserUpdatedEvent
+{
+    public string UserId { get; init; } = string.Empty;
+    public string UpdatedByUserId { get; init; } = string.Empty;
+    public DateTime UpdatedAt { get; init; } = DateTime.UtcNow;
+    public string[] ChangedFields { get; init; } = Array.Empty<string>();
+}
+
+// =============================================================================
+// SERVICE: User Service with Event Publishing
+// =============================================================================
+
+/// <summary>
+/// Business service that publishes domain events when user operations occur.
+/// Webhooks are triggered asynchronously after the event is published.
+/// </summary>
+public class UserServiceWithWebhooks
+{
+    private readonly ILogger<UserServiceWithWebhooks> _logger;
+    private readonly IWebhookPublisher _webhookPublisher;
+    private readonly IQueryCacheService _cache;
+
+    public UserServiceWithWebhooks(
+        ILogger<UserServiceWithWebhooks> logger,
+        IWebhookPublisher webhookPublisher,
+        IQueryCacheService cache)
+    {
+        _logger = logger;
+        _webhookPublisher = webhookPublisher;
+        _cache = cache;
+    }
+
+    /// <summary>
+    /// Create a new user and publish creation event to all registered webhooks.
+    /// </summary>
+    public async Task<UserDto> CreateUserAsync(
+        string email,
+        string firstName,
+        string lastName,
+        string createdBy,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation(
+            "Creating user {Email} by {CreatedBy}",
+            email, createdBy);
+
+        // 1. Create user in database (simulated)
+        var userId = Guid.NewGuid().ToString();
+        var user = new UserDto(userId, email, firstName, lastName);
+
+        // 2. Invalidate cache of all users
+        _cache.Remove("users:all");
+
+        // 3. Publish creation event to all registered webhooks
+        var @event = new UserCreatedEvent
+        {
+            UserId = userId,
+            Email = email,
+            FirstName = firstName,
+            LastName = lastName,
+            CreatedByUserId = createdBy,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        try
+        {
+            _logger.LogInformation(
+                "Publishing UserCreatedEvent for user {UserId}",
+                userId);
+
+            // Publish to all webhooks (asynchronous, non-blocking)
+            await _webhookPublisher.PublishAsync(@event, cancellationToken);
+
+            _logger.LogInformation(
+                "UserCreatedEvent published successfully for user {UserId}",
+                userId);
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't fail the user creation
+            // Webhooks are best-effort with retry logic
+            _logger.LogWarning(
+                ex,
+                "Failed to publish UserCreatedEvent for user {UserId}",
+                userId);
+        }
+
+        return user;
+    }
+
+    /// <summary>
+    /// Update a user and publish update event.
+    /// </summary>
+    public async Task<UserDto> UpdateUserAsync(
+        string userId,
+        string firstName,
+        string lastName,
+        string updatedBy,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation(
+            "Updating user {UserId} by {UpdatedBy}",
+            userId, updatedBy);
+
+        // 1. Update user in database (simulated)
+        var user = new UserDto(userId, $"{userId}@example.com", firstName, lastName);
+
+        // 2. Invalidate cache entries for this user
+        _cache.Remove($"user:{userId}");
+        _cache.Remove("users:all");
+
+        // 3. Publish update event
+        var @event = new UserUpdatedEvent
+        {
+            UserId = userId,
+            UpdatedByUserId = updatedBy,
+            UpdatedAt = DateTime.UtcNow,
+            ChangedFields = new[] { "FirstName", "LastName" }
+        };
+
+        try
+        {
+            _logger.LogInformation(
+                "Publishing UserUpdatedEvent for user {UserId}",
+                userId);
+
+            await _webhookPublisher.PublishAsync(@event, cancellationToken);
+
+            _logger.LogInformation(
+                "UserUpdatedEvent published successfully for user {UserId}",
+                userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Failed to publish UserUpdatedEvent for user {UserId}",
+                userId);
+        }
+
+        return user;
+    }
+}
+
+// =============================================================================
+// REGISTRATION IN PROGRAM.CS
+// =============================================================================
+
+/*
+ * Add to Program.cs:
+ *
+ * // 1. Register webhook system with custom registry
+ * builder.Services.AddWebhooks<YourWebhookRegistry>();
+ *
+ * // 2. Register service that publishes events
+ * builder.Services.AddScoped<UserServiceWithWebhooks>();
+ *
+ * // Usage in your endpoint:
+ * [HttpPost("users")]
+ * public async Task<IActionResult> CreateUser(
+ *     CreateUserRequest request,
+ *     UserServiceWithWebhooks service,
+ *     CancellationToken ct)
+ * {
+ *     var user = await service.CreateUserAsync(
+ *         request.Email,
+ *         request.FirstName,
+ *         request.LastName,
+ *         User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "system",
+ *         ct);
+ *
+ *     return CreatedAtAction(nameof(GetUser), new { userId = user.Id }, user);
+ * }
+ */
+
+// =============================================================================
+// WEBHOOK LISTENER IMPLEMENTATION (Example Webhook Endpoint)
+// =============================================================================
+
+/// <summary>
+/// Example of a webhook endpoint that receives published events.
+/// This would be hosted on an external system or within your service
+/// as a background worker that listens to webhook deliveries.
+/// </summary>
+public class WebhookEventListener
+{
+    private readonly ILogger<WebhookEventListener> _logger;
+
+    public WebhookEventListener(ILogger<WebhookEventListener> logger)
+    {
+        _logger = logger;
+    }
+
+    /// <summary>
+    /// Webhook endpoint handler (typically an HTTP POST endpoint).
+    /// Receives events published by the webhook system.
+    /// </summary>
+    public async Task HandleWebhookAsync(
+        string eventType,
+        object payload,
+        string signature,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation(
+            "Received webhook event: {EventType}",
+            eventType);
+
+        // Verify HMAC signature (webhook system handles this)
+        // signature should be validated using webhook secret
+
+        try
+        {
+            // Process event based on type
+            if (eventType == nameof(UserCreatedEvent) && payload is UserCreatedEvent createdEvent)
+            {
+                await HandleUserCreatedAsync(createdEvent, cancellationToken);
+            }
+            else if (eventType == nameof(UserUpdatedEvent) && payload is UserUpdatedEvent updatedEvent)
+            {
+                await HandleUserUpdatedAsync(updatedEvent, cancellationToken);
+            }
+            else
+            {
+                _logger.LogWarning("Unknown webhook event type: {EventType}", eventType);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing webhook event: {EventType}", eventType);
+            throw;  // Signal failure for retry logic
+        }
+    }
+
+    /// <summary>Handle a user creation event (e.g., send welcome email, trigger onboarding).</summary>
+    private async Task HandleUserCreatedAsync(UserCreatedEvent @event, CancellationToken ct)
+    {
+        _logger.LogInformation(
+            "Handling user creation: {UserId} ({Email})",
+            @event.UserId, @event.Email);
+
+        // Example: Send welcome email
+        // await _emailService.SendWelcomeEmailAsync(@event.Email, @event.FirstName, ct);
+
+        // Example: Initialize user settings
+        // await _settingsService.InitializeUserSettingsAsync(@event.UserId, ct);
+
+        // Example: Subscribe to default notifications
+        // await _notificationService.SubscribeToDefaultsAsync(@event.UserId, ct);
+
+        await Task.Delay(100, ct);  // Simulate async work
+        _logger.LogInformation("User creation handled successfully: {UserId}", @event.UserId);
+    }
+
+    /// <summary>Handle a user update event (e.g., update search index, sync to external system).</summary>
+    private async Task HandleUserUpdatedAsync(UserUpdatedEvent @event, CancellationToken ct)
+    {
+        _logger.LogInformation(
+            "Handling user update: {UserId} (changed: {Fields})",
+            @event.UserId, string.Join(", ", @event.ChangedFields));
+
+        // Example: Update search index
+        // await _searchService.UpdateUserIndexAsync(@event.UserId, ct);
+
+        // Example: Sync to external system
+        // await _externalSyncService.SyncUserAsync(@event.UserId, ct);
+
+        // Example: Trigger dependent workflows
+        // if (@event.ChangedFields.Contains("Email"))
+        //     await _workflowService.TriggerEmailVerificationAsync(@event.UserId, ct);
+
+        await Task.Delay(100, ct);  // Simulate async work
+        _logger.LogInformation("User update handled successfully: {UserId}", @event.UserId);
+    }
+}
+
+// =============================================================================
+// WEBHOOK FLOW DIAGRAM
+// =============================================================================
+
+/*
+ * FLOW: Event Publishing and Delivery
+ *
+ * 1. Business Operation Occurs
+ *    └─> UserService.CreateUserAsync() is called
+ *
+ * 2. Event Published
+ *    └─> _webhookPublisher.PublishAsync(new UserCreatedEvent { ... })
+ *
+ * 3. Webhook System Looks Up Registered Endpoints
+ *    └─> SELECT * FROM WebhookEndpoints WHERE IsActive = 1 AND EventTypes CONTAINS 'UserCreatedEvent'
+ *
+ * 4. For Each Endpoint
+ *    ├─> Generate HMAC-SHA256 signature of payload
+ *    ├─> POST to endpoint URL with headers:
+ *    │   X-Webhook-Event: UserCreatedEvent
+ *    │   X-Webhook-Signature: sha256=...
+ *    │   X-Webhook-Timestamp: 2026-04-27T14:35:22Z
+ *    └─> Body: {"UserId": "user-123", "Email": "alice@example.com", ...}
+ *
+ * 5. Endpoint Response
+ *    ├─> 200 OK: Success, event marked delivered
+ *    ├─> 4xx: Permanent failure, event abandoned
+ *    ├─> 5xx or timeout: Retryable, exponential backoff
+ *    │   Retry after: 5s, 30s, 2m, 15m, 1h, 6h
+ *    └─> Max 6 attempts over 24 hours
+ *
+ * 6. Logging and Monitoring
+ *    └─> All deliveries logged with success/failure status
+ */
+
+// =============================================================================
+// KEY CONCEPTS
+// =============================================================================
+
+/*
+ * ASYNCHRONOUS DELIVERY:
+ * - Event publication does not wait for webhook delivery
+ * - Service continues immediately, webhook delivery happens in background
+ * - Use for integration points that don't require immediate response
+ *
+ * IDEMPOTENCY:
+ * - Webhooks may be delivered multiple times (at-least-once delivery)
+ * - Ensure handlers are idempotent: same event multiple times = same result
+ * - Use event ID or idempotency key to deduplicate
+ *
+ * SECURITY:
+ * - All webhook requests are HMAC-SHA256 signed
+ * - Endpoints must verify signature before processing
+ * - Use webhook secret from registration
+ *
+ * RETRY LOGIC:
+ * - Automatic exponential backoff for transient failures
+ * - Max 6 attempts over 24 hours
+ * - Manual retry available in admin dashboard
+ *
+ * MONITORING:
+ * - Track delivery success/failure rates
+ * - Alert on high failure rates
+ * - Dashboard shows endpoint health and last delivery status
+ */
