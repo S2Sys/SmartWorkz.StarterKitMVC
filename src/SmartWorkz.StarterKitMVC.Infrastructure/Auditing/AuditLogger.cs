@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SmartWorkz.StarterKitMVC.Application.Abstractions;
+using SmartWorkz.StarterKitMVC.Application.MultiTenancy;
 using SmartWorkz.StarterKitMVC.Domain.Entities.Auth;
 using SmartWorkz.StarterKitMVC.Infrastructure.Data;
 

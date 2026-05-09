@@ -109,7 +109,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
         // Audit logging for GDPR/SOC2 compliance
-        services.AddScoped<IAuditLogger, AuditLogger>();
+        services.AddScoped<SmartWorkz.StarterKitMVC.Application.Abstractions.IAuditLogger, AuditLogger>();
 
         // Translation service (DB-backed, memory cached)
         services.AddMemoryCache();
