@@ -1,6 +1,6 @@
 ﻿using Xunit;
 using Moq;
-using SmartWorkz.Web.Services.Grid;
+using SmartWorkz.Grid;
 using SmartWorkz.Shared;
 
 namespace SmartWorkz.Core.Web.Tests.Services;

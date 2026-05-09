@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Moq;
-using SmartWorkz.Web.Services.Components;
+using SmartWorkz.Components;
 using SmartWorkz.Web.TagHelpers.Display;
 using Xunit;
 

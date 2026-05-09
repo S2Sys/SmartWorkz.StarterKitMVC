@@ -25,7 +25,14 @@
       "Read(//c/Users/tsent/.worktrees/phase1-mobile-location/src/SmartWorkz.Core.Mobile/Services/**)",
       "Read(//c/Users/tsent/.worktrees/phase1-mobile-location/tests/SmartWorkz.Core.Mobile.Tests/**)",
       "PowerShell(Get-ChildItem \"c:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\\" | Where-Object {$_.Name -match \"mobile|maui\"}  | Select-Object Name, FullName)",
-      "PowerShell($xml = New-Object System.Xml.XmlDocument; try { $xml.Load\\(\"c:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\SmartWorkz.StarterKitMVC\\\\src\\\\SmartWorkz.Core.MAUI\\\\SmartWorkz.Core.MAUI.csproj\"\\); Write-Host \"✓ Valid XML\" } catch { Write-Host \"✗ Invalid XML: $_\" })"
+      "PowerShell($xml = New-Object System.Xml.XmlDocument; try { $xml.Load\\(\"c:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\SmartWorkz.StarterKitMVC\\\\src\\\\SmartWorkz.Core.MAUI\\\\SmartWorkz.Core.MAUI.csproj\"\\); Write-Host \"✓ Valid XML\" } catch { Write-Host \"✗ Invalid XML: $_\" })",
+      "PowerShell(cd \"c:\\\\Users\\\\tsent\\\\source\\\\repos\\\\S2Sys\\\\SmartWorkz.StarterKitMVC\"; $files = @\\(\"01_README_IMPLEMENTATION_PLANS.md\", \"20_PHASE2_CORE_MOBILE.md\", \"30_DEVOPS_CI_CD.md\"\\); foreach \\($f in $files\\) { $content = Get-Content -Path $f -Raw; $count = \\([regex]::Matches\\($content, \"SmartWorkz\\\\.Core\\\\.MAUI\"\\)\\).Count; Write-Output \"$f`: $count occurrences of SmartWorkz.Core.MAUI\" })",
+      "PowerShell(netstat -ano | findstr :5051 | ForEach-Object { $pid = $_.Split\\(\\)[4]; taskkill /PID $pid /F 2>$null } | Out-Null; Start-Sleep -Milliseconds 500; Write-Host \"Port 5051 cleared\")",
+      "PowerShell(Get-NetTCPConnection -LocalPort 5051 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; Start-Sleep -Milliseconds 500; Write-Host \"Port 5051 cleared\")",
+      "PowerShell(Get-Process dotnet -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Force -ErrorAction SilentlyContinue)",
+      "PowerShell($result = netstat -ano 2>$null | Select-String ':5051' -ErrorAction SilentlyContinue; if \\($result\\) { Write-Host \"Port 5051 still in use: $result\" } else { Write-Host \"Port 5051 is free\" })",
+      "PowerShell(Stop-Process -Id 6944 -Force -ErrorAction SilentlyContinue)"
     ],
     "additionalDirectories": [
       "C:\\Users\\tsent\\source\\repos\\S2Sys\\SmartWorkz.Core.Mobile\\src\\SmartWorkz.Core.Mobile\\Platforms\\Windows",

@@ -1,6 +1,6 @@
 ﻿namespace SmartWorkz.Core.Web.Tests.Services;
 
-using SmartWorkz.Web.Services.Components;
+using SmartWorkz.Components;
 using Xunit;
 
 public class FormComponentProviderTests

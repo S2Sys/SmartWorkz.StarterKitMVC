@@ -1,5 +1,5 @@
 ﻿using Xunit;
-using SmartWorkz.Web.Services.DataView;
+using SmartWorkz.DataView;
 
 namespace SmartWorkz.Core.Web.Tests.Services;
 

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SmartWorkz.Core.Shared.Webhooks.Abstractions;
 using SmartWorkz.Core.Shared.Webhooks.Implementations;
+using IWebhookRegistry = SmartWorkz.Core.Shared.Webhooks.Abstractions.IWebhookRegistry;
 
 namespace SmartWorkz.Core.Shared.Webhooks.Extensions;
 

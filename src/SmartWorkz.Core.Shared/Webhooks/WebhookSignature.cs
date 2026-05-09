@@ -43,20 +43,20 @@ public static class WebhookSignature
         return Sign(json, secretKey);
     }
 
-    /// <summary>
-    /// Sign a webhook event using the provided secret key.
-    /// </summary>
-    public static string Sign(WebhookEvent @event, string secretKey)
-    {
-        if (@event == null)
-            throw new ArgumentNullException(nameof(@event));
-        if (secretKey == null)
-            throw new ArgumentNullException(nameof(secretKey));
+    ///// <summary>
+    ///// Sign a webhook event using the provided secret key.
+    ///// </summary>
+    //public static string Sign(WebhookEvent @event, string secretKey)
+    //{
+    //    if (@event == null)
+    //        throw new ArgumentNullException(nameof(@event));
+    //    if (secretKey == null)
+    //        throw new ArgumentNullException(nameof(secretKey));
 
-        var options = new JsonSerializerOptions { PropertyNamingPolicy = null };
-        var json = JsonSerializer.Serialize(@event, options);
-        return Sign(json, secretKey);
-    }
+    //    var options = new JsonSerializerOptions { PropertyNamingPolicy = null };
+    //    var json = JsonSerializer.Serialize(@event, options);
+    //    return Sign(json, secretKey);
+    //}
 
     /// <summary>
     /// Sign a JSON string using the provided secret key.

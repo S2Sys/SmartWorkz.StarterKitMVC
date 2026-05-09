@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using SmartWorkz.Core.Shared.Webhooks.Abstractions;
 using SmartWorkz.Core.Shared.Webhooks.Models;
+using IWebhookRegistry = SmartWorkz.Core.Shared.Webhooks.Abstractions.IWebhookRegistry;
 using SmartWorkz.Core.Shared.Webhooks.Security;
 
 namespace SmartWorkz.Core.Shared.Webhooks.Implementations;
