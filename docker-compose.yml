@@ -1,11 +1,71 @@
 version: '3.8'
 
 services:
-  web:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: smartworkz-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "P@ssw0rd123!"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql/data
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "P@ssw0rd123!", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  redis:
+    image: redis:7-alpine
+    container_name: smartworkz-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  app:
     build:
       context: .
-      dockerfile: Dockerfile
-    ports:
-      - "5000:80"
+      dockerfile: Dockerfile.public
+    container_name: smartworkz-public
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=SmartWorkz;User Id=sa;Password=P@ssw0rd123!;TrustServerCertificate=true;"
+      ConnectionStrings__Redis: "redis:6379"
+      Features__Swagger__Enabled: "true"
+      Features__Authentication__Jwt__Secret: "your-secret-key-minimum-32-characters-long!"
+      Features__Authentication__Jwt__Issuer: "http://smartworkz"
+      Features__Authentication__Jwt__Audience: "http://smartworkz"
+    ports:
+      - "8080:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  sqlserver_data:
+  redis_data:
+
+networks:
+  default:
+    name: smartworkz-network

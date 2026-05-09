@@ -11,12 +11,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using SmartWorkz.Core.External.Export;
+using SmartWorkz.Shared;
 using SmartWorkz.StarterKitMVC.Application.Abstractions;
 using SmartWorkz.StarterKitMVC.Application.Authorization;
 using SmartWorkz.StarterKitMVC.Application.Localization;
 using SmartWorkz.StarterKitMVC.Application.Repositories;
 using SmartWorkz.StarterKitMVC.Application.Services;
 using SmartWorkz.StarterKitMVC.Infrastructure.Authorization;
+using SmartWorkz.StarterKitMVC.Infrastructure.Auditing;
 using SmartWorkz.StarterKitMVC.Infrastructure.Data;
 using SmartWorkz.StarterKitMVC.Infrastructure.EmailTemplates;
 using SmartWorkz.StarterKitMVC.Infrastructure.Repositories;
@@ -106,6 +108,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IClaimService, ClaimService>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
+        // Audit logging for GDPR/SOC2 compliance
+        services.AddScoped<IAuditLogger, AuditLogger>();
+
         // Translation service (DB-backed, memory cached)
         services.AddMemoryCache();
         services.AddScoped<ITranslationRepository, TranslationRepository>();
@@ -156,7 +161,7 @@ public static class ServiceCollectionExtensions
             services.AddDistributedMemoryCache();
         }
 
-        services.AddSingleton<ICacheService, HybridCacheService>();
+        services.AddSingleton<SmartWorkz.StarterKitMVC.Application.Abstractions.ICacheService, HybridCacheService>();
         return services;
     }
 
@@ -207,6 +212,15 @@ public static class ServiceCollectionExtensions
         services.AddCacheServices(configuration);
         services.AddJwtAuthentication(configuration);
         services.AddMassTransitMessaging(configuration);
+
+        // CQRS dispatchers with automatic handler discovery
+        services.AddCqrs(
+            typeof(SmartWorkz.StarterKitMVC.Application.Abstractions.ICacheService).Assembly,
+            typeof(CommandDispatcher).Assembly);
+
+        // OpenTelemetry distributed tracing
+        var telemetryConfigurator = new SmartWorkz.StarterKitMVC.Infrastructure.Telemetry.OpenTelemetryConfigurator();
+        telemetryConfigurator.ConfigureTelemetry(services, configuration);
 
         // Translation cache warm-up at startup
         services.AddHostedService<TranslationCacheWarmupService>();
