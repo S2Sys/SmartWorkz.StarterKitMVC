@@ -1,0 +1,17 @@
+{
+  "version": "1.0",
+  "toolkit_source": {
+    "type": "ado",
+    "organization": "smartworkz",
+    "project": "SmartWorkz",
+    "repo": "main-product",
+    "pat_env_var": "ADO_PAT"
+  },
+  "auto_sync": {
+    "enabled": true,
+    "on_load": true,
+    "on_pull": true,
+    "cache_minutes": 60
+  },
+  "description": "SmartWorkz product - syncs commands from SmartWorkz/main-product to user-level ~/.claude"
+}

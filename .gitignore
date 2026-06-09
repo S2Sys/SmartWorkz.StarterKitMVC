@@ -21,8 +21,40 @@ Thumbs.db
 # Git worktrees
 .worktrees/
 
-# Claude development artifacts (planning, temporary work)
-.claude/
+# ============================================================================
+# Claude Code - Multi-Project Auto-Download Configuration
+# ============================================================================
+
+# Category A: Auto-downloaded (synced from ADO source, never commit)
+.claude/commands/
+.claude/mcp-servers/
+.claude/plugins/
+.claude/templates/
+.claude/refs/
+
+# Category C: Session-generated ephemeral files (never commit)
+.claude/session-env/
+.claude/sessions/
+.claude/backups/
+.claude/file-history/
+.claude/downloads/
+
+# Sync metadata (never commit)
+.claude/.downloaded
+.claude/.last-sync
+.claude/.last-sync-error.log
+
+# Keep these (project-level decision artifacts - MUST COMMIT)
+!.claude/toolkit/CLAUDE.md
+!.claude/toolkit/CONTEXT.md
+!.claude/toolkit/DECISIONS.md
+!.claude/toolkit/ENTITIES.md
+!.claude/toolkit/BREAKDOWN.md
+!.claude/toolkit/ROADMAP.md
+!.claude/toolkit/PROMPTS.md
+!.claude/.toolkitrc.json
+!.claude/hooks/
+!.claude/security/
 
 # Docusaurus build artifacts
 build/
