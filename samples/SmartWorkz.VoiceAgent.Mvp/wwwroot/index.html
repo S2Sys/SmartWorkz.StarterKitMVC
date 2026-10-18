@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice Agent MVP</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --text:#1d2330; --muted:#6b7385; --accent:#2f6fed; --me:#e8f0ff; --line:#dfe3ea; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#14171c; --card:#1d2129; --text:#e6e9ef; --muted:#9aa3b5; --accent:#6b9bff; --me:#233150; --line:#2c323d; } }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, sans-serif; background:var(--bg); color:var(--text); }
+  main { max-width: 760px; margin: 0 auto; padding: 16px; display:flex; flex-direction:column; height:100vh; gap:12px; }
+  header { display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; }
+  h1 { font-size: 1.15rem; margin:0; }
+  .settings { display:flex; flex-wrap:wrap; gap:8px; font-size:.85rem; color:var(--muted); align-items:center; }
+  select, input, button { font: inherit; color: var(--text); background: var(--card); border:1px solid var(--line); border-radius:8px; padding:6px 10px; }
+  #log { flex:1; overflow-y:auto; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; }
+  .msg { margin: 8px 0; padding: 8px 12px; border-radius:10px; max-width: 85%; white-space: pre-wrap; line-height:1.4; }
+  .user { background: var(--me); margin-left:auto; }
+  .bot { background: var(--bg); }
+  .tag { font-size:.7rem; color:var(--muted); display:block; margin-bottom:2px; }
+  form { display:flex; gap:8px; }
+  #text { flex:1; }
+  #mic { min-width: 110px; }
+  #mic.on { background: #d93636; color:#fff; border-color:#d93636; }
+  button.primary { background: var(--accent); color:#fff; border-color:var(--accent); }
+  #status { font-size:.8rem; color:var(--muted); min-height:1.2em; }
+  details { font-size:.85rem; }
+  pre { white-space: pre-wrap; font-size:.8rem; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Voice Agent MVP</h1>
+    <div class="settings">
+      <label>User <input id="user" size="10"></label>
+      <label>Speech-to-text
+        <select id="sttMode">
+          <option value="browser">Browser</option>
+          <option value="whisper">Local Whisper</option>
+        </select>
+      </label>
+      <label>Language
+        <select id="lang">
+          <option value="en-US">English</option>
+          <option value="ta-IN">Tamil</option>
+          <option value="hi-IN">Hindi</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="speak" checked> Speak replies</label>
+    </div>
+  </header>
+
+  <div id="log"></div>
+  <div id="status"></div>
+
+  <form id="form">
+    <input id="text" placeholder="Type a message, or press the mic and talk..." autocomplete="off">
+    <button type="button" id="mic">🎤 Talk</button>
+    <button class="primary">Send</button>
+  </form>
+
+  <details>
+    <summary>Memory for this user</summary>
+    <button type="button" id="showMem">Refresh</button>
+    <button type="button" id="clearMem">Clear memory</button>
+    <pre id="mem"></pre>
+  </details>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } },
+                set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
+
+$('user').value = store.get('userId') || 'demo-user';
+$('user').onchange = () => store.set('userId', $('user').value.trim());
+const userId = () => $('user').value.trim() || 'demo-user';
+const status = t => $('status').textContent = t || '';
+
+function addMsg(role, text, via) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + (role === 'user' ? 'user' : 'bot');
+  div.innerHTML = `<span class="tag">${role === 'user' ? 'You' : 'Assistant'}${via ? ' · ' + via : ''}</span>`;
+  const body = document.createElement('span');
+  body.textContent = text;
+  div.appendChild(body);
+  $('log').appendChild(div);
+  $('log').scrollTop = $('log').scrollHeight;
+  return body;
+}
+
+// ---------- Text-to-speech (on-device browser voices), spoken sentence by sentence ----------
+function speak(sentence) {
+  if (!$('speak').checked || !sentence.trim() || !window.speechSynthesis) return;
+  const u = new SpeechSynthesisUtterance(sentence);
+  u.lang = $('lang').value;
+  speechSynthesis.speak(u);
+}
+
+// ---------- Ask the agent (same endpoint for text and voice) ----------
+async function ask(text, isVoice) {
+  addMsg('user', text, isVoice ? 'voice' : 'text');
+  const out = addMsg('assistant', '');
+  status('Thinking...');
+  speechSynthesis?.cancel();
+
+  const res = await fetch('/api/chat', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: userId(), text, voice: isVoice })
+  });
+  if (!res.ok) { out.textContent = 'Error: ' + res.status; status(''); return; }
+
+  const reader = res.body.getReader(), dec = new TextDecoder();
+  let pending = '';
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    const chunk = dec.decode(value, { stream: true });
+    out.textContent += chunk;
+    $('log').scrollTop = $('log').scrollHeight;
+    if (isVoice) {
+      pending += chunk;
+      // Speak each finished sentence immediately for low latency.
+      let m;
+      while ((m = pending.match(/^[\s\S]*?[.!?।\n](\s|$)/))) {
+        speak(m[0]); pending = pending.slice(m[0].length);
+      }
+    }
+  }
+  if (isVoice) speak(pending);
+  status('');
+}
+
+$('form').onsubmit = e => {
+  e.preventDefault();
+  const t = $('text').value.trim();
+  if (!t) return;
+  $('text').value = '';
+  ask(t, false);
+};
+
+// ---------- Speech-to-text option 1: browser (Chrome / Edge) ----------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function listenBrowser() {
+  if (!SR) { status('Browser speech recognition not supported here. Use Chrome/Edge or switch to Local Whisper.'); return; }
+  const rec = new SR();
+  rec.lang = $('lang').value;
+  rec.interimResults = false;
+  $('mic').classList.add('on'); $('mic').textContent = '● Listening';
+  rec.onresult = e => ask(e.results[0][0].transcript, true);
+  rec.onerror = e => status('Mic error: ' + e.error);
+  rec.onend = () => { $('mic').classList.remove('on'); $('mic').textContent = '🎤 Talk'; };
+  rec.start();
+}
+
+// ---------- Speech-to-text option 2: local Whisper on the server ----------
+// Click to start recording, click again to stop. Records 16 kHz mono PCM and uploads it as WAV.
+let rec16 = null;
+async function toggleWhisper() {
+  if (rec16) { const r = rec16; rec16 = null; await r.stop(); return; }
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const ctx = new AudioContext({ sampleRate: 16000 });
+  const src = ctx.createMediaStreamSource(stream);
+  const proc = ctx.createScriptProcessor(4096, 1, 1);
+  const chunks = [];
+  proc.onaudioprocess = e => chunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+  src.connect(proc); proc.connect(ctx.destination);
+  $('mic').classList.add('on'); $('mic').textContent = '■ Stop';
+
+  rec16 = { stop: async () => {
+    proc.disconnect(); src.disconnect(); stream.getTracks().forEach(t => t.stop());
+    const rate = ctx.sampleRate; await ctx.close();
+    $('mic').classList.remove('on'); $('mic').textContent = '🎤 Talk';
+    status('Transcribing locally with Whisper (first run downloads the model)...');
+
+    const fd = new FormData();
+    fd.append('audio', toWav(chunks, rate), 'speech.wav');
+    fd.append('language', $('lang').value.slice(0, 2));
+    const res = await fetch('/api/transcribe', { method: 'POST', body: fd });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      status('Transcription failed: ' + (err.detail || res.status)); return;
+    }
+    const { text } = await res.json();
+    status('');
+    if (text) ask(text, true); else status('No speech detected.');
+  }};
+}
+
+function toWav(chunks, rate) {
+  const len = chunks.reduce((n, c) => n + c.length, 0);
+  const buf = new ArrayBuffer(44 + len * 2), v = new DataView(buf);
+  const w = (o, s) => [...s].forEach((ch, i) => v.setUint8(o + i, ch.charCodeAt(0)));
+  w(0, 'RIFF'); v.setUint32(4, 36 + len * 2, true); w(8, 'WAVE'); w(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  w(36, 'data'); v.setUint32(40, len * 2, true);
+  let o = 44;
+  for (const c of chunks) for (let i = 0; i < c.length; i++, o += 2) {
+    const s = Math.max(-1, Math.min(1, c[i])); v.setInt16(o, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+  }
+  return new Blob([buf], { type: 'audio/wav' });
+}
+
+$('mic').onclick = () => $('sttMode').value === 'whisper' ? toggleWhisper().catch(e => status(e.message)) : listenBrowser();
+
+// ---------- Memory viewer ----------
+async function showMem() {
+  const m = await (await fetch('/api/memory/' + encodeURIComponent(userId()))).json();
+  $('mem').textContent = 'Facts:\n' + (m.facts.map(f => '- ' + f).join('\n') || '(none)') +
+    `\n\nStored turns: ${m.turns.length}`;
+}
+$('showMem').onclick = showMem;
+$('clearMem').onclick = async () => { await fetch('/api/memory/' + encodeURIComponent(userId()), { method: 'DELETE' }); showMem(); };
+</script>
+</body>
+</html>
